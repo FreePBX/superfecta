@@ -1,0 +1,42 @@
+<module>
+	<rawname>superfecta</rawname>
+	<name>CID Superfecta</name>
+	<version>2.2.4</version>
+	<candisable>no</candisable>
+	<canuninstall>yes</canuninstall>
+	<type>setup</type>
+	<category>Inbound Call Control</category>
+	<publisher>projects.colsolgrp.net</publisher> 
+	<license>GPLv2+</license>
+	<description>
+	       Provides simultaneous use of, and complete control over multiple caller id data sources.
+	</description>
+	<changelog>
+		*2.2.4* Maintenance and Feature Release. See Tickets  #220, #222, #237, #245, #260, #265, #320, #321, #338, #349, #350, #360, #365, #377, #379, #384, #388, #389, #395, #396, #399, #402, #404, #407, #411, #412, #413, #416, #417, #418, #421 (http://projects.colsolgrp.net/versions/show/76)(12/22/10)		
+		*2.2.3* Maintenance Release. See Tickets: #224, #229, #233, #234, #235, #236, #238, #240, #241 (http://projects.colsolgrp.net/projects/superfecta/issues)(11-24-09)		
+		*2.2.2* Maintenance Release. See Tickets: #209, #210, #212, #211, #199, #198 (http://projects.colsolgrp.net/projects/superfecta/issues)(10-28-09)
+		*2.2.1* Bug/Feature Release. See Tickets: #188, #191, #103, #181, #175, #191, #176, #177, #178, #179, #180, #182, #184, #185, #186, #187. (http://projects.colsolgrp.net/projects/superfecta/issues)(10-16-09)
+		*2.2.0* Feature Release - Tickets: #55, #137, #151, #160, and #161 (http://projects.colsolgrp.net/versions/show/51)(08-18-09)
+		*2.1.1* Maintenance Release - Tickets: #129, #131 (http://projects.colsolgrp.net/versions/show/17)(5-29-09)
+		*2.1.0* Feature Release - Tickets: #16, #28, #62, #68, #71, #88, #89, and #70.(http://projects.colsolgrp.net/versions/show/17)(5-24-09)
+		*2.0.1* Maintenance Release - Tickets: #56, #57, #58, #61, #63, and #66.(http://projects.colsolgrp.net/versions/show/33)(5-15-09)
+		*2.0.0* Major update - Tickets: #7, #10, #15, #17, #36, and #19.(projects.colsolgrp.net)(jjacobs)(5-8-09)
+		*1.1.0* jpterman CRM now standard. Dependancy upon default db id/pw removed.   4-8-09
+		*1.0.4* Re-integrate SugarCRM   3-27-09
+		*1.0.3.3* Correct Fat Fingered Module Version. (No Code Changes from 1.0.3.2)   3-18-09
+		*1.0.3.2* Correct New ModuleInstall Error induced by 1.0.3.1   3-18-09
+		*1.0.3.1* Correct Module Update Error 3-17-09
+		*1.0.3* Updated to Nerd Vittle currnet version of CallerID w/SugarCRM added 3-17-09
+		*1.0.2* Include SugarCRM lookup. Also now supports Fonicatec Distro Security Models  3-14-09
+		*1.0.1* First Module Version (tshif) 3-12-09
+	</changelog>
+	<menuitems>
+		<superfecta>CID Superfecta</superfecta>
+	</menuitems>
+	<info>http://projects.colsolgrp.net/projects/superfecta/wiki/Caller_ID_Superfecta_User_Wiki</info>
+	<location>http://projects.colsolgrp.net/projects/list_files/superfecta</location>
+	<depends>
+		<module>core</module>
+		<module>cidlookup gt2.4</module>
+	</depends>
+</module>
