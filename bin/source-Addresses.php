@@ -13,6 +13,10 @@ $source_desc = "http://phonenumbers.addresses.com - This will return only reside
 if($usage_mode == 'get caller id')
 {
 	$number_error = false;
+	$TFnpa = false;
+	$validnpaUS = false;
+	$validnpaCAN = false;
+
 	if($debug)
 	{
 		print "Searching Addresses White Pages ... ";

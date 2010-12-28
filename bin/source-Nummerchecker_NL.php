@@ -64,7 +64,7 @@ if($usage_mode == 'get caller id')
                 {
                         print "not found<br>\n";
                 }
-        } else if(debug)
+        } else if($debug)
         {
                 print "only for the netherlands !!<br>\n";
         }

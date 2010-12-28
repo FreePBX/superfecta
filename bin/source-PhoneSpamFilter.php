@@ -18,6 +18,10 @@ $source_param['SPAM_Threshold']['default'] = 10;
 if($usage_mode == 'get caller id')
 {
 	$number_error = false;
+	$TFnpa = false;
+	$validnpaUS = false;
+	$validnpaCAN = false;
+
       if($debug)
 	{
 		print "Searching PhoneSpamFilter ... ";

@@ -17,6 +17,9 @@ $source_param['SPAM_Threshold']['default'] = 10;
 if($usage_mode == 'get caller id')
 {
 	$number_error = false;
+	$validSTD = false;
+	$validNGN = false;
+
       if($debug)
 	{
 		print "Searching UK Phone Lookup ... ";
