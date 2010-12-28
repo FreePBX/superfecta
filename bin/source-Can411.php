@@ -4,6 +4,8 @@ if($usage_mode == 'get caller id')
 {
         $number_error = false;
 	$validnpaCAN = false;
+        $found = false;
+        $found = "";
 
         if($debug)
         {
@@ -83,7 +85,7 @@ if($usage_mode == 'get caller id')
                         preg_match_all($expr, $sresult, $surl2);
                         if (count($surl2[1]) == 1)
                         {
-                               $found = 1;
+                               $found = true;
 // When it's business the http://www.411.ca/ is present in the url already, so I look for it and add it in case it's not there
                                 $expr = '/http:\/\/(.*)/Uis';
                                 preg_match_all($expr, $surl2[1][0], $scheckurl);
@@ -110,18 +112,18 @@ if($usage_mode == 'get caller id')
                                 preg_match_all($expr, $sresult, $surl2);
                                 if (count($surl2[1]) > 1)
                                 {
-                                        $found = 1;
+                                        $found = true;
                                         $url = "http://www.411.ca/" . $surl2[1][0];
                                         $sresult =  get_url_contents($url);
                                         $expr = '/<div class="name">(.*)<\/div>/Uis';
                                         preg_match_all($expr, $sresult, $sname);
                                 }else
                                 {
-                                        $found = 0;
+                                        $found = false;
                                 }
                         }
  
-                        if ($found > 0)
+                        if ($found)
                         {
                                 $sname = $sname[1][0];
                         }
