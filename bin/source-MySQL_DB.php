@@ -10,13 +10,13 @@ $source_desc = "Query a local or remote MySQL database.";
 $source_param = array();
 $source_param['DB_Host']['desc'] = 'Host address of the database. (localhost if the database is on the same server as FreePBX)';
 $source_param['DB_Host']['type'] = 'text';
-$source_param['DB_Name']['desc'] = 'schema name of the database';
+$source_param['DB_Name']['desc'] = 'Name of the database';
 $source_param['DB_Name']['type'] = 'text';
-$source_param['DB_User']['desc'] = 'Username used to connect to the database';
+$source_param['DB_User']['desc'] = 'Authentication Username to connect to the database';
 $source_param['DB_User']['type'] = 'text';
 $source_param['DB_Password']['desc'] = 'Password used to connect to the database';
 $source_param['DB_Password']['type'] = 'password';
-$source_param['SQL_Query']['desc'] = 'SQL Query used to retrieve the Dialer Name. select result as data from table where telfield like [NUMBER]. "as data" is important, NUMMBER will be replaced by the called number';
+$source_param['SQL_Query']['desc'] = 'SQL Query used to retrieve the CNAM from the DB. Select result as data from table where telephone field like [NUMBER]. "as data" is important, NUMBER will be replaced by the called number';
 $source_param['SQL_Query']['type'] = 'text';
 
 
