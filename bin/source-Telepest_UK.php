@@ -200,12 +200,18 @@ if($usage_mode == 'get caller id')
 		if($start >0)
 		{
 			$caller_id=''; // Not a telepest
+			if($debug)
+			{
+				print "not found<br>\n";
+			}
 		}
 		else
 		{
 			$start = strpos($value, $thenumber.' has been reported as a possible telepest');
 			if($start >0)
 			{
+				$spam = true;	// Reported as a telepest
+
 				$start = strpos($value, 'We have no information on the ownership of this number.');
 				if($start == false)
 				{
@@ -217,7 +223,7 @@ if($usage_mode == 'get caller id')
 				}
 				else
 				{
-					$caller_id = 'Telepest';
+					$caller_id = 'Telepest';	// Should leave blank ?
 				}
 			}
 		}
@@ -232,7 +238,7 @@ if($usage_mode == 'post processing')
 		{
 			print "Reporting value back to Telepest ... ";
 		}
-//		$url = "http://whocalled.us/do?action=report&name=".$run_param['Username']."&pass=".$run_param['Password']."&phoneNumber=$thenumber&date=".date('Y-m-d')."&callerID=".urlencode(substr($first_caller_id,0,15));
+//		$url = "http://telepest.co.uk/handlers/pestreport.php?action="File Report"&name=".$run_param['Username']."&pass=".$run_param['Password']."&phoneNumber=$thenumber&date=".date('Y-m-d')."&callerID=".urlencode(substr($first_caller_id,0,15));
 		$value = get_url_contents($url);
 		if($debug)
 		{
@@ -252,3 +258,4 @@ if($usage_mode == 'post processing')
 	}
 }
 ?>
+
