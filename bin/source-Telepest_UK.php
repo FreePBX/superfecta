@@ -7,6 +7,8 @@
 //configuration / display parameters
 //The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
 $source_desc = "http://www.telepest.co.uk - A datasource devoted to identifying telemarketers. All information on this site is submitted by users. The operators of Telepest make no claims whatsoever regarding its accuracy or reliability.";
+$source_param['Return_to_Telepest_UK']['desc'] = 'If a valid caller id name is found, provide it back to Telepest for their database.';
+$source_param['Return_to_Telepest_UK']['type'] = 'checkbox';
 
 //run this if the script is running in the "get caller id" usage mode.
 if($usage_mode == 'get caller id')
@@ -217,6 +219,34 @@ if($usage_mode == 'get caller id')
 				{
 					$caller_id = 'Telepest';
 				}
+			}
+		}
+	}
+}
+if($usage_mode == 'post processing')
+{
+	//return the value back to Telepest if the user has enabled it and the result didn't come from cache. This will truncate the string to 15 characters
+	if(!$cache_found && ($winning_source != 'Telepest_UK') && ($first_caller_id != '') && ($run_param['Return_to_Telepest_UK'] == 'on'))
+	{
+		if($debug)
+		{
+			print "Reporting value back to Telepest ... ";
+		}
+//		$url = "http://whocalled.us/do?action=report&name=".$run_param['Username']."&pass=".$run_param['Password']."&phoneNumber=$thenumber&date=".date('Y-m-d')."&callerID=".urlencode(substr($first_caller_id,0,15));
+		$value = get_url_contents($url);
+		if($debug)
+		{
+			$st_success = strstr($value, "success");
+			$st_error = strstr($value, "errorMsg");
+			$success = substr($st_success,8,1);
+			$error = substr($st_error,9);
+			if($success=='1')
+			{
+				print "Success.<br>\n<br>\n";
+			}
+			else
+			{
+				print "Failed with error message: ".$error.".<br>\n<br>\n";
 			}
 		}
 	}
