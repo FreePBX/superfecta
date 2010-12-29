@@ -220,7 +220,7 @@ if($usage_mode == 'get caller id')
 if($usage_mode == 'post processing')
 {
 	//return the value back to Who Called if the user has enabled it and the result didn't come from cache. This will truncate the string to 15 characters
-	if(!$cache_found && ($winning_source != 'Who_Called') && ($first_caller_id != '') && ($run_param['Report_Back'] == 'on'))
+	if(!$cache_found && ($winning_source != 'Who_Called') && ($first_caller_id != '') && ($spam = 'true') && ($run_param['Report_Back'] == 'on'))
 	{
 		if($debug)
 		{
