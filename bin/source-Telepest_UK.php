@@ -7,8 +7,13 @@
 //configuration / display parameters
 //The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
 $source_desc = "http://www.telepest.co.uk - A datasource devoted to identifying telemarketers. All information on this site is submitted by users. The operators of Telepest make no claims whatsoever regarding its accuracy or reliability.";
-$source_param['Return_to_Telepest_UK']['desc'] = 'If a valid caller id name is found, provide it back to Telepest for their database.';
-$source_param['Return_to_Telepest_UK']['type'] = 'checkbox';
+$source_param = array();
+$source_param['Username']['desc'] = 'Your user account Login on the Telepest.co.uk web site.';
+$source_param['Username']['type'] = 'text';
+$source_param['Password']['desc'] = 'Your user account Password on the Telepest.co.uk web site.';
+$source_param['Password']['type'] = 'password';
+$source_param['Report_Back']['desc'] = 'If a valid caller id name is found, provide it back to Telepest for their database.';
+$source_param['Report_Back']['type'] = 'checkbox';
 
 //run this if the script is running in the "get caller id" usage mode.
 if($usage_mode == 'get caller id')
@@ -223,7 +228,7 @@ if($usage_mode == 'get caller id')
 				}
 				else
 				{
-					$caller_id = 'Telepest';	// Should leave blank ?
+					$caller_id = '';	// Should leave blank ?
 				}
 			}
 		}
@@ -232,13 +237,17 @@ if($usage_mode == 'get caller id')
 if($usage_mode == 'post processing')
 {
 	//return the value back to Telepest if the user has enabled it and the result didn't come from cache. This will truncate the string to 15 characters
-	if(!$cache_found && ($winning_source != 'Telepest_UK') && ($first_caller_id != '') && ($run_param['Return_to_Telepest_UK'] == 'on'))
+	if((($winning_source != 'Telepest_UK') && ($first_caller_id != '') && ($spam == '1') && ($run_param['Report_Back'] == 'on')))
 	{
-		if($debug)
-		{
-			print "Reporting value back to Telepest ... ";
-		}
-//		$url = "http://telepest.co.uk/handlers/pestreport.php?action="File Report"&name=".$run_param['Username']."&pass=".$run_param['Password']."&phoneNumber=$thenumber&date=".date('Y-m-d')."&callerID=".urlencode(substr($first_caller_id,0,15));
+	$reportbacknow = true;
+	}	
+	else
+	{
+	$reportbacknow = false;
+	}	
+	if ($reportbacknow) 
+	{
+		$url = "http://telepest.co.uk/handlers/pestreport.php?action=\"File Report\"&name=".$source_param['Username']."&pass=".$source_param['Password']."&phoneNumber=$thenumber&date=".date('Y-m-d')."&callerID=".urlencode(substr($first_caller_id,0,15));
 		$value = get_url_contents($url);
 		if($debug)
 		{
@@ -248,11 +257,11 @@ if($usage_mode == 'post processing')
 			$error = substr($st_error,9);
 			if($success=='1')
 			{
-				print "Success.<br>\n<br>\n";
+				print "Success. Reported SPAM caller back to Telepest_UK.co.<br>\n<br>\n";
 			}
 			else
 			{
-				print "Failed with error message: ".$error.".<br>\n<br>\n";
+				print "Failed reporting back to Telepest_UK.co. with error message: ".$error.".<br>\n<br>\n";
 			}
 		}
 	}
