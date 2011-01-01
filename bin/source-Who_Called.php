@@ -14,7 +14,7 @@ $source_param['Password']['desc'] = 'Your user account Password on the whocalled
 $source_param['Password']['type'] = 'password';
 $source_param['Get_Caller_ID_Name']['desc'] = 'Use whocalled.us for caller id name lookup.';
 $source_param['Get_Caller_ID_Name']['type'] = 'checkbox';
-$source_param['Report_Back']['desc'] = 'If a valid caller id name is found, provide it back to Who Called for their database.';
+$source_param['Report_Back']['desc'] = 'If a the caller has been flagged as SPAM by the successful CID scheme, provide it back to Who Called for their database. All submissions back to this source are considered SPAMers.';
 $source_param['Report_Back']['type'] = 'checkbox';
 $source_param['Get_SPAM_Score']['desc'] = 'Use whocalled.us for spam scoring.';
 $source_param['Get_SPAM_Score']['type'] = 'checkbox';
@@ -68,7 +68,10 @@ if($usage_mode == 'get caller id')
 	{
 		$number_error = true;
 	}
-
+else
+	{
+		$number_error = false;
+	}
 	if(!$number_error)
 	{
 		$npa = substr($thenumber,0,3);
@@ -173,7 +176,7 @@ if($usage_mode == 'get caller id')
 				$spam = true;
 				if($debug)
 				{
-					print " determined to be SPAM (score: ".$score.")<br>\n";
+					print " determined to be <b>SPAM</b> (score: ".$score.")<br>\n";
 				}
 		  }
 		  else if($debug)
@@ -219,14 +222,28 @@ if($usage_mode == 'get caller id')
 }
 if($usage_mode == 'post processing')
 {
-	//return the value back to Who Called if the user has enabled it and the result didn't come from cache. This will truncate the string to 15 characters
-	if(!$cache_found && ($winning_source != 'Who_Called') && ($first_caller_id != '') && ($spam = 'true') && ($run_param['Report_Back'] == 'on'))
+//	return the value back to Who Called if the user has enabled it and the result didn't come from cache. This will truncate the string to 15 characters
+
+//		if($debug)
+//		{
+//			print "Reporting value back winningsource ..:".$winning_source."<br>\n";
+//			print "Reporting value back caller_id ......:".$cid."<br>\n";
+//			print "Reporting value back spam ...........:".$spam."<br>\n";			
+//			print "Reporting value back toggle .........:".$run_param['Report_Back']."<br>\n";			
+//		}
+
+	if((($winning_source != 'Who_Called') && ($first_caller_id != '') && ($spam == '1') && ($run_param['Report_Back'] == 'on')))
 	{
-		if($debug)
-		{
-			print "Reporting value back to Who Called ... ";
-		}
-		$url = "http://whocalled.us/do?action=report&name=".$run_param['Username']."&pass=".$run_param['Password']."&phoneNumber=$thenumber&date=".date('Y-m-d')."&callerID=".urlencode(substr($first_caller_id,0,15));
+	$reportbacknow = true;
+	}	
+	else
+	{
+	$reportbacknow = false;
+	}	
+
+	if ($reportbacknow) 
+	{
+	$url = "http://whocalled.us/do?action=report&name=".$run_param['Username']."&pass=".$run_param['Password']."&phoneNumber=$thenumber&date=".date('Y-m-d')."&callerID=".urlencode(substr($cid,0,15));
 		$value = get_url_contents($url);
 		if($debug)
 		{
@@ -236,11 +253,11 @@ if($usage_mode == 'post processing')
 			$error = substr($st_error,9);
 			if($success=='1')
 			{
-				print "Success.<br>\n<br>\n";
+				print "Success. Posted SPAM information back to Who Called.<br>\n<br>\n";
 			}
 			else
 			{
-				print "Failed with error message: ".$error.".<br>\n<br>\n";
+				print "Failed! Cant post back to Who Called. Reason: ".$error.".<br>\n<br>\n";
 			}
 		}
 	}
