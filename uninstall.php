@@ -32,13 +32,16 @@ if (DB::IsError($check))
 {
 	die_freepbx( "Can not delete superfectacache table: " . $check->getMessage() .  "\n");
 }
-
-$sql = "DROP TABLE IF EXISTS superfecta_to_incoming";
-$check = $db->query($sql);
-if (DB::IsError($check))
-{
-	die_freepbx( "Can not delete superfecta_to_incoming table: " . $check->getMessage() .  "\n");
-}
-
+	print 'Deleting Caller ID Superfecta Inbound Route Assignments, and performing general cleanup.<br>';
+	//delete incoming lookups
+$sql = "delete c1 from cidlookup_incoming c1, cidlookup c2 where c1.cidlookup_id = c2.cidlookup_id and  c2.description = 
+'Caller ID Superfecta'";
+$res = $db->query($sql);
+//delete the line from the cidlookup table
+$sql = "DELETE FROM cidlookup WHERE description = 'Caller ID Superfecta'";
+$res = $db->query($sql);
+//cleanup stray cidlookup_incoming records left by bad uninstalls
+$sql = "delete c1 from cidlookup_incoming c1 left outer join cidlookup c2 on c1.cidlookup_id = c2.cidlookup_id where 
+c2.cidlookup_id is null";
 $res = $db->query($sql);
 ?>
