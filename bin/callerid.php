@@ -273,7 +273,7 @@ else
 			$prefix = ($prefix != '') ? $prefix.':' : '';
 			if($spam)
 			{
-				if($param[$this_scheme]['SPAM_Text_Substitute'] == 'Y')
+				if(isset($param[$this_scheme]['SPAM_Text_Substitute']) && $param[$this_scheme]['SPAM_Text_Substitute'] == 'Y')
 				{
 					$first_caller_id = $param[$this_scheme]['SPAM_Text'];
 				}
