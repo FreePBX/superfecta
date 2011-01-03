@@ -23,7 +23,7 @@ if($usage_mode == 'get caller id')
 	}
 
 	$key_words = array();
-	$temp_array = split(',',$run_param['Ignore_Keywords']);
+	$temp_array = split(',',(isset($run_param['Ignore_Keywords'])?$run_param['Ignore_Keywords']:$source_param['Ignore_Keywords']['default']));
 	foreach($temp_array as $val)
 	{
 		$key_words[] = trim($val);

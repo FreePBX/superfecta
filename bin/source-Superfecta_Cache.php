@@ -55,7 +55,7 @@ if($usage_mode == 'get caller id')
 		}
 		
 		//clear old cache
-		$sql = "DELETE FROM superfectacache WHERE dateentered < DATE_SUB(NOW(),INTERVAL ".$run_param['Cache_Timeout']." DAY)";
+		$sql = "DELETE FROM superfectacache WHERE dateentered < DATE_SUB(NOW(),INTERVAL ".(isset($run_param['Cache_Timeout'])?$run_param['Cache_Timeout']:$source_param['Cache_Timeout']['default'])." DAY)";
 		$db->query($sql);
 		
 		//query cache
