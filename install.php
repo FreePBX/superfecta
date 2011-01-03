@@ -1,13 +1,8 @@
 <?php
 print 'Installing Caller ID Superfecta<br>';
 
-if ((!function_exists('cidlookup_add'))||(!function_exists('cidlookup_edit'))) {
-        die_freepbx( "CallerID Lookup not installed. Cannot install CallerID Superfecta.<br>\n");
-}
-
-//cleanup stray cidlookup_incoming records left by bad uninstalls
-$sql = "delete c1 from cidlookup_incoming c1 left outer join cidlookup c2 on c1.cidlookup_id = c2.cidlookup_id where c2.cidlookup_id is null";
-$check = $db->query($sql);
+// Set execute permissions for AGI script
+chmod(dirname(__FILE__).'/superfecta.agi', 0755);
 
 //a list of the columns that need to be included in the table. Functions below will add and delete columns as necessary.
 $cols['source'] = "varchar(255) NOT NULL";
@@ -38,6 +33,20 @@ $check = $db->query($sql);
 if (DB::IsError($check))
 {
 	die_freepbx( "Can not create superfectacache table: " . $check->getMessage() .  "<br>");
+}
+
+//create incoming lookup table
+$sql = "CREATE TABLE IF NOT EXISTS superfecta_to_incoming (
+ 				superfecta_to_incoming_id BIGINT(20) NOT NULL AUTO_INCREMENT,
+ 				extension VARCHAR(50) DEFAULT NULL,
+ 				cidnum VARCHAR(50) DEFAULT NULL,
+				PRIMARY KEY  (`superfecta_to_incoming_id`),
+				UNIQUE KEY `extn` (`extension`,`cidnum`)
+			) ENGINE=MYISAM";
+$check = $db->query($sql);
+if (DB::IsError($check))
+{
+	die_freepbx( "Can not create superfecta_to_incoming table: " . $check->getMessage() .  "<br>");
 }
 
 //check to see that the proper columns are in the table.
@@ -238,46 +247,29 @@ if($res->numRows() > 0)
 	$res = $db->query($sql);
 }
 
-print 'Verifying Superfecta As Caller ID Source.<br>';
+if ((function_exists('cidlookup_add'))&&(function_exists('cidlookup_edit'))) {
+	//cleanup stray cidlookup_incoming records left by bad superfect < 2.2.4 uninstalls
+	$sql = "delete c1 from cidlookup_incoming c1 left outer join cidlookup c2 on c1.cidlookup_id = c2.cidlookup_id where c2.cidlookup_id is null";
+	$check = $db->query($sql);
 
-$sql = "SELECT * FROM `cidlookup` WHERE `description` = 'Caller ID Superfecta' LIMIT 1;";
-$res = $db->query($sql);
+	$sql = "SELECT * FROM `cidlookup` WHERE `description` = 'Caller ID Superfecta' LIMIT 1;";
+	$res = $db->query($sql);
 
-if($res->numRows() != 1)
-{
-	$cids_lookup_array = array(
-		'sourcetype' => 'http',
-		'cache' => 0,
-		'http_host' => 'localhost',
-		'http_path' => '/admin/modules/superfecta/bin/callerid.php',
-		'http_query' => 'thenumber=[NUMBER]',
-		'description' => 'Caller ID Superfecta',
-		'http_username' => $_SERVER["PHP_AUTH_USER"],
-		'http_password' => $_SERVER["PHP_AUTH_PW"]
-	);
-	cidlookup_add($cids_lookup_array);
-	print 'Adding Caller ID Superfecta Lookup Source.<br>
-	<strong>You may need to add your "maint" user\'s<br>
-	ID and Password in the General Options<br>
-	section of the Caller ID Superfecta Module\'s<br>
-	gui.</strong><br>
-	Note: If your password contains any non<br>
-	alphanumeric characters, you may need to<br>
-	<a href="http://meyerweb.com/eric/tools/dencoder/" target="_blank">URL Encode</a> it first.<br>
-	Hopfully this will be fixed in future<br> 
-	versions of FreePBX Caller ID Lookup.<br>';
-
-}
-else
-{
-	if($row = $res->fetchRow(DB_FETCHMODE_ASSOC)){
-		$row['http_path'] = '/admin/modules/superfecta/bin/callerid.php';
-		$row['sourcetype'] = 'http';
-		$row['cache'] = '0';
-		$row['http_query'] = 'thenumber=[NUMBER]';
-		$row['description'] = 'Caller ID Superfecta';
-		$row['http_host'] = 'localhost';
-		cidlookup_edit($row['cidlookup_id'],$row);
+	if($res->numRows() > 0){
+		print 'Upgrading database to remove CallerID Lookup dependency.<br>';
+		// Move any inbound routes using superfecta for cid Lookups to superfecta's table
+		$sql = "INSERT IGNORE INTO superfecta_to_incoming (extension,cidnum) 
+						(SELECT c2.extension, c2.cidnum FROM cidlookup c1, cidlookup_incoming c2
+							WHERE c1.description = 'Caller ID Superfecta'
+							AND c2.cidlookup_id = c1.cidlookup_id)";
+		$res = $db->query($sql);
+		// Delete the inbound superfect routes from cid lookup's table
+		$sql = "delete c1, c2 from cidlookup_incoming c1, cidlookup c2 
+						where c1.cidlookup_id = c2.cidlookup_id 
+						AND c2.description = 'Caller ID Superfecta'";
+		$res = $db->query($sql);
 	}
+
 }
+
 ?>

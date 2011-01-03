@@ -29,7 +29,13 @@ $winning_source = '';
 $usage_mode = 'get caller id';
 $src_array = array();
 $thenumber_orig = (isset($_REQUEST['thenumber'])) ? trim($_REQUEST['thenumber']) : '';
+if(($thenumber_orig == '') && isset($argv[1])){
+	$thenumber_orig = $argv[1];
+}
 $testdid = (isset($_REQUEST['testdid'])) ? trim($_REQUEST['testdid']) : '';
+if(($testdid == '') && isset($argv[2])){
+	$testdid = $argv[2];
+}
 $scheme = (isset($_REQUEST['scheme'])) ? trim($_REQUEST['scheme']) : '';
 //$thenumber_orig = ereg_replace('[^0-9]+', '', $thenumber_orig);
 
