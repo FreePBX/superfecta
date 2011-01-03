@@ -15,11 +15,11 @@
 //
 
 $scheme = (isset($_REQUEST['scheme'])) ? $_REQUEST['scheme'] : '';
-$module_info = xml2array("modules/superfecta/module.xml");
+$module_info = superfecta_xml2array("modules/superfecta/module.xml");
 
 if(count($_POST))
 {
-	setConfig();
+	superfecta_setConfig();
 	$scheme = (($_POST['scheme_name_orig'] == '') && ($_POST['scheme_name'] != '')) ? 'base_'.$_POST['scheme_name'] : '';
 }
 
@@ -189,12 +189,11 @@ print '</ul>
 		</div>
 		<h1><font face="Arial">Caller ID Superfecta</font></h1>
 		<hr>
-		<p>CallerID Superfecta for FreePBX is a utility program which adds incoming CallerID name lookups to your Asterisk system using multiple data sources.<br><br> Add, Remove, Enable, Disable, Sort and Configure data sources as appropriate for your situation.<br>
-		<strong><font size=2><br>NOTE:</strong> If your telephones are receiving Caller ID information that looks like this:<strong>"&lt;!DOCTYPE HTML" </strong>, make sure you have specified the username and password in "General Options", below.</font></p>';
+		<p>CallerID Superfecta for FreePBX is a utility program which adds incoming CallerID name lookups to your Asterisk system using multiple data sources.<br><br> Add, Remove, Enable, Disable, Sort and Configure data sources as appropriate for your situation.</p>';
 
 if($scheme != "")
 {
-	$conf = getConfig($scheme);
+	$conf = superfecta_getConfig($scheme);
 
 	if (isset($conf['DID']) && (strlen(trim($conf['DID'])))){
 		$did_test_html = '<a href="javascript:return(false);" class="info">DID Number:<span>DID number to test this scheme against</span></a> <input type="text" size="15" maxlength="20" name="testdid"><br>';

@@ -29,7 +29,7 @@ function superfecta_hookProcess_core($viewing_itemid, $request) {
 	switch ($request['action'])	{
 		case 'addIncoming':
 			if($request['enable_superfecta'] == 'yes'){
-				$sql = "INSERT INTO superfecta_to_incoming (extension, cidnum) values (".q($request['extension']).",".q($request['cidnum']).")";
+				$sql = "REPLACE INTO superfecta_to_incoming (extension, cidnum) values (".q($request['extension']).",".q($request['cidnum']).")";
 				$result = sql($sql);
 			}
 		break;
@@ -47,7 +47,7 @@ function superfecta_hookProcess_core($viewing_itemid, $request) {
 					$result = sql($sql);
 			}
 			if($request['enable_superfecta'] == 'yes'){
-				$sql = "INSERT INTO superfecta_to_incoming (extension, cidnum) values (".q($request['extension']).",".q($request['cidnum']).")";
+				$sql = "REPLACE INTO superfecta_to_incoming (extension, cidnum) values (".q($request['extension']).",".q($request['cidnum']).")";
 				$result = sql($sql);
 			}
 		break;
@@ -121,7 +121,7 @@ function superfecta_did_list($id=false) {
 	return is_array($results)?$results:array();
 }
 
-function setConfig()
+function superfecta_setConfig()
 {
 	//clean up
 	$scheme_name = mysql_real_escape_string($_POST['scheme_name']);
@@ -201,7 +201,7 @@ function setConfig()
 
 }
 
-function getConfig($scheme)
+function superfecta_getConfig($scheme)
 {
 	$return = array();
 	$sql = "SELECT * FROM superfectaconfig WHERE source='$scheme'";
@@ -224,7 +224,7 @@ function getConfig($scheme)
 /**
 Parse XML file into an array
 */
-function xml2array($url, $get_attributes = 1, $priority = 'tag')
+function superfecta_xml2array($url, $get_attributes = 1, $priority = 'tag')
 {
 	$contents = "";
 	if (!function_exists('xml_parser_create'))
