@@ -71,13 +71,7 @@ if($usage_mode == 'get caller id')
 	{
 		$thenumber = (substr($thenumber,0,1) == 1) ? substr($thenumber,1) : $thenumber;
 		$npa = substr($thenumber,0,3);
-		
-		// Check for Toll-Free numbers
-		if($npa=='800'||$npa=='866'||$npa=='877'||$npa=='888')
-		{
-			$TFnpa = true;
-		}
-		
+				
 		// Check for valid US NPA
 		$npalistUS = array(
 			"201", "202", "203", "205", "206", "207", "208", "209", "210", "212",
@@ -114,6 +108,7 @@ if($usage_mode == 'get caller id')
 			"800", "866", "877", "888"
 		);
 		
+		$validnpaUS = false;
 		if(in_array($npa, $npalistUS))
 		{
 			$validnpaUS = true;
@@ -127,13 +122,14 @@ if($usage_mode == 'get caller id')
 			"800", "866", "877", "888"
 		  );
 		
+		$validnpaCAN = false;
 		if(in_array($npa, $npalistCAN))
 		{
 			$validnpaCAN = true;
 		}
 	}
-	$TFnpa = '';
-	if($TFnpa || (!$validnpaUS && !$validnpaCAN))
+
+	if((!$validnpaUS && !$validnpaCAN))
 	{
 		$number_error = true;
 	}
