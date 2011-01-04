@@ -20,11 +20,13 @@ $source_desc = "http://www.telepest.us - A datasource devoted to identifying tel
 if($usage_mode == 'get caller id')
 {
 	$number_error = false;
+        $validnpaCAN = false;
+        $validnpaUS = false;
+
       if($debug)
 	{
 		print "Searching Telepest.us ... ";
 	}
-	
 
 	//check for the correct 11 digits in US/CAN phone numbers in international format.
 	// country code + number
@@ -107,8 +109,7 @@ if($usage_mode == 'get caller id')
 			"973", "978", "979", "980", "985", "989",
 			"800", "866", "877", "888"
 		);
-		
-		$validnpaUS = false;
+
 		if(in_array($npa, $npalistUS))
 		{
 			$validnpaUS = true;
@@ -121,8 +122,7 @@ if($usage_mode == 'get caller id')
 			"778", "780", "807", "819", "867", "902", "905",
 			"800", "866", "877", "888"
 		  );
-		
-		$validnpaCAN = false;
+
 		if(in_array($npa, $npalistCAN))
 		{
 			$validnpaCAN = true;
