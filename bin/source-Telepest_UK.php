@@ -7,13 +7,19 @@
 //configuration / display parameters
 //The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
 $source_desc = "http://www.telepest.co.uk - A datasource devoted to identifying telemarketers. All information on this site is submitted by users. The operators of Telepest make no claims whatsoever regarding its accuracy or reliability.";
-//$source_param = array();
+$source_param = array();
 //$source_param['Username']['desc'] = 'Your user account Login on the Telepest.co.uk web site.';
 //$source_param['Username']['type'] = 'text';
 //$source_param['Password']['desc'] = 'Your user account Password on the Telepest.co.uk web site.';
 //$source_param['Password']['type'] = 'password';
 //$source_param['Report_Back']['desc'] = 'If a valid caller id name is found, provide it back to Telepest for their database.';
 //$source_param['Report_Back']['type'] = 'checkbox';
+$source_param['Get_Caller_ID_Name']['desc'] = 'Use Telepest.co.uk for caller id name lookup.';
+$source_param['Get_Caller_ID_Name']['type'] = 'checkbox';
+$source_param['Get_Caller_ID_Name']['default'] = 'on';
+$source_param['Get_SPAM_Score']['desc'] = 'Use Telepest.co.uk for spam scoring.';
+$source_param['Get_SPAM_Score']['type'] = 'checkbox';
+$source_param['Get_SPAM_Score']['default'] = 'on';
 
 //run this if the script is running in the "get caller id" usage mode.
 if($usage_mode == 'get caller id')
@@ -215,20 +221,33 @@ if($usage_mode == 'get caller id')
 			$start = strpos($value, $thenumber.' has been reported as a possible telepest');
 			if($start >0)
 			{
-				$spam = true;	// Reported as a telepest
-
-				$start = strpos($value, 'We have no information on the ownership of this number.');
-				if($start == false)
+				if($run_param['Get_SPAM_Score'] == 'on')
 				{
-					$start = strpos($value, 'According to reports, this number is most likely to belong to');
-					$value = substr($value,$start+62);
-					$end = strpos($value,'</p>');
-					$value = substr($value,0, $end);
-					$caller_id = strip_tags($value);
+					$spam = true;	// Reported as a telepest
+					if($debug)
+					{
+						print "SPAM caller<br>\n";
+					}
 				}
-				else
+				if($run_param['Get_Caller_ID_Name'] == 'on')
 				{
-					$caller_id = '';	// Should leave blank ?
+					if($debug)
+					{
+						print "Looking up CNAM ... ";
+					}
+					$start = strpos($value, 'We have no information on the ownership of this number.');
+					if($start == false)
+					{
+						$start = strpos($value, 'According to reports, this number is most likely to belong to');
+						$value = substr($value,$start+62);
+						$end = strpos($value,'</p>');
+						$value = substr($value,0, $end);
+						$caller_id = strip_tags($value);
+					}
+					else
+					{
+						$caller_id = '';	// Should leave blank ?
+					}
 				}
 			}
 		}
@@ -237,7 +256,7 @@ if($usage_mode == 'get caller id')
 if($usage_mode == 'post processing')
 {
 	//return the value back to Telepest if the user has enabled it and the result didn't come from cache. This will truncate the string to 15 characters
-	if((($winning_source != 'Telepest_UK') && ($first_caller_id != '') && ($spam == '1') && ($run_param['Report_Back'] == 'on')))
+	if((($winning_source != 'Telepest_UK') && ($first_caller_id != '') && ($spam) && ($run_param['Report_Back'] == 'on')))
 	{
 	$reportbacknow = true;
 	}	
