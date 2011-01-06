@@ -8,10 +8,10 @@
 //The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
 $source_desc = "http://www.telepest.us - A datasource devoted to identifying telemarketers. All information on this site is submitted by users. The operators of Telepest make no claims whatsoever regarding its accuracy or reliability.";
 $source_param = array();
-//$source_param['Username']['desc'] = 'Your user account Login on the Telepest.us web site.';
+//$source_param['Username']['desc'] = 'Your name to be displayed on the Telepest.us web site.';
 //$source_param['Username']['type'] = 'text';
-//$source_param['Password']['desc'] = 'Your user account Password on the Telepest.us web site.';
-//$source_param['Password']['type'] = 'password';
+//$source_param['Email']['desc'] = 'Your email address (Required, will not be published).';
+//$source_param['Email']['type'] = 'text';
 $source_param['Get_Caller_ID_Name']['desc'] = 'Use Telepest.us for caller id name lookup.';
 $source_param['Get_Caller_ID_Name']['type'] = 'checkbox';
 $source_param['Get_Caller_ID_Name']['default'] = 'on';
@@ -23,7 +23,8 @@ $source_param['Get_SPAM_Score']['default'] = 'on';
 
 
 //run this if the script is running in the "get caller id" usage mode.
-if($usage_mode == 'get caller id')
+//and only if either run mode is required
+if(($usage_mode == 'get caller id') && (($run_param['Get_SPAM_Score'] == 'on') || ($run_param['Get_Caller_ID_Name'] == 'on')))
 {
 	$number_error = false;
         $validnpaCAN = false;
@@ -202,7 +203,7 @@ if($usage_mode == 'get caller id')
 if($usage_mode == 'post processing')
 {
 	//return the value back to Telepest if the user has enabled it and the result didn't come from cache. This will truncate the string to 15 characters
-	if((($winning_source != 'Telepest_US') && ($first_caller_id != '') && ($spam == '1') && ($run_param['Report_Back'] == 'on')))
+	if((($winning_source != 'Telepest_US') && ($first_caller_id != '') && ($spam) && ($run_param['Report_Back'] == 'on')))
 	{
 	$reportbacknow = true;
 	}	
@@ -212,7 +213,7 @@ if($usage_mode == 'post processing')
 	}	
 	if ($reportbacknow) 
 	{
-//		$url = "http://telepest.us/handlers/pestreport.php?action=\"File Report\"&name=".$source_param['Username']."&pass=".$source_param['Password']."&phoneNumber=$thenumber&date=".date('Y-m-d')."&callerID=".urlencode(substr($first_caller_id,0,15));
+//		$url = "http://telepest.us/handlers/pestreport.php?action=\"File Report\"&submitter_name=".$source_param['Username']."&submitter_email=".$source_param['Email']."&phoneNumber=$thenumber&date=".date('Y-m-d')."&number_owner=".urlencode(substr($first_caller_id,0,60));
 		$value = get_url_contents($url);
 		if($debug)
 		{

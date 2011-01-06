@@ -22,7 +22,8 @@ $source_param['Get_SPAM_Score']['type'] = 'checkbox';
 $source_param['Get_SPAM_Score']['default'] = 'on';
 
 //run this if the script is running in the "get caller id" usage mode.
-if($usage_mode == 'get caller id')
+//and only if either run mode is required
+if(($usage_mode == 'get caller id') && (($run_param['Get_SPAM_Score'] == 'on') || ($run_param['Get_Caller_ID_Name'] == 'on')))
 {
 	$number_error = false;
       if($debug)
