@@ -41,26 +41,24 @@ if($usage_mode == 'get caller id')
 	{
 		if($debug)
 		{
-			print "Skipping Source - Non UK number: ".$thenumber."<br>\n";
+			print "Skipping Source - Non UK number: {$thenumber}<br>\n";
 		}
 	}
 	else
 	{
 		if($debug)
 		{
-			print "Searching maps.google.co.uk for number: ".$thenumber."<br>\n";
+			print "Searching maps.google.co.uk for number: {$thenumber}<br>\n";
 		}
 		// By default, the found name is empty
 		$name = "";
 
 		// We'll be searching google maps
-		$url = "http://maps.google.co.uk/m?q=%22".$thenumber."%22";
+		$url = "http://maps.google.co.uk/m?q=%22{$thenumber}%22";
 		$value = get_url_contents($url);
 
 		// Grab the first result from google maps that matches our phone number
-
-//		$pattern = "/<a class=\"uf\" href=\"[^\"]+\" *>([^<]+)<\/a>[^<]*<\/div>[^<]*<div class=\"[^\"]*\">[^<]*<\/div>[^<]*<div><a class=\"[^\"]*\" href=\"tel:".$thenumber."\" *>/";
-		$pattern = "/<a class=\"uf\" href=\"[^\"]+\" *>([^<]+)<\/a>[^<].*<\/div>[^<]*<div class=\"[^\"]*\">[^<]*<\/div>[^<]*<div><a class=\"[^\"]*\" href=\"tel:".$thenumber."\" *>/";
+		$pattern = "/<a class=\"uf\" href=\"[^\"]+\" *>([^<]+)<\/a>[^<].*<\/div>[^<]*<div class=\"[^\"]*\">[^<]*<\/div>[^<]*<div><a class=\"[^\"]*\" href=\"tel:{$thenumber}\" *>/";
 
 		preg_match($pattern, $value, $match);
 		if(isset($match[1]) && strlen($match[1])){
