@@ -22,19 +22,19 @@ $source_param['DB_Password']['type'] = 'password';
 $source_param['DB_Password']['default'] = 'passw0rd';
 $source_param['Search_Office_Phone']['desc'] = 'Perform search on Office Number Field';
 $source_param['Search_Office_Phone']['type'] = 'checkbox';
-$source_param['Search_Office_Phone']['default'] = true;
+$source_param['Search_Office_Phone']['default'] = "on";
 $source_param['Search_Mobile_Phone']['desc'] = 'Perform search on Mobile Number Field';
 $source_param['Search_Mobile_Phone']['type'] = 'checkbox';
-$source_param['Search_Mobile_Phone']['default'] = true;
+$source_param['Search_Mobile_Phone']['default'] = "on";
 $source_param['Search_Fax_Phone']['desc'] = 'Perform search on Fax Number Field';
 $source_param['Search_Fax_Phone']['type'] = 'checkbox';
-$source_param['Search_Fax_Phone']['default'] = true;
+$source_param['Search_Fax_Phone']['default'] = "on";
 $source_param['Search_Home_Phone']['desc'] = 'Perform search on Home Number Field';
 $source_param['Search_Home_Phone']['type'] = 'checkbox';
-$source_param['Search_Home_Phone']['default'] = true;
+$source_param['Search_Home_Phone']['default'] = "on";
 $source_param['Search_Other_Phone']['desc'] = 'Perform search on Other Number Field';
 $source_param['Search_Other_Phone']['type'] = 'checkbox';
-$source_param['Search_Other_Phone']['default'] = true;
+$source_param['Search_Other_Phone']['default'] = "on";
 $source_param['Filter_Length']['desc']='The number of rightmost digits to check for a match';
 $source_param['Filter_Length']['type']='number';
 $source_param['Filter_Length']['default']= 10;
@@ -62,10 +62,14 @@ if($usage_mode == 'get caller id')
 	}
 	else
 	{
-	//  Build regular expression from $thenumber to avoid non-digit characters
-	//  run with 123456789 for testing
-         $wquery_input = "'[^0-9]*1[^0-9]*2[^0-9]*3[^0-9]*4[^0-9]*5[^0-9]*6[^0-9]*7[^0-9]*8[^0-9]*9[^0-9]*0[^0-9]*'";
-        }
+		//  Build regular expression from $thenumber to avoid non-digit characters
+		$wquery_input = "'[^0-9]*";
+		for( $x=0; $x < (strlen($thenumber)); $x++ )
+	   	{
+			$wquery_input .=  substr($thenumber,$x,1)."[^0-9]*" ;
+		}
+		$wquery_input .= "'";
+	}
 
 
 	// Connect to vTiger db
