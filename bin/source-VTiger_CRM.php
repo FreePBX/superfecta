@@ -70,7 +70,6 @@ if($usage_mode == 'get caller id')
 			$wquery_input .=  substr($thenumber,$x,1)."[^0-9]*" ;
 		}
 		$wquery_input .= "'";
-                print $wquery_input;
 	}
 
 
