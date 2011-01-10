@@ -13,6 +13,10 @@ $source_desc = "http://www.whitepages.ca - These listings will return both resid
 if($usage_mode == 'get caller id')
 {
 	$number_error = false;
+        $TFnpa = false;
+        $validnpaCAN = false;
+        $validnpaUS = false;
+
 	if($debug)
 	{
 		print "Searching http://www.whitepages.ca ... ";
@@ -53,7 +57,7 @@ if($usage_mode == 'get caller id')
 
 	}
 	// number
-      if(strlen($thenumber) < 10)
+      if(strlen($thenumber) != 10)
 	{
 		$number_error = true;
 
@@ -107,7 +111,6 @@ if($usage_mode == 'get caller id')
 			"800", "866", "877", "888"
 		);
 
-		$validnpaUS = false;
 		if(in_array($npa, $npalistUS))
 		{
 			$validnpaUS = true;
@@ -121,7 +124,6 @@ if($usage_mode == 'get caller id')
 			"800", "866", "877", "888"
 		  );
 
-		$validnpaCAN = false;
 		if(in_array($npa, $npalistCAN))
 		{
 			$validnpaCAN = true;
