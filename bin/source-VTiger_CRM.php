@@ -62,6 +62,7 @@ if($usage_mode == 'get caller id')
 	}
 	else
 	{
+		$thenumber = substr($thenumber, (-1*$run_param['Filter_Length']));
 		//  Build regular expression from $thenumber to avoid non-digit characters
 		$wquery_input = "'[^0-9]*";
 		for( $x=0; $x < (strlen($thenumber)); $x++ )
@@ -69,6 +70,7 @@ if($usage_mode == 'get caller id')
 			$wquery_input .=  substr($thenumber,$x,1)."[^0-9]*" ;
 		}
 		$wquery_input .= "'";
+                print $wquery_input;
 	}
 
 
