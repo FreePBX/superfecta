@@ -47,6 +47,7 @@ if($usage_mode == 'get caller id')
 		print "Searching vTiger ... ";
 	}
 
+	$toggle = false;
 	$wquery = "";
         $wquery_input = "";
 	$wquery_string = "";
@@ -76,42 +77,50 @@ if($usage_mode == 'get caller id')
 		//  Build section of query with user specified phone fields
 		if ($run_param['Search_Office_Phone'] == "on")
                 {
-                	$wquery_input = $wquery_input." (phone REGEXP ".$wquery.") OR ";
+			$wquery_input = $wquery_input." (phone REGEXP ".$wquery.") OR ";
+			$toggle = true;
                 }
 		if ($run_param['Search_Mobile_Phone'] == "on")
                 {
                 	$wquery_input = $wquery_input." (mobile REGEXP ".$wquery.") OR ";
+			$toggle = true;
                 }
 		if ($run_param['Search_Fax_Phone'] == "on")
                 {
                 	$wquery_input = $wquery_input." (fax REGEXP ".$wquery.") OR ";
+			$toggle = true;
                 }
 		if ($run_param['Search_Home_Phone'] == "on")
                 {
                 	$wquery_input = $wquery_input." (homephone REGEXP ".$wquery.") OR ";
+                        $toggle = true;
                 }
 		if ($run_param['Search_Other_Phone'] == "on")
                 {
                 	$wquery_input = $wquery_input." (otherphone REGEXP ".$wquery.") OR ";
+			$toggle = true;
                 }
 
-		//  trim final "OR" from $wquery_input
-		$wquery_input = substr($wquery_input, 0, -3);
+                if ($toggle)
+                {
+			//  trim final "OR" from $wquery_input
+			$wquery_input = substr($wquery_input, 0, -3);
 
-        	//  Connect to database
-		$wdb_handle = mysql_connect($run_param['DB_Host'], $run_param['DB_User'], $run_param['DB_Password']) or die("vTiger connection failed" . mysql_error());
-		mysql_select_db($run_param['DB_Name']) or die("vTiger db open error: " . mysql_error());
-		mysql_query("SET NAMES 'utf8'") or die("UTF8 set query  failed: " . mysql_error());
+	        	//  Connect to database
+			$wdb_handle = mysql_connect($run_param['DB_Host'], $run_param['DB_User'], $run_param['DB_Password']) or die("vTiger connection failed" . mysql_error());
+			mysql_select_db($run_param['DB_Name']) or die("vTiger db open error: " . mysql_error());
+			mysql_query("SET NAMES 'utf8'") or die("UTF8 set query  failed: " . mysql_error());
 
-		// search database
-       		$wquery_string = 'SELECT firstname, lastname FROM vtiger_contactdetails INNER JOIN vtiger_contactsubdetails ON vtiger_contactsubdetails.contactsubscriptionid = vtiger_contactdetails.contactid INNER JOIN vtiger_crmentity ON vtiger_crmentity.crmid = vtiger_contactdetails.contactid WHERE '.$wquery_input.' ORDER BY modifiedtime DESC';
-                $wquery_result = mysql_query($wquery_string) or die("SugarCRM accounts query failed" . mysql_error());
+			// search database
+	       		$wquery_string = 'SELECT firstname, lastname FROM vtiger_contactdetails INNER JOIN vtiger_contactsubdetails ON vtiger_contactsubdetails.contactsubscriptionid = vtiger_contactdetails.contactid INNER JOIN vtiger_crmentity ON vtiger_crmentity.crmid = vtiger_contactdetails.contactid WHERE '.$wquery_input.' ORDER BY modifiedtime DESC';
+	                $wquery_result = mysql_query($wquery_string) or die("SugarCRM accounts query failed" . mysql_error());
 
-                // Close dbase connection
-               	mysql_close($wdb_handle);
+	                // Close dbase connection
+	               	mysql_close($wdb_handle);
+                }
 	}
 
-	if(mysql_num_rows($wquery_result)>0)
+	if ($toggle && (mysql_num_rows($wquery_result)>0))
 	{
                 $wquery_row = mysql_fetch_array($wquery_result);
 		$caller_id = $wquery_row["firstname"]." ".$wquery_row["lastname"];
