@@ -65,76 +65,25 @@ if($usage_mode == 'get caller id')
 		$thenumber = substr($thenumber, (-1*$run_param['Filter_Length']));
 		//  Build regular expression from $thenumber to avoid non-digit characters
 		$wquery_input = "'[^0-9]*";
-		for( $x=0; $x < (strlen($thenumber)); $x++ )
+		for( $x=0; $x < ((strlen($thenumber))-1); $x++ )
 	   	{
 			$wquery_input .=  substr($thenumber,$x,1)."[^0-9]*" ;
 		}
-		$wquery_input .= "'";
+		$wquery_input = $wquery_input.(substr($thenumber,-1))."([^0-9]+|$)'";
 	}
-
 
 	// Connect to vTiger db
         if (!$numbererror)
         {
+        	//  Connect to database
 		$wdb_handle = mysql_connect($run_param['DB_Host'], $run_param['DB_User'], $run_param['DB_Password']) or die("vTiger connection failed" . mysql_error());
 		mysql_select_db($run_param['DB_Name']) or die("vTiger db open error: " . mysql_error());
 		mysql_query("SET NAMES 'utf8'") or die("UTF8 set query  failed: " . mysql_error());
-	}
-
-	// search Office Phone field
-       	if(($run_param['Search_Office_Phone'] != "off") && !$numbererror && !$vtfound)
-	{
-		$wquery_string = "SELECT firstname,lastname FROM vtiger_contactdetails WHERE phone REGEXP ".$wquery_input." LIMIT 1";
+		// search database
+       		$wquery_string = 'SELECT firstname, lastname FROM vtiger_contactdetails INNER JOIN vtiger_contactsubdetails ON vtiger_contactsubdetails.contactsubscriptionid = vtiger_contactdetails.contactid INNER JOIN vtiger_crmentity ON vtiger_crmentity.crmid = vtiger_contactdetails.contactid WHERE (phone REGEXP '.$wquery_input.') OR (mobile REGEXP '.$wquery_input.') OR (fax REGEXP '.$wquery_input.') OR (homephone REGEXP '.$wquery_input.') OR (otherphone REGEXP '.$wquery_input.') ORDER BY modifiedtime DESC';
                 $wquery_result = mysql_query($wquery_string) or die("SugarCRM accounts query failed" . mysql_error());
-		if(mysql_num_rows($wquery_result)>0)
-		{
-			$vtfound = true;
-		}
 	}
 
-	// no result yet? search mobile phone field
-       	if(($run_param['Search_Mobile_Phone']!= "off") && !$numbererror && !$vtfound)
-	{
-                $wquery_string = "SELECT firstname,lastname FROM vtiger_contactdetails WHERE mobile REGEXP ".$wquery_input." LIMIT 1";
-		$wquery_result = mysql_query($wquery_string) or die("SugarCRM users query failed" . mysql_error());
-                if(mysql_num_rows($wquery_result)>0)
-		{
-			$vtfound = true;
-		}
-	}
-
-	// no result yet? search fax number field
-       	if(($run_param['Search_Fax_Phone']!= "off") && !$numbererror && !$vtfound)
-	{
-                $wquery_string = "SELECT firstname,lastname FROM vtiger_contactdetails WHERE fax REGEXP ".$wquery_input." LIMIT 1";
-		$wquery_result = mysql_query($wquery_string) or die("SugarCRM users query failed" . mysql_error());
-                if(mysql_num_rows($wquery_result)>0)
-		{
-			$vtfound = true;
-		}
-	}
-
-	// no result yet? search Home phone number field
-       	if(($run_param['Search_Home_Phone']!= "off") && !$numbererror && !$vtfound)
-	{
-                $wquery_string = "SELECT firstname,lastname FROM vtiger_contactdetails INNER JOIN vtiger_contactsubdetails ON vtiger_contactsubdetails.contactsubscriptionid=vtiger_contactdetails.contactid WHERE vtiger_contactsubdetails.homephone REGEXP ".$wquery_input." LIMIT 1";
-		$wquery_result = mysql_query($wquery_string) or die("SugarCRM users query failed" . mysql_error());
-                if(mysql_num_rows($wquery_result)>0)
-		{
-			$vtfound = true;
-		}
-	}
-
-	// no result yet? search Other phone number field
-       	if(($run_param['Search_Other_Phone']!= "off") && !$numbererror && !$vtfound)
-	{
-                $wquery_string = "SELECT firstname,lastname FROM vtiger_contactdetails INNER JOIN vtiger_contactsubdetails ON vtiger_contactsubdetails.contactsubscriptionid=vtiger_contactdetails.contactid WHERE vtiger_contactsubdetails.otherphone REGEXP ".$wquery_input." LIMIT 1";
-		$wquery_result = mysql_query($wquery_string) or die("SugarCRM users query failed" . mysql_error());
-                if(mysql_num_rows($wquery_result)>0)
-		{
-			$vtfound = true;
-		}
-	}
 
 	mysql_close($wdb_handle);
 
