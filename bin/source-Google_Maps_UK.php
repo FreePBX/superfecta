@@ -58,8 +58,7 @@ if($usage_mode == 'get caller id')
 		$value = get_url_contents($url);
 
 		// Grab the first result from google maps that matches our phone number
-		$pattern = "/<a class=\"uf\" href=\"[^\"]+\" *>([^<]+)<\/a>[^<].*<\/div>[^<]*<div class=\"[^\"]*\">[^<]*<\/div>[^<]*<div><a class=\"[^\"]*\" href=\"tel:{$thenumber}\" *>/";
-
+		$pattern = "/<a class=\"uf\" href=\"[^\"]+\" *>([^<]+)<\/a>[^<]<a href=\"[^\"]+\" *><img class=\"t3h5iu\" src=\"[^\"]+\" *[^<]+<\/a> <\/div>[^<]*<div class=\"[^\"]*\">[^<]*<\/div>[^<]*<div><a class=\"[^\"]*\" href=\"tel:{$thenumber}\" *>/";
 		preg_match($pattern, $value, $match);
 		if(isset($match[1]) && strlen($match[1])){
 			$name = trim(strip_tags($match[1]));
