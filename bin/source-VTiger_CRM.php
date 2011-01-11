@@ -20,21 +20,15 @@ $source_param['DB_User']['default'] = 'root';
 $source_param['DB_Password']['desc'] = 'Password used to connect to the  vTiger CRM database';
 $source_param['DB_Password']['type'] = 'password';
 $source_param['DB_Password']['default'] = 'passw0rd';
-$source_param['Search_Office_Phone']['desc'] = 'Perform search on Office Number Field';
-$source_param['Search_Office_Phone']['type'] = 'checkbox';
-$source_param['Search_Office_Phone']['default'] = "on";
-$source_param['Search_Mobile_Phone']['desc'] = 'Perform search on Mobile Number Field';
-$source_param['Search_Mobile_Phone']['type'] = 'checkbox';
-$source_param['Search_Mobile_Phone']['default'] = "on";
-$source_param['Search_Fax_Phone']['desc'] = 'Perform search on Fax Number Field';
-$source_param['Search_Fax_Phone']['type'] = 'checkbox';
-$source_param['Search_Fax_Phone']['default'] = "on";
-$source_param['Search_Home_Phone']['desc'] = 'Perform search on Home Number Field';
-$source_param['Search_Home_Phone']['type'] = 'checkbox';
-$source_param['Search_Home_Phone']['default'] = "on";
-$source_param['Search_Other_Phone']['desc'] = 'Perform search on Other Number Field';
-$source_param['Search_Other_Phone']['type'] = 'checkbox';
-$source_param['Search_Other_Phone']['default'] = "on";
+$source_param['Search_Contacts']['desc'] = 'Include Contact records in search';
+$source_param['Search_Contacts']['type'] = 'checkbox';
+$source_param['Search_Contacts']['default'] = "on";
+$source_param['Search_Accounts']['desc'] = 'Include Account records in search';
+$source_param['Search_Accounts']['type'] = 'checkbox';
+$source_param['Search_Accounts']['default'] = "on";
+$source_param['Search_Leads']['desc'] = 'Include Leads records in search';
+$source_param['Search_Leads']['type'] = 'checkbox';
+$source_param['Search_Leads']['default'] = "on";
 $source_param['Filter_Length']['desc']='The number of rightmost digits to check for a match';
 $source_param['Filter_Length']['type']='number';
 $source_param['Filter_Length']['default']= 10;
@@ -47,14 +41,13 @@ if($usage_mode == 'get caller id')
 		print "Searching vTiger ... ";
 	}
 
-	$toggle = false;
+	// Initialize variables
 	$wquery = "";
-        $wquery_input = "";
 	$wquery_string = "";
 	$wquery_result = "";
 
+	// Abandon search if not enough digits in $thenumber
 	if (strlen($thenumber) < $run_param['Filter_Length'])
-	// Abandon search in not enough digits
 	{
 		If ($debug)
 		{
@@ -66,7 +59,7 @@ if($usage_mode == 'get caller id')
         	//  trim incoming number to specified filter length
 		$thenumber = substr($thenumber, (-1*$run_param['Filter_Length']));
 
-		//  Build regular expression from the modified $thenumber to avoid non-digit characters
+		//  Build regular expression from modified $thenumber to avoid non-digit characters
 		$wquery = "'[^0-9]*";
 		for( $x=0; $x < ((strlen($thenumber))-1); $x++ )
 	   	{
@@ -74,60 +67,59 @@ if($usage_mode == 'get caller id')
 		}
 		$wquery = $wquery.(substr($thenumber,-1))."([^0-9]+|$)'";
 
-		//  Build section of query with user specified phone fields
-		if ($run_param['Search_Office_Phone'] == "on")
-                {
-			$wquery_input = $wquery_input." (phone REGEXP ".$wquery.") OR ";
-			$toggle = true;
-                }
-		if ($run_param['Search_Mobile_Phone'] == "on")
-                {
-                	$wquery_input = $wquery_input." (mobile REGEXP ".$wquery.") OR ";
-			$toggle = true;
-                }
-		if ($run_param['Search_Fax_Phone'] == "on")
-                {
-                	$wquery_input = $wquery_input." (fax REGEXP ".$wquery.") OR ";
-			$toggle = true;
-                }
-		if ($run_param['Search_Home_Phone'] == "on")
-                {
-                	$wquery_input = $wquery_input." (homephone REGEXP ".$wquery.") OR ";
-                        $toggle = true;
-                }
-		if ($run_param['Search_Other_Phone'] == "on")
-                {
-                	$wquery_input = $wquery_input." (otherphone REGEXP ".$wquery.") OR ";
-			$toggle = true;
-                }
+        	//  Connect to database
+		$wdb_handle = mysql_connect($run_param['DB_Host'], $run_param['DB_User'], $run_param['DB_Password']) or die("vTiger connection failed" . mysql_error());
+		mysql_select_db($run_param['DB_Name']) or die("vTiger db open error: " . mysql_error());
+		mysql_query("SET NAMES 'utf8'") or die("UTF8 set query  failed: " . mysql_error());
 
-                if ($toggle)
+		if ($run_param['Search_Contacts'] == "on")
                 {
-			//  trim final "OR" from $wquery_input
-			$wquery_input = substr($wquery_input, 0, -3);
+			// search contacts in database
+	       		$wquery_string = 'SELECT firstname, lastname FROM vtiger_contactdetails INNER JOIN vtiger_contactsubdetails ON vtiger_contactsubdetails.contactsubscriptionid = vtiger_contactdetails.contactid INNER JOIN vtiger_crmentity ON vtiger_crmentity.crmid = vtiger_contactdetails.contactid WHERE (phone REGEXP '.$wquery.') OR (mobile REGEXP '.$wquery.') OR (fax REGEXP '.$wquery.') OR (homephone REGEXP '.$wquery.') OR (otherphone REGEXP '.$wquery.') ORDER BY modifiedtime DESC';
+	                $wquery_result = mysql_query($wquery_string) or die("vTiger contacts query failed" . mysql_error());
+                       	if (mysql_num_rows($wquery_result)>0)
+			{
+                		$wquery_row = mysql_fetch_array($wquery_result);
+				$caller_id = $wquery_row["firstname"]." ".$wquery_row["lastname"];
+			}
+		}
+		if (($run_param['Search_Accounts'] == "on") && ($caller_id == ""))
+                {
+			// search accounts in database
+	       		$wquery_string = 'SELECT accountname FROM vtiger_account INNER JOIN vtiger_crmentity ON vtiger_crmentity.crmid = vtiger_account.accountid WHERE (phone REGEXP '.$wquery.') OR (otherphone REGEXP '.$wquery.') OR (fax REGEXP '.$wquery.') ORDER BY modifiedtime DESC';
+	                $wquery_result = mysql_query($wquery_string) or die("vTiger accounts query failed" . mysql_error());
+                       	if (mysql_num_rows($wquery_result)>0)
+			{
+                		$wquery_row = mysql_fetch_array($wquery_result);
+				$caller_id = $wquery_row["accountname"];
+			}
+		}
+		if (($run_param['Search_Leads'] == "on") && ($caller_id == ""))
+                {
+			// search leads in database
+	       		$wquery_string = 'SELECT firstname, lastname FROM vtiger_leaddetails INNER JOIN vtiger_crmentity ON vtiger_crmentity.crmid = vtiger_leaddetails.leadid INNER JOIN vtiger_leadaddress ON vtiger_leadaddress.leadaddressid = vtiger_leaddetails.leadid WHERE (phone REGEXP '.$wquery.') OR (mobile REGEXP '.$wquery.') OR (fax REGEXP '.$wquery.') ORDER BY modifiedtime DESC';
+	                $wquery_result = mysql_query($wquery_string) or die("vTiger Leads query failed" . mysql_error());
+                       	if (mysql_num_rows($wquery_result)>0)
+			{
+                		$wquery_row = mysql_fetch_array($wquery_result);
+				$caller_id = $wquery_row["firstname"]." ".$wquery_row["lastname"];
+			}
+		}
 
-	        	//  Connect to database
-			$wdb_handle = mysql_connect($run_param['DB_Host'], $run_param['DB_User'], $run_param['DB_Password']) or die("vTiger connection failed" . mysql_error());
-			mysql_select_db($run_param['DB_Name']) or die("vTiger db open error: " . mysql_error());
-			mysql_query("SET NAMES 'utf8'") or die("UTF8 set query  failed: " . mysql_error());
+                // Close dbase connection
+               	mysql_close($wdb_handle);
 
-			// search database
-	       		$wquery_string = 'SELECT firstname, lastname FROM vtiger_contactdetails INNER JOIN vtiger_contactsubdetails ON vtiger_contactsubdetails.contactsubscriptionid = vtiger_contactdetails.contactid INNER JOIN vtiger_crmentity ON vtiger_crmentity.crmid = vtiger_contactdetails.contactid WHERE '.$wquery_input.' ORDER BY modifiedtime DESC';
-	                $wquery_result = mysql_query($wquery_string) or die("SugarCRM accounts query failed" . mysql_error());
-
-	                // Close dbase connection
-	               	mysql_close($wdb_handle);
+		if ($caller_id == "")
+                {
+			if($debug)
+			{
+				print "not found<br>\n";
+			}
+		}
+		else
+                {
+                $caller_id = trim($caller_id);
                 }
-	}
-
-	if ($toggle && (mysql_num_rows($wquery_result)>0))
-	{
-                $wquery_row = mysql_fetch_array($wquery_result);
-		$caller_id = $wquery_row["firstname"]." ".$wquery_row["lastname"];
-	}
-	else if($debug)
-	{
-		print "not found<br>\n";
 	}
 }
 ?>
