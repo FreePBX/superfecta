@@ -279,7 +279,7 @@ else
 				}
 				else
 				{
-					$first_caller_id = $param[$this_scheme]['SPAM_Text'].':'.$first_caller_id;
+					$first_caller_id = "{$param[$this_scheme]['SPAM_Text']}:".str_replace("{$param[$this_scheme]['SPAM_Text']}:", '', $first_caller_id);
 				}
 			}
 		}
