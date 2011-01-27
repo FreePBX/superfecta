@@ -203,7 +203,7 @@ if(($usage_mode == 'get caller id') && (($run_param['Get_SPAM_Score'] == 'on') |
 if($usage_mode == 'post processing')
 {
 	//return the value back to Telepest if the user has enabled it and the result didn't come from cache. This will truncate the string to 15 characters
-	if((($winning_source != 'Telepest_US') && ($first_caller_id != '') && ($spam) && ($run_param['Report_Back'] == 'on')))
+	if((($winning_source != 'Telepest_US') && ($first_caller_id != '') && ($spam) && (isset($run_param['Report_Back'])) && ($run_param['Report_Back'] == 'on')))
 	{
 	$reportbacknow = true;
 	}	
