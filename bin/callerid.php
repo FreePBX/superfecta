@@ -151,7 +151,7 @@ else
 	}
 
 	// Loop over each scheme
-	while ($row = $res->fetchRow(DB_FETCHMODE_ASSOC))
+	while ($res && ($row = $res->fetchRow(DB_FETCHMODE_ASSOC)))
 	{
 		$this_scheme = $row['source'];
 		$run_this_scheme = true;
