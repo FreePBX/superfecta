@@ -62,10 +62,16 @@ if($usage_mode == 'get caller id')
 	else
 	{
 		// Search reverseaustralia.com
-		$url = "http://api.reverseaustralia.com/cidlookup.php?format=text&key={$run_param['API_Key']}&q=$thenumber".($run_param['Spam_Threshold']?"&spamthreshold={$run_param['Spam_Threshold']}":'');
-		$value = trim(get_url_contents($url));
+		$url = "http://api.reverseaustralia.com/cidlookup.php?format=text&key={$run_param['API_Key']}&q=$thenumber".($run_param['Spam_Threshold']?"&spamscore=1":'');
+		$value = get_url_contents($url);
 		// No name, unless we find one
 		$name = "";
+		if ($run_param['Spam_Threshold'])
+		{
+			list($value, $spamscore) = explode("\t", $value);
+			if ($spamscore >= $run_param['Spam_Threshold'])
+				$spam = true;
+		}
 		if ($value != 'Not found')
 			$name = $value;
 
