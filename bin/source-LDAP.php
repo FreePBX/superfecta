@@ -27,8 +27,7 @@ if($usage_mode == 'get caller id')
 	$name = "";
 
 	// check if php-ldap is installed
-	function_exists('ldap_connect')
-	or die ("LDAP functions not available");
+	function_exists('ldap_connect') or die ("LDAP functions not available");
 
 	// parse host and port info 
 	$connection = parse_url($run_param['LDAP_Host']) ;
@@ -42,47 +41,47 @@ if($usage_mode == 'get caller id')
 	elseif(array_key_exists('host', $connection))
 	{
 		$server = $connection['host']; 
-		if(array_key_exists('port', $connection))
-		{ 
-			$server .= ':' . $connection['port'];
-		}
+	}
+
+	// rebuild ldap domain name string - before we add the port info
+	$elements = explode('.', $server);
+
+	// Add port if required
+	if(array_key_exists('port', $connection))
+	{ 
+		$server .= ':' . $connection['port'];
 	}
 
 	// connect
-	$ad=ldap_connect("ldap://{$server}")
-	or die ("Couldn't connect to {$server}");
+	$ad=ldap_connect("ldap://{$server}") or die ("Couldn't connect to {$server}");
 	
-	//Set protocol version
-	ldap_set_option($ad, LDAP_OPT_PROTOCOL_VERSION, 3)
-	or die ("Could not set ldap protocol");
+	// Set protocol version
+	ldap_set_option($ad, LDAP_OPT_PROTOCOL_VERSION, 3) or die ("Could not set ldap protocol");
 	
 	// Set this option for AD on Windows Server 2003 per PHP manual
-	ldap_set_option($ad, LDAP_OPT_REFERRALS, 0)
-	or die ("Could not set option referrals");
+	ldap_set_option($ad, LDAP_OPT_REFERRALS, 0) or die ("Could not set option referrals");
 
 	// Attempt to set 5 second timeout
 	if (defined('LDAP_OPT_NETWORK_TIMEOUT')) {
 		// This option isn't present before PHP 5.3.
-		ldap_set_option($ad, constant('LDAP_OPT_NETWORK_TIMEOUT'), 5)
-		or die ("Could not set network timeout");
+		ldap_set_option($ad, constant('LDAP_OPT_NETWORK_TIMEOUT'), 5) or die ("Could not set network timeout");
 	}
 	
 	// build DC string
-	$elements = explode('.', $server);
-	$dc = "dc=".implode(";dc=", $elements);
+	$dc = "dc=" . implode(";dc=", $elements);
 	
 	// bind
-	$bd=ldap_bind($ad,"cn={$run_param['LDAP_User']},{$dc}","{$run_param['LDAP_Password']}")
-	or die ("Couldn't bind to {$server}");
+	$bd=ldap_bind($ad, "cn={$run_param['LDAP_User']}, {$dc}", "{$run_param['LDAP_Password']}") or die ("Couldn't bind to {$server}");
 	
-	// search
+	// Set Organizational Unit e.g "ou=people, dc=ldap,dc=example,dc=com"
 	$dn = "ou={$run_param['LDAP_Unit']},${dc}";
 	if($debug)
 	{
 		echo "Searching {$dn} ... ";
 	}
-
-	if($rs=ldap_search($ad,$dn,"(|(telephoneNumber=*{$thenumber})(mobile=*{$thenumber})(homeTelephoneNumber=*{$thenumber}))",array('cn')))
+	
+	// perform LDAP search - only return CN to conserve bandwith
+	if($rs = ldap_search($ad, $dn, "(|(telephoneNumber=*{$thenumber})(mobile=*{$thenumber})(homeTelephoneNumber=*{$thenumber}))", array('cn')))
 	{
 		if($info = ldap_get_entries($ad, $rs))
 		{	
@@ -93,7 +92,7 @@ if($usage_mode == 'get caller id')
 			if($info["count"] > 0)
 			{
 				// var_dump($info[0]);
-				$name=$info[0]["cn"][0];
+				$name = $info[0]["cn"][0];
 			}
 		}
 	}
