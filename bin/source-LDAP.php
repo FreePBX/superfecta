@@ -47,8 +47,9 @@ if($usage_mode == 'get caller id')
 		die("Unable to determine LDAP server name");
 	}
 
-	// build DC string
-	$dc = "dc=" . implode(";dc=", explode('.', $server));
+	// build DC string from host name supplied
+	// e.g. "ldap.example.com" becomes "dc=ldap,dc=example,dc=com"
+	$dc = "dc=" . implode(",dc=", explode('.', $server));
 
 	// Add port to server connect string if required
 	if(array_key_exists('port', $connection))
@@ -97,6 +98,9 @@ if($usage_mode == 'get caller id')
 			}
 		}
 	}
+	
+	// Tidy up and release connection
+	ldap_unbind($ad);
 	
 	// If we found a match, return it
 	if(strlen($name) > 1)
