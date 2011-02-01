@@ -5,7 +5,7 @@
 
 //configuration / display parameters
 //The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
-$source_desc = "LDAP lookup source.";
+$source_desc = "This source will search an LDAP Server and return the Common Name for a telephone number.\nAttempts are made to match telephoneNumber, mobile and homeTelephoneNumber.";
 $source_param = array();
 $source_param['LDAP_Host']['desc'] = 'LDAP Server to search.<br>The port is optional e.g. ldap.example.com:389';
 $source_param['LDAP_Host']['type'] = 'text';
@@ -30,23 +30,27 @@ if($usage_mode == 'get caller id')
 	function_exists('ldap_connect') or die ("LDAP functions not available");
 
 	// parse host and port info 
-	$connection = parse_url($run_param['LDAP_Host']) ;
-	// print_r($connection);
+	$connection = @parse_url($run_param['LDAP_Host']) or die("No LDAP host specified - Check config LDAP_Host");
+	// print_r($connection); echo("<br>\n");
 
 	// beware - different keys returned if port is present or not	
-	if(array_key_exists('path', $connection))
+	if(array_key_exists('path', $connection) && (strlen($connection['path']) > 1))
 	{
 		$server = $connection['path']; 
 	}
-	elseif(array_key_exists('host', $connection))
+	elseif(array_key_exists('host', $connection) && (strlen($connection['host']) > 1))
 	{
 		$server = $connection['host']; 
 	}
+	else 
+	{
+		die("Unable to determine LDAP server name");
+	}
 
-	// rebuild ldap domain name string - before we add the port info
-	$elements = explode('.', $server);
+	// build DC string
+	$dc = "dc=" . implode(";dc=", explode('.', $server));
 
-	// Add port if required
+	// Add port to server connect string if required
 	if(array_key_exists('port', $connection))
 	{ 
 		$server .= ':' . $connection['port'];
@@ -66,10 +70,7 @@ if($usage_mode == 'get caller id')
 		// This option isn't present before PHP 5.3.
 		ldap_set_option($ad, constant('LDAP_OPT_NETWORK_TIMEOUT'), 5) or die ("Could not set network timeout");
 	}
-	
-	// build DC string
-	$dc = "dc=" . implode(";dc=", $elements);
-	
+		
 	// bind
 	$bd=ldap_bind($ad, "cn={$run_param['LDAP_User']}, {$dc}", "{$run_param['LDAP_Password']}") or die ("Couldn't bind to {$server}");
 	
