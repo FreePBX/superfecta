@@ -5,9 +5,9 @@
 
 //configuration / display parameters
 //The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
-$source_desc = "This source will search an LDAP Server and return the Common Name for a telephone number.\nAttempts are made to match telephoneNumber, mobile and homeTelephoneNumber.";
+$source_desc = "This source will search an LDAP Server and return the Common Name (<strong>cn</strong>) for a telephone number.<br><br>Attempts are made to match telephoneNumber, mobile and homeTelephoneNumber.";
 $source_param = array();
-$source_param['LDAP_Host']['desc'] = 'LDAP Server to search.<br>The port is optional e.g. ldap.example.com:389';
+$source_param['LDAP_Host']['desc'] = 'LDAP Server to search.<br>The port is optional e.g. ldap.example.com:389<br><br>To connect through SSL prefix the connection with <strong>ldaps</strong> e.g. ldaps://ldap.example.com';
 $source_param['LDAP_Host']['type'] = 'text';
 $source_param['LDAP_User']['desc'] = 'Authentication Username to connect to the LDAP server';
 $source_param['LDAP_User']['type'] = 'text';
@@ -33,6 +33,9 @@ if($usage_mode == 'get caller id')
 	$connection = @parse_url($run_param['LDAP_Host']) or die("No LDAP host specified - Check config LDAP_Host");
 	// print_r($connection); echo("<br>\n");
 
+	// set default to ldap
+	$scheme = 'ldap';
+	
 	// beware - different keys returned if port is present or not	
 	if(array_key_exists('path', $connection) && (strlen($connection['path']) > 1))
 	{
@@ -57,8 +60,17 @@ if($usage_mode == 'get caller id')
 		$server .= ':' . $connection['port'];
 	}
 
-	// connect
-	$ad=ldap_connect("ldap://{$server}") or die ("Couldn't connect to {$server}");
+	// Check for SSL connection string
+	if(array_key_exists('scheme', $connection))
+	{
+		if($connection['scheme']==='ldaps')
+		{
+			$scheme = 'ldaps';
+		}
+	}
+
+	// Prepare connection to LDAP server
+	$ad=@ldap_connect("{$scheme}://{$server}") or die ("Couldn't connect to {$scheme}://{$server}");
 	
 	// Set protocol version
 	ldap_set_option($ad, LDAP_OPT_PROTOCOL_VERSION, 3) or die ("Could not set ldap protocol");
@@ -72,8 +84,8 @@ if($usage_mode == 'get caller id')
 		ldap_set_option($ad, constant('LDAP_OPT_NETWORK_TIMEOUT'), 5) or die ("Could not set network timeout");
 	}
 		
-	// bind
-	$bd=ldap_bind($ad, "cn={$run_param['LDAP_User']}, {$dc}", "{$run_param['LDAP_Password']}") or die ("Couldn't bind to {$server}");
+	// Establish connection with LDAP server
+	$bd=@ldap_bind($ad, "cn={$run_param['LDAP_User']}, {$dc}", "{$run_param['LDAP_Password']}") or die ("Couldn't bind to {$scheme}://{$server}");
 	
 	// Set Organizational Unit e.g "ou=people, dc=ldap,dc=example,dc=com"
 	$dn = "ou={$run_param['LDAP_Unit']},${dc}";
