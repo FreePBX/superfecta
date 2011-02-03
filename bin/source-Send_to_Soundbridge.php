@@ -30,36 +30,31 @@ $source_param['Font_size']['option'][7] = 'SansSerif 16';
 $source_param['Font_size']['default'] = '1';
 $source_param['Display_time']['desc'] = 'Specify how many seconds to display the CID for.';
 $source_param['Display_time']['type'] = 'text';
-$source_param['Display_time']['default'] = '10';
+$source_param['Display_time']['default'] = '2';
 		
 if($usage_mode == 'post processing')
 {
 	if (($run_param['Server_address'] !='') && ($first_caller_id != ''))
 	{
+		// Fonts supported by sketch
+		$fonts = array( '1'=>1, 	// Fixed 8
+						'2'=>2, 	// Fixed 16
+						'3'=>3, 	// Zurich Bold 32
+						'4'=>10, 	// Zurich Bold 16
+						'5'=>11, 	// Zurich Lite 16
+						'6'=>12, 	// Fixed 16
+						'7'=>14 );	// Sans Serif 16
+		
 		// Validate font size
-		switch ($run_param['Font_size']) 
+		if(array_key_exists($run_param['Font_size'], $fonts) )
 		{
-			case 1: // Fixed8
-			case 2:	// Fixed16
-			case 3:	// ZurichBold32
-				$font=$run_param['Font_size'];
-				break;
-			case 4:
-				$font=10; // ZurichBold16
-				break;
-			case 5:
-				$font=11; // ZurichLite16
-				break;
-			case 6:
-				$font=12; // Fixed16
-				break;
-			case 7:
-				$font=14; // SansSerif16
-			    break;
-			default:
-			    die("Invalid Font size requested.");
+			$font = $fonts[ $run_param['Font_size'] ];
 		}
-
+		else
+		{
+		    die("Invalid Font size requested.");
+		}
+		
 		$errno='';
 		$errstr='';
 		
