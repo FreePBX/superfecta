@@ -29,8 +29,8 @@ $source_param['Font_size']['option'][6] = 'Fixed 16';
 $source_param['Font_size']['option'][7] = 'SansSerif 16';
 $source_param['Font_size']['default'] = '1';
 $source_param['Display_time']['desc'] = 'Specify how many seconds to display the CID for.';
-$source_param['Display_time']['type'] = 'text';
-$source_param['Display_time']['default'] = '2';
+$source_param['Display_time']['type'] = 'number';
+$source_param['Display_time']['default'] = 2;
 		
 if($usage_mode == 'post processing')
 {
