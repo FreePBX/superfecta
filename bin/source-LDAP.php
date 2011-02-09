@@ -88,9 +88,9 @@ if($usage_mode == 'get caller id')
 	$bd=@ldap_bind($ad, "cn={$run_param['LDAP_User']}, {$dc}", "{$run_param['LDAP_Password']}") or die ("Couldn't bind to {$scheme}://{$server}");
 	
 	// Set Organizational Unit e.g "ou=people, dc=ldap,dc=example,dc=com"
-	$ou = $run_param['LDAP_Unit']});
 	// Allow for embedded quotes to avoid LDAP injection
-	$dn = addslashes("ou={$ou},${dc}");
+	$ou = addslashes($run_param['LDAP_Unit']);
+	$dn = "ou=${ou},${dc}";
 
 	if($debug)
 	{
@@ -98,7 +98,7 @@ if($usage_mode == 'get caller id')
 	}
 	
 	// perform LDAP search - only return CN to conserve bandwith
-	if($rs = ldap_search($ad, $dn, "(|(telephoneNumber=*{$thenumber})(mobile=*{$thenumber})(homeTelephoneNumber=*{$thenumber}))", array('cn')))
+	if($rs = @ldap_search($ad, $dn, "(|(telephoneNumber=*{$thenumber})(mobile=*{$thenumber})(homeTelephoneNumber=*{$thenumber}))", array('cn')))
 	{
 		if($info = ldap_get_entries($ad, $rs))
 		{	
