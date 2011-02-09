@@ -88,7 +88,10 @@ if($usage_mode == 'get caller id')
 	$bd=@ldap_bind($ad, "cn={$run_param['LDAP_User']}, {$dc}", "{$run_param['LDAP_Password']}") or die ("Couldn't bind to {$scheme}://{$server}");
 	
 	// Set Organizational Unit e.g "ou=people, dc=ldap,dc=example,dc=com"
-	$dn = "ou={$run_param['LDAP_Unit']},${dc}";
+	$ou = $run_param['LDAP_Unit']});
+	// Allow for embedded quotes to avoid LDAP injection
+	$dn = addslashes("ou={$ou},${dc}");
+
 	if($debug)
 	{
 		echo "Searching {$dn} ... ";
