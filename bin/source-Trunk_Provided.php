@@ -23,7 +23,7 @@ if($usage_mode == 'get caller id')
 	}
 
 	$key_words = array();
-	$temp_array = split(',',(isset($run_param['Ignore_Keywords'])?$run_param['Ignore_Keywords']:$source_param['Ignore_Keywords']['default']));
+	$temp_array = explode(',',(isset($run_param['Ignore_Keywords'])?$run_param['Ignore_Keywords']:$source_param['Ignore_Keywords']['default']));
 	foreach($temp_array as $val)
 	{
 		$key_words[] = trim($val);
@@ -33,16 +33,16 @@ if($usage_mode == 'get caller id')
 	//get the caller id name already set for this call using the PHP Asterisk Manager
 	//first get a list of the active channels and return the first one that has a caller id value set.
 	$value = $astman->command('core show channels concise');
-	$chan_array = split("\n",$value['data']);
+	$chan_array = preg_split("/\n/",$value['data']);
 	foreach($chan_array as $val)
 	{
-		$this_chan_array = split("!",$val);
+		$this_chan_array = explode("!",$val);
 		if(isset($this_chan_array[7]))
 		{
                         if ($thenumber_orig == $this_chan_array[7])
 			{
 				$value = $astman->command('core show channel '.$this_chan_array[0]);
-				$this_array = split("\n",$value['data']);
+				$this_array = preg_split("/\n/",$value['data']);
 				foreach($this_array as $val2)
 				{
 					if(strpos($val2,'Caller ID Name: ') !== false)

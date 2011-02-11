@@ -73,7 +73,7 @@ if($usage_mode == 'get caller id')
 
 	// Process ignore words
         $key_words = array();
-	$temp_array = split(',',(isset($run_param['Ignore_Keywords'])?$run_param['Ignore_Keywords']:$source_param['Ignore_Keywords']['default']));
+	$temp_array = explode(',',(isset($run_param['Ignore_Keywords'])?$run_param['Ignore_Keywords']:$source_param['Ignore_Keywords']['default']));
 	foreach($temp_array as $val)
 	{
 		$key_words[] = trim($val);
