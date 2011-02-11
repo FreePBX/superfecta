@@ -116,10 +116,10 @@ else
 	//get the DID for this call using the PHP Asterisk Manager
 	$DID = "";
 	$value = $astman->command('core show channels concise');
-	$chan_array = split("\n",$value['data']);
+	$chan_array = preg_split("/\n/",$value['data']);
 	foreach($chan_array as $val)
 	{
-		$this_chan_array = split("!",$val);
+		$this_chan_array = explode("!",$val);
 		if(isset($this_chan_array[7]))
 		{
 			$this_chan_array[7]=trim($this_chan_array[7]);
@@ -127,7 +127,7 @@ else
 			if($thenumber_orig == $this_chan_array[7])
 			{
 				$value = $astman->command('core show channel '.$this_chan_array[0]);
-				$this_array = split("\n",$value['data']);
+				$this_array = preg_split("/\n/",$value['data']);
 				foreach($this_array as $val2)
 				{
 					if(strpos($val2,'FROM_DID=') !== false)
