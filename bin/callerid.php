@@ -17,8 +17,6 @@ if($debug){
 	ini_set('display_errors', '1');
 }
 
-require_once("../../../functions.inc.php");
-
 $caller_id = '';
 $charsetIA5 = true;
 $first_caller_id = '';
@@ -45,33 +43,55 @@ if($debug)
 	$end_time_whole = 0;
 }
 
-// new code - causes config values to be pulled from db  3/12/2009
-require_once 'DB.php';
-define("AMP_CONF", "/etc/amportal.conf");
+//New code for FreePBX 2.9 -- Andrew Nagy (tm1000)
+if(file_exists("/etc/freepbx.conf")) {
+	//This is FreePBX 2.9+
+	if($debug) {
+		echo "<br/><strong>Detected FreePBX version is at least 2.9</strong><br/>";
+	}
+	require("/etc/freepbx.conf");
+	global $db,$astman,$amp_conf;
+} elseif(file_exists("/etc/asterisk/freepbx.conf")) {
+	//This is FreePBX 2.9+
+	if($debug) {
+		echo "<br/><strong>Detected FreePBX version is at least 2.9</strong><br/>";
+	}
+	require("/etc/asterisk/freepbx.conf");
+	global $db,$astman,$amp_conf;	
+} else {
+	//This is > FreePBX 2.8
+	if($debug) {
+		echo "<br/><strong>Detected FreePBX version is at most 2.8</strong><br/>";
+	}
+	require_once("../../../functions.inc.php");
+	require_once 'DB.php';
+	define("AMP_CONF", "/etc/amportal.conf");
 
-$amp_conf = parse_amportal_conf(AMP_CONF);
-if(count($amp_conf) == 0)
-{
-	fatal("FAILED");
+	$amp_conf = parse_amportal_conf(AMP_CONF);
+	if(count($amp_conf) == 0)
+	{
+		fatal("FAILED");
+	}
+
+	$dsn = array(
+	    'phptype'  => 'mysql',
+	    'username' => $amp_conf['AMPDBUSER'],
+	    'password' => $amp_conf['AMPDBPASS'],
+	    'hostspec' => $amp_conf['AMPDBHOST'],
+	    'database' => $amp_conf['AMPDBNAME'],
+	);
+	$options = array();
+	$db =& DB::connect($dsn, $options);
+	if(PEAR::isError($db))
+	{
+		die($db->getMessage());
+	}
+
+	//connect to the asterisk manager
+	require_once('../../../common/php-asmanager.php');
+	$astman	= new AGI_AsteriskManager();	
 }
-
-$dsn = array(
-    'phptype'  => 'mysql',
-    'username' => $amp_conf['AMPDBUSER'],
-    'password' => $amp_conf['AMPDBPASS'],
-    'hostspec' => $amp_conf['AMPDBHOST'],
-    'database' => $amp_conf['AMPDBNAME'],
-);
-$options = array();
-$db =& DB::connect($dsn, $options);
-if(PEAR::isError($db))
-{
-	die($db->getMessage());
-}
-
-//connect to the asterisk manager
-require_once('../../../common/php-asmanager.php');
-$astman	= new AGI_AsteriskManager();
+//End new FreePBX 2.9 code.
 
 // attempt to connect to asterisk manager proxy
 if(!isset($amp_conf["ASTMANAGERPROXYPORT"]) || !$res = $astman->connect("127.0.0.1:".$amp_conf["ASTMANAGERPROXYPORT"], $amp_conf["AMPMGRUSER"] , $amp_conf["AMPMGRPASS"], 'off'))
