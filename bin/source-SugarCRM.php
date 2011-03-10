@@ -24,10 +24,10 @@ $source_param['DB_Password']['desc'] = 'Password used to connect to the SugarCRM
 $source_param['DB_Password']['type'] = 'password';
 $source_param['Search_Type']['desc'] = 'The SugarCRM type of entries that should be used to match the number';
 $source_param['Search_Type']['type'] = 'select';
-$source_param['Search_Type']['option'][0] = 'accounts';
-$source_param['Search_Type']['option'][1] = 'accounts and users';
-$source_param['Search_Type']['option'][2] = 'accounts, users and contacts';
-$source_param['Search_Type']['default'] = 2;
+$source_param['Search_Type']['option'][1] = 'accounts';
+$source_param['Search_Type']['option'][2] = 'accounts and users';
+$source_param['Search_Type']['option'][3] = 'accounts, users and contacts';
+$source_param['Search_Type']['default'] = 3;
 $source_param['Filter_Length']['desc']='The number of rightmost digits to check for a match';
 $source_param['Filter_Length']['type']='number';
 $source_param['Filter_Length']['default']= 9;
@@ -53,7 +53,7 @@ if($usage_mode == 'get caller id')
 	mysql_query("SET NAMES 'utf8'") or die("UTF8 set query  failed: " . mysql_error());
 	
 	// search accounts
-	if($run_param['Search_Type'] >= 0)
+	if($run_param['Search_Type'] >= 1)
 	{
 		$wquery_string = "SELECT * FROM accounts WHERE deleted = '0' AND (RIGHT(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(accounts.phone_office,' ',''),'+',''),'-',''),'(',''),')','')," . $run_param['Filter_Length'] . ") LIKE '" . $wquery_input . "' OR RIGHT(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(accounts.phone_alternate,' ',''),'+',''),'-',''),'(',''),')','')," . $run_param['Filter_Length'] . ") LIKE '" . $wquery_input . "' OR RIGHT(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(accounts.phone_fax,' ',''),'+',''),'-',''),'(',''),')','')," . $run_param['Filter_Length'] . ") LIKE '" . $wquery_input . "') LIMIT 1";
 		$wquery_result = mysql_query($wquery_string) or die("SugarCRM accounts query failed" . mysql_error());
@@ -65,7 +65,7 @@ if($usage_mode == 'get caller id')
 	}
 	
 	// search also users, if no result from accounts
-	if($run_param['Search_Type'] >= 1 && strlen($wresult_caller_name) == 0)
+	if($run_param['Search_Type'] >= 2 && strlen($wresult_caller_name) == 0)
 	{
 		$wquery_string = "SELECT * FROM users WHERE deleted = '0' AND (RIGHT(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(users.phone_work,' ',''),'+',''),'-',''),'(',''),')','')," . $run_param['Filter_Length'] . ") LIKE '" . $wquery_input . "' OR RIGHT(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(users.phone_mobile,' ',''),'+',''),'-',''),'(',''),')','')," . $run_param['Filter_Length'] . ") LIKE '". $wquery_input ."'  OR RIGHT(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(users.phone_home,' ',''),'+',''),'-',''),'(',''),')','')," . $run_param['Filter_Length'] . ") LIKE '". $wquery_input ."' OR RIGHT(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(users.phone_other,' ',''),'+',''),'-',''),'(',''),')','')," . $run_param['Filter_Length'] . ") LIKE '" . $wquery_input . "' OR RIGHT(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(users.phone_fax,' ',''),'+',''),'-',''),'(',''),')','')," . $run_param['Filter_Length'] . ") LIKE '" . $wquery_input . "') LIMIT 1";
 		$wquery_result = mysql_query($wquery_string) or die("SugarCRM users query failed" . mysql_error());
@@ -77,7 +77,7 @@ if($usage_mode == 'get caller id')
 	} 
 	
 	// search also contacts, if no results from previous searches
-	if($run_param['Search_Type'] >= 2 && strlen($wresult_caller_name) == 0)
+	if($run_param['Search_Type'] >= 3 && strlen($wresult_caller_name) == 0)
 	{
 		$wquery_string = "SELECT * FROM contacts WHERE deleted = '0' AND (RIGHT(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(contacts.phone_work,' ',''),'+',''),'-',''),'(',''),')','')," . $run_param['Filter_Length'] . ") LIKE '" . $wquery_input . "' OR RIGHT(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(contacts.phone_mobile,' ',''),'+',''),'-',''),'(',''),')','')," . $run_param['Filter_Length'] . ") LIKE '". $wquery_input ."'  OR RIGHT(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(contacts.phone_home,' ',''),'+',''),'-',''),'(',''),')','')," . $run_param['Filter_Length'] . ") LIKE '" . $wquery_input . "' OR RIGHT(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(contacts.phone_other,' ',''),'+',''),'-',''),'(',''),')','')," . $run_param['Filter_Length'] . ") LIKE '" . $wquery_input . "' OR RIGHT(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(contacts.phone_fax,' ',''),'+',''),'-',''),'(',''),')','')," . $run_param['Filter_Length'] . ") LIKE '" . $wquery_input . "') LIMIT 1";
 		$wquery_result = mysql_query($wquery_string) or die("SugarCRM contacts query failed" . mysql_error());
