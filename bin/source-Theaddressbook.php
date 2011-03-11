@@ -97,7 +97,7 @@ if($usage_mode == 'get caller id')
 	mysql_select_db($run_param['tab_dbase']) or die(mysql_error());
 
 	//  Search phone1 and phone2 fields in theaddressbook
-	$wquery_string = "SELECT * FROM ".$run_param['tab_contact']." INNER JOIN ".$run_param['tab_address']." ON ".$run_param['tab_address'].".id = ".$run_param['tab_contact'].".id INNER JOIN ".$run_param['tab_otherphone']." ON ".$run_param['tab_otherphone'].".id = ".$run_param['tab_contact'].".id WHERE (".$tab_phone1." REGEXP ".$wquery.") OR (".$tab_phone2." REGEXP ".$wquery.") ORDER BY lastupdate DESC";
+	$wquery_string = "SELECT * FROM ".$run_param['tab_contact']." INNER JOIN ".$run_param['tab_address']." ON ".$run_param['tab_address'].".id = ".$run_param['tab_contact'].".id WHERE (".$tab_phone1." REGEXP ".$wquery.") OR (".$tab_phone2." REGEXP ".$wquery.") ORDER BY lastupdate DESC";
 	$wquery_result = mysql_query($wquery_string);
 
 	if (mysql_num_rows($wquery_result)>0)
@@ -109,7 +109,7 @@ if($usage_mode == 'get caller id')
 	else
 	{
 		//  If no result in phone1 or phone2 search phone field in otherphone table
-		$wquery_string = "SELECT * FROM ".$run_param['tab_contact']." INNER JOIN ".$run_param['tab_address']." ON ".$run_param['tab_address'].".id = ".$run_param['tab_contact'].".id INNER JOIN ".$run_param['tab_otherphone']." ON ".$run_param['tab_otherphone'].".id = ".$run_param['tab_contact'].".id WHERE ".$tab_othernum." REGEXP ".$wquery." ORDER BY lastupdate DESC";
+		$wquery_string = "SELECT * FROM ".$run_param['tab_contact']." INNER JOIN ".$run_param['tab_otherphone']." ON ".$run_param['tab_otherphone'].".id = ".$run_param['tab_contact'].".id WHERE ".$tab_othernum." REGEXP ".$wquery." ORDER BY lastupdate DESC";
 		$wquery_result = mysql_query($wquery_string);
 	        $wquery_row = mysql_fetch_array($wquery_result);
 		if (mysql_num_rows($wquery_result)>0)
