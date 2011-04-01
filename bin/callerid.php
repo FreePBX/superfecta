@@ -39,6 +39,9 @@ $scheme = (isset($_REQUEST['scheme'])) ? trim($_REQUEST['scheme']) : '';
 
 if($debug)
 {
+	//Report all errors, FreePBX hides them
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
 	$start_time_whole = mctime_float();
 	$end_time_whole = 0;
 }
