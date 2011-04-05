@@ -65,32 +65,16 @@ if($usage_mode == 'get caller id')
 		$url="http://tel.search.ch/index.en.html?was=$thenumber";
 		$value = get_url_contents($url);
 		$name='';
-		
-		//////// open the website directory ///////////
-		$AgetHeaders = @get_headers($url);
-		if (preg_match("|200|", $AgetHeaders[0]))
-		////////////////////////////////////////////// 
-		{
-			$fp = @fopen ($url,"r");
-			while (!feof($fp))
-			{
-				$z = fgets($fp,5000);  // read etch line of the website
 
-				if(ereg('class="fn org"', $z)) 
-				{
-					$ik=explode('class="fn org">',$z);
-					$nk=$ik[1];
-					$ik=explode('<',$nk);
-					$nk=$ik[0];
-					$name=trim($nk);
-				}
-			} 	
-			fclose($fp);
-		}  
-
+		$pattern = "/class=\"fn.*\"*>(.*)<\/a>/";
+		preg_match($pattern, $value, $match);
+		if(isset($match[1]) && strlen($match[1])){
+			$name = trim(strip_tags($match[1]));
+		}
+		// If we found a match, return it
 		if(strlen($name) > 1)
 		{
-			$caller_id = strip_tags($name);
+			$caller_id = $name;
 		}
 		else if($debug)
 		{
