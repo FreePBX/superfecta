@@ -13,7 +13,7 @@ $debug_val = (isset($_REQUEST['debug'])) ? $_REQUEST['debug'] : '';
 $debug = ($debug_val == 'yes') ? true : false;
 if($debug){
 	// If debugging, report all errors
-	error_reporting(E_ALL);
+	error_reporting(-1);
 	ini_set('display_errors', '1');
 }
 
