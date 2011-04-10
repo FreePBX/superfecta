@@ -66,7 +66,7 @@ if($usage_mode == 'get caller id')
 		$value = get_url_contents($url);
 		$name='';
 
-		$pattern = "/class=\"fn.*\"*>(.*)<\/a>/";
+		$pattern = "/class=\"(?:fn|fn org)\">(.*)<\/a>/";
 		preg_match($pattern, $value, $match);
 		if(isset($match[1]) && strlen($match[1])){
 			$name = trim(strip_tags($match[1]));
