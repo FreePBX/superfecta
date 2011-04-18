@@ -6,7 +6,7 @@
 
 //configuration / display parameters
 //The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
-$source_desc = "http://www.telcodata.us/ - Provides data for the US and some Canadian locations.<br>These listings generally return only the geographic location of the caller, not a name.<br>Because the data provided is less specific than other sources, this data source is usualy configured near the bottom of the list of active data sources.<br><br>This data source requires Superfecta Module version 2.2.1 or higher.";
+$source_desc = "http://telcodata.us/ - Provides data for the US and some Canadian locations.<br>These listings generally return only the geographic location of the caller, not a name.<br>Because the data provided is less specific than other sources, this data source is usualy configured near the bottom of the list of active data sources.<br><br>This data source requires Superfecta Module version 2.2.1 or higher.";
 
 
 
@@ -140,7 +140,7 @@ if($usage_mode == 'get caller id')
 	}
 	else
 	{
-		$url = "http://www.telcodata.us/query/queryexchangexml.html?npa=$npa&nxx=$nxx";
+		$url = "http://telcodata.us/query/queryexchangexml.html?npa=$npa&nxx=$nxx";
 		$value = get_url_contents($url);
 		
 		$start = strpos($value, "<ratecenter>");
