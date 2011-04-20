@@ -142,7 +142,13 @@ if($usage_mode == 'get caller id')
 	{
 		$url = "http://telcodata.us/query/queryexchangexml.html?npa=$npa&nxx=$nxx";
 		$value = get_url_contents($url);
-		
+
+		if ($value == "")         //  If first search is unsuccessful, try this URL
+		{
+			$url = "http://www.telcodata.us/query/queryexchangexml.html?npa=$npa&nxx=$nxx";
+			$value = get_url_contents($url);
+                }
+
 		$start = strpos($value, "<ratecenter>");
 		$ratecenter = substr($value,$start+12);
 		$end = strpos($ratecenter, "</ratecenter>");
