@@ -14,15 +14,30 @@ $source_param['Server_address']['default'] = '';
 $source_param['Server_TCP_Port']['desc'] = 'Specify the TCP port to be used (default for YAC is 10629).';
 $source_param['Server_TCP_Port']['type'] = 'number';
 $source_param['Server_TCP_Port']['default'] = '10629';
+$source_param['Default_CNAM']['desc'] = 'Text to push if no CNAM is found. Leave blank to prevent Superfecta from sending anything if no CNAM is found.';
+$source_param['Default_CNAM']['type'] = 'text';
+$source_param['Default_CNAM']['default'] = "Unknown";
 
 
 if($usage_mode == 'post processing')
 {
-	if (($run_param['Server_address'] !='') && ($first_caller_id != ''))
+
+	$yac_cnam = "";
+
+	if ($first_caller_id != "")
+        {
+        	$yac_cnam = $first_caller_id;
+        }
+        else if ($run_param['Default_CNAM'] != "")
+        {
+		$yac_cnam = $run_param['Default_CNAM'];
+        }
+
+	if (($run_param['Server_address'] !='') && ($yac_cnam != ''))
 	{
-    	$yac_text = $first_caller_id.'~'.$thenumber; 
+    	$yac_text = $yac_cnam.'~'.$thenumber;
 		shell_exec('/bin/echo -e -n "@CALL'.$yac_text.'"|nc -w 1 '.$run_param['Server_address'].' '.$run_param['Server_TCP_Port'].'');
-		
+
 		if($debug)
 		{
 			print 'Send to YAC: '.$first_caller_id.' '.$thenumber.'<br><br>';
