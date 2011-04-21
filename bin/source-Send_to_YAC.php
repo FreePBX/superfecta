@@ -40,7 +40,7 @@ if($usage_mode == 'post processing')
 
 		if($debug)
 		{
-			print 'Send to YAC: '.$first_caller_id.' '.$thenumber.'<br><br>';
+			print 'Send to YAC: '$yac_text.'<br><br>';
 		}
 	}
 }
