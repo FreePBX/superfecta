@@ -21,11 +21,11 @@ $source_param['DB_Password']['desc'] = 'Password used to connect to the FOP2 dat
 $source_param['DB_Password']['type'] = 'password';
 $source_param['DB_Password']['default'] = 'passw0rd';
 
-$source_param['CNAM_Type']['desc'] = 'Select how CNAM is returned';
+$source_param['CNAM_Type']['desc'] = 'Select how returned CNAM is prioritized';
 $source_param['CNAM_Type']['type'] = 'select';
-$source_param['CNAM_Type']['option'][1] = 'Company_name';
-$source_param['CNAM_Type']['option'][2] = 'First_name Last_name';
-$source_param['CNAM_Type']['option'][3] = 'Last_name Company_name';
+$source_param['CNAM_Type']['option'][1] = 'Company_name then First_name Last_name';
+$source_param['CNAM_Type']['option'][2] = 'First_name Last_name then Company_name';
+$source_param['CNAM_Type']['option'][3] = 'Last_name Company_name if both exist';
 $source_param['CNAM_Type']['default'] = 1;
 
 $source_param['Filter_Length']['desc']='The number of rightmost digits to check for a match';
@@ -77,7 +77,59 @@ if($usage_mode == 'get caller id')
 		if (mysql_num_rows($wquery_result)>0)
 		{
                 	$wquery_row = mysql_fetch_array($wquery_result);
-			$caller_id = $wquery_row["firstname"]." ".$wquery_row["lastname"];
+
+
+                        if ($run_param['CNAM_Type'] == 3)
+                        {
+                                if ($wquery_row["lastname"] != "" and $wquery_row["company"] != "")
+                                {
+					$caller_id = $wquery_row["lastname"]." ".$wquery_row["company"];
+                                }
+                                else
+                                {
+					$run_param['CNAM_Type'] = 1;
+                                }
+                        }
+
+
+			if ($run_param['CNAM_Type'] == 1)
+                        {
+                        	If ($wquery_row["company"] != "")
+                                {
+					$caller_id = $wquery_row["company"];
+                                }
+                                Else if ($wquery_row["firstname"] != "" and $wquery_row["lastname"] != "")
+                                {
+					$caller_id = $wquery_row["firstname"]." ".$wquery_row["lastname"];
+                                }
+                                else if ($wquery_row["firstname"] != "")
+                                {
+					$caller_id = $wquery_row["firstname"];
+                                }
+                                else
+                                {
+					$caller_id = $wquery_row["lastname"];
+                                }
+                        }
+			if ($run_param['CNAM_Type'] == 2)
+                        {
+                                if ($wquery_row["firstname"] != "" and $wquery_row["lastname"] != "")
+                                {
+					$caller_id = $wquery_row["firstname"]." ".$wquery_row["lastname"];
+                                }
+                                else if ($wquery_row["firstname"] != "")
+                                {
+					$caller_id = $wquery_row["firstname"];
+                                }
+                                else if ($wquery_row["lastname"] != "")
+                                {
+					$caller_id = $wquery_row["lastname"];
+                                }
+                                else
+                                {
+                                	$caller_id = $wquery_row["company"];
+                        	}
+                        }
 		}
 
                 // Close dbase connection
@@ -96,4 +148,6 @@ if($usage_mode == 'get caller id')
                 }
 	}
 }
+
+
 ?>
