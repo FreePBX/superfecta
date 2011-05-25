@@ -231,13 +231,28 @@ if($usage_mode == 'get caller id')
 			$url = "";
 			break;
 	}
-	
+
 	if ($url != "")
 	{
 
 		$url = $url . "&qPhone=" . $loc_number. "&qSelLang3=&SubmitREV=Zoek&inphCoordType=EPSG";
 		$sresult =  get_url_contents($url);
-		preg_match_all('/businessdetails.aspx">(.*)<\/a>/U', $sresult, $sname);
+
+		switch ($Country)
+		{
+			case "FR" :
+			case "BE" :
+			case "LU" :
+			case "DK":
+			case "AU":
+			case "DE" :
+				preg_match_all('/<span class="fn org">(.*)<\/span><\/a>/U', $sresult, $sname);
+				break;
+	
+			default :
+				preg_match_all('/businessdetails.aspx">(.*)<\/a>/U', $sresult, $sname);
+				break;
+		}
 		
 		if (count($sname[1]) > 0)
 		{
