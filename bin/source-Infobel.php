@@ -6,9 +6,10 @@
 
 //configuration / display parameters
 //The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
-$source_desc = "http://www.infobel.com - This source includes business and residential data for Belgium, France, Luxembourg, Denmark, Austria, Italy, and Germany";
+$source_desc = "http://www.infobel.com - This source includes business and residential data for Belgium, France, Luxembourg, Denmark, Austria, and Germany";
 $source_param = array();
-$source_param['Default_Country']['desc'] = 'Default Country to search if the number is not presented in the international format. Enter BE for Belgium, FR for France, LU for Luxembourg, DK for Denmark, AU for Austria, IT for Italy, DE for Germany.';
+$source_param['Default_Country']['desc'] = 'Default Country to search if the number is not presented in the international format.<br><br>
+Enter BE for Belgium, FR for France, LU for Luxembourg, DK for Denmark, AU for Austria, DE for Germany.';
 $source_param['Default_Country']['type'] = 'text';
 $source_param['Default_Country']['default'] = 'FR';
 
