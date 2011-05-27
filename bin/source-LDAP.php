@@ -13,7 +13,7 @@ $source_param['LDAP_User']['desc'] = 'Authentication Username to connect to the 
 $source_param['LDAP_User']['type'] = 'text';
 $source_param['LDAP_Password']['desc'] = 'Password used to connect to the LDAP server';
 $source_param['LDAP_Password']['type'] = 'password';
-$source_param['LDAP_Unit']['desc'] = 'Organizational Unit to search.';
+$source_param['LDAP_Unit']['desc'] = 'Organizational Unit to search.<br><br>Leave blank to search all OU.';
 $source_param['LDAP_Unit']['type'] = 'text';
 
 //run this if the script is running in the "get caller id" usage mode.
@@ -90,7 +90,16 @@ if($usage_mode == 'get caller id')
 	// Set Organizational Unit e.g "ou=people, dc=ldap,dc=example,dc=com"
 	// Allow for embedded quotes to avoid LDAP injection
 	$ou = addslashes($run_param['LDAP_Unit']);
-	$dn = "ou=${ou},${dc}";
+	
+	// Check for OU
+	if(strlen($ou)>0)
+	{
+		$dn = "ou=${ou},${dc}";
+	}
+	else
+	{	
+		$dn = "${dc}";
+	}
 
 	if($debug)
 	{
