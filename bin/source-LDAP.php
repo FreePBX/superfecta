@@ -5,7 +5,7 @@
 
 //configuration / display parameters
 //The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
-$source_desc = "This source will search an LDAP Server and return the Common Name (<strong>cn</strong>) for a telephone number.<br><br>Attempts are made to match telephoneNumber, mobile and homeTelephoneNumber.";
+$source_desc = "This source will search an LDAP Server and return the Common Name (<strong>cn</strong>) for a telephone number.<br><br>Attempts are made to match telephoneNumber, mobile and homeTelephoneNumber.<br><br><strong>Note: php-ldap is required to be installed for this to work</strong>.";
 $source_param = array();
 $source_param['LDAP_Host']['desc'] = 'LDAP Server to search.<br>The port is optional e.g. ldap.example.com:389<br><br>To connect through SSL prefix the connection with <strong>ldaps</strong> e.g. ldaps://ldap.example.com';
 $source_param['LDAP_Host']['type'] = 'text';
@@ -27,7 +27,7 @@ if($usage_mode == 'get caller id')
 	$name = "";
 
 	// check if php-ldap is installed
-	function_exists('ldap_connect') or die ("LDAP functions not available");
+	function_exists('ldap_connect') or die ("LDAP functions not available - please check if php-ldap is installed");
 
 	// parse host and port info 
 	$connection = @parse_url($run_param['LDAP_Host']) or die("No LDAP host specified - Check config LDAP_Host");
