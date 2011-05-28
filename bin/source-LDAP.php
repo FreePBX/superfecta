@@ -70,7 +70,7 @@ if($usage_mode == 'get caller id')
 	}
 
 	// Prepare connection to LDAP server
-	$ad=@ldap_connect("{$scheme}://{$server}") or die ("Couldn't connect to {$scheme}://{$server}");
+	$ad=@ldap_connect("{$scheme}://{$server}") or die ("Could not connect to {$scheme}://{$server}");
 	
 	// Set protocol version
 	ldap_set_option($ad, LDAP_OPT_PROTOCOL_VERSION, 3) or die ("Could not set ldap protocol");
@@ -85,15 +85,15 @@ if($usage_mode == 'get caller id')
 	}
 		
 	// Establish connection with LDAP server
-	$bd=@ldap_bind($ad, "cn={$run_param['LDAP_User']}, {$dc}", "{$run_param['LDAP_Password']}") or die ("Couldn't bind to {$scheme}://{$server}");
-	
-	// Set Organizational Unit e.g "ou=people, dc=ldap,dc=example,dc=com"
-	// Allow for embedded quotes to avoid LDAP injection
-	$ou = addslashes($run_param['LDAP_Unit']);
-	
-	// Check for OU
-	if(strlen($ou)>0)
+	$bd=@ldap_bind($ad, "cn={$run_param['LDAP_User']}, {$dc}", "{$run_param['LDAP_Password']}") or die ("Could not bind to {$scheme}://{$server}");
+		
+	// Check for OU to limit search
+	if(strlen($run_param['LDAP_Unit'])>0)
 	{
+		// Allow for embedded quotes to avoid LDAP injection
+		$ou = addslashes($run_param['LDAP_Unit']);
+
+		// Set Organizational Unit e.g "ou=people, dc=ldap,dc=example,dc=com"
 		$dn = "ou=${ou},${dc}";
 	}
 	else
@@ -106,7 +106,7 @@ if($usage_mode == 'get caller id')
 		echo "Searching {$dn} ... ";
 	}
 	
-	// perform LDAP search - only return CN to conserve bandwith
+	// perform LDAP search - only return CN to conserve bandwidth
 	if($rs = @ldap_search($ad, $dn, "(|(telephoneNumber=*{$thenumber})(mobile=*{$thenumber})(homeTelephoneNumber=*{$thenumber}))", array('cn')))
 	{
 		if($info = ldap_get_entries($ad, $rs))
