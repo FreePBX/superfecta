@@ -146,54 +146,27 @@ if($usage_mode == 'get caller id')
 	{
 		$url="http://www.whitepages.ca/search/ReversePhone?full_phone=$thenumber";
 		$value = get_url_contents($url);
+		$name="";		
 
 		$notfound = strpos($value, "PHONE_USER_ERROR");
 		$notfound = ($notfound < 1) ? strpos($value, "PHONE_NO_RESULTS") : $notfound;
-		$patternFirst = "/FIRST.*?\"(.*?)\",/";
-		$patternLast = "/LAST.*?\"(.*?)\",/";
-		$patternCity = "/CITY.*?\"(.*?)\",/";
-		$patternState = "/STATE.*?\"(.*?)\",/";
-		$patternType = "/Type: *(.*?)<\/span>/";
-		$patternCompany = "/Company: <\/strong><span class=\"org\">(.*?)<\/span>/";
-
-		//look for company name first
-		preg_match($patternCompany, $value, $company);
-		if(isset($company[1]))
-		{
-			$name = $company[1];
-		}
-		else
-		{
-			//now look for a first and last name
-			preg_match($patternFirst, $value, $first);
-			preg_match($patternLast, $value, $last);
-			$name = $first[1]." ".$last[1];
-			if($name == " ")
-			{
-				$start= strpos($value, "</strong> based in <strong>");
-
-				if($start > 1)
-				{
-					$value = substr($value,$start);
-					$start= strpos($value, "<strong>");
-					$value = substr($value,$start+8);
-					$end= strpos($value, "</strong>");
-					$name = substr($value,0,$end);
-					$name = str_replace( chr(13), "", $name );
-					$name = str_replace( chr(10), "", $name );
-					$name = trim(str_replace( "&nbsp;", "", $name ));
-				}
-			}
-		}
 
 		if($notfound)
 		{
 			$name="";
 		}
+		else
+		{
+			$pattern = "/<span class=\"name\"><a href=\".*\">(.*)<\/a><\/span>/";
+			preg_match($pattern, $value, $match);
+			if(isset($match[1]) && strlen($match[1])){
+				$name = trim(strip_tags($match[1]));
+			}
+		}
 
 		if(strlen($name) > 1)
 		{
-			$caller_id = trim(strip_tags($name));
+			$caller_id = $name;
 		}
 		else if($debug)
 		{
