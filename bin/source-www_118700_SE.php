@@ -12,10 +12,10 @@ $source_desc = "http://www.118700.se - This listing include data from the Swedis
 $source_param = array();
 $source_param['Search_Type']['desc'] = 'Select which sources you want to search';
 $source_param['Search_Type']['type'] = 'select';
-$source_param['Search_Type']['option'][0] = 'Residential';
-$source_param['Search_Type']['option'][1] = 'Business';
-$source_param['Search_Type']['option'][2] = 'Residential & Business';
-$source_param['Search_Type']['default'] = 2;
+$source_param['Search_Type']['option'][1] = 'Residential';
+$source_param['Search_Type']['option'][2] = 'Business';
+$source_param['Search_Type']['option'][3] = 'Residential & Business';
+$source_param['Search_Type']['default'] = 3;
 
 
 //run this if the script is running in the "get caller id" usage mode.
@@ -68,7 +68,7 @@ if($usage_mode == 'get caller id')
 	
 	if(!$number_error)
 	{
-		if($run_param['Search_Type'] != 1)
+		if($run_param['Search_Type'] != 2)
 		{	
 	
 			if($debug)
@@ -102,7 +102,7 @@ if($usage_mode == 'get caller id')
 				print "not found<br>\n";
 			}
 		}
-		if($run_param['Search_Type'] >= 1)
+		if($run_param['Search_Type'] >= 2)
 		{
 			if($debug)
 			{

@@ -67,7 +67,7 @@ $number_error = false;
 	
 	if(!$number_error)
 	{
-		if($run_param['Search_Type'] != 1)
+		if($run_param['Search_Type'] != 2)
 		{	
 	
 			if($debug)
@@ -103,7 +103,7 @@ $number_error = false;
 				print "not found<br>\n";
 			}
 		}
-		if($run_param['Search_Type'] >= 1)
+		if($run_param['Search_Type'] >= 2)
 		{
 			if($debug)
 			{
