@@ -125,7 +125,7 @@ if($usage_mode == 'get caller id')
 				}
 			}
 
-			if ($found)
+			if ($found && isset($sname[1][0]))
 			{
 				$sname = $sname[1][0];
 			}
