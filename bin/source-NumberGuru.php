@@ -7,14 +7,19 @@
 //configuration / display parameters
 //The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
 $source_desc = "http://www.numberguru.com - 	US free CNAM lookup.<br><br>This data source requires Superfecta Module version 2.2.4 or higher.";
+$source_param['Get_Caller_ID_Name']['desc'] = 'Use NumberGuru for caller id name lookup.';
+$source_param['Get_Caller_ID_Name']['type'] = 'checkbox';
+$source_param['Get_Caller_ID_Name']['default'] = 'on';
 $source_param['Get_SPAM_Score']['desc'] = 'Use NumberGuru for spam scoring.';
 $source_param['Get_SPAM_Score']['type'] = 'checkbox';
 $source_param['Get_SPAM_Score']['default'] = 'on';
 $source_param['Spam_Threshold']['desc'] = 'How sensitive of a spam score to use 0-100';
 $source_param['Spam_Threshold']['type'] = 'number';
 $source_param['Spam_Threshold']['default'] = '60';
+
 //run this if the script is running in the "get caller id" usage mode.
-if($usage_mode == 'get caller id')
+//and only if either run mode is required
+if(($usage_mode == 'get caller id') && (($run_param['Get_SPAM_Score'] == 'on') || ($run_param['Get_Caller_ID_Name'] == 'on')))
 {
 	$TFnpa = false;
 	$validnpaUS = false;
@@ -143,18 +148,32 @@ if($usage_mode == 'get caller id')
 	}
 	else
 	{
-		// By default, the found name is empty
-		$name = "";
-
 		// Search NumberGuru USA
 		$url = "http://www.numberguru.com/s/{$thenumber}";
 		$value = get_url_contents($url);
 
-		// Grab the first result from google maps that matches our phone number
-		$pattern = "/<div class=\"callout_details_left caller_id\">Owner's Name:<\/div>\s*<div class=\"callout_details_right caller_id\">(.*)<\/div>/";
-		preg_match($pattern, $value, $match);
-		if(isset($match[1]) && strlen($match[1])){
-			$name = trim(strip_tags($match[1]));
+		// Check for CNAM lookup
+		if(isset($run_param['Get_Caller_ID_Name']) && $run_param['Get_Caller_ID_Name'] == 'on')
+		{
+			// By default, the found name is empty
+			$name = "";
+		
+			// Grab the first result from google maps that matches our phone number
+			$pattern = "/<div class=\"callout_details_left caller_id\">Owner's Name:<\/div>\s*<div class=\"callout_details_right caller_id\">(.*)<\/div>/";
+			preg_match($pattern, $value, $match);
+			if(isset($match[1]) && strlen($match[1])){
+				$name = trim(strip_tags($match[1]));
+			}
+			
+			// If we found a match, return it
+			if(strlen($name) > 1 && $name<>"UNAVAILABLE")
+			{
+				$caller_id = $name;
+			}
+			else if($debug)
+			{
+				print "not found<br>\n";
+			}
 		}
 		
 		// Check for SPAM score
@@ -178,15 +197,6 @@ if($usage_mode == 'get caller id')
 			}
 		}
 		
-		// If we found a match, return it
-		if(strlen($name) > 1 && $name<>"UNAVAILABLE")
-		{
-			$caller_id = $name;
-		}
-		else if($debug)
-		{
-			print "not found<br>\n";
-		}
 	}
 }
 ?>
