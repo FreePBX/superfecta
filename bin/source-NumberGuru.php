@@ -158,7 +158,7 @@ if($usage_mode == 'get caller id')
 		}
 		
 		// Check for SPAM score
-		if($run_param['Get_SPAM_Score'] == 'on')
+		if(isset($run_param['Get_SPAM_Score']) && $run_param['Get_SPAM_Score'] == 'on')
 		{
 			$score=0;
 			$pattern = "/<div class=\"stat_number\">(.*)%<\/div>\s*<div class=\"stat_title\">Spammer Score<\/div>/";
