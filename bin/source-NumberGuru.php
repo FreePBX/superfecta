@@ -7,8 +7,12 @@
 //configuration / display parameters
 //The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
 $source_desc = "http://www.numberguru.com - 	US free CNAM lookup.<br><br>This data source requires Superfecta Module version 2.2.4 or higher.";
-
-
+$source_param['Get_SPAM_Score']['desc'] = 'Use NumberGuru for spam scoring.';
+$source_param['Get_SPAM_Score']['type'] = 'checkbox';
+$source_param['Get_SPAM_Score']['default'] = 'on';
+$source_param['Spam_Threshold']['desc'] = 'How sensitive of a spam score to use 0-100';
+$source_param['Spam_Threshold']['type'] = 'number';
+$source_param['Spam_Threshold']['default'] = '60';
 //run this if the script is running in the "get caller id" usage mode.
 if($usage_mode == 'get caller id')
 {
@@ -152,6 +156,28 @@ if($usage_mode == 'get caller id')
 		if(isset($match[1]) && strlen($match[1])){
 			$name = trim(strip_tags($match[1]));
 		}
+		
+		// Check for SPAM score
+		if($run_param['Get_SPAM_Score'] == 'on')
+		{
+			$score=0;
+			$pattern = "/<div class=\"stat_number\">(.*)%<\/div>\s*<div class=\"stat_title\">Spammer Score<\/div>/";
+			
+			preg_match($pattern, $value, $match);
+			if(isset($match[1]) && strlen($match[1]))
+			{
+				$score = $match[1];
+				if(isset($run_param['Spam_Threshold']) && $score>=$run_param['Spam_Threshold'])
+				{
+					$spam = true;	// Flag as SPAM
+					if($debug)
+					{
+						print "SPAM caller<br>\n";
+					}
+				}
+			}
+		}
+		
 		// If we found a match, return it
 		if(strlen($name) > 1 && $name<>"UNAVAILABLE")
 		{
