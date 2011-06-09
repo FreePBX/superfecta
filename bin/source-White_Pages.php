@@ -142,11 +142,12 @@ if($usage_mode == 'get caller id')
 	}
 	else
 	{
-		$url="http://www.whitepages.com/search/ReversePhone?full_phone=$thenumber";
+		$name = "";
+		$url="http://www.whitepages.com/business/reverse_phone?phone_number=${thenumber}";
 		$value = get_url_contents($url);
-		
-		$pattern = '/<div class=\"bs_result(?: mapped_result \" id=\"result_1|)?">\s*<table class=\"result_container.*\"><tr>\s*<td class=\"result_content_container\">\s*<table>\s*<tr>\s*<td class=\"tagline_container\">\s*<p class=\"result_name\">\s*<a.*\">(.*)<\/a>/';
-		
+		$pattern = <<<EOD
+/<div class=\"bs_result(?: mapped_result \" id=\"result_1|)?\">\s*<table class=\"result_container.*\"><tr>\s*<td class=\"result_content_container\">\s*<table>\s*<tr>\s*<td class=\"tagline_container\">\s*<p class=\"result_name\">\s*<a.*\">(.*)<\/a>/
+EOD;
 		preg_match($pattern, $value, $match);
 		if(isset($match[1]) && strlen($match[1])){
 			$name = trim(strip_tags($match[1]));
