@@ -7,7 +7,7 @@
 
 
 //  Collect info for The Address Book installation
-	$source_desc = "Searches The Address Book http://www.corvalis.net/address/ for appearances of the number and returns the last name, and first name if present, from the contact table. Phone numbers can be stored with [space] + - ( and )<br><br>This data source requires Superfecta Module version 2.2.1 or higher.";
+	$source_desc = "Searches The Address Book http://www.corvalis.net/address/ for appearances of the number and returns the last name, and first name if present, from the contact table.<br><br>This data source requires Superfecta Module version 2.2.1 or higher.";
 	$source_param['tab_server']['desc'] = 'Host address of The Address Book database. (localhost if the database is on the same server as FreePBX.)';
 	$source_param['tab_server']['type'] = 'text';
 	$source_param['tab_server']['default'] = 'localhost';
