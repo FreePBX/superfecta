@@ -35,12 +35,12 @@ if($usage_mode == 'post processing')
 
 	if (($run_param['Server_address'] !='') && ($yac_cnam != ''))
 	{
-    	$yac_text = $yac_cnam.'~'.$thenumber;
+		$yac_text = $yac_cnam.'~'.$thenumber;
 		shell_exec('/bin/echo -e -n "@CALL'.$yac_text.'"|nc -w 1 '.$run_param['Server_address'].' '.$run_param['Server_TCP_Port'].'');
 
 		if($debug)
 		{
-			print 'Send to YAC: '$yac_text.'<br><br>';
+			print 'Send to YAC: '.$yac_text.'<br><br>';
 		}
 	}
 }
