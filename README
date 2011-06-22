@@ -1,0 +1,25 @@
+Project Style: FreePBX Module
+CallerID Superfecta for FreePBX is a utility program which adds incoming CallerID name lookups to your Asterisk system using several different sources.
+
+The Superfecta Winunciator Project can be found here.
+
+Conditions/Prerequisites:
+This module is compatible with the security models used in, and has been tested with the following distributions:
+Fonicatec PABX
+Foncordiax
+PBX In A Flash
+Need List of specific Distributions tested 
+TrixBOX CE
+Elastix
+
+See Elastix specific installation instructions.
+
+NOTE: Effective with module version 2.2.4, Fonicatec PABX and Foncordiax will no longer be a platform we test on. The htaccess file in the Superfecta Module will be removed upon upgrade to v2.2.4 and beyond - so If you have a customized system that uses or requires this file, make a backup of it before upgrading.
+
+The Module’s wiki Page is here.
+
+Asterisk Version Compatibility
+This module has been tested and found to work correctly with Asterisk versions 1.4 and 1.6.
+
+FreePBX Version Compatibility
+This module has been tested and found to work correctly with FreePBX v 2.5.x - 2.8.x.
