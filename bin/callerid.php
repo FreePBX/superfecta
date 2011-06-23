@@ -19,7 +19,7 @@ $debug = ($debug_val == 'yes') ? true : false;
 //$debug = true;
 if($debug){
 	// If debugging, report all errors
-	error_reporting(E_ALL);
+	error_reporting(-1);
 	ini_set('display_errors', '1');
 }
 
@@ -48,33 +48,57 @@ if(($thenumber_orig == '') && isset($argv[1]) && ($argv[1] != '-multifecta_id'))
 	$multifecta_id = $argv[2];
 }
 
-require_once("../../../functions.inc.php");
+//New code for FreePBX 2.9 -- Andrew Nagy (tm1000)
+if(file_exists("/etc/freepbx.conf")) {
+	//This is FreePBX 2.9+
+	if($debug) {
+		echo "<br/><strong>Detected FreePBX version is at least 2.9</strong><br/>";
+	}
+	require("/etc/freepbx.conf");
+	global $db,$amp_conf;
+} elseif(file_exists("/etc/asterisk/freepbx.conf")) {
+	//This is FreePBX 2.9+
+	if($debug) {
+		echo "<br/><strong>Detected FreePBX version is at least 2.9</strong><br/>";
+	}
+	require("/etc/asterisk/freepbx.conf");
+	global $db,$amp_conf;	
+} else {
+	//This is > FreePBX 2.8
+	if($debug) {
+		echo "<br/><strong>Detected FreePBX version is at most 2.8</strong><br/>";
+	}
+	
+	require_once("../../../functions.inc.php");
+	
+	require_once 'DB.php';
+	define("AMP_CONF", "/etc/amportal.conf");
 
-//$thenumber_orig = ereg_replace('[^0-9]+', '', $thenumber_orig);
+	$amp_conf = parse_amportal_conf(AMP_CONF);
+	if(count($amp_conf) == 0)
+	{
+		fatal("FAILED");
+	}
 
-// new code - causes config values to be pulled from db  3/12/2009
-require_once 'DB.php';
-define("AMP_CONF", "/etc/amportal.conf");
+	$dsn = array(
+	    'phptype'  => 'mysql', // Looks like we are assuming mysql  -- is this safe? (jkiel - 01/04/2011)
+	    'username' => $amp_conf['AMPDBUSER'],
+	    'password' => $amp_conf['AMPDBPASS'],
+	    'hostspec' => $amp_conf['AMPDBHOST'],
+	    'database' => $amp_conf['AMPDBNAME'],
+	);
+	$options = array();
+	$db =& DB::connect($dsn, $options);
+	if(PEAR::isError($db))
+	{
+		die($db->getMessage());
+	}
 
-$amp_conf = parse_amportal_conf(AMP_CONF);
-if(count($amp_conf) == 0)
-{
-	fatal("FAILED");
+	//connect to the asterisk manager
+	require_once('../../../common/php-asmanager.php');
+	$astman	= new AGI_AsteriskManager();	
 }
-
-$dsn = array(
-    'phptype'  => 'mysql', // Looks like we are assuming mysql  -- is this safe? (jkiel - 01/04/2011)
-    'username' => $amp_conf['AMPDBUSER'],
-    'password' => $amp_conf['AMPDBPASS'],
-    'hostspec' => $amp_conf['AMPDBHOST'],
-    'database' => $amp_conf['AMPDBNAME'],
-);
-$options = array();
-$db =& DB::connect($dsn, $options);
-if(PEAR::isError($db))
-{
-	die($db->getMessage());
-}
+//End new FreePBX 2.9 code.
 
 //Check if we are a multifecta child, if so, get our variables from our child record
 if($multifecta_id){
@@ -88,6 +112,7 @@ if($multifecta_id){
 		die("Unable to load child record: " . $res->getMessage() .  "<br>");
 	}
 	if($row = $res->fetchRow(DB_FETCHMODE_ASSOC)){
+		
 		$scheme = $row['scheme'];
 		$thenumber_orig = $row['cidnum'];
 		$DID = $row['extension'];
@@ -105,21 +130,6 @@ if($debug)
 {
 	$start_time_whole = mctime_float();
 	$end_time_whole = 0;
-}
-
-//connect to the asterisk manager
-require_once('../../../common/php-asmanager.php');
-$astman	= new AGI_AsteriskManager();
-
-// attempt to connect to asterisk manager proxy
-if(!isset($amp_conf["ASTMANAGERPROXYPORT"]) || !$res = $astman->connect("127.0.0.1:".$amp_conf["ASTMANAGERPROXYPORT"], $amp_conf["AMPMGRUSER"] , $amp_conf["AMPMGRPASS"], 'off'))
-{
-	// attempt to connect directly to asterisk, if no proxy or if proxy failed
-	if (!$res = $astman->connect("127.0.0.1:".$amp_conf["ASTMANAGERPORT"], $amp_conf["AMPMGRUSER"] , $amp_conf["AMPMGRPASS"], 'off'))
-	{
-		// couldn't connect at all
-		unset( $astman );
-	}
 }
 
 $param = array();
@@ -154,42 +164,6 @@ if(DB::isError($res) && $debug)
 else
 {
 
-	// get the DID for this call using the PHP Asterisk Manager
-	// (jkiel - 01/04/2011) Superfecta >= 2.3.0 shouldn't ever need to execute this, since DID is passed as an argument in the command line
-	// (jkiel - 01/04/2011) We should try to remove this before 2.3.0 release
-	if(!strlen(trim($DID))){
-		$value = $astman->command('core show channels concise');
-		$chan_array = split("\n",$value['data']);
-		foreach($chan_array as $val)
-		{
-			$this_chan_array = split("!",$val);
-			if(isset($this_chan_array[7]))
-			{
-				$this_chan_array[7]=trim($this_chan_array[7]);
-		//		if($thenumber_orig == substr($this_chan_array[7],-10))
-				if($thenumber_orig == $this_chan_array[7])
-				{
-					$value = $astman->command('core show channel '.$this_chan_array[0]);
-					$this_array = split("\n",$value['data']);
-					foreach($this_array as $val2)
-					{
-						if(strpos($val2,'FROM_DID=') !== false)
-						{
-							$DID = trim(str_replace('FROM_DID=','',$val2));
-							break;
-						}
-					}
-		
-					//break out if the value is set.
-					if($DID != '')
-					{
-						break;
-					}
-				}
-			}
-		}
-	}
-
 	// Loop over each scheme
 	while ($row = $res->fetchRow(DB_FETCHMODE_ASSOC))
 	{
@@ -203,7 +177,7 @@ else
 		}
 		//trying to push some info to the CLI
 		if(!$multifecta_id){
-			$astman->command('VERBOSE "Processing '.substr($this_scheme,5).' Scheme." 3');
+			//$astman->command('VERBOSE "Processing '.substr($this_scheme,5).' Scheme." 3');
 		}
 
 
@@ -321,7 +295,7 @@ else
 				}
 
 			}
-
+			require_once('superfecta_base.php');
 			if ($theoriginalnumber !='')
 			{
 				$multifecta_count = 0;
@@ -336,17 +310,29 @@ else
 						$start_time = mctime_float();
 					}
 					$run_param = isset($param[substr($this_scheme,5).'_'.$source_name]) ? $param[substr($this_scheme,5).'_'.$source_name] : array();
-
-					include("source-".$source_name.".php");
-					$caller_id = _utf8_decode($caller_id);
-					if(($first_caller_id == '') && ($caller_id != ''))
-					{
-						$first_caller_id = $caller_id;
-						$winning_source = $source_name;
-						if($debug)
-						{
-							$end_time_whole = mctime_float();
+					
+					if(file_exists("source-".$source_name.".module")) {
+						require_once("source-".$source_name.".module");
+						$source_class = NEW $source_name;
+						$source_class->debug = $debug;
+						if(method_exists($source_class, 'get_caller_id')) {
+							$caller_id = $source_class->get_caller_id($thenumber,$run_param);
+							unset($source_class);
+							$caller_id = _utf8_decode($caller_id);
+							if(($first_caller_id == '') && ($caller_id != ''))
+							{
+								$first_caller_id = $caller_id;
+								$winning_source = $source_name;
+								if($debug)
+								{
+									$end_time_whole = mctime_float();
+								}
+							}
+						} else {
+							print "Function 'get_caller_id' does not exist!<br>\n";
 						}
+					} else {
+						print "Unable to find source '".$source_name."' skipping..<br\>\n";
 					}
 	
 					if($debug)
@@ -658,7 +644,17 @@ if((isset($param[$this_scheme])) && ((!$param[$this_scheme]['enable_multifecta']
 		if((!$single_source) || ($single_source == $source_name)){
 			$thenumber = $theoriginalnumber;
 			$run_param = (isset($param[substr($this_scheme,5).'_'.$source_name]) ? $param[substr($this_scheme,5).'_'.$source_name] : array());
-			include("source-".$source_name.".php");
+			require_once('superfecta_base.php');
+			if(file_exists("source-".$source_name.".module")) {
+				require_once("source-".$source_name.".module");
+				$source_class = NEW $source_name;
+				$source_class->debug = $debug;
+				if(method_exists($source_class, 'post_processing')) {
+					$caller_id = $source_class->post_processing($cache_found,$winning_source,$first_caller_id,$run_param,$thenumber);
+				} else {
+					print "Method 'post_processing' doesn't exist<br\>\n"; 
+				}
+			}
 		}
 	}
 }
@@ -680,9 +676,6 @@ if($multifecta_id){
 		die("Unable to update child end time: " . $res->getMessage() .  "<br>");
 	}
 }
-
-$astman->disconnect();
-
 
 /**
 Search an array of area codes against phone number to find one that matches.

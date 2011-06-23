@@ -171,36 +171,38 @@ if($delete_file != '')
 //revert to old file if requested
 if($revert_file != '')
 {
-	if(is_file("bin/old_source-".$revert_file.".php"))
+	if(is_file("bin/old_source-".$revert_file.".inc"))
 	{
-		if(is_file("bin/source-".$revert_file.".php"))
+		if(is_file("bin/source-".$revert_file.".inc"))
 		{
-			unlink("bin/source-".$revert_file.".php");
+			unlink("bin/source-".$revert_file.".inc");
 		}
-		rename("bin/old_source-".$revert_file.".php","bin/source-".$revert_file.".php");
+		rename("bin/old_source-".$revert_file.".inc","bin/source-".$revert_file.".inc");
 	}
 }
 
 //get a list of the files that are on this local server
-foreach (glob("bin/source-*.php") as $filename)
+foreach (glob("bin/source-*.module") as $filename)
 {
 	if($filename != '')
 	{
 		$source_desc = '';
 		$source_param = array();
-		include($filename);
-		$this_source_name = substr(substr($filename,11),0,-4);
-		$src_files[$this_source_name]['desc'] = $source_desc;
-		$src_files[$this_source_name]['param'] = $source_param;
-
+		require_once('bin/superfecta_base.php');
+		require_once($filename);		
+		$this_source_name = substr(substr($filename,11),0,-7);	
+		$source_class = NEW $this_source_name;
+		$settings = $source_class->settings();	
+		$src_files[$this_source_name]['desc'] = $settings['desc'];		
+		$src_files[$this_source_name]['param'] = $settings['param'];
+		$source_param = $settings['source_param'];
+						
 		//update the database if this source was the last displayed form.
 		if($source_param_form == $this_source_name)
 		{
 			foreach($source_param as $key=>$val)
 			{
-				//$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('".substr($scheme,5).'_'.$this_source_name."','$key','".mysql_escape_string($_REQUEST[$key])."')";
 				$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('".substr($scheme,5).'_'.$this_source_name."','$key','".mysql_real_escape_string(utf8_decode($_REQUEST[$key]))."')";
-
 				$db->query($sql);
 			}
 		}
