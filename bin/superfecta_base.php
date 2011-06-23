@@ -2,6 +2,7 @@
 class superfecta_base {
 	public $debug = FALSE;
 	public $thenumber;
+	public $db; //The database
 	
 	/**
 	Search an array of area codes against phone number to find one that matches.

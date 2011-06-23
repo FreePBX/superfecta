@@ -314,6 +314,7 @@ else
 					if(file_exists("source-".$source_name.".module")) {
 						require_once("source-".$source_name.".module");
 						$source_class = NEW $source_name;
+						$source_class->db = $db;
 						$source_class->debug = $debug;
 						if(method_exists($source_class, 'get_caller_id')) {
 							$caller_id = $source_class->get_caller_id($thenumber,$run_param);
@@ -648,6 +649,7 @@ if((isset($param[$this_scheme])) && ((!$param[$this_scheme]['enable_multifecta']
 			if(file_exists("source-".$source_name.".module")) {
 				require_once("source-".$source_name.".module");
 				$source_class = NEW $source_name;
+				$source_class->db = $db;
 				$source_class->debug = $debug;
 				if(method_exists($source_class, 'post_processing')) {
 					$caller_id = $source_class->post_processing($cache_found,$winning_source,$first_caller_id,$run_param,$thenumber);
