@@ -162,22 +162,22 @@ if($update_file != '')
 if($delete_file != '')
 {
 	//right now we're keeping and "old_" files just in case the user wants to revert back in the future
-	if(is_file("bin/source-".$delete_file.".php"))
+	if(is_file("bin/source-".$delete_file.".module"))
 	{
-		unlink("bin/source-".$delete_file.".php");
+		unlink("bin/source-".$delete_file.".module");
 	}
 }
 
 //revert to old file if requested
 if($revert_file != '')
 {
-	if(is_file("bin/old_source-".$revert_file.".inc"))
+	if(is_file("bin/old_source-".$revert_file.".module"))
 	{
-		if(is_file("bin/source-".$revert_file.".inc"))
+		if(is_file("bin/source-".$revert_file.".module"))
 		{
-			unlink("bin/source-".$revert_file.".inc");
+			unlink("bin/source-".$revert_file.".module");
 		}
-		rename("bin/old_source-".$revert_file.".inc","bin/source-".$revert_file.".inc");
+		rename("bin/old_source-".$revert_file.".module","bin/source-".$revert_file.".module");
 	}
 }
 
@@ -196,6 +196,7 @@ foreach (glob("bin/source-*.module") as $filename)
 		$src_files[$this_source_name]['desc'] = $settings['desc'];		
 		$src_files[$this_source_name]['param'] = $settings['param'];
 		$source_param = $settings['source_param'];
+		$src_files[$this_source_name]['param'] = $settings['source_param'];
 						
 		//update the database if this source was the last displayed form.
 		if($source_param_form == $this_source_name)
