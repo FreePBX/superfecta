@@ -27,12 +27,12 @@ abstract class superfecta_base {
 	public $db;
 	public $amp_conf;
 	public $astman;
+	public $access_type;
 	
 	function __construct() {
-		$this->thenumber_orig = isset($_REQUEST['thenumber'])) ? trim($_REQUEST['thenumber']) : '';
 		$this->debug_val = (isset($_REQUEST['debug'])) ? $_REQUEST['debug'] : '';
 		$this->debug = ($debug_val == 'yes') ? true : false;
-
+		
 		if($debug){
 			// If debugging, report all errors
 			error_reporting(-1);
@@ -44,16 +44,18 @@ abstract class superfecta_base {
 			$end_time_whole = 0;
 		}
 		
-		if(($thenumber_orig == '') && isset($argv[1])){
-			$thenumber_orig = $argv[1];
-		}
-		$testdid = (isset($_REQUEST['testdid'])) ? trim($_REQUEST['testdid']) : '';
-		if(($testdid == '') && isset($argv[2])){
+		//Determine access type
+		if(php_sapi_name() == 'cli') {
+			$this->access_type = 'cli';
+			$this->thenumber_orig = $argv[1];
 			$testdid = $argv[2];
+		} else {
+			$this->access_type = 'web';
+			$this->thenumber_orig = isset($_REQUEST['thenumber'])) ? trim($_REQUEST['thenumber']) : '';
+			$testdid = (isset($_REQUEST['testdid'])) ? trim($_REQUEST['testdid']) : '';			
 		}
-		$scheme = (isset($_REQUEST['scheme'])) ? trim($_REQUEST['scheme']) : '';
-		//$thenumber_orig = ereg_replace('[^0-9]+', '', $thenumber_orig);
-
+		
+		//Import FreePBX data
 		//New code for FreePBX 2.9 -- Andrew Nagy (tm1000)
 		if(file_exists("/etc/freepbx.conf")) {
 			//This is FreePBX 2.9+
@@ -62,14 +64,20 @@ abstract class superfecta_base {
 			}
 			require("/etc/freepbx.conf");
 			global $db,$astman,$amp_conf;
+			$this->$db = $db;
+			$this->$astman = $astman;
+			$this->$amp_conf = $amp_conf;
 		} elseif(file_exists("/etc/asterisk/freepbx.conf")) {
 			//This is FreePBX 2.9+
 			if($debug) {
 				echo "<br/><strong>Detected FreePBX version is at least 2.9</strong><br/>";
 			}
 			require("/etc/asterisk/freepbx.conf");
-			global $db,$astman,$amp_conf;	
-		} else {
+			global $db,$astman,$amp_conf;
+			$this->$db = $db;
+			$this->$astman = $astman;
+			$this->$amp_conf = $amp_conf;
+		} elseif(file_exists("/etc/amportal.conf")) { {
 			//This is > FreePBX 2.8
 			if($debug) {
 				echo "<br/><strong>Detected FreePBX version is at most 2.8</strong><br/>";
@@ -100,18 +108,23 @@ abstract class superfecta_base {
 
 			//connect to the asterisk manager
 			require_once('../../../common/php-asmanager.php');
-			$astman	= new AGI_AsteriskManager();	
+			$astman	= new AGI_AsteriskManager();
+			$this->$db = $db;
+			$this->$astman = $astman;
+			$this->$amp_conf = $amp_conf;
+		} else {
+			die('not yet :-)');
 		}
 		//End new FreePBX 2.9 code.
 		
 		// attempt to connect to asterisk manager proxy
-		if(!isset($amp_conf["ASTMANAGERPROXYPORT"]) || !$res = $astman->connect("127.0.0.1:".$amp_conf["ASTMANAGERPROXYPORT"], $amp_conf["AMPMGRUSER"] , $amp_conf["AMPMGRPASS"], 'off'))
+		if(!isset($this->amp_conf["ASTMANAGERPROXYPORT"]) || !$res = $this->astman->connect("127.0.0.1:".$this->amp_conf["ASTMANAGERPROXYPORT"], $this->amp_conf["AMPMGRUSER"] , $this->amp_conf["AMPMGRPASS"], 'off'))
 		{
 			// attempt to connect directly to asterisk, if no proxy or if proxy failed
-			if (!$res = $astman->connect("127.0.0.1:".$amp_conf["ASTMANAGERPORT"], $amp_conf["AMPMGRUSER"] , $amp_conf["AMPMGRPASS"], 'off'))
+			if (!$res = $this->astman->connect("127.0.0.1:".$this->amp_conf["ASTMANAGERPORT"], $this->amp_conf["AMPMGRUSER"] , $this->amp_conf["AMPMGRPASS"], 'off'))
 			{
 				// couldn't connect at all
-				unset( $astman );
+				unset( $this->astman );
 			}
 		}
 	}
@@ -119,7 +132,7 @@ abstract class superfecta_base {
 	function process_number () {
 		$param = array();
 		$query = "SELECT * FROM superfectaconfig";
-		$res = $db->query($query);
+		$res = $this->db->query($query);
 		while ($row = $res->fetchRow(DB_FETCHMODE_ASSOC))
 		{
 			$param[$row['source']][$row['field']] = $row['value'];
