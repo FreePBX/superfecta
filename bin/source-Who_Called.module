@@ -147,7 +147,7 @@ class Who_Called extends superfecta_base {
 			else
 			{
 				$url = "http://whocalled.us/do?action=getWho&name=".$run_param['Username']."&pass=".$run_param['Password']."&phoneNumber=$thenumber";
-				$value = get_url_contents($url);
+				$value = $this->get_url_contents($url);
 
 				$st_success = strstr($value, "success");
 				$st_cid = strstr($value, "who");
