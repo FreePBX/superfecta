@@ -15,11 +15,11 @@
 //
 
 $scheme = (isset($_REQUEST['scheme'])) ? $_REQUEST['scheme'] : '';
-$module_info = xml2array("modules/superfecta/module.xml");
+$module_info = superfecta_xml2array("modules/superfecta/module.xml");
 
 if(count($_POST))
 {
-	setConfig();
+	superfecta_setConfig();
 	$scheme = (($_POST['scheme_name_orig'] == '') && ($_POST['scheme_name'] != '')) ? 'base_'.$_POST['scheme_name'] : '';
 }
 
@@ -189,12 +189,11 @@ print '</ul>
 		</div>
 		<h1><font face="Arial">Caller ID Superfecta</font></h1>
 		<hr>
-		<p>CallerID Superfecta for FreePBX is a utility program which adds incoming CallerID name lookups to your Asterisk system using multiple data sources.<br><br> Add, Remove, Enable, Disable, Sort and Configure data sources as appropriate for your situation.<br>
-		<strong><font size=2><br>NOTE:</strong> If your telephones are receiving Caller ID information that looks like this:<strong>"&lt;!DOCTYPE HTML" </strong>, make sure you have specified the username and password in "General Options", below.</font></p>';
+		<p>CallerID Superfecta for FreePBX is a utility program which adds incoming CallerID name lookups to your Asterisk system using multiple data sources.<br><br> Add, Remove, Enable, Disable, Sort and Configure data sources as appropriate for your situation.</p>';
 
 if($scheme != "")
 {
-	$conf = getConfig($scheme);
+	$conf = superfecta_getConfig($scheme);
 
 	if (isset($conf['DID']) && (strlen(trim($conf['DID'])))){
 		$did_test_html = '<a href="javascript:return(false);" class="info">DID Number:<span>DID number to test this scheme against</span></a> <input type="text" size="15" maxlength="20" name="testdid"><br>';
@@ -249,14 +248,6 @@ if($scheme != "")
 							<td colspan="2"><font face="Arial"><br><u>General Options</font></u></td>
 						</tr>
 						<tr>
-							<td><a href="javascript:return(false);" class="info">Username:<span>The HTTP Authentication username (you probably used it to get to this page.)</span></a></td>
-							<td><input type="text" name="http_username" size="23" maxlength="20" value="'.utf8_encode($conf['http_username']).'"></td>
-						</tr>
-						<tr>
-							<td><a href="javascript:return(false);" class="info">Password:<span>The HTTP Authentication password (you probably used it to get to this page.)</span></a></td>
-							<td><input type="password" name="http_password" size="23" maxlength="20" value="'.utf8_encode($conf['http_password']).'"></td>
-						</tr>
-						<tr>
 							<td><a href="javascript:return(false);" class="info">Lookup Timeout<span>Specify a timeout in seconds for each source. If the source fails to return a result within the alloted time, the script will move on.</span></a></td>
 							<td><input type="text" name="Curl_Timeout" size="4" maxlength="5" value="'.$conf['Curl_Timeout'].'"></td>
 						</tr>
@@ -271,6 +262,16 @@ if($scheme != "")
 							</td>
 						</tr>
 						<tr>
+							<td><a href="javascript:return(false);" class="info">Enable Multifecta<span>When enabled, all sources in this scheme will be run simultaneously.</span></a></td>
+							<td>
+								<input type="checkbox" name="enable_multifecta" value="Y"' . ( ( (isset($conf['enable_multifecta'])) && ($conf['enable_multifecta'] == 'Y') ) ? 'checked' : '' ) . '>
+							</td>
+						</tr>
+						<tr>
+							<td><a href="javascript:return(false);" class="info">Multifecta Timeout<span>Specify a timeout in seconds defining how long multifecta will obey the source priority. After this timeout, the first source to respond with a CNAM will be taken, until "Lookup Timeout" is reached.</span></a></td>
+							<td><input type="text" name="multifecta_timeout" size="4" maxlength="5" value="'.$conf['multifecta_timeout'].'"></td>
+						</tr>
+						<tr>
 							<td><a href="javascript:return(false);" class="info">CID Prefix URL<span>If you wish to prefix information on the caller id you can specify a url here where that prefix can be retrieved.<br>The data will not be parsed in any way, and will be truncated to the first 10 characters.<br>Example URL: http://www.example.com/GetCID.php?phone_number=[thenumber]<br>[thenumber] will be replaced with the full 10 digit phone number when the URL is called.</span></a></td>
 							<td><input type="text" name="Prefix_URL" size="23" maxlength="255" value="'.(isset($conf['Prefix_URL'])? $conf['Prefix_URL'] : '' ).'"></td>
 						</tr>
@@ -280,8 +281,7 @@ if($scheme != "")
 					</form>
 				</td>
 				<td valign="top">
-					<form name="debug_form" 
-action="javascript:Ht_debug(document.forms.debug_form.thenumber.value,'.$did_test_script.'document.forms.debug_form.Allscheme.checked);">
+					<form name="debug_form" action="javascript:Ht_debug(document.forms.debug_form.thenumber.value,'.$did_test_script.'document.forms.debug_form.Allscheme.checked);">
 						<p>Test a phone number against the selected sources.<br>
 						'.$did_test_html.'
 						<a href="javascript:return(false);" class="info">Phone Number:<span>Phone number to test this scheme against.</span></a> <input type="text" size="15" maxlength="20" name="thenumber"> <input type="submit" value="Debug"><br>
@@ -292,32 +292,7 @@ action="javascript:Ht_debug(document.forms.debug_form.thenumber.value,'.$did_tes
 				</td>
 			</tr>
 		</table>
-
-		<script language="javascript">
-			<!--
-			';
-		//prompt the user if they have use http authentication to get to this page, but don't have that information specified in the fields
-		if(isset($_SERVER["REMOTE_USER"]))
-		{
-			if(($_SERVER["REMOTE_USER"] != '') && ($conf['http_username'] == ''))
-			{
-				//javascript alert the user that they are logged in using authentication and should probably fill out the fields in this form.
-				//also focus on the username form element.
-				print 'document.forms.Superfecta.http_username.focus();';
-				print 'alert("You are currently using HTTP Authentication with a username of '.$_SERVER["REMOTE_USER"].'. You should probably fill in the username and password portion (In the General Options section) of this form to ensure proper operation of Caller ID Superfecta.");';
-			}
-			else if(($conf['http_username'] != '') && ($conf['http_password'] == ''))
-			{
-				//javascript alert the user that they have a username filled out, but no password.
-				//also focus on the password form element.
-				print 'document.forms.Superfecta.http_password.focus();';
-				print 'alert("The form has a value entered for the username (In the General Options section), but the password is blank. You should probably fill in the password portion of this form to ensure proper operation of Caller ID Superfecta.");';
-			}
-		}
-
-		print '
-			-->
-		</script>';
+		';
 }
 
 //uncomment line below to see the available array values in $module_info.

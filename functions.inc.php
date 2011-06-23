@@ -1,6 +1,127 @@
 <?php
 
-function setConfig()
+function superfecta_hook_core($viewing_itemid, $target_menuid) {
+	$html = '';
+	if ($target_menuid == 'did')	{
+		$html = '<tr><td colspan="2"><h5>';
+		$html .= _("Superfecta CID Lookup");
+		$html .= '<hr></h5></td></tr>';
+		$html .= '<tr>';
+		$html .= '<td colspan="2">';
+		if(superfecta_did_get($viewing_itemid)){
+			$checked_status = 'checked';
+		}else{
+			$checked_status = '';	
+		}
+		$html .= '<input type="checkbox" name="enable_superfecta" value="yes" '.$checked_status.'><a href="#" class="info">Enable CID Superfecta for this DID<span>'._("Sources can be added/removed in CID Superfecta section").'.</span></a>';
+		$html .= '</td></tr>';
+	}
+
+	return $html;
+	
+}
+
+function superfecta_hookProcess_core($viewing_itemid, $request) {
+	
+	// TODO: move sql to functions superfecta_did_(add, del, edit)
+	if (!isset($request['action']))
+		return;
+	switch ($request['action'])	{
+		case 'addIncoming':
+			if($request['enable_superfecta'] == 'yes'){
+				$sql = "REPLACE INTO superfecta_to_incoming (extension, cidnum) values (".q($request['extension']).",".q($request['cidnum']).")";
+				$result = sql($sql);
+			}
+		break;
+		case 'delIncoming':
+			$extarray = explode('/', $request['extdisplay'], 2);
+			if(count($extarray) == 2){
+					$sql = "DELETE FROM superfecta_to_incoming WHERE extension = ".q($extarray[0])." AND cidnum = ".q($extarray[1]);
+					$result = sql($sql);
+			}
+		break;
+		case 'edtIncoming':	// deleting and adding as in core module
+			$extarray = explode('/', $request['extdisplay'], 2);
+			if(count($extarray) == 2){
+					$sql = "DELETE FROM superfecta_to_incoming WHERE extension = ".q($extarray[0])." AND cidnum = ".q($extarray[1]);
+					$result = sql($sql);
+			}
+			if($request['enable_superfecta'] == 'yes'){
+				$sql = "REPLACE INTO superfecta_to_incoming (extension, cidnum) values (".q($request['extension']).",".q($request['cidnum']).")";
+				$result = sql($sql);
+			}
+		break;
+	}
+}
+
+
+function superfecta_hookGet_config($engine) {
+	// TODO: integrating with direct extension <-> DID association
+	// TODO: add option to avoid callerid lookup if the telco already supply a callerid name (GosubIf)
+	global $ext;  // is this the best way to pass this?
+
+	switch($engine) {
+		case "asterisk":
+			$pairing = superfecta_did_list();
+			if(is_array($pairing)) {
+				foreach($pairing as $item) {
+					if ($item['superfecta_to_incoming_id'] != 0) {
+
+						// Code from modules/core/functions.inc.php core_get_config inbound routes
+						$exten = trim($item['extension']);
+						$cidnum = trim($item['cidnum']);
+						
+						if ($cidnum != '' && $exten == '') {
+							$exten = 's';
+							$pricid = ($item['pricid']) ? true:false;
+						} else if (($cidnum != '' && $exten != '') || ($cidnum == '' && $exten == '')) {
+							$pricid = true;
+						} else {
+							$pricid = false;
+						}
+						$context = ($pricid) ? "ext-did-0001":"ext-did-0002";
+
+						$exten = (empty($exten)?"s":$exten);
+						$exten = $exten.(empty($cidnum)?"":"/".$cidnum); //if a CID num is defined, add it
+
+						$ext->splice($context, $exten, 1, new ext_setvar('CALLERID(name)', '${lookupcid}'));
+						$ext->splice($context, $exten, 1, new ext_agi(dirname(__FILE__).'/superfecta.agi'));
+											
+					}
+				}
+			}
+		break;
+	}
+
+}
+
+function superfecta_did_get($did){
+	$extarray = explode('/', $did, 2);
+	if(count($extarray) == 2){
+		$sql = "SELECT * FROM superfecta_to_incoming WHERE extension = ".q($extarray[0])." AND cidnum = ".q($extarray[1]);
+		$result = sql($sql,"getAll",DB_FETCHMODE_ASSOC);
+		if(is_array($result) && count($result)){
+			return true;
+		}
+	}
+	return false;	
+}
+
+function superfecta_did_list($id=false) {
+	$sql = "
+	SELECT superfecta_to_incoming_id, a.extension extension, a.cidnum cidnum, pricid FROM superfecta_to_incoming a 
+	INNER JOIN incoming b
+	ON a.extension = b.extension AND a.cidnum = b.cidnum
+	";
+	if ($id !== false && ctype_digit($id)) {
+		$sql .= " WHERE superfecta_to_incoming_id = '".q($id)."'";
+	}
+
+	$results = sql($sql,"getAll",DB_FETCHMODE_ASSOC);
+	return is_array($results)?$results:array();
+}
+
+function superfecta_setConfig()
 {
 	//clean up
 	$scheme_name = mysql_real_escape_string($_POST['scheme_name']);
@@ -13,6 +134,8 @@ function setConfig()
 	$http_username = mysql_real_escape_string(utf8_decode($_POST['http_username']));
 	$SPAM_Text = mysql_real_escape_string($_POST['SPAM_Text']);
 	$SPAM_Text_Substitute = (isset($_POST['SPAM_Text_Substitute'])) ? mysql_real_escape_string($_POST['SPAM_Text_Substitute']) : 'N';
+	$enable_multifecta =  mysql_real_escape_string(utf8_decode($_POST['enable_multifecta']));
+	$multifecta_timeout =  mysql_real_escape_string(utf8_decode($_POST['multifecta_timeout']));
 	$error = false;
 
 	//see if the scheme name has changed, and make sure that there isn't already one named the new name.
@@ -46,6 +169,10 @@ function setConfig()
 		sql($sql);
 		$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('base_".$scheme_name."','Curl_Timeout','$Curl_Timeout')";
 		sql($sql);
+		$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('base_".$scheme_name."','enable_multifecta','$enable_multifecta')";
+		sql($sql);
+		$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('base_".$scheme_name."','multifecta_timeout','$multifecta_timeout')";
+		sql($sql);
 		$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('base_".$scheme_name."','SPAM_Text','$SPAM_Text')";
 		sql($sql);
 		$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('base_".$scheme_name."','SPAM_Text_Substitute','$SPAM_Text_Substitute')";
@@ -78,22 +205,9 @@ function setConfig()
 		sql($sql);
 	}
 
-
-	//check the previous username and password from the cidlookup table
-	$sql = "SELECT http_username, http_password FROM cidlookup WHERE description = 'Caller ID Superfecta' LIMIT 1";
-	$results= sql($sql, "getAll");
-
-	//update the HTTP Auth username and password if needed
-	if (($results[0][0] != $http_username) or ($results[0][1] != $http_password))
-	{
-	$sql = "UPDATE cidlookup SET http_username = '$http_username', http_password = '$http_password' WHERE description = 'Caller ID Superfecta' LIMIT 1";
-	sql($sql);
-	//$fcc->update();
-	needreload();
-	}
 }
 
-function getConfig($scheme)
+function superfecta_getConfig($scheme)
 {
 	$return = array();
 	$sql = "SELECT * FROM superfectaconfig WHERE source='$scheme'";
@@ -110,11 +224,12 @@ function getConfig($scheme)
 		$return['SPAM_Text'] = 'SPAM';
 	}
 
-	//get the username and password from the cidlookup table
-	$sql = "SELECT http_username, http_password FROM cidlookup WHERE description = 'Caller ID Superfecta' LIMIT 1";
-	$results= sql($sql, "getAll");
-	$return['http_username'] = $results[0][0];
-	$return['http_password'] = $results[0][1];
+	if(!isset($return['multifecta_timeout'])){
+		$return['multifecta_timeout'] = '1.5';
+	}
+	if(!isset($return['enable_multifecta'])){
+		$return['enable_multifecta'] = '';
+	}
 
 	return $return;
 }
@@ -122,7 +237,7 @@ function getConfig($scheme)
 /**
 Parse XML file into an array
 */
-function xml2array($url, $get_attributes = 1, $priority = 'tag')
+function superfecta_xml2array($url, $get_attributes = 1, $priority = 'tag')
 {
 	$contents = "";
 	if (!function_exists('xml_parser_create'))

@@ -70,18 +70,92 @@ $src_cnt = 1;
 $src_files = array();
 $update_site_unavailable = false;
 
+// Load files available on live update
+if(($check_updates == 'on') || ($update_file != ''))
+{
+	$update_array = array();
+	$dst_offset = (60*60); // We need to offset by an hour to compensate for a possible DST.  This should be set to zero
+			       // if we know the update server is giving us UTC.  When using PST, we dont know if the file was created
+			       // In PST, or PDT -- so we subtract an hour or 2 to make sure.  Not ideal, but the MD5 check should
+			       // Help avoid any unnecessary updates.		
+	$updateserver_timezone = "PST"; // Would be nice if this could by UTC.  See above.
+
+	// Temporary cookie file
+	$temp_cookie_file = false;
+	//$temp_cookie_file = tempnam("/tmp", "CURLCOOKIE");
+
+	// Load the login page to get cookies set and to get authentication key
+	$login_url = "http://projects.colsolgrp.net/login";
+	$file_url = "http://projects.colsolgrp.net/projects/list_files/superfecta";
+	//$update_content = get_url_contents($login_url,false,$file_url,$temp_cookie_file);
+	//$pattern = "/<input name=\"authenticity_token\" type=\"hidden\" value=\"([^\"]+)\"/";
+	//if(preg_match($pattern, $update_content, $match)){
+		//$authenticity_token = $match[1];
+		//$post_array = array(
+		//	"authenticity_token" => $authenticity_token,
+		//	"back_url" => urlencode($file_url),
+		//	"username" => "superfectaupdates",
+		//	"password" => "update_password"
+		//);
+		// Login
+		//$update_content = get_url_contents($login_url,$post_array,$login_url,$temp_cookie_file);
+		// Get the file list
+		$update_content = get_url_contents($file_url,false,$login_url,$temp_cookie_file);
+		$file_pattern = "/<td class=\"filename\"><a href=\"(\/attachments\/download\/[^\"]+)\" title=\"[^\"]*?\">([^<]+)\<\/a>/";
+		$date_pattern = "/<td class=\"created_on\">([^<]+)<\/td>/";
+		$md5_pattern = "/<td class=\"digest\">([^<]+)<\/td>/";
+		if(preg_match_all($file_pattern, $update_content, $file_match) && preg_match_all($date_pattern, $update_content, $date_match) && preg_match_all($md5_pattern, $update_content, $md5_match)){
+			foreach($file_match[1] as $key => $value){
+				if((substr($file_match[2][$key],0,7)=='source-') && (substr($file_match[2][$key],strlen($file_match[2][$key])-4)=='.php')){
+					$this_source_name = substr(substr(trim($file_match[2][$key]),7),0,-4);
+					$update_array[$this_source_name]['link'] = "http://projects.colsolgrp.net".trim($file_match[1][$key]);
+					$update_array[$this_source_name]['date'] = strtotime(trim($date_match[1][$key] . " " . $updateserver_timezone ));
+					$update_array[$this_source_name]['md5'] = trim($md5_match[1][$key]);
+				}
+			}
+		}else{
+			//site un-available, give error.
+			$update_site_unavailable = true;
+			$check_updates = 'off';
+		}
+	//}else{
+	//	//site un-available, give error.
+	//	$update_site_unavailable = true;
+	//	$check_updates = 'off';
+	//}
+	// Clean up the temp cookie file
+	//@unlink($temp_cookie_file);
+}
+
 //process updates from online server first
 if($update_file != '')
 {
 	$parsed_url = parse_url($update_file);
 	$parsed_path = pathinfo($parsed_url['path']);
+	$update_source_name = $this_source_name = substr(substr(trim($parsed_path['basename']),7),0,-4);
+	$local_destination_file = "bin/".$parsed_path['basename'];
 
 	//rename and keep old file if it exists
-	if(is_file("bin/".$parsed_path['basename']))
+	if(is_file($local_destination_file))
 	{
-		rename("bin/".$parsed_path['basename'],"bin/old_".$parsed_path['basename']);
+		rename($local_destination_file,"bin/old_".$parsed_path['basename']);
 	}
-	copy($update_file,"bin/".$parsed_path['basename']);
+	copy($update_file,$local_destination_file);
+	if(cisf_md5_file($local_destination_file) != ($update_array[$update_source_name]['md5'])){
+		echo "Warning: Downloaded file '" . $parsed_path['basename'] . "' did not pass MD5 verification.";
+		if(is_file("bin/old_".$parsed_path['basename'])){
+			echo " Reverting update.";
+			$revert_file = $update_source_name;
+		}else{
+			echo " Update aborted.";
+			$delete_file = $update_source_name;
+		}
+		echo "<br>\n<br>\n";
+	}else{
+		//echo "Updated $update_source_name successfully.<br>\n<br>\n";
+		// Reset the date to the correct one
+		touch($local_destination_file, $update_array[$update_source_name]['date']);
+	}
 }
 
 //delete file if requested.
@@ -189,39 +263,6 @@ foreach($src_files as $key=>$val)
 }
 
 ksort($src_print);
-
-if($check_updates == 'on')
-{
-	$update_array = array();
-	$update_content = get_url_contents('http://projects.colsolgrp.net/projects/list_files/superfecta');
-	if(($update_content == '') || (strpos($update_content,'The system is currently in Maintenance Mode. Please try again later.') !== false))
-	{
-		//site un-available, give error.
-		$update_site_unavailable = true;
-		$check_updates = 'off';
-	}
-	else
-	{
-		$update_content = html2text($update_content);
-		$update_content = substr($update_content,(strpos($update_content,'Caller ID Superfecta Source Files') + 33));
-		$update_content = substr($update_content,0,strpos($update_content,'[LINK: /versions/show'));
-		$update_content = str_replace("\t","|||",$update_content);
-		$update_content = str_replace("]","|||",$update_content);
-		$update_content = str_replace("\n","",$update_content);
-		$tmp_array = explode("[LINK: ",$update_content);
-		foreach($tmp_array as $val)
-		{
-			$tmp2_array = explode("|||",$val);
-			if(!empty($tmp2_array[0]))
-			{
-				$this_source_name = substr(substr(trim($tmp2_array[1]),7),0,-4);
-				$update_array[$this_source_name]['link'] = "http://projects.colsolgrp.net".trim($tmp2_array[0]);
-				$update_array[$this_source_name]['date'] = strtotime(trim($tmp2_array[2])) - (60*60*24);	//to correct for time zones, give a time that is 24 hours older than the file actually is.
-			}
-		}
-		//print_r($update_array);
-	}
-}
 
 print '<input type="hidden" name="src_up" value="">
 		<input type="hidden" name="src_down" value="">
@@ -398,9 +439,14 @@ foreach($src_print as $val)
 		if(key_exists($val['name'],$update_array))
 		{
 			$this_last_update = filemtime("bin/source-".$val['name'].".php");
-			if($update_array[$val['name']]['date'] > $this_last_update)
+			$this_md5 = cisf_md5_file("bin/source-".$val['name'].".php");
+			if(($update_array[$val['name']]['md5'] != $this_md5)  && (($update_array[$val['name']]['date']+$dst_offset) > $this_last_update))
 			{
 				print ' <a href="javascript:document.forms.CIDSources.update_file.value=\''.$update_array[$val['name']]['link'].'\';document.forms.CIDSources.submit();">update available</a>';
+			}
+			elseif(($update_array[$val['name']]['md5'] != $this_md5)  && (($update_array[$val['name']]['date']+$dst_offset) < $this_last_update))
+			{
+				print ' <a href="javascript:document.forms.CIDSources.update_file.value=\''.$update_array[$val['name']]['link'].'\';document.forms.CIDSources.submit();">downgrade available</a>';
 			}
 		}
 		else
@@ -419,18 +465,13 @@ foreach($src_print as $val)
 if($check_updates == 'on')
 {
 	$options_list = '';
+	$src_key_list = array();
+	foreach($src_print as $val2){
+		$src_key_list[$val2['name']] = 'installed';
+	}
 	foreach($update_array as $key=>$val)
 	{
-		$in_array = false;
-		foreach($src_print as $val2)
-		{
-			if($val2['name'] == $key)
-			{
-				$in_array = true;
-				break;
-			}
-		}
-		if(!$in_array)
+		if(!isset($src_key_list[$key]))
 		{
 			$options_list .= '<OPTION value="'.$val['link'].'">'.str_replace('_',' ',$key).'</OPTION>';
 		}
@@ -439,19 +480,17 @@ if($check_updates == 'on')
 	if(!empty($options_list))
 	{
 		print '<tr>
-				<td>
-					<a href="javascript:document.forms.CIDSources.update_file.value=document.forms.CIDSources.add_source_file.value;document.forms.CIDSources.submit();"><img src="images/scrollup.gif" border="0" alt="Up Arrow" title="Move Up List"></a>
-				</td>
-	    	<td>&nbsp;</td>
-	    	<td>&nbsp;</td>
-				<td>&nbsp;</td>
-		    <td>
+			<td>
+			<a href="javascript:document.forms.CIDSources.update_file.value=document.forms.CIDSources.add_source_file.value;document.forms.CIDSources.submit();"><img src="images/scrollup.gif" border="0" alt="Up Arrow" title="Install Source"></a>
+			</td>
+	    		<td>&nbsp;</td>
+	    		<td>&nbsp;</td>
+			<td>&nbsp;</td>
+		    	<td colspan="3">
 		    	<SELECT name="add_source_file">
-						<OPTION value="">Select One</OPTION>'.$options_list.'
-					</SELECT>
-				</td>
-		    <td>&nbsp;</td>
-		    <td>&nbsp;</td>
+				<OPTION value="">Select source to install</OPTION>'.$options_list.'
+			</SELECT> <- More sources available
+			</td>
 		  </tr>';
 	}
 }
@@ -461,21 +500,48 @@ print '</table>
 $sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('$scheme','sources','$enabled_src_list')";
 $db->query($sql);
 
+function cisf_url_encode_array($arr){
+	$string = "";
+	foreach ($arr as $key => $value) {
+		$string .= $key . "=" . urlencode($value) . "&";
+	}
+	trim($string,"&");
+	return $string;
+}
+
 /**
 Returns the content of a URL.
 */
-function get_url_contents($url)
+function get_url_contents($url,$post_data=false,$referrer=false,$cookie_file=false,$useragent=false)
 {
 	$crl = curl_init();
-	$useragent="Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.1) Gecko/20061204 Firefox/2.0.0.1";
+	if(!$useragent){
+		// Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.2.6) Gecko/20100625 Firefox/3.6.6 ( .NET CLR 3.5.30729)
+		$useragent="Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.1) Gecko/20061204 Firefox/2.0.0.1";
+	}
+	if($referrer){
+		curl_setopt ($crl, CURLOPT_REFERER, $referrer);
+	}
 	curl_setopt($crl,CURLOPT_USERAGENT,$useragent);
 	curl_setopt($crl,CURLOPT_URL,$url);
 	curl_setopt($crl,CURLOPT_RETURNTRANSFER,true);
-	curl_setopt($crl,CURLOPT_CONNECTTIMEOUT,5);
 	curl_setopt($crl,CURLOPT_FAILONERROR,true);
-	curl_setopt($crl,CURLOPT_TIMEOUT,5);
-	$ret = trim(curl_exec($crl));
+	if($cookie_file){
+		curl_setopt($crl, CURLOPT_COOKIEJAR, $cookie_file);
+		curl_setopt($crl, CURLOPT_COOKIEFILE, $cookie_file);
+	}
+	if($post_data){
+		curl_setopt($crl, CURLOPT_POST, 1); // set POST method
+		curl_setopt($crl, CURLOPT_POSTFIELDS, cisf_url_encode_array($post_data)); // add POST fields
+	}
 
+	$ret = trim(curl_exec($crl));
+	if(curl_error($crl) && $debug)
+	{
+		print ' '.curl_error($crl).' ';
+	}
+
+	//if debug is turned on, return the error number if the page fails.
 	if($ret === false)
 	{
 		$ret = '';
@@ -490,132 +556,31 @@ function get_url_contents($url)
 	return $ret;
 }
 
-function html2text($badStr)
-{
-	//remove PHP if it exists
-	while(substr_count( $badStr, '<'.'?' ) && substr_count( $badStr, '?'.'>' ) && strpos( $badStr, '?'.'>', strpos( $badStr, '<'.'?' ) ) > strpos( $badStr, '<'.'?' ))
-	{
-		$badStr = substr( $badStr, 0, strpos( $badStr, '<'.'?' ) ) . substr( $badStr, strpos( $badStr, '?'.'>', strpos( $badStr, '<'.'?' ) ) + 2 );
-	}
+// Abstract file get content to support older versions of php
+function cisf_file_get_contents($file){
 
-	//remove comments
-	while( substr_count( $badStr, '<!--' ) && substr_count( $badStr, '-->' ) && strpos( $badStr, '-->', strpos( $badStr, '<!--' ) ) > strpos( $badStr, '<!--' ) )
-	{
-		$badStr = substr( $badStr, 0, strpos( $badStr, '<!--' ) ) . substr( $badStr, strpos( $badStr, '-->', strpos( $badStr, '<!--' ) ) + 3 );
-	}
-
-	//now make sure all HTML tags are correctly written (> not in between quotes)
-	for( $x = 0, $goodStr = '', $is_open_tb = false, $is_open_sq = false, $is_open_dq = false; isset($badStr{$x}) && strlen( $chr = $badStr{$x} ); $x++ )
-	{
-		//take each letter in turn and check if that character is permitted there
-		switch($chr)
-		{
-			case '<':
-			    if( !$is_open_tb && strtolower( substr( $badStr, $x + 1, 5 ) ) == 'style' )
-					{
-			        $badStr = substr( $badStr, 0, $x ) . substr( $badStr, strpos( strtolower( $badStr ), '</style>', $x ) + 7 ); $chr = '';
-			    }
-					elseif( !$is_open_tb && strtolower( substr( $badStr, $x + 1, 6 ) ) == 'script' )
-					{
-			        $badStr = substr( $badStr, 0, $x ) . substr( $badStr, strpos( strtolower( $badStr ), '</script>', $x ) + 8 ); $chr = '';
-			    }
-					elseif( !$is_open_tb )
-					{
-						$is_open_tb = true;
-					}
-					else
-					{
-						$chr = '&lt;';
-					}
-			    break;
-			case '>':
-			    if( !$is_open_tb || $is_open_dq || $is_open_sq )
-					{
-						$chr = '&gt;';
-					}
-					else
-					{
-						$is_open_tb = false;
-					}
-			    break;
-			case '"':
-			    if( $is_open_tb && !$is_open_dq && !$is_open_sq )
-					{
-						$is_open_dq = true;
-					}
-			    elseif( $is_open_tb && $is_open_dq && !$is_open_sq )
-					{
-						$is_open_dq = false;
-					}
-			    else
-					{
-						$chr = '&quot;';
-					}
-			    break;
-			case "'":
-			    if( $is_open_tb && !$is_open_dq && !$is_open_sq )
-					{
-						$is_open_sq = true;
-					}
-			    elseif( $is_open_tb && !$is_open_dq && $is_open_sq )
-					{
-						$is_open_sq = false;
-					}
+	if(function_exists('file_get_contents')){
+		return file_get_contents($file);
+	} else {
+		$contents = '';
+		$fp = @fopen($file,"rb");
+		while (!feof($fp)) {
+			$contents .= fread($fp, 16384);
 		}
-		$goodStr .= $chr;
+		fclose($fp);
+		return $contents;
 	}
-
-	//now that the page is valid (I hope) for strip_tags, strip all unwanted tags
-	$goodStr = strip_tags( $goodStr, '<title><hr><h1><h2><h3><h4><h5><h6><div><p><pre><sup><ul><ol><br><dl><dt><table><caption><tr><li><dd><th><td><a><area><img><form><input><textarea><button><select><option>' );
-
-	//strip extra whitespace except between <pre> and <textarea> tags
-	$badStr = preg_split( "/<\/?pre[^>]*>/i", $goodStr );
-	for( $x = 0; isset( $badStr[$x] ) && is_string( $badStr[$x] ); $x++ )
-	{
-		if( $x % 2 )
-		{
-			$badStr[$x] = '<pre>'.$badStr[$x].'</pre>';
-		}
-		else
-		{
-			$goodStr = preg_split( "/<\/?textarea[^>]*>/i", $badStr[$x] );
-			for( $z = 0; isset( $goodStr[$z] ) && is_string( $goodStr[$z] ); $z++ )
-			{
-				if($z % 2)
-				{
-					$goodStr[$z] = '<textarea>'.$goodStr[$z].'</textarea>';
-				}
-				else
-				{
-			  	$goodStr[$z] = preg_replace( "/\s+/", ' ', $goodStr[$z] );
-				}
-			}
-			$badStr[$x] = implode('',$goodStr);
-		}
-	}
-	$goodStr = implode('',$badStr);
-	//remove all options from select inputs
-	$goodStr = preg_replace( "/<option[^>]*>[^<]*/i", '', $goodStr );
-	//replace all tags with their text equivalents
-	$goodStr = preg_replace( "/<(\/title|hr)[^>]*>/i", "\n          --------------------\n", $goodStr );
-	$goodStr = preg_replace( "/<(h|div|p)[^>]*>/i", "\n\n", $goodStr );
-	$goodStr = preg_replace( "/<sup[^>]*>/i", '^', $goodStr );
-	$goodStr = preg_replace( "/<(ul|ol|br|dl|dt|table|caption|\/textarea|tr[^>]*>\s*<(td|th))[^>]*>/i", "\n", $goodStr );
-	$goodStr = preg_replace( "/<li[^>]*>/i", "\n· ", $goodStr );
-	$goodStr = preg_replace( "/<dd[^>]*>/i", "\n\t", $goodStr );
-	$goodStr = preg_replace( "/<(th|td)[^>]*>/i", "\t", $goodStr );
-	$goodStr = preg_replace( "/<a[^>]* href=(\"((?!\"|#|javascript:)[^\"#]*)(\"|#)|'((?!'|#|javascript:)[^'#]*)('|#)|((?!'|\"|>|#|javascript:)[^#\"'> ]*))[^>]*>/i", "[LINK: $2$4$6] ", $goodStr );
-	$goodStr = preg_replace( "/<img[^>]* alt=(\"([^\"]+)\"|'([^']+)'|([^\"'> ]+))[^>]*>/i", "[IMAGE: $2$3$4] ", $goodStr );
-	$goodStr = preg_replace( "/<form[^>]* action=(\"([^\"]+)\"|'([^']+)'|([^\"'> ]+))[^>]*>/i", "\n[FORM: $2$3$4] ", $goodStr );
-	$goodStr = preg_replace( "/<(input|textarea|button|select)[^>]*>/i", "[INPUT] ", $goodStr );
-	//strip all remaining tags (mostly closing tags)
-	$goodStr = strip_tags( $goodStr );
-	//convert HTML entities
-	$goodStr = strtr( $goodStr, array_flip( get_html_translation_table( HTML_ENTITIES ) ) );
-	preg_replace( "/&#(\d+);/me", "chr('$1')", $goodStr );
-	//wordwrap
-	$goodStr = wordwrap( $goodStr );
-	//make sure there are no more than 3 linebreaks in a row and trim whitespace
-	return preg_replace( "/^\n*|\n*$/", '', preg_replace( "/[ \t]+(\n|$)/", "$1", preg_replace( "/\n(\s*\n){2}/", "\n\n\n", preg_replace( "/\r\n?|\f/", "\n", str_replace( chr(160), ' ', $goodStr ) ) ) ) );
 }
+
+// Abstract md5_file function for older versions of php
+function cisf_md5_file($file, $raw = false){
+
+	if(function_exists('md5_file')){
+		return md5_file($file, $raw);
+	} else {
+		$contents = cisf_file_get_contents($file);
+		return md5($contents, $raw);
+	}
+}
+
 ?>
