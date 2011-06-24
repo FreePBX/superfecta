@@ -74,7 +74,6 @@ $update_site_unavailable = false;
 // Load files available on live update
 if(($check_updates == 'on') || ($update_file != ''))
 {
-	//https://raw.github.com/tm1000/Caller-ID-Superfecta/v3.x/bin/source-list.xml
 	$update_array = array();
 	$source_list = superfecta_xml2array2(UPDATE_SERVER.'source-list.xml');
 	foreach($source_list['data']['source'] as $sources) {
@@ -85,63 +84,6 @@ if(($check_updates == 'on') || ($update_file != ''))
 			$update_array[$this_source_name]['md5'] = $sources['md5'];
 		}
 	}
-	
-	echo "<pre>";
-	print_r($update_array);
-	/* old
-	
-	$dst_offset = (60*60); // We need to offset by an hour to compensate for a possible DST.  This should be set to zero
-			       // if we know the update server is giving us UTC.  When using PST, we dont know if the file was created
-			       // In PST, or PDT -- so we subtract an hour or 2 to make sure.  Not ideal, but the MD5 check should
-			       // Help avoid any unnecessary updates.		
-	$updateserver_timezone = "PST"; // Would be nice if this could by UTC.  See above.
-
-	// Temporary cookie file
-	$temp_cookie_file = false;
-	//$temp_cookie_file = tempnam("/tmp", "CURLCOOKIE");
-
-	// Load the login page to get cookies set and to get authentication key
-	$login_url = "http://projects.colsolgrp.net/login";
-	$file_url = "http://projects.colsolgrp.net/projects/list_files/superfecta";
-	//$update_content = get_url_contents($login_url,false,$file_url,$temp_cookie_file);
-	//$pattern = "/<input name=\"authenticity_token\" type=\"hidden\" value=\"([^\"]+)\"/";
-	//if(preg_match($pattern, $update_content, $match)){
-		//$authenticity_token = $match[1];
-		//$post_array = array(
-		//	"authenticity_token" => $authenticity_token,
-		//	"back_url" => urlencode($file_url),
-		//	"username" => "superfectaupdates",
-		//	"password" => "update_password"
-		//);
-		// Login
-		//$update_content = get_url_contents($login_url,$post_array,$login_url,$temp_cookie_file);
-		// Get the file list
-		$update_content = get_url_contents($file_url,false,$login_url,$temp_cookie_file);
-		$file_pattern = "/<td class=\"filename\"><a href=\"(\/attachments\/download\/[^\"]+)\" title=\"[^\"]*?\">([^<]+)\<\/a>/";
-		$date_pattern = "/<td class=\"created_on\">([^<]+)<\/td>/";
-		$md5_pattern = "/<td class=\"digest\">([^<]+)<\/td>/";
-		if(preg_match_all($file_pattern, $update_content, $file_match) && preg_match_all($date_pattern, $update_content, $date_match) && preg_match_all($md5_pattern, $update_content, $md5_match)){
-			foreach($file_match[1] as $key => $value){
-				if((substr($file_match[2][$key],0,7)=='source-') && (substr($file_match[2][$key],strlen($file_match[2][$key])-4)=='.php')){
-					$this_source_name = substr(substr(trim($file_match[2][$key]),7),0,-4);
-					$update_array[$this_source_name]['link'] = "http://projects.colsolgrp.net".trim($file_match[1][$key]);
-					$update_array[$this_source_name]['date'] = strtotime(trim($date_match[1][$key] . " " . $updateserver_timezone ));
-					$update_array[$this_source_name]['md5'] = trim($md5_match[1][$key]);
-				}
-			}
-		}else{
-			//site un-available, give error.
-			$update_site_unavailable = true;
-			$check_updates = 'off';
-		}
-	//}else{
-	//	//site un-available, give error.
-	//	$update_site_unavailable = true;
-	//	$check_updates = 'off';
-	//}
-	// Clean up the temp cookie file
-	//@unlink($temp_cookie_file);
-	*/
 }
 
 //process updates from online server first
