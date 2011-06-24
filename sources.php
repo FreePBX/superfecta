@@ -368,7 +368,7 @@ foreach($src_print as $val)
 				<a href="javascript:document.forms.CIDSources.delete_file.value=\''.$val['name'].'\';document.forms.CIDSources.submit();"><img src="modules/superfecta/delete.gif" border="0" alt="Delete Button" title="Delete This Source File"></a>
 			</td>
 			<td>';
-	if(is_file("bin/old_source-".$val['name'].".php"))
+	if(is_file("bin/old_source-".$val['name'].".module"))
 	{
 		print '<a href="javascript:document.forms.CIDSources.revert_file.value=\''.$val['name'].'\';document.forms.CIDSources.submit();"><img src="modules/superfecta/revert.gif" border="0" alt="Revert Button" title="Revert to previous version of this file."></a>';
 	}
@@ -389,7 +389,7 @@ foreach($src_print as $val)
 	{
 		if(key_exists($val['name'],$update_array))
 		{
-			$this_last_update = filemtime("bin/source-".$val['name'].".php");
+			$this_last_update = filemtime("bin/source-".$val['name'].".module");
 			if($update_array[$val['name']]['date'] > $this_last_update)
 			{
 				print ' <a href="javascript:document.forms.CIDSources.update_file.value=\''.$update_array[$val['name']]['link'].'\';document.forms.CIDSources.submit();">update available</a>';
