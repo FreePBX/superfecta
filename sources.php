@@ -73,6 +73,7 @@ $update_site_unavailable = false;
 // Load files available on live update
 if(($check_updates == 'on') || ($update_file != ''))
 {
+	/* old
 	$update_array = array();
 	$dst_offset = (60*60); // We need to offset by an hour to compensate for a possible DST.  This should be set to zero
 			       // if we know the update server is giving us UTC.  When using PST, we dont know if the file was created
@@ -125,6 +126,7 @@ if(($check_updates == 'on') || ($update_file != ''))
 	//}
 	// Clean up the temp cookie file
 	//@unlink($temp_cookie_file);
+	*/
 }
 
 //process updates from online server first
