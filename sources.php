@@ -71,50 +71,18 @@ $src_cnt = 1;
 $src_files = array();
 $update_site_unavailable = false;
 
-// Load files available on live update
-if(($check_updates == 'on') || ($update_file != ''))
-{
-	$update_array = array();
-	$source_list = superfecta_xml2array2(UPDATE_SERVER.'source-list.xml');
-	foreach($source_list['data']['source'] as $sources) {
-		if(file_exists('bin/'.$sources['name'])) {
-			$this_source_name = substr(substr(trim($sources['name']),7),0,-7);
-			$update_array[$this_source_name]['link'] = UPDATE_SERVER.$sources['name'];
-			$update_array[$this_source_name]['date'] = $sources['modified'];
-			$update_array[$this_source_name]['md5'] = $sources['md5'];
-		}
-	}
-}
-
 //process updates from online server first
 if($update_file != '')
 {
 	$parsed_url = parse_url($update_file);
 	$parsed_path = pathinfo($parsed_url['path']);
-	$update_source_name = $this_source_name = substr(substr(trim($parsed_path['basename']),7),0,-4);
-	$local_destination_file = "bin/".$parsed_path['basename'];
 
 	//rename and keep old file if it exists
-	if(is_file($local_destination_file))
+	if(is_file("bin/".$parsed_path['basename']))
 	{
-		rename($local_destination_file,"bin/old_".$parsed_path['basename']);
+		rename("bin/".$parsed_path['basename'],"bin/old_".$parsed_path['basename']);
 	}
-	copy($update_file,$local_destination_file);
-	if(cisf_md5_file($local_destination_file) != ($update_array[$update_source_name]['md5'])){
-		echo "Warning: Downloaded file '" . $parsed_path['basename'] . "' did not pass MD5 verification.";
-		if(is_file("bin/old_".$parsed_path['basename'])){
-			echo " Reverting update.";
-			$revert_file = $update_source_name;
-		}else{
-			echo " Update aborted.";
-			$delete_file = $update_source_name;
-		}
-		echo "<br>\n<br>\n";
-	}else{
-		//echo "Updated $update_source_name successfully.<br>\n<br>\n";
-		// Reset the date to the correct one
-		touch($local_destination_file, $update_array[$update_source_name]['date']);
-	}
+	copy($update_file,"bin/".$parsed_path['basename']);
 }
 
 //delete file if requested.
@@ -225,6 +193,27 @@ foreach($src_files as $key=>$val)
 }
 
 ksort($src_print);
+
+if($check_updates == 'on')
+{
+	$update_array = array();
+	// Load files available on live update
+	if(($check_updates == 'on') || ($update_file != ''))
+	{
+		$update_array = array();
+		$source_list = superfecta_xml2array2(UPDATE_SERVER.'source-list.xml');
+		foreach($source_list['data']['source'] as $sources) {
+			$this_source_name = substr(substr(trim($sources['name']),7),0,-7);
+			$update_array[$this_source_name]['link'] = UPDATE_SERVER.$sources['name'];
+			$update_array[$this_source_name]['date'] = $sources['modified'];
+			$update_array[$this_source_name]['md5'] = $sources['md5'];
+		}
+		/*
+		$update_site_unavailable = true;
+		$check_updates = 'off';
+		*/
+	}	
+}
 
 print '<input type="hidden" name="src_up" value="">
 		<input type="hidden" name="src_down" value="">
@@ -401,14 +390,9 @@ foreach($src_print as $val)
 		if(key_exists($val['name'],$update_array))
 		{
 			$this_last_update = filemtime("bin/source-".$val['name'].".php");
-			$this_md5 = cisf_md5_file("bin/source-".$val['name'].".php");
-			if(($update_array[$val['name']]['md5'] != $this_md5)  && (($update_array[$val['name']]['date']+$dst_offset) > $this_last_update))
+			if($update_array[$val['name']]['date'] > $this_last_update)
 			{
 				print ' <a href="javascript:document.forms.CIDSources.update_file.value=\''.$update_array[$val['name']]['link'].'\';document.forms.CIDSources.submit();">update available</a>';
-			}
-			elseif(($update_array[$val['name']]['md5'] != $this_md5)  && (($update_array[$val['name']]['date']+$dst_offset) < $this_last_update))
-			{
-				print ' <a href="javascript:document.forms.CIDSources.update_file.value=\''.$update_array[$val['name']]['link'].'\';document.forms.CIDSources.submit();">downgrade available</a>';
 			}
 		}
 		else
@@ -427,13 +411,18 @@ foreach($src_print as $val)
 if($check_updates == 'on')
 {
 	$options_list = '';
-	$src_key_list = array();
-	foreach($src_print as $val2){
-		$src_key_list[$val2['name']] = 'installed';
-	}
 	foreach($update_array as $key=>$val)
 	{
-		if(!isset($src_key_list[$key]))
+		$in_array = false;
+		foreach($src_print as $val2)
+		{
+			if($val2['name'] == $key)
+			{
+				$in_array = true;
+				break;
+			}
+		}
+		if(!$in_array)
 		{
 			$options_list .= '<OPTION value="'.$val['link'].'">'.str_replace('_',' ',$key).'</OPTION>';
 		}
@@ -442,17 +431,19 @@ if($check_updates == 'on')
 	if(!empty($options_list))
 	{
 		print '<tr>
-			<td>
-			<a href="javascript:document.forms.CIDSources.update_file.value=document.forms.CIDSources.add_source_file.value;document.forms.CIDSources.submit();"><img src="images/scrollup.gif" border="0" alt="Up Arrow" title="Install Source"></a>
-			</td>
-	    		<td>&nbsp;</td>
-	    		<td>&nbsp;</td>
-			<td>&nbsp;</td>
-		    	<td colspan="3">
+				<td>
+					<a href="javascript:document.forms.CIDSources.update_file.value=document.forms.CIDSources.add_source_file.value;document.forms.CIDSources.submit();"><img src="images/scrollup.gif" border="0" alt="Up Arrow" title="Move Up List"></a>
+				</td>
+	    	<td>&nbsp;</td>
+	    	<td>&nbsp;</td>
+				<td>&nbsp;</td>
+		    <td>
 		    	<SELECT name="add_source_file">
-				<OPTION value="">Select source to install</OPTION>'.$options_list.'
-			</SELECT> <- More sources available
-			</td>
+						<OPTION value="">Select One</OPTION>'.$options_list.'
+					</SELECT>
+				</td>
+		    <td>&nbsp;</td>
+		    <td>&nbsp;</td>
 		  </tr>';
 	}
 }
@@ -462,13 +453,162 @@ print '</table>
 $sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('$scheme','sources','$enabled_src_list')";
 $db->query($sql);
 
-function cisf_url_encode_array($arr){
-	$string = "";
-	foreach ($arr as $key => $value) {
-		$string .= $key . "=" . urlencode($value) . "&";
+/**
+Returns the content of a URL.
+*/
+function get_url_contents($url)
+{
+	$crl = curl_init();
+	$useragent="Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.1) Gecko/20061204 Firefox/2.0.0.1";
+	curl_setopt($crl,CURLOPT_USERAGENT,$useragent);
+	curl_setopt($crl,CURLOPT_URL,$url);
+	curl_setopt($crl,CURLOPT_RETURNTRANSFER,true);
+	curl_setopt($crl,CURLOPT_CONNECTTIMEOUT,5);
+	curl_setopt($crl,CURLOPT_FAILONERROR,true);
+	curl_setopt($crl,CURLOPT_TIMEOUT,5);
+	$ret = trim(curl_exec($crl));
+
+	if($ret === false)
+	{
+		$ret = '';
 	}
-	trim($string,"&");
-	return $string;
+	//something in curl is causing a return of "1" if the page being called is valid, but completely empty.
+	//to get rid of this, I'm doing a nasty hack of just killing results of "1".
+	if($ret == '1')
+	{
+		$ret = '';
+	}
+	curl_close($crl);
+	return $ret;
+}
+
+function html2text($badStr)
+{
+	//remove PHP if it exists
+	while(substr_count( $badStr, '<'.'?' ) && substr_count( $badStr, '?'.'>' ) && strpos( $badStr, '?'.'>', strpos( $badStr, '<'.'?' ) ) > strpos( $badStr, '<'.'?' ))
+	{
+		$badStr = substr( $badStr, 0, strpos( $badStr, '<'.'?' ) ) . substr( $badStr, strpos( $badStr, '?'.'>', strpos( $badStr, '<'.'?' ) ) + 2 );
+	}
+
+	//remove comments
+	while( substr_count( $badStr, '<!--' ) && substr_count( $badStr, '-->' ) && strpos( $badStr, '-->', strpos( $badStr, '<!--' ) ) > strpos( $badStr, '<!--' ) )
+	{
+		$badStr = substr( $badStr, 0, strpos( $badStr, '<!--' ) ) . substr( $badStr, strpos( $badStr, '-->', strpos( $badStr, '<!--' ) ) + 3 );
+	}
+
+	//now make sure all HTML tags are correctly written (> not in between quotes)
+	for( $x = 0, $goodStr = '', $is_open_tb = false, $is_open_sq = false, $is_open_dq = false; isset($badStr{$x}) && strlen( $chr = $badStr{$x} ); $x++ )
+	{
+		//take each letter in turn and check if that character is permitted there
+		switch($chr)
+		{
+			case '<':
+			    if( !$is_open_tb && strtolower( substr( $badStr, $x + 1, 5 ) ) == 'style' )
+					{
+			        $badStr = substr( $badStr, 0, $x ) . substr( $badStr, strpos( strtolower( $badStr ), '</style>', $x ) + 7 ); $chr = '';
+			    }
+					elseif( !$is_open_tb && strtolower( substr( $badStr, $x + 1, 6 ) ) == 'script' )
+					{
+			        $badStr = substr( $badStr, 0, $x ) . substr( $badStr, strpos( strtolower( $badStr ), '</script>', $x ) + 8 ); $chr = '';
+			    }
+					elseif( !$is_open_tb )
+					{
+						$is_open_tb = true;
+					}
+					else
+					{
+						$chr = '&lt;';
+					}
+			    break;
+			case '>':
+			    if( !$is_open_tb || $is_open_dq || $is_open_sq )
+					{
+						$chr = '&gt;';
+					}
+					else
+					{
+						$is_open_tb = false;
+					}
+			    break;
+			case '"':
+			    if( $is_open_tb && !$is_open_dq && !$is_open_sq )
+					{
+						$is_open_dq = true;
+					}
+			    elseif( $is_open_tb && $is_open_dq && !$is_open_sq )
+					{
+						$is_open_dq = false;
+					}
+			    else
+					{
+						$chr = '&quot;';
+					}
+			    break;
+			case "'":
+			    if( $is_open_tb && !$is_open_dq && !$is_open_sq )
+					{
+						$is_open_sq = true;
+					}
+			    elseif( $is_open_tb && !$is_open_dq && $is_open_sq )
+					{
+						$is_open_sq = false;
+					}
+		}
+		$goodStr .= $chr;
+	}
+
+	//now that the page is valid (I hope) for strip_tags, strip all unwanted tags
+	$goodStr = strip_tags( $goodStr, '<title><hr><h1><h2><h3><h4><h5><h6><div><p><pre><sup><ul><ol><br><dl><dt><table><caption><tr><li><dd><th><td><a><area><img><form><input><textarea><button><select><option>' );
+
+	//strip extra whitespace except between <pre> and <textarea> tags
+	$badStr = preg_split( "/<\/?pre[^>]*>/i", $goodStr );
+	for( $x = 0; isset( $badStr[$x] ) && is_string( $badStr[$x] ); $x++ )
+	{
+		if( $x % 2 )
+		{
+			$badStr[$x] = '<pre>'.$badStr[$x].'</pre>';
+		}
+		else
+		{
+			$goodStr = preg_split( "/<\/?textarea[^>]*>/i", $badStr[$x] );
+			for( $z = 0; isset( $goodStr[$z] ) && is_string( $goodStr[$z] ); $z++ )
+			{
+				if($z % 2)
+				{
+					$goodStr[$z] = '<textarea>'.$goodStr[$z].'</textarea>';
+				}
+				else
+				{
+			  	$goodStr[$z] = preg_replace( "/\s+/", ' ', $goodStr[$z] );
+				}
+			}
+			$badStr[$x] = implode('',$goodStr);
+		}
+	}
+	$goodStr = implode('',$badStr);
+	//remove all options from select inputs
+	$goodStr = preg_replace( "/<option[^>]*>[^<]*/i", '', $goodStr );
+	//replace all tags with their text equivalents
+	$goodStr = preg_replace( "/<(\/title|hr)[^>]*>/i", "\n          --------------------\n", $goodStr );
+	$goodStr = preg_replace( "/<(h|div|p)[^>]*>/i", "\n\n", $goodStr );
+	$goodStr = preg_replace( "/<sup[^>]*>/i", '^', $goodStr );
+	$goodStr = preg_replace( "/<(ul|ol|br|dl|dt|table|caption|\/textarea|tr[^>]*>\s*<(td|th))[^>]*>/i", "\n", $goodStr );
+	$goodStr = preg_replace( "/<li[^>]*>/i", "\n� ", $goodStr );
+	$goodStr = preg_replace( "/<dd[^>]*>/i", "\n\t", $goodStr );
+	$goodStr = preg_replace( "/<(th|td)[^>]*>/i", "\t", $goodStr );
+	$goodStr = preg_replace( "/<a[^>]* href=(\"((?!\"|#|javascript:)[^\"#]*)(\"|#)|'((?!'|#|javascript:)[^'#]*)('|#)|((?!'|\"|>|#|javascript:)[^#\"'> ]*))[^>]*>/i", "[LINK: $2$4$6] ", $goodStr );
+	$goodStr = preg_replace( "/<img[^>]* alt=(\"([^\"]+)\"|'([^']+)'|([^\"'> ]+))[^>]*>/i", "[IMAGE: $2$3$4] ", $goodStr );
+	$goodStr = preg_replace( "/<form[^>]* action=(\"([^\"]+)\"|'([^']+)'|([^\"'> ]+))[^>]*>/i", "\n[FORM: $2$3$4] ", $goodStr );
+	$goodStr = preg_replace( "/<(input|textarea|button|select)[^>]*>/i", "[INPUT] ", $goodStr );
+	//strip all remaining tags (mostly closing tags)
+	$goodStr = strip_tags( $goodStr );
+	//convert HTML entities
+	$goodStr = strtr( $goodStr, array_flip( get_html_translation_table( HTML_ENTITIES ) ) );
+	preg_replace( "/&#(\d+);/me", "chr('$1')", $goodStr );
+	//wordwrap
+	$goodStr = wordwrap( $goodStr );
+	//make sure there are no more than 3 linebreaks in a row and trim whitespace
+	return preg_replace( "/^\n*|\n*$/", '', preg_replace( "/[ \t]+(\n|$)/", "$1", preg_replace( "/\n(\s*\n){2}/", "\n\n\n", preg_replace( "/\r\n?|\f/", "\n", str_replace( chr(160), ' ', $goodStr ) ) ) ) );
 }
 
 /**
@@ -620,79 +760,4 @@ function superfecta_xml2array2($url, $get_attributes = 1, $priority = 'tag')
 	}
 	return ($xml_array);
 }
-
-/**
-Returns the content of a URL.
-*/
-function get_url_contents($url,$post_data=false,$referrer=false,$cookie_file=false,$useragent=false)
-{
-	$crl = curl_init();
-	if(!$useragent){
-		// Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.2.6) Gecko/20100625 Firefox/3.6.6 ( .NET CLR 3.5.30729)
-		$useragent="Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.1) Gecko/20061204 Firefox/2.0.0.1";
-	}
-	if($referrer){
-		curl_setopt ($crl, CURLOPT_REFERER, $referrer);
-	}
-	curl_setopt($crl,CURLOPT_USERAGENT,$useragent);
-	curl_setopt($crl,CURLOPT_URL,$url);
-	curl_setopt($crl,CURLOPT_RETURNTRANSFER,true);
-	curl_setopt($crl,CURLOPT_FAILONERROR,true);
-	if($cookie_file){
-		curl_setopt($crl, CURLOPT_COOKIEJAR, $cookie_file);
-		curl_setopt($crl, CURLOPT_COOKIEFILE, $cookie_file);
-	}
-	if($post_data){
-		curl_setopt($crl, CURLOPT_POST, 1); // set POST method
-		curl_setopt($crl, CURLOPT_POSTFIELDS, cisf_url_encode_array($post_data)); // add POST fields
-	}
-
-	$ret = trim(curl_exec($crl));
-	if(curl_error($crl) && $debug)
-	{
-		print ' '.curl_error($crl).' ';
-	}
-
-	//if debug is turned on, return the error number if the page fails.
-	if($ret === false)
-	{
-		$ret = '';
-	}
-	//something in curl is causing a return of "1" if the page being called is valid, but completely empty.
-	//to get rid of this, I'm doing a nasty hack of just killing results of "1".
-	if($ret == '1')
-	{
-		$ret = '';
-	}
-	curl_close($crl);
-	return $ret;
-}
-
-// Abstract file get content to support older versions of php
-function cisf_file_get_contents($file){
-
-	if(function_exists('file_get_contents')){
-		return file_get_contents($file);
-	} else {
-		$contents = '';
-		$fp = @fopen($file,"rb");
-		while (!feof($fp)) {
-			$contents .= fread($fp, 16384);
-		}
-		fclose($fp);
-		return $contents;
-	}
-}
-
-// Abstract md5_file function for older versions of php
-function cisf_md5_file($file, $raw = false){
-
-	if(function_exists('md5_file')){
-		return md5_file($file, $raw);
-	} else {
-		$contents = cisf_file_get_contents($file);
-		return md5($contents, $raw);
-	}
-}
-
 ?>
