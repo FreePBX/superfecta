@@ -4,7 +4,7 @@ class Google_Maps_UK extends superfecta_base {
 	function settings() {
 		//configuration / display parameters
 		//The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
-		$source_desc = "http://maps.google.co.uk - 	These listings include business data for the UK.<br><br>This data source requires Superfecta Module version 2.2.4 or higher.";
+		$source_desc = "http://maps.google.co.uk - 	These listings include business data for the UK.<br><br>This data source requires Superfecta Module version 3.0 or higher.";
 		$settings['desc'] = $source_desc;
 		return($settings);
 	}
