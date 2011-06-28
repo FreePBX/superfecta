@@ -169,8 +169,13 @@ function superfecta_setConfig()
 		sql($sql);
 		$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('base_".$scheme_name."','Curl_Timeout','$Curl_Timeout')";
 		sql($sql);
-		$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('base_".$scheme_name."','enable_multifecta','$enable_multifecta')";
-		sql($sql);
+		if($enable_multifecta == 'Y') {
+			$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('base_".$scheme_name."','enable_multifecta','$enable_multifecta')";
+			sql($sql);
+		} else {
+			$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('base_".$scheme_name."','enable_multifecta',NULL)";
+			sql($sql);	
+		}
 		$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('base_".$scheme_name."','multifecta_timeout','$multifecta_timeout')";
 		sql($sql);
 		$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('base_".$scheme_name."','SPAM_Text','$SPAM_Text')";
