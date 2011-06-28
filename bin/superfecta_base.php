@@ -4,6 +4,22 @@ class superfecta_base {
 	public $thenumber;
 	public $db; //The database
 	
+	function post_processing($cache_found,$winning_source,$first_caller_id,$run_param,$thenumber) {
+		return($thenumber);
+	}
+
+	function get_caller_id($thenumber,$run_param=array()) {
+		//Is this the best way to do this?
+		$caller_id = NULL; 
+		return($caller_id);
+	}
+
+	function settings() {
+		//Is this the best way to do this?
+		$settings = array(); 
+		return($settings);
+	}
+
 	/**
 	Search an array of area codes against phone number to find one that matches.
 	Return an array with the area code, area name and remaining phone number
