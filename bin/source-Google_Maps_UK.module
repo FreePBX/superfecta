@@ -69,7 +69,4 @@ class Google_Maps_UK extends superfecta_base {
 		}
 		return($caller_id);
 	}
-		
-	function post_processing($cache_found,$winning_source,$first_caller_id,$run_param,$thenumber) {
-	}
 }
