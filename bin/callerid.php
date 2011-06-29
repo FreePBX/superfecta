@@ -722,13 +722,13 @@ if($superfecta->debug)
 	$end_time_whole = ($end_time_whole == 0) ? mctime_float() : $end_time_whole;
 	print "<br>\nresult <img src='images/scrollup.gif'> took ".number_format(($end_time_whole-$start_time_whole),4)." seconds.</b>";
 }
-
 if($superfecta->multifecta_id){
 	$multifecta_child_end_time = mctime_float();
 	$query = "UPDATE superfecta_mf_child
 			SET timestamp_end = ".$db->quoteSmart($multifecta_child_end_time)."
-		  	WHERE superfecta_mf_child_id = ".$db->quoteSmart($multifecta_id)."
+		  	WHERE superfecta_mf_child_id = ".$db->quoteSmart($superfecta->multifecta_id)."
 			";
+	file_put_contents('/var/www/html/admin/modules/superfecta/end-'.$superfecta->multifecta_id,$query);
 	$res = $superfecta->db->query($query);
 	if (DB::IsError($res)){
 		die("Unable to update child end time: " . $res->getMessage() .  "<br>");

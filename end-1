@@ -1,0 +1,4 @@
+UPDATE superfecta_mf_child
+			SET timestamp_end = '1309343042.9258'
+		  	WHERE superfecta_mf_child_id = '1'
+			
