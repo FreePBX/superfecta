@@ -317,4 +317,9 @@ if ((function_exists('cidlookup_add'))&&(function_exists('cidlookup_edit'))) {
 
 }
 
-?>
+$sql = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'superfecta_to_incoming' AND COLUMN_NAME = 'scheme'";
+$schemes = $db->getAll($sql,array(),DB_FETCHMODE_ASSOC);
+if(!in_array('scheme',$schemes[0])) {
+	$sql = 'ALTER TABLE `superfecta_to_incoming` ADD `scheme` VARCHAR(50) NOT NULL;';
+	$db->query($sql);
+}

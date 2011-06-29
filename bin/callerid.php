@@ -29,6 +29,13 @@ if(($superfecta->thenumber_orig == '') && isset($argv[1]) && ($argv[1] != '-mult
 	$superfecta->multifecta_id = $argv[2];
 }
 
+if(($superfecta->scheme == '') AND (isset($argv[3]))) {
+	$superfecta->scheme = $argv[3];
+}
+
+file_put_contents('/var/www/html/admin/modules/superfecta/file-superfecta-'.$superfecta->multifecta_id, $superfecta->scheme);
+
+
 if($superfecta->debug){
 	// If debugging, report all errors
 	error_reporting(-1);
@@ -385,7 +392,7 @@ else
 						if($superfecta->debug){
 							print "Spawning child $superfecta->superfecta_mf_child_id: $source_name <br>\n";
 						}
-						exec('/usr/bin/php ' . (__FILE__) . ' -multifecta_id ' . $superfecta->superfecta_mf_child_id . ' > /dev/null 2>&1 &');
+						exec('/usr/bin/php ' . (__FILE__) . ' -multifecta_id ' . $superfecta->superfecta_mf_child_id . ' '.$superfecta->scheme.' > /dev/null 2>&1 &');
 						//exec('/usr/bin/php ' . (__FILE__) . ' -multifecta_id ' . $superfecta->superfecta_mf_child_id . ' > log'.$superfecta->superfecta_mf_child_id.' 2>&1 &');
 					}else{
 						die("Unable to get child record id<br>");

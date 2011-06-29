@@ -1,6 +1,9 @@
 <?php
 
 function superfecta_hook_core($viewing_itemid, $target_menuid) {
+	global $db;
+	$sql = "SELECT * FROM superfectaconfig WHERE field ='order' ORDER BY value ASC";
+	$schemes = $db->getAll($sql,array(),DB_FETCHMODE_ASSOC);
 	$html = '';
 	if ($target_menuid == 'did')	{
 		if(superfecta_did_get($viewing_itemid)){
@@ -15,9 +18,20 @@ function superfecta_hook_core($viewing_itemid, $target_menuid) {
 		$html.='<td><input type="checkbox" name="enable_superfecta" value="yes" '.$checked_status.'></td></tr>';
 		
 		$html.='<tr><td><a href="#" class="info">'._('Scheme').'<span>'._("Setup Schemes in CID Superfecta section").'</span></a>:</td>';
-		$html.='<td><select>
-		  <option value="base_Default" disabled>Default</option>
-		</select>
+		$html.='<td><select name="superfecta_scheme">';
+		$info = explode("/",$viewing_itemid);
+		$sql = "SELECT scheme FROM superfecta_to_incoming WHERE extension = '".$info[0]."'";
+		$scheme = $db->getOne($sql);
+		foreach($schemes as $data) {
+			if($scheme == $data['source']) {
+				$selected = 'selected';
+			} else {
+				$selected = '';
+			}
+			$name = explode("_",$data['source']);
+			$html .= '<option value="'.$data['source'].'" '.$selected.'>'.$name[1].'</option>';
+		}
+		$html.= '</select>
 		</td></tr>';
 		
 		$html .= '</td></tr>';
@@ -35,7 +49,7 @@ function superfecta_hookProcess_core($viewing_itemid, $request) {
 	switch ($request['action'])	{
 		case 'addIncoming':
 			if($request['enable_superfecta'] == 'yes'){
-				$sql = "REPLACE INTO superfecta_to_incoming (extension, cidnum) values (".q($request['extension']).",".q($request['cidnum']).")";
+				$sql = "REPLACE INTO superfecta_to_incoming (extension, cidnum, scheme) values (".q($request['extension']).",".q($request['cidnum']).",".q($request['superfecta_scheme']).")";
 				$result = sql($sql);
 			}
 		break;
@@ -53,7 +67,7 @@ function superfecta_hookProcess_core($viewing_itemid, $request) {
 					$result = sql($sql);
 			}
 			if($request['enable_superfecta'] == 'yes'){
-				$sql = "REPLACE INTO superfecta_to_incoming (extension, cidnum) values (".q($request['extension']).",".q($request['cidnum']).")";
+				$sql = "REPLACE INTO superfecta_to_incoming (extension, cidnum, scheme) values (".q($request['extension']).",".q($request['cidnum']).",".q($request['superfecta_scheme']).")";
 				$result = sql($sql);
 			}
 		break;
@@ -72,10 +86,13 @@ function superfecta_hookGet_config($engine) {
 			if(is_array($pairing)) {
 				foreach($pairing as $item) {
 					if ($item['superfecta_to_incoming_id'] != 0) {
-
 						// Code from modules/core/functions.inc.php core_get_config inbound routes
 						$exten = trim($item['extension']);
 						$cidnum = trim($item['cidnum']);
+						$scheme = trim($item['scheme']);
+						if($scheme == '') {
+							$scheme = 'base_Default';
+						}						
 						
 						if ($cidnum != '' && $exten == '') {
 							$exten = 's';
@@ -89,9 +106,10 @@ function superfecta_hookGet_config($engine) {
 
 						$exten = (empty($exten)?"s":$exten);
 						$exten = $exten.(empty($cidnum)?"":"/".$cidnum); //if a CID num is defined, add it
-
-						$ext->splice($context, $exten, 1, new ext_setvar('CALLERID(name)', '${lookupcid}'));
-						$ext->splice($context, $exten, 1, new ext_agi(dirname(__FILE__).'/superfecta.agi'));
+						
+						$ext->splice($context, $exten, 1, new ext_setvar('CIDSFSCHEME', $scheme));						
+						$ext->splice($context, $exten, 2, new ext_setvar('CALLERID(name)', '${lookupcid}'));
+						$ext->splice($context, $exten, 2, new ext_agi(dirname(__FILE__).'/superfecta.agi'));
 											
 					}
 				}
@@ -115,7 +133,7 @@ function superfecta_did_get($did){
 
 function superfecta_did_list($id=false) {
 	$sql = "
-	SELECT superfecta_to_incoming_id, a.extension extension, a.cidnum cidnum, pricid FROM superfecta_to_incoming a 
+	SELECT superfecta_to_incoming_id, a.extension extension, a.cidnum cidnum, pricid, scheme FROM superfecta_to_incoming a 
 	INNER JOIN incoming b
 	ON a.extension = b.extension AND a.cidnum = b.cidnum
 	";
