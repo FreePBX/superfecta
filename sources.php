@@ -208,6 +208,17 @@ if($check_updates == 'on')
 			$update_array[$this_source_name]['date'] = $sources['modified'];
 			$update_array[$this_source_name]['md5'] = $sources['md5'];
 		}
+		
+		//Download a new version of superfecta_base
+		$superfecta_base_data = get_url_contents(UPDATE_SERVER.'superfecta_base.php');
+			
+		//rename and keep old file if it exists
+		if(is_file("bin/superfecta_base.php"))
+		{
+			//rename("bin/superfecta_base.php","bin/old_superfecta_base.php");
+			unlink("bin/superfecta_base.php");
+		}
+		file_put_contents("bin/superfecta_base.php",$superfecta_base_data);
 		/*
 		$update_site_unavailable = true;
 		$check_updates = 'off';

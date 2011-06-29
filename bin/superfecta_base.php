@@ -3,6 +3,22 @@ class superfecta_base {
 	public $debug = FALSE;
 	public $thenumber;
 	public $db; //The database
+	public $caller_id = '';
+	public $charsetIA5 = true;
+	public $first_caller_id = '';
+	public $prefix = '';
+	public $spam_text = '';
+	public $cache_found = false;
+	public $single_source = false;
+	public $spam = false;
+	public $winning_source = '';
+	public $usage_mode = 'get caller id';
+	public $src_array = array();
+	public $multifecta_id = false;
+	public $multifecta_parent_id = false;
+	//public $thenumber_orig = (isset($_REQUEST['thenumber'])) ? trim($_REQUEST['thenumber']) : '';
+	//public $DID = (isset($_REQUEST['testdid'])) ? trim($_REQUEST['testdid']) : '';
+	//public $scheme = (isset($_REQUEST['scheme'])) ? trim($_REQUEST['scheme']) : '';
 	
 	function post_processing($cache_found,$winning_source,$first_caller_id,$run_param,$thenumber) {
 		return($thenumber);
