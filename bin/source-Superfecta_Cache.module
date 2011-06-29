@@ -106,7 +106,7 @@ class Superfecta_Cache extends superfecta_base {
 				{
 					$sql = "REPLACE INTO superfectacache (number,callerid,dateentered)
 									VALUES($thenumber,'$first_caller_id',NOW())";
-					$this->db->query($sql);
+					$this->db->query($sql);					
 					if($debug)
 					{
 						print "Caller ID data added to cache.<br>\n<br>\n";

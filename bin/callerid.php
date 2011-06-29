@@ -687,28 +687,27 @@ if($superfecta->debug && (!$superfecta->multifecta_id))
 	print "</b><br>\n";
 }
 
-// If we are not a multifecta parent, run the post proccess for this scheme
-if((isset($param[$this_scheme])) && ((!$param[$this_scheme]['enable_multifecta']) || ($superfecta->multifecta_id))){
+// Multifecta Parent has to run this after everything actually or it doesnt make any sense
+if((isset($param[$this_scheme])) && ((!$param[$this_scheme]['enable_multifecta']) || (!$superfecta->multifecta_id))){
 	//post-processing
 	if($superfecta->debug)
 	{
 		print "Post CID retrieval processing.<br>\n<br>\n";
-	}
+	}	
 	
 	$usage_mode = 'post processing';
 	foreach($src_array as $source_name)
 	{
 		// Run the source
 		if((!$single_source) || ($single_source == $source_name)){
-			$thenumber = $theoriginalnumber;
 			$run_param = (isset($param[substr($this_scheme,5).'_'.$source_name]) ? $param[substr($this_scheme,5).'_'.$source_name] : array());
 			if(file_exists("source-".$source_name.".module")) {
 				require_once("source-".$source_name.".module");
 				$source_class = NEW $source_name;
 				$source_class->db = $db;
 				$source_class->debug = $debug;
-				if(method_exists($source_class, 'post_processing')) {
-					$caller_id = $source_class->post_processing($cache_found,$winning_source,$first_caller_id,$run_param,$thenumber);
+				if(method_exists($source_class, 'post_processing')) {					
+					$caller_id = $source_class->post_processing($cache_found,$winning_source,$first_caller_id,$run_param,$superfecta->theoriginalnumber);
 				} else {
 					print "Method 'post_processing' doesn't exist<br\>\n"; 
 				}
@@ -728,7 +727,6 @@ if($superfecta->multifecta_id){
 			SET timestamp_end = ".$db->quoteSmart($multifecta_child_end_time)."
 		  	WHERE superfecta_mf_child_id = ".$db->quoteSmart($superfecta->multifecta_id)."
 			";
-	file_put_contents('/var/www/html/admin/modules/superfecta/end-'.$superfecta->multifecta_id,$query);
 	$res = $superfecta->db->query($query);
 	if (DB::IsError($res)){
 		die("Unable to update child end time: " . $res->getMessage() .  "<br>");
