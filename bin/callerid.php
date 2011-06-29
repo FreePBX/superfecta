@@ -33,9 +33,6 @@ if(($superfecta->scheme == '') AND (isset($argv[3]))) {
 	$superfecta->scheme = $argv[3];
 }
 
-file_put_contents('/var/www/html/admin/modules/superfecta/file-superfecta-'.$superfecta->multifecta_id, $superfecta->scheme);
-
-
 if($superfecta->debug){
 	// If debugging, report all errors
 	error_reporting(-1);
