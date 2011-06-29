@@ -306,10 +306,8 @@ else
 			if ($superfecta->theoriginalnumber !='')
 			{
 				$superfecta->multifecta_count = 0;
-				foreach($src_array as $source_name)
-				{
-				if(((!$single_source) || ($single_source == $source_name)) && ((!$param[$this_scheme]['enable_multifecta']) || ($superfecta->multifecta_id))){
-					// We are in non-multifecta mode, or a multifecta, single source, child.  Run this source now.
+				if(($superfecta->multifecta_id) && (isset($argv[4]))) {
+					$source_name = $argv[4];
 					$superfecta->thenumber = $superfecta->theoriginalnumber;
 					$superfecta->caller_id = '';
 					if($superfecta->debug)
@@ -325,11 +323,15 @@ else
 						$source_class->debug = $superfecta->debug;
 						$source_class->amp_conf = $superfecta->amp_conf;
 						$source_class->db = $superfecta->db;
-						
+				
 						if(method_exists($source_class, 'get_caller_id')) {
 							$caller_id = $source_class->get_caller_id($superfecta->thenumber,$run_param);
 							unset($source_class);
 							$caller_id = _utf8_decode($caller_id);
+					
+							if(isset($superfecta->multifecta_id)) {
+								$superfecta->caller_id_array[$superfecta->multifecta_id] = $caller_id;
+							}
 							if(($first_caller_id == '') && ($caller_id != ''))
 							{
 								$first_caller_id = $caller_id;
@@ -345,56 +347,102 @@ else
 					} elseif($superfecta->debug) {
 						print "Unable to find source '".$source_name."' skipping..<br\>\n";
 					}
+				} else {
+					foreach($src_array as $source_name)
+						{
+						$caller_id = '';
+						if(((!$single_source) || ($single_source == $source_name)) && ((!$param[$this_scheme]['enable_multifecta']) || ($superfecta->multifecta_id))){
+							// We are in non-multifecta mode, or a multifecta, single source, child.  Run this source now.
+							$superfecta->thenumber = $superfecta->theoriginalnumber;
+							$superfecta->caller_id = '';
+							if($superfecta->debug)
+							{
+								$start_time = mctime_float();
+							}
+							$run_param = isset($param[substr($this_scheme,5).'_'.$source_name]) ? $param[substr($this_scheme,5).'_'.$source_name] : array();
+
+							if(file_exists("source-".$source_name.".module")) {
+								require_once("source-".$source_name.".module");
+								$source_class = NEW $source_name;
+								//Gotta be a better way to do this
+								$source_class->debug = $superfecta->debug;
+								$source_class->amp_conf = $superfecta->amp_conf;
+								$source_class->db = $superfecta->db;
+						
+								if(method_exists($source_class, 'get_caller_id')) {
+									$caller_id = $source_class->get_caller_id($superfecta->thenumber,$run_param);
+									unset($source_class);
+									$caller_id = _utf8_decode($caller_id);
+							
+									if(isset($superfecta->multifecta_id)) {
+										$superfecta->caller_id_array[$superfecta->multifecta_id] = $caller_id;
+									}
+									if(($first_caller_id == '') && ($caller_id != ''))
+									{
+										$first_caller_id = $caller_id;
+										$winning_source = $source_name;
+										if($superfecta->debug)
+										{
+											$end_time_whole = mctime_float();
+										}
+									}
+								} elseif($superfecta->debug) {
+									print "Function 'get_caller_id' does not exist!<br>\n";
+								}
+							} elseif($superfecta->debug) {
+								print "Unable to find source '".$source_name."' skipping..<br\>\n";
+							}
 	
-					if($superfecta->debug)
-					{
-						if($caller_id != '')
-						{
-							print "'" . utf8_encode($caller_id)."'<br>\nresult <img src='images/scrollup.gif'> took ".number_format((mctime_float()-$start_time),4)." seconds.<br>\n<br>\n";
-						}
-						else
-						{
-							print "result <img src='images/scrollup.gif'> took ".number_format((mctime_float()-$start_time),4)." seconds.<br>\n<br>\n";
-						}
-					}
-					else if($superfecta->caller_id != '')
-					{
-						break;
-					}
-				}elseif(($param[$this_scheme]['enable_multifecta']) && (!$superfecta->multifecta_id)){
-					// We are a Multifecta parent.  Get ready to spawn a child.
-					$superfecta->multifecta_child_start_time = mctime_float();
-					$query = "INSERT INTO superfecta_mf_child (
-								superfecta_mf_id,
-								priority,
-								source,
-								timestamp_start
-							) VALUES (
-								".$db->quoteSmart($superfecta->superfecta_mf_id).",
-								".$db->quoteSmart($superfecta->multifecta_count).",
-								".$db->quoteSmart($source_name).",
-								".$db->quoteSmart($superfecta->multifecta_child_start_time)."
-							)";
-					// Create the child record
-					$res2 = $superfecta->db->query($query);
-					if (DB::IsError($res)){
-						die("Unable to create child record: " . $res2->getMessage() .  "<br>");
-					}
-					if($superfecta->superfecta_mf_child_id = (($superfecta->amp_conf["AMPDBENGINE"] == "sqlite3") ? sqlite_last_insert_rowid($superfecta->db->connection) : mysql_insert_id($superfecta->db->connection)))
-					{
-						// We have the child's id
-						// Spawn the child
-						if($superfecta->debug){
-							print "Spawning child $superfecta->superfecta_mf_child_id: $source_name <br>\n";
-						}
-						exec('/usr/bin/php ' . (__FILE__) . ' -multifecta_id ' . $superfecta->superfecta_mf_child_id . ' '.$superfecta->scheme.' > /dev/null 2>&1 &');
-						//exec('/usr/bin/php ' . (__FILE__) . ' -multifecta_id ' . $superfecta->superfecta_mf_child_id . ' > log'.$superfecta->superfecta_mf_child_id.' 2>&1 &');
-					}else{
-						die("Unable to get child record id<br>");
-					}
-					$superfecta->multifecta_count ++;
-				} // End if
-				} // end foreach
+							if($superfecta->debug)
+							{
+								if($caller_id != '')
+								{
+									print "'" . utf8_encode($caller_id)."'<br>\nresult <img src='images/scrollup.gif'> took ".number_format((mctime_float()-$start_time),4)." seconds.<br>\n<br>\n";
+								}
+								else
+								{
+									print "result <img src='images/scrollup.gif'> took ".number_format((mctime_float()-$start_time),4)." seconds.<br>\n<br>\n";
+								}
+							}
+							else if($superfecta->caller_id != '')
+							{
+								break;
+							}
+						}elseif(($param[$this_scheme]['enable_multifecta']) && (!$superfecta->multifecta_id)){
+							// We are a Multifecta parent.  Get ready to spawn a child.
+							$superfecta->multifecta_child_start_time = mctime_float();
+							$query = "INSERT INTO superfecta_mf_child (
+										superfecta_mf_id,
+										priority,
+										source,
+										timestamp_start
+									) VALUES (
+										".$db->quoteSmart($superfecta->superfecta_mf_id).",
+										".$db->quoteSmart($superfecta->multifecta_count).",
+										".$db->quoteSmart($source_name).",
+										".$db->quoteSmart($superfecta->multifecta_child_start_time)."
+									)";
+							// Create the child record
+							$res2 = $superfecta->db->query($query);
+							if (DB::IsError($res)){
+								die("Unable to create child record: " . $res2->getMessage() .  "<br>");
+							}
+							if($superfecta->superfecta_mf_child_id = (($superfecta->amp_conf["AMPDBENGINE"] == "sqlite3") ? sqlite_last_insert_rowid($superfecta->db->connection) : mysql_insert_id($superfecta->db->connection)))
+							{
+								// We have the child's id
+								// Spawn the child
+								if($superfecta->debug){
+									print "Spawning child $superfecta->superfecta_mf_child_id: $source_name <br>\n";
+								}
+								exec('/usr/bin/php ' . (__FILE__) . ' -multifecta_id ' . $superfecta->superfecta_mf_child_id . ' '.$superfecta->scheme.' '.$source_name.' > /dev/null 2>&1 &');
+								//exec('/usr/bin/php ' . (__FILE__) . ' -multifecta_id ' . $superfecta->superfecta_mf_child_id . ' > log'.$superfecta->superfecta_mf_child_id.' 2>&1 &');
+							}else{
+								die("Unable to get child record id<br>");
+							}
+							$superfecta->multifecta_count ++;
+						} // End if
+					} // end foreach
+				}
 			} 
 			else
 			{
@@ -564,13 +612,13 @@ if(($first_caller_id || $spam_text) && (!$superfecta->multifecta_id)){
 
 }elseif($superfecta->multifecta_id){
 	// If we are a multifecta child, update our child record with our results
-	// Update only what we have -- leave the rest null 
+	// Update only what we have -- leave the rest null 	
 	$multifecta_child_cname_time = mctime_float();
 	$query = "UPDATE superfecta_mf_child
 			SET timestamp_cnam = ".$db->quoteSmart($multifecta_child_cname_time);
 			if($first_caller_id){
 				$query .= ",
-				cnam = ".$db->quoteSmart(trim($first_caller_id));
+				cnam = ".$db->quoteSmart(trim($superfecta->caller_id_array[$superfecta->multifecta_id]));
 			}
 			if($spam_text){
 				$query .= ",
