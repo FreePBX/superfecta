@@ -220,31 +220,6 @@ if($scheme != "")
 							<td><input type="text" name="scheme_name" size="23" maxlength="20" value="'.substr($scheme,5).'"></td>
 						</tr>
 						<tr>
-							<td valign="top"><a href="javascript:return(false);" class="info">DID Rules<span>Define the expected DID Number if your trunk passes DID on incoming calls. <br><br>Leave this blank to match calls with any or no DID info.<br><br>This rule trys both absolute and pattern matching (eg "_2[345]X", to match a range of numbers). (The "_" underscore is optional.)</span></a>:</td>
-							<td>
-								<textarea tabindex="1" cols="20" rows="5" name="DID">'.(isset($conf['DID']) ? $conf['DID'] : '' ).'</textarea>
-							</td>
-						</tr>
-						<tr>
-							<td valign="top">
-								<a href="javascript:return(false);" class="info">CID Rules<span>Incoming calls with CID matching the patterns specified here will use this CID Scheme. If this is left blank, this scheme will be used for any CID. It can be used to add or remove prefixes.<br>
-								<strong>Many sources require a specific number of digits in the phone number. It is recommended that you use the patterns to remove excess country code data from incoming CID to increase the effectiveness of this module.</strong><br>
-								Note that a pattern without a + or | (to add or remove a prefix) will not make any changes but will create a match. Only the first matched pattern will be executed and the remaining rules will not be acted on.<br /><br /><b>Rules:</b><br />
-								<strong>X</strong>&nbsp;&nbsp;&nbsp; matches any digit from 0-9<br />
-								<strong>Z</strong>&nbsp;&nbsp;&nbsp; matches any digit from 1-9<br />
-								<strong>N</strong>&nbsp;&nbsp;&nbsp; matches any digit from 2-9<br />
-
-								<strong>[1237-9]</strong>&nbsp;	 matches any digit or letter in the brackets (in this example, 1,2,3,7,8,9)<br />
-								<strong>.</strong>&nbsp;&nbsp;&nbsp; wildcard, matches one or more characters (not allowed before a | or +)<br />
-								<strong>|</strong>&nbsp;&nbsp;&nbsp; removes a dialing prefix from the number (for example, 613|NXXXXXX would match when some one dialed "6135551234" but would only pass "5551234" to the Superfecta look up.)<br><strong>+</strong>&nbsp;&nbsp;&nbsp; adds a dialing prefix to the number (for example, 1613+NXXXXXX would match when someone dialed "5551234" and would pass "16135551234" to the Superfecta look up.)<br /><br />
-
-								You can also use both + and |, for example: 01+0|1ZXXXXXXXXX would match "016065551234" and dial it as "0116065551234" Note that the order does not matter, eg. 0|01+1ZXXXXXXXXX does the same thing.</span></a>:
-							</td>
-							<td valign="top">
-								<textarea tabindex="2" id="dialrules" cols="20" rows="5" name="CID_rules">'.(isset($conf['CID_rules']) ? $conf['CID_rules'] : '' ).'</textarea>
-							</td>
-						</tr>
-						<tr>
 							<td colspan="2"><font face="Arial"><br><u>General Options</font></u></td>
 						</tr>
 						<tr>

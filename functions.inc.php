@@ -183,6 +183,9 @@ function superfecta_setConfig()
 		{
 			$sql = "UPDATE superfectaconfig SET source = 'base_".$scheme_name."' WHERE source = 'base_".$scheme_name_orig."'";
 			sql($sql);
+			
+			$sql = "UPDATE superfecta_to_incoming SET scheme = 'base_".$scheme_name."' WHERE scheme = 'base_".$scheme_name_orig."'";
+			sql($sql);
 		}
 	}
 
