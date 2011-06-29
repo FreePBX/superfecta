@@ -3,19 +3,25 @@
 function superfecta_hook_core($viewing_itemid, $target_menuid) {
 	$html = '';
 	if ($target_menuid == 'did')	{
-		$html = '<tr><td colspan="2"><h5>';
-		$html .= _("Superfecta CID Lookup");
-		$html .= '<hr></h5></td></tr>';
-		$html .= '<tr>';
-		$html .= '<td colspan="2">';
 		if(superfecta_did_get($viewing_itemid)){
 			$checked_status = 'checked';
 		}else{
 			$checked_status = '';	
 		}
-		$html .= '<input type="checkbox" name="enable_superfecta" value="yes" '.$checked_status.'><a href="#" class="info">Enable CID Superfecta for this DID<span>'._("Sources can be added/removed in CID Superfecta section").'.</span></a>';
+		
+		$html.='<tr><td colspan="2"><h5>'._("Superfecta CID Lookup").'<hr></h5></td></tr>';
+		
+		$html.='<tr><td><a href="#" class="info">'._('Enable CID Superfecta').'<span>'._("Sources can be added/removed in CID Superfecta section").'</span></a>:</td>';
+		$html.='<td><input type="checkbox" name="enable_superfecta" value="yes" '.$checked_status.'></td></tr>';
+		
+		$html.='<tr><td><a href="#" class="info">'._('Scheme').'<span>'._("Setup Schemes in CID Superfecta section").'</span></a>:</td>';
+		$html.='<td><select>
+		  <option value="base_Default" disabled>Default</option>
+		</select>
+		</td></tr>';
+		
 		$html .= '</td></tr>';
-	}
+	}    
 
 	return $html;
 	
