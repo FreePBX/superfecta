@@ -317,9 +317,7 @@ else
 						$start_time = mctime_float();
 					}
 					$run_param = isset($param[substr($this_scheme,5).'_'.$source_name]) ? $param[substr($this_scheme,5).'_'.$source_name] : array();
-					if($superfecta->debug) {
-						echo $source_name." Returned: ";
-					}
+
 					if(file_exists("source-".$source_name.".module")) {
 						require_once("source-".$source_name.".module");
 						$source_class = NEW $source_name;

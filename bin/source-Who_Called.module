@@ -30,6 +30,7 @@ class Who_Called extends superfecta_base {
 		}
 		else
 		{
+			if($debug) { print "Searching Who Called ... ";	}
 			$url = "http://whocalled.us/do?action=getWho&name=".$run_param['Username']."&pass=".$run_param['Password']."&phoneNumber=$thenumber";
 			$value = $this->get_url_contents($url);
 
