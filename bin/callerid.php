@@ -167,9 +167,11 @@ else
 		if($superfecta->debug)
 		{
 			print "<hr>Processing ".substr($this_scheme,5)." Scheme.<br>\n";
-			echo "<pre>";
-			var_dump($param[$this_scheme]);
-			echo "</pre>";
+			echo "Variables set in this scheme:<br>\n";
+			ksort($param[$this_scheme]);
+			foreach($param[$this_scheme] as $key => $data) {
+				echo "\t--><b>".$key.":</b>".$data."<br/>\n";
+			}
 		}
 		//trying to push some info to the CLI
 		if(!$superfecta->multifecta_id){
@@ -200,7 +202,9 @@ else
 		}
 
 		// Run the scheme
-		
+		if($superfecta->debug) {
+			echo "Running Scheme:<br/>\n";
+		}
 		if($run_this_scheme)
 		{
 			if(!isset($param[$this_scheme]['enable_multifecta'])){
@@ -310,7 +314,7 @@ else
 					}
 					$run_param = isset($param[substr($this_scheme,5).'_'.$source_name]) ? $param[substr($this_scheme,5).'_'.$source_name] : array();
 					if($superfecta->debug) {
-						echo "Running ".$source_name."<br/>\n";
+						echo $source_name." Returned: ";
 					}
 					if(file_exists("source-".$source_name.".module")) {
 						require_once("source-".$source_name.".module");
@@ -342,7 +346,7 @@ else
 	
 					if($superfecta->debug)
 					{
-						if($superfecta->caller_id != '')
+						if($caller_id != '')
 						{
 							print "'" . utf8_encode($caller_id)."'<br>\nresult <img src='images/scrollup.gif'> took ".number_format((mctime_float()-$start_time),4)." seconds.<br>\n<br>\n";
 						}
