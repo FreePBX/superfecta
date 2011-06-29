@@ -41,6 +41,7 @@ class Superfecta_Cache extends superfecta_base {
 		$settings['desc'] = $source_desc;
 		$settings['param'] = array();
 		$settings['source_param'] = $source_param;
+		$settings['version_requirement'] = "3.0";
 		return($settings);
 	}
 	

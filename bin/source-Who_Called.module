@@ -11,6 +11,7 @@ class Who_Called extends superfecta_base {
 		$settings['desc'] = "http://whocalled.us - These listings are provided by other users of the whocalled service. This service requires authentication - which you configure by clicking on this datasource. <br>This data source requires Superfecta Module version 2.2.1 or higher.";
 		$settings['param'] = array();
 		$settings['source_param'] = $source_param;
+		$settings['version_requirement'] = "3.0";
 		return($settings);
 	}
 	
