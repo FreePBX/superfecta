@@ -590,7 +590,7 @@ if ($first_caller_id !='')
 	//$first_caller_id = _utf8_decode($first_caller_id);
 	$first_caller_id = strip_tags($first_caller_id );
 	$first_caller_id = trim ($first_caller_id);
-	if ($charsetIA5)
+	if ($superfecta->charsetIA5)
 	{
 		$first_caller_id = stripAccents($first_caller_id);
 	}
