@@ -35,7 +35,8 @@ if(($superfecta->scheme == '') AND (isset($argv[3]))) {
 
 if($superfecta->debug){
 	// If debugging, report all errors
-	error_reporting(-1);
+//	error_reporting(-1);
+	error_reporting(E_ALL & E_NOTICE); // -1 was not letting me see the wood for the trees.
 	ini_set('display_errors', '1');
 	echo "Debug is on<br>\n";
 	echo "The Original Number: ". $superfecta->thenumber_orig ."<br>\n";
@@ -148,9 +149,9 @@ if($superfecta->debug)
 //loop through schemes
 $query = "SELECT source	FROM superfectaconfig WHERE field = 'order' AND value > 0";
 
-if(($superfecta->debug || $superfecta->multifecta_id) && ($scheme != ""))
+if(($superfecta->debug || $superfecta->multifecta_id) && ($superfecta->scheme != ""))
 {
-	$query .= " AND	source = " . $superfecta->db->quoteSmart($scheme);
+	$query .= " AND	source = " . $superfecta->db->quoteSmart($superfecta->scheme);
 }
 $query .= " ORDER BY value";
 $res = $superfecta->db->query($query);
@@ -196,7 +197,7 @@ else
 
 		// Determine if the CID matches any patterns defined for this scheme
 
-		$rule_match = match_pattern_all((isset($param[$this_scheme]['CID_rules']))?$param[$this_scheme]['CID_rules']:'', $thenumber );
+		$rule_match = match_pattern_all((isset($param[$this_scheme]['CID_rules']))?$param[$this_scheme]['CID_rules']:'', $superfecta->thenumber );
 		if($rule_match['number'] && $run_this_scheme){
 			if($superfecta->debug){print "Matched CID Rule: '".$rule_match['pattern']."' with '".$rule_match['number']."'<br>\n";}
 			$superfecta->thenumber = $rule_match['number'];
