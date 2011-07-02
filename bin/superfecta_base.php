@@ -16,6 +16,8 @@ class superfecta_base {
 	public $src_array = array();
 	public $multifecta_id = false;
 	public $multifecta_parent_id = false;
+	public $curl_timeout;
+	
 	//public $thenumber_orig = (isset($_REQUEST['thenumber'])) ? trim($_REQUEST['thenumber']) : '';
 	//public $DID = (isset($_REQUEST['testdid'])) ? trim($_REQUEST['testdid']) : '';
 	//public $scheme = (isset($_REQUEST['scheme'])) ? trim($_REQUEST['scheme']) : '';
@@ -75,7 +77,6 @@ class superfecta_base {
 	*/
 	function get_url_contents($url,$post_data=false,$referrer=false,$cookie_file=false,$useragent=false)
 	{
-		global $debug,$curl_timeout;
 		$crl = curl_init();
 		if(!$useragent){
 			// Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.2.6) Gecko/20100625 Firefox/3.6.6 ( .NET CLR 3.5.30729)
@@ -87,9 +88,9 @@ class superfecta_base {
 		curl_setopt($crl,CURLOPT_USERAGENT,$useragent);
 		curl_setopt($crl,CURLOPT_URL,$url);
 		curl_setopt($crl,CURLOPT_RETURNTRANSFER,true);
-		curl_setopt($crl,CURLOPT_CONNECTTIMEOUT,$curl_timeout);
+		curl_setopt($crl,CURLOPT_CONNECTTIMEOUT,$this->curl_timeout);
 		curl_setopt($crl,CURLOPT_FAILONERROR,true);
-		curl_setopt($crl,CURLOPT_TIMEOUT,$curl_timeout);
+		curl_setopt($crl,CURLOPT_TIMEOUT,$this->curl_timeout);
 		if($cookie_file){
 			curl_setopt($crl, CURLOPT_COOKIEJAR, $cookie_file);
 			curl_setopt($crl, CURLOPT_COOKIEFILE, $cookie_file);
@@ -100,7 +101,7 @@ class superfecta_base {
 		}
 
 		$ret = trim(curl_exec($crl));
-		if(curl_error($crl) && $debug)
+		if(curl_error($crl) && $this->debug)
 		{
 			print ' '.curl_error($crl).' ';
 		}
@@ -346,7 +347,6 @@ class superfecta_base {
 	
 	function IsValidNumber($country, $thenumber)
 	{
-		global $debug;
 		$number_error = false;
 
 		switch ($country)
@@ -364,7 +364,8 @@ class superfecta_base {
 					}
 					else
 					{
-						$number_error = true;
+						if($this->debug) { print basename(__FILE__).":".__LINE__." Failing ${country} number test<br>"; }
+						return false;
 					}
 		
 				}
@@ -383,7 +384,8 @@ class superfecta_base {
 						}			
 						else
 						{
-							$number_error = true;
+							if($this->debug) { print basename(__FILE__).":".__LINE__." Failing ${country} number test<br>"; }
+							return false;
 						}
 					}
 				}	
@@ -391,7 +393,8 @@ class superfecta_base {
 				// number
 			    if(strlen($thenumber) < 10)
 				{
-					$number_error = true;
+					if($this->debug) { print basename(__FILE__).":".__LINE__." Failing ${country} number test<br>"; }
+					return false;
 				}
 
 				$validnpaUS = false;
@@ -468,9 +471,10 @@ class superfecta_base {
 					}
 				}
 						
-				if(!$TFnpa && (!$validnpaUS && !$validnpaCAN))
+				if(!$TFnpa && ((!$validnpaUS) && (!$validnpaCAN)))
 				{
-					$number_error = true;
+					if($this->debug) { print basename(__FILE__).":".__LINE__." Failing ${country} number test<br>"; }
+					return false;
 				}
 			} // end US/CA
 			break;
@@ -493,10 +497,11 @@ class superfecta_base {
 							{
 								$thenumber = substr($thenumber, -12);
 							}			
-						}
-						else
-						{
-							$number_error = true;
+							else
+							{
+								if($this->debug) { print basename(__FILE__).":".__LINE__." Failing ${country} number test<br>"; }
+								return false;
+							}
 						}
 					}
 				}
@@ -512,7 +517,8 @@ class superfecta_base {
 			
 			    if(strlen($thenumber) < 8)
 				{
-					$number_error = true;
+					if($this->debug) { print basename(__FILE__).":".__LINE__." Failing ${country} number test<br>"; }
+					return false;
 				}	
 						
 				if(!$number_error)
@@ -633,22 +639,23 @@ class superfecta_base {
 						}
 					}
 
-					if(!$validSTD || !$validNGN)
+					if((!$validSTD) && (!$validNGN))
 					{
-						$number_error = true;
+						if($this->debug) { print basename(__FILE__).":".__LINE__." Failing ${country} number test<br>"; }
+						return false;
 					}
 				}
 			} //end UK
 			break;
 			
 			default:
-				if($debug)
+				if($this->debug)
 				{
-					print "Unknown Country Code passed to IsValidNumber: ".$country."<br>\n";
+					print "Unknown Country Code ${country} passed to IsValidNumber: ".$country."<br>\n";
 				}
 				break;
 		} // end Country switch
 				
-		return $number_error;
+		return ($number_error ? false : true);
 	}
 }

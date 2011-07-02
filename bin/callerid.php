@@ -215,7 +215,7 @@ else
 				$param[$this_scheme]['enable_multifecta'] = false;	
 			}
 
-			$curl_timeout = $param[$this_scheme]['Curl_Timeout'];
+			$superfecta->curl_timeout = $param[$this_scheme]['Curl_Timeout'];
 
 			//if a prefix lookup is enabled, look it up, and truncate the result to 10 characters
 			///Clean these up, set NULL values instead of blanks then don't check for ''
