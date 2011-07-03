@@ -35,7 +35,7 @@ if(php_sapi_name() == 'cli' && empty($_SERVER['REMOTE_ADDR'])) {
 	$scheme_name = "base_".(isset($_REQUEST['scheme'])) ? trim($_REQUEST['scheme']) : '';
 	$debug = (((isset($_REQUEST['debug'])) ? $_REQUEST['debug'] : '') == 'yes') ? true : false;
 	$thenumber_orig = (isset($_REQUEST['thenumber'])) ? trim($_REQUEST['thenumber']) : '';
-	$did = (isset($_REQUEST['DID'])) ? trim($_REQUEST['DID']) : '';
+	$DID = (isset($_REQUEST['DID'])) ? trim($_REQUEST['DID']) : '';
 }
 
 //Die on Scheme unknown
