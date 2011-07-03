@@ -323,6 +323,28 @@ class superfecta_multi extends superfecta_base {
 	}
 	
 	function send_results($caller_id) {
-		//run post processing here
-	}	
+		$sql = "SELECT field,value FROM superfectaconfig WHERE source = '".$this->scheme_name."_".$data."'";
+		$run_param = $this->db->getAssoc($sql);
+		$sources = explode(",",$this->scheme_param['sources']);
+		
+		if($this->debug)
+		{
+			$this->out("Post CID retrieval processing.");
+		}	
+		foreach($sources as $source_name)
+		{
+			// Run the source
+			if(file_exists("source-".$source_name.".module")) {
+				require_once("source-".$source_name.".module");
+				$source_class = NEW $source_name;
+				$source_class->db = $this->db;
+				$source_class->debug = $this->debug;
+				if(method_exists($source_class, 'post_processing')) {					
+					$caller_id = $source_class->post_processing(FALSE,NULL,$caller_id,$run_param,$this->thenumber_orig);
+				} else {
+					print "Method 'post_processing' doesn't exist<br\>\n"; 
+				}
+			}
+		}
+	}
 }

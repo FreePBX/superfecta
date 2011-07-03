@@ -90,605 +90,86 @@ $superfecta->thenumber = ereg_replace('[^0-9]+', '', $superfecta->thenumber_orig
 
 $run_this_scheme = true;
 
-
-// Determine if this is the correct DID, if this scheme is limited to a DID.
-$rule_match = match_pattern_all( (isset($scheme_param['DID'])) ? $scheme_param['DID'] : '', $DID );
-if($rule_match['number']){
-	if($superfecta->debug){print "Matched DID Rule: '".$rule_match['pattern']."' with '".$rule_match['number']."'<br>\n";}
-}elseif($rule_match['status']){
-	if($superfecta->debug){print "No matching DID rules.<br>\n";}
-	$run_this_scheme = false;
-}
-
-// Determine if the CID matches any patterns defined for this scheme
-$rule_match = match_pattern_all((isset($scheme_param['CID_rules']))?$scheme_param['CID_rules']:'', $superfecta->thenumber );
-if($rule_match['number'] && $run_this_scheme){
-	if($superfecta->debug){print "Matched CID Rule: '".$rule_match['pattern']."' with '".$rule_match['number']."'<br>\n";}
-	$superfecta->thenumber = $rule_match['number'];
-}elseif($rule_match['status'] && $run_this_scheme){
-	if($superfecta->debug){print "No matching CID rules.<br>\n";}
-	$run_this_scheme = false;
-}
-
-if($run_this_scheme) {
-	$callerid = $superfecta->get_results();
-	$superfecta->send_results($callerid);
-	if(!$superfecta->debug) {
-		echo $callerid;
+if(($superfecta->type == 'SUPER') || (($superfecta->type == 'MULTI') && ($superfecta->multi_type == 'PARENT'))) {
+	// Determine if this is the correct DID, if this scheme is limited to a DID.
+	$rule_match = match_pattern_all( (isset($scheme_param['DID'])) ? $scheme_param['DID'] : '', $DID );
+	if($rule_match['number']){
+		if($superfecta->debug){print "Matched DID Rule: '".$rule_match['pattern']."' with '".$rule_match['number']."'<br>\n";}
+	}elseif($rule_match['status']){
+		if($superfecta->debug){print "No matching DID rules.<br>\n";}
+		$run_this_scheme = false;
 	}
-}
 
-/*
+	// Determine if the CID matches any patterns defined for this scheme
+	$rule_match = match_pattern_all((isset($scheme_param['CID_rules']))?$scheme_param['CID_rules']:'', $superfecta->thenumber );
+	if($rule_match['number'] && $run_this_scheme){
+		if($superfecta->debug){print "Matched CID Rule: '".$rule_match['pattern']."' with '".$rule_match['number']."'<br>\n";}
+		$superfecta->thenumber = $rule_match['number'];
+	}elseif($rule_match['status'] && $run_this_scheme){
+		if($superfecta->debug){print "No matching CID rules.<br>\n";}
+		$run_this_scheme = false;
+	}
 
+	$superfecta->curl_timeout = $scheme_param['Curl_Timeout'];
 
-
-
-//loop through schemes
-$query = "SELECT source	FROM superfectaconfig WHERE field = 'order' AND value > 0";
-
-if(($superfecta->debug || $superfecta->multifecta_id) && ($superfecta->scheme != ""))
-{
-	$query .= " AND	source = " . $superfecta->db->quoteSmart($superfecta->scheme);
-}
-$query .= " ORDER BY value";
-$res = $superfecta->db->query($query);
-if(DB::isError($res) && $debug)
-{
-	print 'The database query of:<br>'.$query.'<br>failed with an error of:<br>'.$res->getMessage();
-}
-else
-{
-
-	// Loop over each scheme
-	while ($row = $res->fetchRow(DB_FETCHMODE_ASSOC))
+	//if a prefix lookup is enabled, look it up, and truncate the result to 10 characters
+	///Clean these up, set NULL values instead of blanks then don't check for ''
+	$superfecta->prefix = '';
+	if((isset($scheme_param['Prefix_URL'])) && (trim($scheme_param['Prefix_URL']) != ''))
 	{
-		$this_scheme = $row['source'];
-		$run_this_scheme = true;
-		$superfecta->thenumber = ereg_replace('[^0-9]+', '', $superfecta->thenumber_orig);
+		if($superfecta->debug)
+		{
+			$start_time = mctime_float();
+		}
+	
+		$superfecta->prefix = get_url_contents(str_replace("[thenumber]",$superfecta->thenumber,$scheme_param['Prefix_URL']));
 
 		if($superfecta->debug)
 		{
-			print "<hr>Processing ".substr($this_scheme,5)." Scheme.<br>\n";
-			echo "Variables set in this scheme:<br>\n";
-			ksort($param[$this_scheme]);
-			foreach($param[$this_scheme] as $key => $data) {
-				echo "\t--><b>".$key.":</b>".$data."<br/>\n";
-			}
-		}
-		//trying to push some info to the CLI
-		if(!$superfecta->multifecta_id){
-			//$astman->command('VERBOSE "Processing '.substr($this_scheme,5).' Scheme." 3');
-		}
-
-
-
-
-		// Run the scheme
-		if($superfecta->debug) {
-			echo "Running Scheme:<br/>\n";
-		}
-		if($run_this_scheme)
-		{
-			if(!isset($param[$this_scheme]['enable_multifecta'])){
-				$param[$this_scheme]['enable_multifecta'] = false;	
-			}
-
-			$superfecta->curl_timeout = $param[$this_scheme]['Curl_Timeout'];
-
-			//if a prefix lookup is enabled, look it up, and truncate the result to 10 characters
-			///Clean these up, set NULL values instead of blanks then don't check for ''
-			if( (isset($param[$this_scheme]['Prefix_URL'])) && (trim($param[$this_scheme]['Prefix_URL']) != '') && (!$superfecta->multifecta_id))
+			print "Prefix Url defined ...\n";
+			if($superfecta->prefix !='')
 			{
-				if($superfecta->debug)
-				{
-					$start_time = mctime_float();
-				}
-				
-				$prefix = get_url_contents(str_replace("[thenumber]",$superfecta->thenumber,$param[$this_scheme]['Prefix_URL']));
-
-				if($superfecta->debug)
-				{
-					print "Prefix Url defined ...\n";
-					if($prefix !='')
-					{
-						print 'returned: '.$prefix."<br>\n";
-					}
-					else
-					{
-						print "result was empty<br>\n";
-					}
-					print "result <img src='images/scrollup.gif'> took ".number_format((mctime_float()-$start_time),4)." seconds.<br>\n<br>\n";
-				}
+				print 'returned: '.$superfecta->prefix."<br>\n";
 			}
-
-			//run through the specified sources
-			$src_array = explode(',',$param[$this_scheme]['sources']);
-			$superfecta->theoriginalnumber = $superfecta->thenumber;
-
-			// Check if we are a multifecta parent
-			if(($param[$this_scheme]['enable_multifecta'])  && (!$superfecta->multifecta_id)){
-				if($superfecta->debug){
-					print "Multifecta enabled for " .substr($this_scheme,5)." scheme <br>\n";
-				}
-
-				// We are a multifecta parent
-
-				$superfecta->multifecta_start_time = mctime_float();
-
-				// Clean up multifecta records that are over 10 minutes old
-				$query = "DELETE mf, mfc FROM superfecta_mf mf, superfecta_mf_child mfc
-						WHERE mf.timestamp_start < ".$superfecta->db->quoteSmart($superfecta->multifecta_start_time - (60*10))."
-						AND mfc.superfecta_mf_id = mf.superfecta_mf_id
-						";
-				$res2 = $superfecta->db->query($query);
-				if (DB::IsError($res2)){
-					die("Unable to delete old multifecta records: " . $res2->getMessage() .  "<br>");
-				}
-
-				// Prepare for launching children.
-
-				$query = "INSERT INTO superfecta_mf (
-						timestamp_start, 
-						scheme, 
-						cidnum, 
-						extension, 
-						prefix, 
-						debug
-					) VALUES (
-						".$superfecta->db->quoteSmart($superfecta->multifecta_start_time).",
-						".$superfecta->db->quoteSmart($this_scheme).",
-						".$superfecta->db->quoteSmart($superfecta->theoriginalnumber).",
-						".$superfecta->db->quoteSmart($superfecta->DID).",
-						".$superfecta->db->quoteSmart($superfecta->prefix).",
-						".$superfecta->db->quoteSmart(($superfecta->debug)?'1':'0')."
-					)";
-				// Create the parent record
-				$res2 = $superfecta->db->query($query);
-				if (DB::IsError($res2)){
-					die("Unable to create parent record: " . $res2->getMessage() .  "<br>");
-				}
-				// (jkiel - 01/04/2011) Get id of the parent record 
-				// (jkiel - 01/04/2011) [Insert complaints on Pear DB not supporting a last_insert_id method here] <--Actually this is easy to do. -tm1000
-				// (jkiel - 01/04/2011) What is the point of an abstraction layer when you are forced to bypass it?!?!?
-				if($superfecta->superfecta_mf_id = (($superfecta->amp_conf["AMPDBENGINE"] == "sqlite3") ? sqlite_last_insert_rowid($superfecta->db->connection) : mysql_insert_id($superfecta->db->connection)))
-				{
-					// We have the parent record id
-					if($superfecta->debug) {
-						echo "Multifecta Parent ID:".$superfecta->superfecta_mf_id."<br>\n";
-					}
-				}else{
-					die("Unable to get parent record id<br>");
-				}
-
-			}
-			if ($superfecta->theoriginalnumber !='')
-			{
-				$superfecta->multifecta_count = 0;
-				if(($superfecta->multifecta_id) && (isset($argv[4]))) {
-					$source_name = $argv[4];
-					$superfecta->thenumber = $superfecta->theoriginalnumber;
-					$superfecta->caller_id = '';
-					if($superfecta->debug)
-					{
-						$start_time = mctime_float();
-					}
-					$run_param = isset($param[substr($this_scheme,5).'_'.$source_name]) ? $param[substr($this_scheme,5).'_'.$source_name] : array();
-
-					if(file_exists("source-".$source_name.".module")) {
-						require_once("source-".$source_name.".module");
-						$source_class = NEW $source_name;
-						//Gotta be a better way to do this
-						$source_class->debug = $superfecta->debug;
-						$source_class->amp_conf = $superfecta->amp_conf;
-						$source_class->db = $superfecta->db;
-				
-						if(method_exists($source_class, 'get_caller_id')) {
-							$caller_id = $source_class->get_caller_id($superfecta->thenumber,$run_param);
-							unset($source_class);
-							$caller_id = _utf8_decode($caller_id);
-					
-							if(isset($superfecta->multifecta_id)) {
-								$superfecta->caller_id_array[$superfecta->multifecta_id] = $caller_id;
-							}
-							if(($first_caller_id == '') && ($caller_id != ''))
-							{
-								$superfecta->first_caller_id = $caller_id;
-								$superfecta->winning_source = $source_name;
-								if($superfecta->debug)
-								{
-									$end_time_whole = mctime_float();
-								}
-							}
-						} elseif($superfecta->debug) {
-							print "Function 'get_caller_id' does not exist!<br>\n";
-						}
-					} elseif($superfecta->debug) {
-						print "Unable to find source '".$source_name."' skipping..<br\>\n";
-					}
-				} else {
-					foreach($src_array as $source_name)
-						{
-						$caller_id = '';
-						if(((!$superfecta->single_source) || ($$superfecta->single_source == $source_name)) && ((!$param[$this_scheme]['enable_multifecta']) || ($superfecta->multifecta_id))){
-							// We are in non-multifecta mode, or a multifecta, single source, child.  Run this source now.
-							$superfecta->thenumber = $superfecta->theoriginalnumber;
-							$superfecta->caller_id = '';
-							if($superfecta->debug)
-							{
-								$start_time = mctime_float();
-							}
-							$run_param = isset($param[substr($this_scheme,5).'_'.$source_name]) ? $param[substr($this_scheme,5).'_'.$source_name] : array();
-
-							if(file_exists("source-".$source_name.".module")) {
-								require_once("source-".$source_name.".module");
-								$source_class = NEW $source_name;
-								//Gotta be a better way to do this
-								$source_class->debug = $superfecta->debug;
-								$source_class->amp_conf = $superfecta->amp_conf;
-								$source_class->db = $superfecta->db;
-						
-								if(method_exists($source_class, 'get_caller_id')) {
-									$caller_id = $source_class->get_caller_id($superfecta->thenumber,$run_param);
-									unset($source_class);
-									$caller_id = _utf8_decode($caller_id);
-							
-									if(isset($superfecta->multifecta_id)) {
-										$superfecta->caller_id_array[$superfecta->multifecta_id] = $caller_id;
-									}
-									if(($superfecta->first_caller_id == '') && ($caller_id != ''))
-									{
-										$superfecta->first_caller_id = $caller_id;
-										$winning_source = $source_name;
-										if($superfecta->debug)
-										{
-											$end_time_whole = mctime_float();
-										}
-									}
-								} elseif($superfecta->debug) {
-									print "Function 'get_caller_id' does not exist!<br>\n";
-								}
-							} elseif($superfecta->debug) {
-								print "Unable to find source '".$source_name."' skipping..<br\>\n";
-							}
-	
-							if($superfecta->debug)
-							{
-								if($caller_id != '')
-								{
-									print "'" . utf8_encode($caller_id)."'<br>\nresult <img src='images/scrollup.gif'> took ".number_format((mctime_float()-$start_time),4)." seconds.<br>\n<br>\n";
-								}
-								else
-								{
-									print "result <img src='images/scrollup.gif'> took ".number_format((mctime_float()-$start_time),4)." seconds.<br>\n<br>\n";
-								}
-							}
-							else if($superfecta->caller_id != '')
-							{
-								break;
-							}
-						}elseif(($param[$this_scheme]['enable_multifecta']) && (!$superfecta->multifecta_id)){
-							// We are a Multifecta parent.  Get ready to spawn a child.
-							$superfecta->multifecta_child_start_time = mctime_float();
-							$query = "INSERT INTO superfecta_mf_child (
-										superfecta_mf_id,
-										priority,
-										source,
-										timestamp_start
-									) VALUES (
-										".$db->quoteSmart($superfecta->superfecta_mf_id).",
-										".$db->quoteSmart($superfecta->multifecta_count).",
-										".$db->quoteSmart($source_name).",
-										".$db->quoteSmart($superfecta->multifecta_child_start_time)."
-									)";
-							// Create the child record
-							$res2 = $superfecta->db->query($query);
-							if (DB::IsError($res)){
-								die("Unable to create child record: " . $res2->getMessage() .  "<br>");
-							}
-							if($superfecta->superfecta_mf_child_id = (($superfecta->amp_conf["AMPDBENGINE"] == "sqlite3") ? sqlite_last_insert_rowid($superfecta->db->connection) : mysql_insert_id($superfecta->db->connection)))
-							{
-								// We have the child's id
-								// Spawn the child
-								if($superfecta->debug){
-									print "Spawning child $superfecta->superfecta_mf_child_id: $source_name <br>\n";
-								}
-								exec('/usr/bin/php ' . (__FILE__) . ' -multifecta_id ' . $superfecta->superfecta_mf_child_id . ' '.$superfecta->scheme.' '.$source_name.' > /dev/null 2>&1 &');
-								//exec('/usr/bin/php ' . (__FILE__) . ' -multifecta_id ' . $superfecta->superfecta_mf_child_id . ' > log'.$superfecta->superfecta_mf_child_id.' 2>&1 &');
-							}else{
-								die("Unable to get child record id<br>");
-							}
-							$superfecta->multifecta_count ++;
-						} // End if
-					} // end foreach
-				}
-			} 
 			else
 			{
-			 	if($superfecta->debug)
-				{
-					print "The CID '".$superfecta->thenumber_orig."' did not contain number. Lookup stopped <br>";
-				}
+				print "result was empty<br>\n";
 			}
-
-
-			//$prefix = ($prefix != '') ? $prefix.':' : '';
-			if($superfecta->spam)
-			{
-				if(isset($param[$this_scheme]['SPAM_Text_Substitute']) && $param[$this_scheme]['SPAM_Text_Substitute'] == 'Y')
-				{
-					$first_caller_id = $param[$this_scheme]['SPAM_Text'];
-				}
-				elseif(!$spam_text)
-				{
-					$spam_text = $param[$this_scheme]['SPAM_Text'];
-				}
-			}
-		}
-
-		if($superfecta->first_caller_id != '')
-		{
-			break;
-		}
-		// If we are a Multifecta parent, wait for our children to complete, 
-		// or for one of our preferences to 'win', before moving on to the next scheme
-		if(($superfecta->theoriginalnumber !='') && $run_this_scheme && ($param[$this_scheme]['enable_multifecta']) && (!$superfecta->multifecta_id) && ($superfecta->multifecta_count)){
-
-			if($superfecta->debug){
-				print "Parent took ".number_format((mctime_float()-$superfecta->multifecta_start_time),4)." seconds to spawn children.<br>\n";
-			}
-			
-			$query = "SELECT superfecta_mf_child_id, priority, cnam, spam_text, spam, source, cached
-					FROM superfecta_mf_child
-					WHERE superfecta_mf_id = ".$superfecta->db->quoteSmart($superfecta->superfecta_mf_id)."
-					AND timestamp_cnam IS NOT NULL
-					ORDER BY priority
-					";
-			$loop_limit = 200; // Loop 200 times maximum, just incase our timeout function fails
-			$loop_start_time = mctime_float();
-			$loop_cur_time = mctime_float();
-			$loop_priority_time_limit = $param[$this_scheme]['multifecta_timeout'];
-			$loop_time_limit = ($param[$this_scheme]['Curl_Timeout'] + .5); //Give us an extra half second over CURL
-			$multifecta_timeout_hit = false;
-			while($loop_limit && (($loop_cur_time - $loop_start_time)<=$loop_time_limit)){
-				$res2 = $superfecta->db->query($query);
-				if (DB::IsError($res)){
-					die("Unable to search for winning child: " . $res2->getMessage() .  "<br>");
-				}
-				$winning_child_id = false;
-				$last_priority = 0;
-				$first_caller_id = '';
-				$spam_text = '';
-				$spam = '';
-				$spam_source = '';
-				$spam_child_id = false;
-				$loop_cur_time = mctime_float();
-				while($res2 && ($row2 = $res2->fetchRow(DB_FETCHMODE_ASSOC))){
-					// Wait for a winning child, in the order of it's preference
-					// Take the first to finish after multifecta_timeout is reached
-					if(($row2['priority']==$last_priority) 
-						|| ($loop_limit == 1) 
-						|| (($loop_cur_time - $loop_start_time)>$loop_time_limit)
-						|| (($loop_cur_time - $loop_start_time)>$loop_priority_time_limit)
-					){
-						if((!$multifecta_timeout_hit) && (($loop_cur_time - $loop_start_time)>$loop_priority_time_limit)){
-							$multifecta_timeout_hit = true;
-							if($superfecta->debug){
-								print "Multifecta Timeout reached.  Taking first child with a CNAM result.<br>\n";
-							}
-						}
-						// Record the results of any spam sources
-						// We dont break out of the loop for spam though.  We'll just keep
-						// checking it over and over until we get a cnam or we time-out.
-						$spam_text = (($row2['spam_text'])?$row2['spam_text']:$spam_text);
-						if($row2['spam_text'] && (!$spam_text)){
-							$spam = $row2['spam'];
-							$spam_text = $row2['spam_text'];
-							$spam_source = $row2['source'];
-							$spam_child_id = $row2['superfecta_mf_child_id'];
-						}
-						// If we hit a cnam result, we are done.  break out of the loop.
-						$spam = (($row2['spam_text'])?$row2['spam']:$spam);
-						if($row2['cnam'] && (!$first_caller_id)){
-							$first_caller_id = $row2['cnam'];
-							$winning_child_id = $row2['superfecta_mf_child_id'];
-							$winning_source = $row2['source'];
-							$cache_found = $row2['cached'];
-							break;
-						}
-						$last_priority ++;
-					}
-				}
-				// We have a cnam, break out of this loop too
-				if($first_caller_id){ break; }
-				$loop_limit --;
-				if($loop_limit && ($loop_cur_time - $loop_start_time)<=$loop_time_limit){
-					usleep(50000); // sleep for 1/20 second. Short delay, but should help from taxing the system too much.
-				}else{
-					if($superfecta->debug){
-						print "Maximum timeout reached.  Will not wait for any more children. <br>\n";
-						break;
-					}
-				}
-			}
-			if($superfecta->debug && $loop_cur_time){
-				print "Parent waited " . number_format(($loop_cur_time - $loop_start_time),4) . " seconds for children's results. <br>\n";
-			}
-			if($superfecta->debug && $first_caller_id){
-				print "Winning CNAM child source $winning_child_id: $winning_source, with: $first_caller_id <br>\n";
-			}
-			if($superfecta->debug && $spam_text){
-				print "Winning SPAM child source $spam_child_id: $spam_source <br>\n";
-			}
-			if($superfecta->debug && (!$first_caller_id) && (!$spam_text)){
-				print "No winning SPAM or CNAM children found in allotted time. <br>\n";
-			}
-			$superfecta->multifecta_parent_end_time = mctime_float();
-			$query = "UPDATE superfecta_mf
-				SET timestamp_end = ".$superfecta->db->quoteSmart($superfecta->multifecta_parent_end_time);
-				if($winning_child_id){
-					$query .= ",
-					winning_child_id = ".$superfecta->db->quoteSmart($winning_child_id);
-				}
-				if($spam_child_id){
-					$query .= ",
-					spam_child_id = ".$superfecta->db->quoteSmart($spam_child_id);
-				}
-				$query .= "
-				  	WHERE superfecta_mf_id = ".$superfecta->db->quoteSmart($superfecta->superfecta_mf_id)."
-					";
-			$res2 = $superfecta->db->query($query);
+			print "result <img src='images/scrollup.gif'> took ".number_format((mctime_float()-$start_time),4)." seconds.<br>\n<br>\n";
 		}
 	}
-}
 
-//remove unauthorized character in the caller id
-if ($superfecta->first_caller_id !='')
-{
-	//$first_caller_id = _utf8_decode($first_caller_id);
-	$superfecta->first_caller_id = strip_tags($superfecta->first_caller_id );
-	$superfecta->first_caller_id = trim ($superfecta->first_caller_id);
-	if ($superfecta->charsetIA5)
-	{
-		$superfecta->first_caller_id = stripAccents($superfecta->first_caller_id);
-	}
-	$superfecta->first_caller_id = preg_replace ( "/[\";']/", "", $superfecta->first_caller_id);
-	//limit caller id to the first 60 char
-	$superfecta->first_caller_id = substr($superfecta->first_caller_id,0,60);
-}
-
-if($superfecta->debug && (!$superfecta->multifecta_id))
-{
-	print "<b>Returned Result would be: ";
-	$superfecta->first_caller_id = utf8_encode($superfecta->first_caller_id);
-}
-
-// Output cnam/spam/prefix result
-if(($superfecta->first_caller_id || $superfecta->spam_text) && (!$superfecta->multifecta_id)){
-
-	// If we are not runnign multifecta, or we are a multifecta parent, echo our results to STDOUT
-	print (($superfecta->prefix != '') ? $superfecta->prefix.':' : '').(($superfecta->spam_text != '') ? $superfecta->spam_text.':' : '').$superfecta->first_caller_id;
-
-}elseif($superfecta->multifecta_id){
-	// If we are a multifecta child, update our child record with our results
-	// Update only what we have -- leave the rest null 	
-	$multifecta_child_cname_time = mctime_float();
-	$query = "UPDATE superfecta_mf_child
-			SET timestamp_cnam = ".$db->quoteSmart($multifecta_child_cname_time);
-			if($superfecta->first_caller_id){
-				$query .= ",
-				cnam = ".$db->quoteSmart(trim($superfecta->caller_id_array[$superfecta->multifecta_id]));
-			}
-			if($superfecta->spam_text){
-				$query .= ",
-				spam_text = ".$db->quoteSmart($spam_text);
-			}
-			if($superfecta->spam){
-				$query .= ",
-				spam = ".$db->quoteSmart($spam);
-			}
-			if($superfecta->cache_found){
-				$query .= ",
-				cached = 1";
-			}
-			$query .= "
-		  	WHERE superfecta_mf_child_id = ".$db->quoteSmart($superfecta->multifecta_id)."
-			";
-	$res = $superfecta->db->query($query);
-	if (DB::IsError($res)){
-		die("Unable to update child: " . $res->getMessage() .  "<br>");
-	}
-
-	// Reset some variables that will be filled by the winning child
-	$spam_text = '';
-	$spam = false;
-	$first_caller_id = '';
-	$winning_child_id = false;
-	$multifecta_parent_end_time = false;
-
-	// Now wait for the winning cnam, and then continue on to post-process
-	$query = "SELECT mf.winning_child_id, mf.timestamp_end, mf.prefix, mf.scheme, mfc.cnam, mfc.source, mfc.cached, mfs.spam, mfs.spam_text
-			FROM superfecta_mf mf
-				LEFT OUTER JOIN superfecta_mf_child mfc 
-					ON mfc.superfecta_mf_child_id = mf.winning_child_id
-				LEFT OUTER JOIN superfecta_mf_child mfs
-					ON mfs.superfecta_mf_child_id = mf.spam_child_id
-		  	WHERE mf.superfecta_mf_id = ".$db->quoteSmart($multifecta_parent_id)."
-			AND mf.timestamp_end IS NOT NULL 
-			";
-
-	// Check every second until we get a result
-	$loop_limit = 10; // Loop for ~10 seconds before giving up
-	while((!$superfecta->multifecta_parent_end_time) && ($loop_limit)){
-		sleep(1); // sleep for 1 second
-		$res = $superfecta->db->query($query);
-		if (DB::IsError($res)){
-			die("Unable to load winning child: " . $res->getMessage() .  "<br>");
-		}
-		if($res && ($row = $res->fetchRow(DB_FETCHMODE_ASSOC))){
-			$winning_child_id = $row['winning_child_id'];
-			$multifecta_parent_end_time = $row['timestamp_end'];
-			$prefix = $row['prefix'];
-			$first_caller_id = $row['cnam'];
-			$spam_text = $row['spam_text'];
-			$spam = $row['spam'];
-			$winning_source = $row['source'];
-			$this_scheme =  $row['scheme'];
-			$cache_found = $row['cached'];
-		}
-		$loop_limit --;
-	}
-}
-
-if($superfecta->debug && (!$superfecta->multifecta_id))
-{
-	// end of returned result debug output
-	print "</b><br>\n";
-}
-
-// Multifecta Parent has to run this after everything actually or it doesnt make any sense
-if((isset($param[$this_scheme])) && ((!$param[$this_scheme]['enable_multifecta']) || (!$superfecta->multifecta_id))){
-	//post-processing
-	if($superfecta->debug)
-	{
-		print "Post CID retrieval processing.<br>\n<br>\n";
-	}	
+	if($run_this_scheme) {
+		$callerid = $superfecta->get_results();
 	
-	$usage_mode = 'post processing';
-	foreach($src_array as $source_name)
-	{
-		// Run the source
-		if((!$superfecta->single_source) || ($superfecta->single_source == $source_name)){
-			$run_param = (isset($param[substr($this_scheme,5).'_'.$source_name]) ? $param[substr($this_scheme,5).'_'.$source_name] : array());
-			if(file_exists("source-".$source_name.".module")) {
-				require_once("source-".$source_name.".module");
-				$source_class = NEW $source_name;
-				$source_class->db = $db;
-				$source_class->debug = $debug;
-				if(method_exists($source_class, 'post_processing')) {					
-					$caller_id = $source_class->post_processing($superfecta->cache_found,$superfecta->winning_source,$superfecta->first_caller_id,$run_param,$superfecta->theoriginalnumber);
-				} else {
-					print "Method 'post_processing' doesn't exist<br\>\n"; 
-				}
+		if ($callerid !='')
+		{
+			//$first_caller_id = _utf8_decode($first_caller_id);
+			$callerid = strip_tags($callerid );
+			$callerid = trim ($callerid);
+			if ($superfecta->charsetIA5)
+			{
+				$callerid = stripAccents($callerid);
 			}
+			$callerid = preg_replace ( "/[\";']/", "", $callerid);
+			//limit caller id to the first 60 char
+			$callerid = substr($callerid,0,60);
+		}
+	
+		$superfecta->send_results($callerid);
+	
+		if(!$superfecta->debug) {
+			echo $superfecta->prefix.$callerid;
+		} else {
+			print "<b>Returned Result would be: ";
+			$callerid = utf8_encode($superfecta->prefix.$callerid);
+			print $callerid;
+			$end_time_whole = ($end_time_whole == 0) ? mctime_float() : $end_time_whole;
+			print "<br>\nresult <img src='images/scrollup.gif'> took ".number_format(($end_time_whole-$start_time_whole),4)." seconds.</b>";
 		}
 	}
-}
-
-if($superfecta->debug)
-{
-	$end_time_whole = ($end_time_whole == 0) ? mctime_float() : $end_time_whole;
-	print "<br>\nresult <img src='images/scrollup.gif'> took ".number_format(($end_time_whole-$start_time_whole),4)." seconds.</b>";
-}
-if($superfecta->multifecta_id){
-	$multifecta_child_end_time = mctime_float();
-	$query = "UPDATE superfecta_mf_child
-			SET timestamp_end = ".$db->quoteSmart($multifecta_child_end_time)."
-		  	WHERE superfecta_mf_child_id = ".$db->quoteSmart($superfecta->multifecta_id)."
-			";
-	$res = $superfecta->db->query($query);
-	if (DB::IsError($res)){
-		die("Unable to update child end time: " . $res->getMessage() .  "<br>");
-	}
+} elseif(($superfecta->type == 'MULTI') && ($superfecta->multi_type == 'CHILD')) {
+	$superfecta->get_results();
 }
 
 /**
