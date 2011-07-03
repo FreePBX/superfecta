@@ -71,7 +71,7 @@ if(isset($scheme_param['enable_multifecta'])) {
 }
 $superfecta->cli = $cli;
 
-if($superfecta->debug){
+if(($superfecta->debug) && (($superfecta->type == 'SUPER') || (($superfecta->type == 'MULTI') && ($superfecta->multi_type == 'PARENT')))){
 	// If debugging, report all errors
 	error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
 	ini_set('display_errors', '1');
