@@ -13,126 +13,38 @@ Original script by Nerd Vittles. (Google for Caller Id Trifecta)
 	01-03-2010  	Version 2.3.0  Updates to remove need for Caller ID Lookup module
 	01-04-2010  	Version 2.3.0  Updates for running multiple sources at the same time (Multifecta)
 ***/
-require_once('superfecta_base.php');
-$superfecta = NEW superfecta_base();
-$superfecta->debug = (((isset($_REQUEST['debug'])) ? $_REQUEST['debug'] : '') == 'yes') ? true : false;
+require_once('../config.php');
 
-$superfecta->thenumber_orig = (isset($_REQUEST['thenumber'])) ? trim($_REQUEST['thenumber']) : '';
-$superfecta->DID = (isset($_REQUEST['testdid'])) ? trim($_REQUEST['testdid']) : '';
-$superfecta->scheme = (isset($_REQUEST['scheme'])) ? trim($_REQUEST['scheme']) : '';
-
-if(($superfecta->thenumber_orig == '') && isset($argv[1]) && ($argv[1] != '-multifecta_id')){
-	$superfecta->thenumber_orig = $argv[1];
-}elseif(($superfecta->DID == '') && isset($argv[2]) && ($argv[1] != '-multifecta_id')){
-	$superfecta->DID = $argv[2];
-}elseif(isset($argv[1]) && ($argv[1] == '-multifecta_id') && isset($argv[2])){
-	$superfecta->multifecta_id = $argv[2];
-}
-
-if(($superfecta->scheme == '') AND (isset($argv[3]))) {
-	$superfecta->scheme = $argv[3];
-}
-
-if($superfecta->debug){
-	// If debugging, report all errors
-//	error_reporting(-1);
-	error_reporting(E_ALL & E_NOTICE); // -1 was not letting me see the wood for the trees.
-	ini_set('display_errors', '1');
-	echo "Debug is on<br>\n";
-	echo "The Original Number: ". $superfecta->thenumber_orig ."<br>\n";
-	echo "The DID: ". $superfecta->DID ."<br>\n";
-	echo "The Scheme: ". $superfecta->scheme ."<br>\n";
-	if($superfecta->multifecta_id) {
-		$mf_type = "child";		 
-	} else {
-		$mf_type = "parent";
+//Determine CLI or HTTP
+if(php_sapi_name() == 'cli' && empty($_SERVER['REMOTE_ADDR'])) {
+	$cli = true;
+	$shortopts  = "";
+	$shortopts .= "s:m:n:r:";  // Required value
+	$shortopts .= "d"; // These options do not accept values
+	$options = getopt($shortopts);
+	if(isset($options)) {
+		$scheme_name = "base_".$options['s'];
+		$debug = isset($options['d']) ? true : false;
+		$multifecta_id = isset($options['m']) ? $options['m'] : false;
+		$thenumber_orig = isset($options['n']) ? $options['n'] : false;
+		$source = isset($options['r']) ? $options['r'] : false;
 	}
-	echo "Multifecta-Type: ". $mf_type ."<br>\n";
-}
-
-//New code for FreePBX 2.9 -- Andrew Nagy (tm1000)
-if(file_exists("/etc/freepbx.conf")) {
-	//This is FreePBX 2.9+
-	if($superfecta->debug) {
-		echo "<br/><strong>Detected FreePBX version is at least 2.9</strong><br/>";
-	}
-	require("/etc/freepbx.conf");
-} elseif(file_exists("/etc/asterisk/freepbx.conf")) {
-	//This is FreePBX 2.9+
-	if($superfecta->debug) {
-		echo "<br/><strong>Detected FreePBX version is at least 2.9</strong><br/>";
-	}
-	require("/etc/asterisk/freepbx.conf");
 } else {
-	//This is > FreePBX 2.8
-	if($superfecta->debug) {
-		echo "<br/><strong>Detected FreePBX version is at most 2.8</strong><br/>";
-	}
-	
-	require_once("../../../functions.inc.php");
-	
-	require_once 'DB.php';
-	define("AMP_CONF", "/etc/amportal.conf");
-
-	$amp_conf = parse_amportal_conf(AMP_CONF);
-	if(count($amp_conf) == 0)
-	{
-		fatal("FAILED");
-	}
-
-	$dsn = array(
-	    'phptype'  => 'mysql', // Looks like we are assuming mysql  -- is this safe? (jkiel - 01/04/2011)
-	    'username' => $amp_conf['AMPDBUSER'],
-	    'password' => $amp_conf['AMPDBPASS'],
-	    'hostspec' => $amp_conf['AMPDBHOST'],
-	    'database' => $amp_conf['AMPDBNAME'],
-	);
-	$options = array();
-	$db =& DB::connect($dsn, $options);
-	if(PEAR::isError($db))
-	{
-		die($db->getMessage());
-	}
-}
-$superfecta->db = $db;
-$superfecta->amp_conf = $amp_conf;
-//End new FreePBX 2.9 code.
-
-//Check if we are a multifecta child, if so, get our variables from our child record
-if($superfecta->multifecta_id){
-	$query  = "SELECT mf.superfecta_mf_id, mf.scheme, mf.cidnum, mf.extension, mf.debug, mfc.source
-			FROM superfecta_mf mf, superfecta_mf_child mfc
-			WHERE mfc.superfecta_mf_child_id = " . $superfecta->db->quoteSmart($superfecta->multifecta_id) . "
-			AND mf.superfecta_mf_id = mfc.superfecta_mf_id";
-
-	$res = $superfecta->db->query($query);
-	if (DB::IsError($res)){
-		die("Unable to load child record: " . $res->getMessage() .  "<br>");
-	}
-	if($row = $res->fetchRow(DB_FETCHMODE_ASSOC)){
-		
-		$superfecta->scheme = $row['scheme'];
-		$superfecta->thenumber_orig = $row['cidnum'];
-		$superfecta->DID = $row['extension'];
-		$superfecta->multifecta_parent_id = $row['superfecta_mf_id'];
-		if($row['debug']){
-			$debug = true;
-		}
-		$superfecta->single_source = $row['source'];
-	}else{
-		die("Unable to load multifecta child record '".$superfecta->multifecta_id."'");
-	}
+	$cli = false;
+	$scheme_name = "base_".(isset($_REQUEST['scheme'])) ? trim($_REQUEST['scheme']) : '';
+	$debug = (((isset($_REQUEST['debug'])) ? $_REQUEST['debug'] : '') == 'yes') ? true : false;
+	$thenumber_orig = (isset($_REQUEST['thenumber'])) ? trim($_REQUEST['thenumber']) : '';
 }
 
-if($superfecta->debug)
-{
-	$start_time_whole = mctime_float();
-	$end_time_whole = 0;
+//Die on Scheme unknown
+if(trim($scheme_name) == '') {
+	die("No Scheme Assigned/Known!");
 }
 
+//Get Scheme Params
 $param = array();
 $query = "SELECT * FROM superfectaconfig";
-$res = $superfecta->db->query($query);
+$res = $db->query($query);
 if (DB::IsError($res)){
 	die("Unable to load scheme parameters: " . $res->getMessage() .  "<br>");
 }
@@ -141,10 +53,47 @@ while ($row = $res->fetchRow(DB_FETCHMODE_ASSOC))
 	$param[$row['source']][$row['field']] = $row['value'];
 }
 
-if($superfecta->debug)
-{
-	print "Debugging Enabled, will not stop after first result.<br>\n";
+if(!array_key_exists($scheme_name,$param)) {
+	die('Scheme Does not Exist!');
 }
+
+$scheme_param = $param[$scheme_name];
+
+require_once('superfecta_base.php');
+if(isset($scheme_param['enable_multifecta'])) {
+	require_once('superfecta_multi.php');
+	$superfecta = NEW superfecta_multi($multifecta_id,$db,$amp_conf,$debug,$thenumber_orig,$scheme_name,$scheme_param,$source);
+	$superfecta->type = 'MULTI';
+} else {
+	require_once('superfecta_single.php');
+	$superfecta = NEW superfecta_single($db,$amp_conf,$debug,$thenumber_orig);
+	$superfecta->type = 'SUPER';
+	$superfecta->out("Non Multi-Fecta schemes are currently disabled");
+}
+$superfecta->cli = $cli;
+
+if($superfecta->debug){
+	// If debugging, report all errors
+	error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
+	ini_set('display_errors', '1');
+	$superfecta->out("<strong>Debug is on</strong><br>\n");
+	$superfecta->out("<strong>The Original Number: </strong>". $superfecta->thenumber_orig);
+	$superfecta->out("<strong>The Scheme: </strong>". $superfecta->scheme_name);
+	$superfecta->out("<strong>Scheme Type: </strong>".$superfecta->type."FECTA");
+	$superfecta->out("<strong>is CLI: </strong>");
+	$superfecta->out($cli ? 'true' : 'false');
+	$start_time_whole = mctime_float();
+	$end_time_whole = 0;
+	$superfecta->out("<b>Debugging Enabled, will not stop after first result.");
+	$superfecta->out("Scheme Variables:</b><pre>". print_r($superfecta->scheme_param,TRUE) . "</pre>");
+}
+
+$superfecta->get_results();
+
+/*
+
+
+
 
 //loop through schemes
 $query = "SELECT source	FROM superfectaconfig WHERE field = 'order' AND value > 0";
