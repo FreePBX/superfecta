@@ -34,8 +34,8 @@ class superfecta_single extends superfecta_base {
 					$caller_id = _utf8_decode($caller_id);
 
 
-					if(($first_caller_id == '') && ($caller_id != '')) {
-						$first_caller_id = $caller_id;
+					if(($this->first_caller_id == '') && ($caller_id != '')) {
+						$this->first_caller_id = $caller_id;
 						$winning_source = $data;
 						if($this->debug)
 						{
@@ -65,7 +65,7 @@ class superfecta_single extends superfecta_base {
 				break;
 			}
 		}
-		return($first_caller_id);
+		return($this->first_caller_id);
 	}
 	
 	function send_results($caller_id) {
