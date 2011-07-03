@@ -71,9 +71,10 @@ if(isset($scheme_param['enable_multifecta'])) {
 }
 $superfecta->cli = $cli;
 
+//We only want to run all of this if it's a parent-multifecta or the original code (single-fecta), No need to run this for every child
 if(($superfecta->debug) && (($superfecta->type == 'SUPER') || (($superfecta->type == 'MULTI') && ($superfecta->multi_type == 'PARENT')))){
 	// If debugging, report all errors
-	error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
+	error_reporting(E_ALL & E_NOTICE); // -1 was not letting me see the wood for the trees.
 	ini_set('display_errors', '1');
 	$superfecta->out("<strong>Debug is on</strong><br>\n");
 	$superfecta->out("<strong>The Original Number: </strong>". $superfecta->thenumber_orig);
@@ -87,9 +88,11 @@ if(($superfecta->debug) && (($superfecta->type == 'SUPER') || (($superfecta->typ
 	$superfecta->out("Scheme Variables:</b><pre>". print_r($superfecta->scheme_param,TRUE) . "</pre>");
 }
 $superfecta->thenumber = ereg_replace('[^0-9]+', '', $superfecta->thenumber_orig);
+$superfecta->curl_timeout = $scheme_param['Curl_Timeout'];
 
 $run_this_scheme = true;
 
+//We only want to run all of this if it's a parent-multifecta or the original code (single-fecta), No need to run this for every child
 if(($superfecta->type == 'SUPER') || (($superfecta->type == 'MULTI') && ($superfecta->multi_type == 'PARENT'))) {
 	// Determine if this is the correct DID, if this scheme is limited to a DID.
 	$rule_match = match_pattern_all( (isset($scheme_param['DID'])) ? $scheme_param['DID'] : '', $DID );
@@ -109,8 +112,6 @@ if(($superfecta->type == 'SUPER') || (($superfecta->type == 'MULTI') && ($superf
 		if($superfecta->debug){print "No matching CID rules.<br>\n";}
 		$run_this_scheme = false;
 	}
-
-	$superfecta->curl_timeout = $scheme_param['Curl_Timeout'];
 
 	//if a prefix lookup is enabled, look it up, and truncate the result to 10 characters
 	///Clean these up, set NULL values instead of blanks then don't check for ''

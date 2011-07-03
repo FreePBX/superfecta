@@ -16,7 +16,7 @@ class superfecta_base {
 	public $src_array = array();
 	public $multifecta_id = false;
 	public $multifecta_parent_id = false;
-	public $curl_timeout;
+	public $curl_timeout = '1.5';
 	
 	//public $thenumber_orig = (isset($_REQUEST['thenumber'])) ? trim($_REQUEST['thenumber']) : '';
 	//public $DID = (isset($_REQUEST['testdid'])) ? trim($_REQUEST['testdid']) : '';
