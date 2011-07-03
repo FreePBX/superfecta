@@ -19,7 +19,7 @@ require_once('../config.php');
 if(php_sapi_name() == 'cli' && empty($_SERVER['REMOTE_ADDR'])) {
 	$cli = true;
 	$shortopts  = "";
-	$shortopts .= "s:m:n:r:";  // Required value
+	$shortopts .= "s:m:n:r:i";  // Required value
 	$shortopts .= "d"; // These options do not accept values
 	$options = getopt($shortopts);
 	if(isset($options)) {
@@ -28,12 +28,14 @@ if(php_sapi_name() == 'cli' && empty($_SERVER['REMOTE_ADDR'])) {
 		$multifecta_id = isset($options['m']) ? $options['m'] : false;
 		$thenumber_orig = isset($options['n']) ? $options['n'] : false;
 		$source = isset($options['r']) ? $options['r'] : false;
+		$DID = isset($options['i']) ? $options['i'] : false;
 	}
 } else {
 	$cli = false;
 	$scheme_name = "base_".(isset($_REQUEST['scheme'])) ? trim($_REQUEST['scheme']) : '';
 	$debug = (((isset($_REQUEST['debug'])) ? $_REQUEST['debug'] : '') == 'yes') ? true : false;
 	$thenumber_orig = (isset($_REQUEST['thenumber'])) ? trim($_REQUEST['thenumber']) : '';
+	$did = (isset($_REQUEST['DID'])) ? trim($_REQUEST['DID']) : '';
 }
 
 //Die on Scheme unknown
@@ -70,13 +72,14 @@ if(isset($scheme_param['enable_multifecta'])) {
 	$superfecta->type = 'SUPER';
 }
 $superfecta->cli = $cli;
+$superfecta->DID = $DID;
 
 //We only want to run all of this if it's a parent-multifecta or the original code (single-fecta), No need to run this for every child
 if(($superfecta->debug) && (($superfecta->type == 'SUPER') || (($superfecta->type == 'MULTI') && ($superfecta->multi_type == 'PARENT')))){
 	// If debugging, report all errors
 	error_reporting(E_ALL & E_NOTICE); // -1 was not letting me see the wood for the trees.
 	ini_set('display_errors', '1');
-	$superfecta->out("<strong>Debug is on</strong><br>\n");
+	$superfecta->out("<strong>Debug is on</strong>");
 	$superfecta->out("<strong>The Original Number: </strong>". $superfecta->thenumber_orig);
 	$superfecta->out("<strong>The Scheme: </strong>". $superfecta->scheme_name);
 	$superfecta->out("<strong>Scheme Type: </strong>".$superfecta->type."FECTA");
@@ -95,7 +98,7 @@ $run_this_scheme = true;
 //We only want to run all of this if it's a parent-multifecta or the original code (single-fecta), No need to run this for every child
 if(($superfecta->type == 'SUPER') || (($superfecta->type == 'MULTI') && ($superfecta->multi_type == 'PARENT'))) {
 	// Determine if this is the correct DID, if this scheme is limited to a DID.
-	$rule_match = match_pattern_all( (isset($scheme_param['DID'])) ? $scheme_param['DID'] : '', $DID );
+	$rule_match = match_pattern_all( (isset($scheme_param['DID'])) ? $scheme_param['DID'] : '', $superfecta->DID );
 	if($rule_match['number']){
 		if($superfecta->debug){print "Matched DID Rule: '".$rule_match['pattern']."' with '".$rule_match['number']."'<br>\n";}
 	}elseif($rule_match['status']){

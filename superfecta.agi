@@ -13,7 +13,7 @@
 	$did = $agi->request['agi_extension'];
 	$thenumber = $agi->request['agi_callerid'];
 	chdir(dirname(__FILE__) . '/bin');
-	if($result = trim(shell_exec('/usr/bin/php ' . dirname(__FILE__) . '/bin/callerid.php -s '.$sn[1].' -n ' . $thenumber))){
+	if($result = trim(shell_exec('/usr/bin/php ' . dirname(__FILE__) . '/bin/callerid.php -s '.$sn[1].' -n ' . $thenumber . '-i '.$did))){
 		$agi->set_variable("lookupcid", $result);
 	}
 
