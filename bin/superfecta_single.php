@@ -65,7 +65,7 @@ class superfecta_single extends superfecta_base {
 				break;
 			}
 		}
-		return($caller_id);
+		return($first_caller_id);
 	}
 	
 	function send_results($caller_id) {
