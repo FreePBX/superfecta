@@ -66,9 +66,8 @@ if(isset($scheme_param['enable_multifecta'])) {
 	$superfecta->type = 'MULTI';
 } else {
 	require_once('superfecta_single.php');
-	$superfecta = NEW superfecta_single($db,$amp_conf,$debug,$thenumber_orig);
+	$superfecta = NEW superfecta_single($db,$amp_conf,$debug,$thenumber_orig,$scheme_name,$scheme_param);
 	$superfecta->type = 'SUPER';
-	$superfecta->out("Non Multi-Fecta schemes are currently disabled");
 }
 $superfecta->cli = $cli;
 
@@ -87,8 +86,37 @@ if($superfecta->debug){
 	$superfecta->out("<b>Debugging Enabled, will not stop after first result.");
 	$superfecta->out("Scheme Variables:</b><pre>". print_r($superfecta->scheme_param,TRUE) . "</pre>");
 }
+$superfecta->thenumber = ereg_replace('[^0-9]+', '', $superfecta->thenumber_orig);
 
-$superfecta->get_results();
+$run_this_scheme = true;
+
+
+// Determine if this is the correct DID, if this scheme is limited to a DID.
+$rule_match = match_pattern_all( (isset($scheme_param['DID'])) ? $scheme_param['DID'] : '', $DID );
+if($rule_match['number']){
+	if($superfecta->debug){print "Matched DID Rule: '".$rule_match['pattern']."' with '".$rule_match['number']."'<br>\n";}
+}elseif($rule_match['status']){
+	if($superfecta->debug){print "No matching DID rules.<br>\n";}
+	$run_this_scheme = false;
+}
+
+// Determine if the CID matches any patterns defined for this scheme
+$rule_match = match_pattern_all((isset($scheme_param['CID_rules']))?$scheme_param['CID_rules']:'', $superfecta->thenumber );
+if($rule_match['number'] && $run_this_scheme){
+	if($superfecta->debug){print "Matched CID Rule: '".$rule_match['pattern']."' with '".$rule_match['number']."'<br>\n";}
+	$superfecta->thenumber = $rule_match['number'];
+}elseif($rule_match['status'] && $run_this_scheme){
+	if($superfecta->debug){print "No matching CID rules.<br>\n";}
+	$run_this_scheme = false;
+}
+
+if($run_this_scheme) {
+	$callerid = $superfecta->get_results();
+	$superfecta->send_results($callerid);
+	if(!$superfecta->debug) {
+		echo $callerid;
+	}
+}
 
 /*
 
@@ -133,27 +161,7 @@ else
 		}
 
 
-		// Determine if this is the correct DID, if this scheme is limited to a DID.
 
-		$rule_match = match_pattern_all( (isset($param[$this_scheme]['DID'])) ? $param[$this_scheme]['DID'] : '', $DID );
-		if($rule_match['number']){
-			if($superfecta->debug){print "Matched DID Rule: '".$rule_match['pattern']."' with '".$rule_match['number']."'<br>\n";}
-		}elseif($rule_match['status']){
-			if($superfecta->debug){print "No matching DID rules.<br>\n";}
-			$run_this_scheme = false;
-		}
-
-
-		// Determine if the CID matches any patterns defined for this scheme
-
-		$rule_match = match_pattern_all((isset($param[$this_scheme]['CID_rules']))?$param[$this_scheme]['CID_rules']:'', $superfecta->thenumber );
-		if($rule_match['number'] && $run_this_scheme){
-			if($superfecta->debug){print "Matched CID Rule: '".$rule_match['pattern']."' with '".$rule_match['number']."'<br>\n";}
-			$superfecta->thenumber = $rule_match['number'];
-		}elseif($rule_match['status'] && $run_this_scheme){
-			if($superfecta->debug){print "No matching CID rules.<br>\n";}
-			$run_this_scheme = false;
-		}
 
 		// Run the scheme
 		if($superfecta->debug) {

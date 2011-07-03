@@ -113,10 +113,12 @@ class superfecta_multi extends superfecta_base {
 				}
 				if($superfecta_mf_child_id = (($this->amp_conf["AMPDBENGINE"] == "sqlite3") ? sqlite_last_insert_rowid($this->db->connection) : mysql_insert_id($this->db->connection))){
 					if($this->debug){
-						$this->out("Spawning child $superfecta_mf_child_id: $data <br>\n");
-						$db = '-d ';
+						$this->out("Spawning child ".$superfecta_mf_child_id.":". $data);
+						exec('/usr/bin/php /var/www/html/admin/modules/superfecta/bin/callerid.php -s '.$this->scheme_name.' -n '.$this->thenumber_orig.' -m ' . $superfecta_mf_child_id . ' -r '.$data.' > log-'.$superfecta_mf_child_id.'.log 2>&1 &');
+					} else {
+						exec('/usr/bin/php /var/www/html/admin/modules/superfecta/bin/callerid.php -s '.$this->scheme_name.' -n '.$this->thenumber_orig.' -d -m ' . $superfecta_mf_child_id . ' -r '.$data.' > /dev/null 2>&1 &');
+						
 					}
-					exec('/usr/bin/php /var/www/html/admin/modules/superfecta/bin/callerid.php -s '.$this->scheme_name.' -n '.$this->thenumber_orig.' '.$db.'-m ' . $superfecta_mf_child_id . ' -r '.$data.' > log-'.$superfecta_mf_child_id.'.log 2>&1 &');
 				}
 				$multifecta_count++;
 			}
@@ -149,6 +151,7 @@ class superfecta_multi extends superfecta_base {
 				$spam_child_id = false;
 				$loop_cur_time = mctime_float();
 				while($res2 && ($row2 = $res2->fetchRow(DB_FETCHMODE_ASSOC))){
+					/*** FUTURE
 					echo "<pre>";
 					print_r($row2);
 					echo "</pre>";
@@ -159,6 +162,7 @@ class superfecta_multi extends superfecta_base {
 						$cache_found = $row2['cached'];
 						break;
 					}
+					**/
 					// Wait for a winning child, in the order of it's preference
 					// Take the first to finish after multifecta_timeout is reached
 					if(($row2['priority']==$last_priority) 
@@ -205,18 +209,33 @@ class superfecta_multi extends superfecta_base {
 						break;
 					}
 				}
+			}			
+			
+			if($this->debug) {			
+				$sql = 'SELECT superfecta_mf_child_id, source FROM superfecta_mf_child WHERE superfecta_mf_id = '.$superfecta_mf_id;
+				$list =& $this->db->getAll($sql, array(), DB_FETCHMODE_ASSOC);
+				usleep(50000);
+				foreach ($list as $data) {
+						echo "<b>Debug From Child-".$data['superfecta_mf_child_id']."-".$data['source'].":</b><br/>";
+						echo "<pre>";
+						echo file_get_contents("log-".$data['superfecta_mf_child_id'].".log");
+						echo "</pre>";
+						unlink("log-".$data['superfecta_mf_child_id'].".log");
+				}
 			}
+			
+			
 			if($this->debug && $loop_cur_time){
-				$this->out("Parent waited " . number_format(($loop_cur_time - $loop_start_time),4) . " seconds for children's results. <br>\n");
+				$this->out("Parent waited " . number_format(($loop_cur_time - $loop_start_time),4) . " seconds for children's results.");
 			}
 			if($this->debug && $first_caller_id){
-				$this->out("Winning CNAM child source $winning_child_id: $winning_source, with: $first_caller_id <br>\n");
+				$this->out("Winning CNAM child source ".$winning_child_id.":". $winning_source.", with: ".$first_caller_id);
 			}
 			if($this->debug && $spam_text){
-				$this->out("Winning SPAM child source $spam_child_id: $spam_source <br>\n");
+				$this->out("Winning SPAM child source ".$spam_child_id.":". $spam_source);
 			}
 			if($this->debug && (!$first_caller_id) && (!$spam_text)){
-				$this->out("No winning SPAM or CNAM children found in allotted time. <br>\n");
+				$this->out("No winning SPAM or CNAM children found in allotted time.");
 			}
 			$multifecta_parent_end_time = mctime_float();
 			$query = "UPDATE superfecta_mf
@@ -233,13 +252,10 @@ class superfecta_multi extends superfecta_base {
 				  	WHERE superfecta_mf_id = ".$this->db->quoteSmart($superfecta_mf_id)."
 					";
 			$res2 = $this->db->query($query);
+			return($first_caller_id);
 		} elseif ($this->multi_type = 'CHILD') {
-			$this->thenumber = ereg_replace('[^0-9]+', '', $this->thenumber_orig);
 			$superfecta->caller_id = '';
-			if($this->debug)
-			{
-				$start_time = mctime_float();
-			}
+			$start_time = mctime_float();
 			
 			$sql = "SELECT field,value FROM superfectaconfig WHERE source = '".$this->scheme_name."_".$this->source."'";
 			$run_param = $this->db->getAssoc($sql);
@@ -266,10 +282,11 @@ class superfecta_multi extends superfecta_base {
 					{
 						if($this->debug)
 						{
-							$end_time_whole = mctime_float();
 							echo "<br/>Returned Result was: ".$caller_id;
 						}
 					}
+					$end_time_whole = mctime_float();
+					
 					$multifecta_child_cname_time = mctime_float();
 					$query = "UPDATE superfecta_mf_child
 							SET timestamp_cnam = ".$this->db->quoteSmart($multifecta_child_cname_time);
@@ -303,5 +320,9 @@ class superfecta_multi extends superfecta_base {
 				print "Unable to find source '".$this->source."' skipping..<br\>\n";
 			}
 		}
+	}
+	
+	function send_results($caller_id) {
+		//run post processing here
 	}	
 }

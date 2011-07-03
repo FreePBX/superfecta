@@ -37,6 +37,14 @@ class superfecta_base {
 		$settings = array(); 
 		return($settings);
 	}
+	
+	function out($message) {
+		if(!$this->cli) {
+			echo $message . "</br>";
+		} else {
+			echo strip_tags($message) . "\n";
+		}
+	}
 
 	/**
 	Search an array of area codes against phone number to find one that matches.
