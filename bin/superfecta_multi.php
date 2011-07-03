@@ -108,7 +108,7 @@ class superfecta_multi extends superfecta_base {
 						)";
 				// Create the child record
 				$res2 = $this->db->query($query);
-				if (DB::IsError($res)){
+				if (DB::IsError($res2)){
 					die("Unable to create child record: " . $res2->getMessage() .  "<br>");
 				}
 				if($superfecta_mf_child_id = (($this->amp_conf["AMPDBENGINE"] == "sqlite3") ? sqlite_last_insert_rowid($this->db->connection) : mysql_insert_id($this->db->connection))){
@@ -139,7 +139,7 @@ class superfecta_multi extends superfecta_base {
 			$multifecta_timeout_hit = false;
 			while($loop_limit && (($loop_cur_time - $loop_start_time)<=$loop_time_limit)){
 				$res2 = $this->db->query($query);
-				if (DB::IsError($res)){
+				if (DB::IsError($res2)){
 					die("Unable to search for winning child: " . $res2->getMessage() .  "<br>");
 				}
 				$winning_child_id = false;
@@ -278,7 +278,7 @@ class superfecta_multi extends superfecta_base {
 					if(isset($this->multifecta_id)) {
 						$this->caller_id_array[$this->multifecta_id] = $caller_id;
 					}
-					if(($first_caller_id == '') && ($caller_id != ''))
+					if(($this->first_caller_id == '') && ($caller_id != ''))
 					{
 						if($this->debug)
 						{
@@ -294,15 +294,15 @@ class superfecta_multi extends superfecta_base {
 								$query .= ",
 								cnam = ".$this->db->quoteSmart(trim($this->caller_id_array[$this->multifecta_id]));
 							}
-							if($spam_text){
+							if($this->spam_text){
 								$query .= ",
-								spam_text = ".$this->db->quoteSmart($spam_text);
+								spam_text = ".$this->db->quoteSmart($this->spam_text);
 							}
-							if($spam){
+							if($this->spam){
 								$query .= ",
-								spam = ".$this->db->quoteSmart($spam);
+								spam = ".$this->db->quoteSmart($this->spam);
 							}
-							if($cache_found){
+							if($this->cache_found){
 								$query .= ",
 								cached = 1";
 							}
