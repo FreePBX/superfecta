@@ -335,8 +335,8 @@ else
 							}
 							if(($first_caller_id == '') && ($caller_id != ''))
 							{
-								$first_caller_id = $caller_id;
-								$winning_source = $source_name;
+								$superfecta->first_caller_id = $caller_id;
+								$superfecta->winning_source = $source_name;
 								if($superfecta->debug)
 								{
 									$end_time_whole = mctime_float();
@@ -352,7 +352,7 @@ else
 					foreach($src_array as $source_name)
 						{
 						$caller_id = '';
-						if(((!$single_source) || ($single_source == $source_name)) && ((!$param[$this_scheme]['enable_multifecta']) || ($superfecta->multifecta_id))){
+						if(((!$superfecta->single_source) || ($$superfecta->single_source == $source_name)) && ((!$param[$this_scheme]['enable_multifecta']) || ($superfecta->multifecta_id))){
 							// We are in non-multifecta mode, or a multifecta, single source, child.  Run this source now.
 							$superfecta->thenumber = $superfecta->theoriginalnumber;
 							$superfecta->caller_id = '';
@@ -378,9 +378,9 @@ else
 									if(isset($superfecta->multifecta_id)) {
 										$superfecta->caller_id_array[$superfecta->multifecta_id] = $caller_id;
 									}
-									if(($first_caller_id == '') && ($caller_id != ''))
+									if(($superfecta->first_caller_id == '') && ($caller_id != ''))
 									{
-										$first_caller_id = $caller_id;
+										$superfecta->first_caller_id = $caller_id;
 										$winning_source = $source_name;
 										if($superfecta->debug)
 										{
@@ -468,7 +468,7 @@ else
 			}
 		}
 
-		if($first_caller_id != '')
+		if($superfecta->first_caller_id != '')
 		{
 			break;
 		}
@@ -585,31 +585,31 @@ else
 }
 
 //remove unauthorized character in the caller id
-if ($first_caller_id !='')
+if ($superfecta->first_caller_id !='')
 {
 	//$first_caller_id = _utf8_decode($first_caller_id);
-	$first_caller_id = strip_tags($first_caller_id );
-	$first_caller_id = trim ($first_caller_id);
+	$superfecta->first_caller_id = strip_tags($superfecta->first_caller_id );
+	$superfecta->first_caller_id = trim ($superfecta->first_caller_id);
 	if ($superfecta->charsetIA5)
 	{
-		$first_caller_id = stripAccents($first_caller_id);
+		$superfecta->first_caller_id = stripAccents($superfecta->first_caller_id);
 	}
-	$first_caller_id = preg_replace ( "/[\";']/", "", $first_caller_id);
+	$superfecta->first_caller_id = preg_replace ( "/[\";']/", "", $superfecta->first_caller_id);
 	//limit caller id to the first 60 char
-	$first_caller_id = substr($first_caller_id,0,60);
+	$superfecta->first_caller_id = substr($superfecta->first_caller_id,0,60);
 }
 
 if($superfecta->debug && (!$superfecta->multifecta_id))
 {
 	print "<b>Returned Result would be: ";
-	$first_caller_id = utf8_encode($first_caller_id);
+	$superfecta->first_caller_id = utf8_encode($superfecta->first_caller_id);
 }
 
 // Output cnam/spam/prefix result
-if(($first_caller_id || $spam_text) && (!$superfecta->multifecta_id)){
+if(($superfecta->first_caller_id || $superfecta->spam_text) && (!$superfecta->multifecta_id)){
 
 	// If we are not runnign multifecta, or we are a multifecta parent, echo our results to STDOUT
-	print (($prefix != '') ? $prefix.':' : '').(($spam_text != '') ? $spam_text.':' : '').$first_caller_id;
+	print (($superfecta->prefix != '') ? $superfecta->prefix.':' : '').(($superfecta->spam_text != '') ? $superfecta->spam_text.':' : '').$superfecta->first_caller_id;
 
 }elseif($superfecta->multifecta_id){
 	// If we are a multifecta child, update our child record with our results
@@ -617,19 +617,19 @@ if(($first_caller_id || $spam_text) && (!$superfecta->multifecta_id)){
 	$multifecta_child_cname_time = mctime_float();
 	$query = "UPDATE superfecta_mf_child
 			SET timestamp_cnam = ".$db->quoteSmart($multifecta_child_cname_time);
-			if($first_caller_id){
+			if($superfecta->first_caller_id){
 				$query .= ",
 				cnam = ".$db->quoteSmart(trim($superfecta->caller_id_array[$superfecta->multifecta_id]));
 			}
-			if($spam_text){
+			if($superfecta->spam_text){
 				$query .= ",
 				spam_text = ".$db->quoteSmart($spam_text);
 			}
-			if($spam){
+			if($superfecta->spam){
 				$query .= ",
 				spam = ".$db->quoteSmart($spam);
 			}
-			if($cache_found){
+			if($superfecta->cache_found){
 				$query .= ",
 				cached = 1";
 			}
@@ -700,7 +700,7 @@ if((isset($param[$this_scheme])) && ((!$param[$this_scheme]['enable_multifecta']
 	foreach($src_array as $source_name)
 	{
 		// Run the source
-		if((!$single_source) || ($single_source == $source_name)){
+		if((!$superfecta->single_source) || ($superfecta->single_source == $source_name)){
 			$run_param = (isset($param[substr($this_scheme,5).'_'.$source_name]) ? $param[substr($this_scheme,5).'_'.$source_name] : array());
 			if(file_exists("source-".$source_name.".module")) {
 				require_once("source-".$source_name.".module");
@@ -708,7 +708,7 @@ if((isset($param[$this_scheme])) && ((!$param[$this_scheme]['enable_multifecta']
 				$source_class->db = $db;
 				$source_class->debug = $debug;
 				if(method_exists($source_class, 'post_processing')) {					
-					$caller_id = $source_class->post_processing($cache_found,$winning_source,$first_caller_id,$run_param,$superfecta->theoriginalnumber);
+					$caller_id = $source_class->post_processing($superfecta->cache_found,$superfecta->winning_source,$superfecta->first_caller_id,$run_param,$superfecta->theoriginalnumber);
 				} else {
 					print "Method 'post_processing' doesn't exist<br\>\n"; 
 				}
