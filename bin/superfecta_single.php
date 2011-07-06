@@ -93,4 +93,9 @@ class superfecta_single extends superfecta_base {
 			}
 		}
 	}
+	
+	//Run this when web debug is initiated
+	function web_debug() {
+		return($this->get_results());
+	}
 }

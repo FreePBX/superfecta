@@ -64,6 +64,7 @@ $scheme_param = $param[$scheme_name];
 require_once('superfecta_base.php');
 if(isset($scheme_param['enable_multifecta'])) {
 	require_once('superfecta_multi.php');
+	//require_once('superfecta_pcntl.php');
 	$superfecta = NEW superfecta_multi($multifecta_id,$db,$amp_conf,$debug,$thenumber_orig,$scheme_name,$scheme_param,$source);
 	$superfecta->type = 'MULTI';
 } else {
@@ -79,16 +80,16 @@ if(($superfecta->debug) && (($superfecta->type == 'SUPER') || (($superfecta->typ
 	// If debugging, report all errors
 	error_reporting(E_ALL & E_NOTICE); // -1 was not letting me see the wood for the trees.
 	ini_set('display_errors', '1');
-	$superfecta->out("<strong>Debug is on</strong>");
-	$superfecta->out("<strong>The Original Number: </strong>". $superfecta->thenumber_orig);
-	$superfecta->out("<strong>The Scheme: </strong>". $superfecta->scheme_name);
-	$superfecta->out("<strong>Scheme Type: </strong>".$superfecta->type."FECTA");
+	$superfecta->outn("<strong>Debug is on</strong>");
+	$superfecta->outn("<strong>The Original Number: </strong>". $superfecta->thenumber_orig);
+	$superfecta->outn("<strong>The Scheme: </strong>". $superfecta->scheme_name);
+	$superfecta->outn("<strong>Scheme Type: </strong>".$superfecta->type."FECTA");
 	$superfecta->out("<strong>is CLI: </strong>");
-	$superfecta->out($cli ? 'true' : 'false');
+	$superfecta->outn($cli ? 'true' : 'false');
 	$start_time_whole = mctime_float();
 	$end_time_whole = 0;
-	$superfecta->out("<b>Debugging Enabled, will not stop after first result.");
-	$superfecta->out("Scheme Variables:</b><pre>". print_r($superfecta->scheme_param,TRUE) . "</pre>");
+	$superfecta->outn("<b>Debugging Enabled, will not stop after first result.");
+	$superfecta->outn("Scheme Variables:</b><pre>". print_r($superfecta->scheme_param,TRUE) . "</pre>");
 }
 $superfecta->thenumber = ereg_replace('[^0-9]+', '', $superfecta->thenumber_orig);
 $superfecta->curl_timeout = $scheme_param['Curl_Timeout'];
@@ -100,19 +101,19 @@ if(($superfecta->type == 'SUPER') || (($superfecta->type == 'MULTI') && ($superf
 	// Determine if this is the correct DID, if this scheme is limited to a DID.
 	$rule_match = match_pattern_all( (isset($scheme_param['DID'])) ? $scheme_param['DID'] : '', $superfecta->DID );
 	if($rule_match['number']){
-		if($superfecta->debug){print "Matched DID Rule: '".$rule_match['pattern']."' with '".$rule_match['number']."'<br>\n";}
+		if($superfecta->debug){$superfecta->outn("Matched DID Rule: '".$rule_match['pattern']."' with '".$rule_match['number']."'");}
 	}elseif($rule_match['status']){
-		if($superfecta->debug){print "No matching DID rules.<br>\n";}
+		if($superfecta->debug){$superfecta->outn("No matching DID rules.");}
 		$run_this_scheme = false;
 	}
 
 	// Determine if the CID matches any patterns defined for this scheme
 	$rule_match = match_pattern_all((isset($scheme_param['CID_rules']))?$scheme_param['CID_rules']:'', $superfecta->thenumber );
 	if($rule_match['number'] && $run_this_scheme){
-		if($superfecta->debug){print "Matched CID Rule: '".$rule_match['pattern']."' with '".$rule_match['number']."'<br>\n";}
+		if($superfecta->debug){$superfecta->outn("Matched CID Rule: '".$rule_match['pattern']."' with '".$rule_match['number']."'");}
 		$superfecta->thenumber = $rule_match['number'];
 	}elseif($rule_match['status'] && $run_this_scheme){
-		if($superfecta->debug){print "No matching CID rules.<br>\n";}
+		if($superfecta->debug){$superfecta->outn("No matching CID rules.");}
 		$run_this_scheme = false;
 	}
 
@@ -130,26 +131,30 @@ if(($superfecta->type == 'SUPER') || (($superfecta->type == 'MULTI') && ($superf
 
 		if($superfecta->debug)
 		{
-			print "Prefix Url defined ...\n";
+			$superfecta->outn("Prefix Url defined ...");
 			if($superfecta->prefix !='')
 			{
-				print 'returned: '.$superfecta->prefix."<br>\n";
+				$superfecta->outn("returned: ".$superfecta->prefix);
 			}
 			else
 			{
-				print "result was empty<br>\n";
+				$superfecta->outn("result was empty");
 			}
-			print "result <img src='images/scrollup.gif'> took ".number_format((mctime_float()-$start_time),4)." seconds.<br>\n<br>\n";
+			$superfecta->outn("result <img src='images/scrollup.gif'> took ".number_format((mctime_float()-$start_time),4)." seconds.");
 		}
 	}
 
 	if($run_this_scheme) {
-		$callerid = $superfecta->get_results();
-	
+		if(!$cli) {
+			$callerid = $superfecta->web_debug();				
+		} else {
+			$callerid = $superfecta->get_results();			
+		}
+				
 		if ($callerid !='')
 		{
 			//$first_caller_id = _utf8_decode($first_caller_id);
-			$callerid = strip_tags($callerid );
+			$callerid = strip_tags($callerid);
 			$callerid = trim ($callerid);
 			if ($superfecta->charsetIA5)
 			{
@@ -165,15 +170,19 @@ if(($superfecta->type == 'SUPER') || (($superfecta->type == 'MULTI') && ($superf
 		if(!$superfecta->debug) {
 			echo $superfecta->prefix.$callerid;
 		} else {
-			print "<b>Returned Result would be: ";
+			$superfecta->out("<b>Returned Result would be: ");
 			$callerid = utf8_encode($superfecta->prefix.$callerid);
-			print $callerid;
+			$superfecta->outn($callerid);
 			$end_time_whole = ($end_time_whole == 0) ? mctime_float() : $end_time_whole;
-			print "<br>\nresult <img src='images/scrollup.gif'> took ".number_format(($end_time_whole-$start_time_whole),4)." seconds.</b>";
+			$superfecta->outn("result <img src='images/scrollup.gif'> took ".number_format(($end_time_whole-$start_time_whole),4)." seconds.</b>");
 		}
 	}
 } elseif(($superfecta->type == 'MULTI') && ($superfecta->multi_type == 'CHILD')) {
-	$superfecta->get_results();
+	if(!$cli) {
+		$callerid = $superfecta->web_debug();				
+	} else {
+		$callerid = $superfecta->get_results();			
+	}
 }
 
 /**

@@ -19,28 +19,7 @@ class superfecta_multi extends superfecta_base {
 			$this->multi_type = 'PARENT';
 		}
 		if($this->multi_type == "CHILD"){
-			$query  = "SELECT mf.superfecta_mf_id, mf.scheme, mf.cidnum, mf.extension, mf.debug, mfc.source
-					FROM superfecta_mf mf, superfecta_mf_child mfc
-					WHERE mfc.superfecta_mf_child_id = " . $this->db->quoteSmart($this->multifecta_id) . "
-					AND mf.superfecta_mf_id = mfc.superfecta_mf_id";
 
-			$res = $this->db->query($query);
-			if (DB::IsError($res)){
-				die("Unable to load child record: " . $res->getMessage() .  "<br>");
-			}
-			if($row = $res->fetchRow(DB_FETCHMODE_ASSOC)){
-
-				$this->scheme = $row['scheme'];
-				$this->thenumber_orig = $row['cidnum'];
-				$this->DID = $row['extension'];
-				$this->multifecta_parent_id = $row['superfecta_mf_id'];
-				if($row['debug']){
-					$this->debug = true;
-				}
-				$this->single_source = $row['source'];
-			}else{
-				die("Unable to load multifecta child record '".$this->multifecta_id."'");
-			}
 		}
 	}
 	
@@ -100,44 +79,61 @@ class superfecta_multi extends superfecta_base {
 		}
 		$sources = explode(",",$this->scheme_param['sources']);
 		$multifecta_count = 1;
+		$pid_list = array();
 		foreach($sources as $data) {
-			$multifecta_child_start_time = mctime_float();
-			$query = "INSERT INTO superfecta_mf_child (
-						superfecta_mf_id,
-						priority,
-						source,
-						timestamp_start
-					) VALUES (
-						".$this->db->quoteSmart($superfecta_mf_id).",
-						".$this->db->quoteSmart($multifecta_count).",
-						".$this->db->quoteSmart($data).",
-						".$this->db->quoteSmart($multifecta_child_start_time)."
-					)";
-			// Create the child record
-			$res2 = $this->db->query($query);
-			if (DB::IsError($res2)){
-				die("Unable to create child record: " . $res2->getMessage() .  "<br>");
-			}
-			if($superfecta_mf_child_id = (($this->amp_conf["AMPDBENGINE"] == "sqlite3") ? sqlite_last_insert_rowid($this->db->connection) : mysql_insert_id($this->db->connection))){
-				if($this->debug){
-					$this->outn("Spawning child ".$superfecta_mf_child_id.":". $data);
-					exec('/usr/bin/php /var/www/html/admin/modules/superfecta/bin/callerid.php -s '.$this->scheme_name.' -n '.$this->thenumber_orig.' -m ' . $superfecta_mf_child_id . ' -r '.$data.' > log-'.$superfecta_mf_child_id.'.log 2>&1 &');
-				} else {
-					exec('/usr/bin/php /var/www/html/admin/modules/superfecta/bin/callerid.php -s '.$this->scheme_name.' -n '.$this->thenumber_orig.' -d -m ' . $superfecta_mf_child_id . ' -r '.$data.' > /dev/null 2>&1 &');
-					
+			$pid = pcntl_fork();
+			if ($pid == -1) {
+			     die('could not fork');
+			} else if ($pid) {
+			     // we are the parent		
+				$multifecta_child_start_time = mctime_float();
+				$query = "INSERT INTO asterisk.superfecta_mf_child (
+					superfecta_mf_child_id,
+					superfecta_mf_id,
+					priority,
+					source,
+				timestamp_start
+				) VALUES (
+					".$this->db->quoteSmart($pid).",
+					".$this->db->quoteSmart($superfecta_mf_id).",
+					".$this->db->quoteSmart($multifecta_count).",
+					".$this->db->quoteSmart($data).",
+					".$this->db->quoteSmart($multifecta_child_start_time)."
+				)";
+				// Create the child record
+				$res2 = $this->db->query($query);
+				if (DB::IsError($res2)){
+					die("Unable to create child record: " . $res2->getMessage() .  ":$pid<br>");
 				}
+				$pid_list[$multifecta_count] = $pid;
+			} else {
+				 $this->multifecta_id = getmypid();
+			     //$this->run_child();
+				 die();
 			}
 			$multifecta_count++;
 		}
+		
+		$notfinished = TRUE;
+		
+		while($notfinished) {
+			foreach($pid_list as $p_list) {
+			}
+			$notfinished = FALSE;
+		}
+		
 		if($this->debug){
 			$this->outn("Parent took ".number_format((mctime_float()-$multifecta_start_time),4)." seconds to spawn children.<br>\n");
 		}
 		$query = "SELECT superfecta_mf_child_id, priority, cnam, spam_text, spam, source, cached
-				FROM superfecta_mf_child
+				FROM asterisk.superfecta_mf_child
 				WHERE superfecta_mf_id = ".$this->db->quoteSmart($superfecta_mf_id)."
 				AND timestamp_cnam IS NOT NULL
 				ORDER BY priority
 				";
+				
+				echo $query;
+				
 		$loop_limit = 200; // Loop 200 times maximum, just incase our timeout function fails
 		$loop_start_time = mctime_float();
 		$loop_cur_time = mctime_float();
@@ -219,7 +215,7 @@ class superfecta_multi extends superfecta_base {
 		}			
 		
 		if($this->debug) {			
-			$sql = 'SELECT superfecta_mf_child_id, source FROM superfecta_mf_child WHERE superfecta_mf_id = '.$superfecta_mf_id;
+			$sql = 'SELECT superfecta_mf_child_id, source FROM asterisk.superfecta_mf_child WHERE superfecta_mf_id = '.$superfecta_mf_id;
 			$list =& $this->db->getAll($sql, array(), DB_FETCHMODE_ASSOC);
 			usleep(50000);
 			foreach ($list as $data) {
@@ -232,7 +228,7 @@ class superfecta_multi extends superfecta_base {
 		}
 		
 		$multifecta_parent_end_time = mctime_float();
-		$query = "UPDATE superfecta_mf
+		$query = "UPDATE asterisk.superfecta_mf
 			SET timestamp_end = ".$this->db->quoteSmart($multifecta_parent_end_time);
 			if($winning_child_id){
 				$query .= ",
@@ -264,9 +260,34 @@ class superfecta_multi extends superfecta_base {
 	}
 	
 	function run_child() {
+		
+		$query  = "SELECT mf.superfecta_mf_id, mf.scheme, mf.cidnum, mf.extension, mf.debug, mfc.source
+				FROM asterisk.superfecta_mf mf, asterisk.superfecta_mf_child mfc
+				WHERE mfc.superfecta_mf_child_id = " . $this->db->quoteSmart($this->multifecta_id) . "
+				AND mf.superfecta_mf_id = mfc.superfecta_mf_id";
+
+		$res = $this->db->query($query);
+		if (DB::IsError($res)){
+			die("Unable to load child record: " . $res->getMessage() .  "<br>");
+		}
+		if($row = $res->fetchRow(DB_FETCHMODE_ASSOC)){
+			print_r($row);
+			$this->scheme = $row['scheme'];
+			$this->thenumber_orig = $row['cidnum'];
+			$this->DID = $row['extension'];
+			$this->multifecta_parent_id = $row['superfecta_mf_id'];
+			if($row['debug']){
+				$this->debug = true;
+			}
+			$this->single_source = $row['source'];
+		}else{
+			die("Unable to load multifecta child record '".$this->multifecta_id."'");
+		}
+		
 		$start_time = mctime_float();
 		
-		$sql = "SELECT field,value FROM superfectaconfig WHERE source = '".$this->scheme_name."_".$this->source."'";
+		$sql = "SELECT field,value FROM asterisk.superfectaconfig WHERE source = '".$this->scheme_name."_".$this->source."'";
+				
 		$run_param = $this->db->getAssoc($sql);
         
 		print_r($run_param);
@@ -297,7 +318,7 @@ class superfecta_multi extends superfecta_base {
 				$end_time_whole = mctime_float();
 				
 				$multifecta_child_cname_time = mctime_float();
-				$query = "UPDATE superfecta_mf_child
+				$query = "UPDATE asterisk.superfecta_mf_child
 						SET timestamp_cnam = ".$this->db->quoteSmart($multifecta_child_cname_time);
 						if($caller_id){
 							$query .= ",
@@ -331,7 +352,7 @@ class superfecta_multi extends superfecta_base {
 	}
 	
 	function send_results($caller_id) {
-		$sql = "SELECT field,value FROM superfectaconfig WHERE source = '".$this->scheme_name."_".$data."'";
+		$sql = "SELECT field,value FROM asterisk.superfectaconfig WHERE source = '".$this->scheme_name."_".$data."'";
 		$run_param = $this->db->getAssoc($sql);
 		$sources = explode(",",$this->scheme_param['sources']);
 		

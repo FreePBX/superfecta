@@ -40,6 +40,14 @@ class superfecta_base {
 	
 	function out($message) {
 		if(!$this->cli) {
+			echo $message;
+		} else {
+			echo strip_tags($message);
+		}
+	}
+	
+	function outn($message) {
+		if(!$this->cli) {
 			echo $message . "</br>";
 		} else {
 			echo strip_tags($message) . "\n";
