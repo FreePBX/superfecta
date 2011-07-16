@@ -121,7 +121,7 @@ if($usage_mode == 'get caller id')
 			"204", "226", "249", "250", "289", "306", "343", "365", "403", "416", "418", "438", "450",
 			"506", "514", "519", "579", "581", "587", "604", "613", "647", "705", "709",
 			"778", "780", "807", "819", "867", "873", "902", "905",
-			"800", "866", "877", "888"
+			
 		  );
 
 		if(in_array($npa, $npalistCAN))
@@ -130,7 +130,7 @@ if($usage_mode == 'get caller id')
 		}
 	}
 
-	if($TFnpa || (!$validnpaUS && !$validnpaCAN))
+	if(!$TFnpa && !$validnpaUS && !$validnpaCAN)
 	{
 		$number_error = true;
 	}
@@ -139,7 +139,7 @@ if($usage_mode == 'get caller id')
 	{
 		if($debug)
 		{
-			print "Skipping Source - Toll Free or Non US/CAN number: ".$thenumber."<br>\n";
+			print "Skipping Source - Improper number: ".$thenumber."<br>\n";
 		}
 	}
 	else
@@ -174,4 +174,3 @@ if($usage_mode == 'get caller id')
 		}
 	}
 }
-?>
