@@ -1,0 +1,74 @@
+<?php
+class PhoneSpamFilter_UK extends superfecta_base {
+
+	function settings() {
+		//configuration / display parameters
+		//The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
+		$source_desc = "http://www.phonespamfilter.co.uk - A datasource devoted to identifying telemarketers. These listings are provided by other users of this service.";
+
+		$settings['desc'] = $source_desc;
+		$settings['version_requirement'] = "3.0";
+
+		$source_param = array();
+		$source_param['SPAM_Threshold']['desc'] = 'Specify the # of listings required to mark a call as spam.';
+		$source_param['SPAM_Threshold']['type'] = 'number';
+		$source_param['SPAM_Threshold']['default'] = 10;
+
+		$settings['param'] = array();
+		$settings['source_param'] = $source_param;
+
+		return($settings);
+	}
+	
+	function get_caller_id($thenumber,$run_param=array()) {
+		//This debug variable allows simple copy and past of most sources.
+		$debug = $this->debug;
+
+		$caller_id = "";		
+
+		if(!$this->IsValidNumber('UK', $thenumber))
+		{
+			if($debug)
+			{
+				print "Skipping Source - Non UK number: {$thenumber}<br>\n";
+			}
+		}
+		else
+		{
+			if($debug)
+			{
+				print "Searching PhoneSpamFilter (UK) ... ";
+			}
+			
+			$url = "http://www.phonespamfilter.co.uk/check.php?phone=$thenumber";
+			$value = get_url_contents($url);
+			
+			if(is_numeric($value))
+			{
+				if($debug)
+				{
+					print ' value of '.$value.' returned ... ';
+				}
+				$score = $value;
+				if($score > $run_param['SPAM_Threshold'])
+				{
+					$this->spam = true;
+					if($debug)
+					{
+						print " determined to be SPAM<br>\n";
+					}
+				}
+				else if($debug)
+				{
+					print "Not a SPAM caller<br>\n";
+				}
+			}
+			else if($debug)
+			{
+				print "not found<br>\n";
+			}
+		}
+			
+		return($caller_id);
+	}
+}
