@@ -1,0 +1,60 @@
+<?php
+class UKPhoneInfo_UK extends superfecta_base {
+
+	function settings() {
+		//configuration / display parameters
+		//The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
+		$source_desc = "http://www.ukphoneinfo.com - The UK Telephone Code Locator will return the exchange or service area location. No names are returned by this source.<br>Because the data provided is less specific than other sources, this data source is usualy configured near the bottom of the list of active data sources.";
+		$settings['desc'] = $source_desc;
+		$settings['version_requirement'] = "3.0";
+		return($settings);
+	}
+	
+	function get_caller_id($thenumber,$run_param=array()) {
+		//This debug variable allows simple copy and past of most sources.
+		$debug = $this->debug;
+
+		$caller_id = "";		
+
+		// Validate number
+		if(!$this->IsValidNumber('UK', $thenumber))
+		{
+			if($debug)
+			{
+				print "Skipping Source - Non UK number: {$thenumber}<br>\n";
+			}
+		}
+		else
+		{
+			if($debug)
+			{
+				print 'Searching UKPhoneInfo...<br> ';
+			}
+			// By default, the found name is empty
+			$sname = "";
+	
+			$url = "http://www.ukphoneinfo.com/search.php?Submit=Submit&d=nl";
+			
+			$url = $url . "&GNG=" . $thenumber;
+			$sresult =  get_url_contents($url);
+			
+			if(preg_match_all('=<h2[^>]*>(.*)</h2>=siU', $sresult, $sname))
+			{
+				if (is_array($sname) && count($sname[1]) > 0)
+				{
+					$sname = $sname[1][0];
+				}
+				
+				if ($sname != "")
+				{
+					$caller_id = strip_tags($sname);			
+				}
+			}
+			else if($debug)
+			{
+				print "not found<br>\n";
+			}
+		}
+		return($caller_id);
+	}
+}
