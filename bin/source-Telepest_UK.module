@@ -32,17 +32,11 @@ class Telepest_UK extends superfecta_base {
 		{			
 			if(!$this->IsValidNumber('UK', $thenumber))
 			{
-				if($debug)
-				{
-					print "Skipping Source - Non UK number: {$thenumber}<br>\n";
-				}
+				$this->DebugPrint( "Skipping Source - Non UK number: {$thenumber}" );
 			}
 			else
 			{
-				if($debug)
-				{
-					print "Searching Telepest.co.uk ... ";
-				}
+				$this->DebugPrint( "Searching Telepest.co.uk ... " );
 				
 				$url = "http://www.telepest.co.uk/$thenumber";
 				$value = get_url_contents($url);
@@ -51,10 +45,7 @@ class Telepest_UK extends superfecta_base {
 				if($start >0)
 				{
 					$caller_id=''; // Not a telepest
-					if($debug)
-					{
-						print "not found<br>\n";
-					}
+					$this->DebugPrint( "not found" );
 				}
 				else
 				{
@@ -64,17 +55,12 @@ class Telepest_UK extends superfecta_base {
 						if($run_param['Get_SPAM_Score'] == 'on')
 						{
 							$this->spam = true;	// Reported as a telepest
-							if($debug)
-							{
-								print "SPAM caller<br>\n";
-							}
+							$this->DebugPrint( "SPAM caller");
 						}
 						if($run_param['Get_Caller_ID_Name'] == 'on')
 						{
-							if($debug)
-							{
-								print "Looking up CNAM ... ";
-							}
+							$this->DebugPrint( "Looking up CNAM ... " );
+							
 							$start = strpos($value, 'We have no information on the ownership of this number.');
 							if($start == false)
 							{

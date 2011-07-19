@@ -11,8 +11,6 @@ class Google_Maps_UK extends superfecta_base {
 	}
 	
 	function get_caller_id($thenumber,$run_param=array()) {
-		//This debug variable allows simple copy and past of most sources.
-		$debug = $this->debug;
 
 		$caller_id = "";		
 
@@ -21,17 +19,12 @@ class Google_Maps_UK extends superfecta_base {
 
 		if(!$this->IsValidNumber('UK', $thenumber))
 		{
-			if($debug)
-			{
-				print "Skipping Source - Non UK number: {$thenumber}<br>\n";
-			}
+			$this->DebugPrint("Skipping Source - Non UK number: {$thenumber}");
 		}
 		else
 		{
-			if($debug)
-			{
-				print "Searching maps.google.co.uk for number: {$thenumber}<br>\n";
-			}
+			$this->DebugPrint("Searching maps.google.co.uk for number: {$thenumber}");
+			
 			// By default, the found name is empty
 			$name = "";
 	
@@ -50,9 +43,9 @@ class Google_Maps_UK extends superfecta_base {
 			{
 				$caller_id = $name;
 			}
-			else if($debug)
+			else
 			{
-				print "not found<br>\n";
+				$this->DebugPrint("not found");
 			}
 		}
 		return($caller_id);

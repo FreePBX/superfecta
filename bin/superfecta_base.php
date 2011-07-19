@@ -674,4 +674,15 @@ class superfecta_base {
 				
 		return ($number_error ? false : true);
 	}
+	
+	function DebugEcho($string)
+	{
+		if($this->debug){ echo "{$string}"; }	
+	}
+	
+	function DebugPrint($string)
+	{
+		if($this->debug){ print "{$string}<br>\n"; }	
+	}
+
 }

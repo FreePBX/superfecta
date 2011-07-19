@@ -19,17 +19,12 @@ class UKPhoneInfo_UK extends superfecta_base {
 		// Validate number
 		if(!$this->IsValidNumber('UK', $thenumber))
 		{
-			if($debug)
-			{
-				print "Skipping Source - Non UK number: {$thenumber}<br>\n";
-			}
+			$this->DebugPrint( "Skipping Source - Non UK number: {$thenumber}" );
 		}
 		else
 		{
-			if($debug)
-			{
-				print 'Searching UKPhoneInfo...<br> ';
-			}
+			$this->DebugPrint( 'Searching UKPhoneInfo ...');
+
 			// By default, the found name is empty
 			$sname = "";
 	
@@ -50,9 +45,9 @@ class UKPhoneInfo_UK extends superfecta_base {
 					$caller_id = strip_tags($sname);			
 				}
 			}
-			else if($debug)
+			else
 			{
-				print "not found<br>\n";
+				$this->DebugPrint( "not found" );
 			}
 		}
 		return($caller_id);

@@ -28,10 +28,8 @@ class LDAP extends superfecta_base {
 		$debug = $this->debug;
 		$caller_id = "";		
 
-		if($debug)
-		{
-			print "Searching LDAP for number: {$thenumber}<br>\n";
-		}
+		$this->DebugPrint( "Searching LDAP for number: {$thenumber}");
+
 		// By default, the found name is empty
 		$name = "";
 	
@@ -110,20 +108,15 @@ class LDAP extends superfecta_base {
 			$dn = "${dc}";
 		}
 	
-		if($debug)
-		{
-			echo "Searching {$dn} ... ";
-		}
+		$this->DebugEcho( "Searching {$dn} ... ");
 		
 		// perform LDAP search - only return CN to conserve bandwidth
 		if($rs = @ldap_search($ad, $dn, "(|(telephoneNumber=*{$thenumber})(mobile=*{$thenumber})(homeTelephoneNumber=*{$thenumber}))", array('cn')))
 		{
 			if($info = ldap_get_entries($ad, $rs))
 			{	
-				if($debug)
-				{
-					echo $info["count"]." entries returned<br>\n";
-				}
+				$this->DebugPrint( $info["count"]." entries returned");
+
 				if($info["count"] > 0)
 				{
 					// var_dump($info[0]);

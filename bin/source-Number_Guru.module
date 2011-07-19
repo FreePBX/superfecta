@@ -30,17 +30,14 @@ class Number_Guru extends superfecta_base {
 		
 		if( (!$this->IsValidNumber('US',$thenumber)) && (!$this->IsValidNumber('CA',$thenumber)) )
 		{
-			if($debug)
-			{
-				print "Skipping Source - Not a valid US/CAN number: ".$thenumber."<br>\n";
-			}
+			$this->DebugPrint( "Skipping Source - Not a valid US/CAN number: ".$thenumber);
 		}
 		else
 		{
 			if(($run_param['Get_SPAM_Score'] == 'on') || ($run_param['Get_Caller_ID_Name'] == 'on'))
 			{
 				
-				if($debug) { print "Searching NumberGuru ... ";	}
+				$this->DebugPrint( "Searching NumberGuru ... ");
 
 				// Search NumberGuru USA
 				$url = "http://www.numberguru.com/s/{$thenumber}";
@@ -64,9 +61,9 @@ class Number_Guru extends superfecta_base {
 					{
 						$caller_id = $name;
 					}
-					else if($debug)
+					else
 					{
-						print "not found<br>\n";
+						$this->DebugPrint( "not found");
 					}
 				}
 				
@@ -82,12 +79,8 @@ class Number_Guru extends superfecta_base {
 						$score = $match[1];
 						if(isset($run_param['Spam_Threshold']) && $score>=$run_param['Spam_Threshold'])
 						{
-							global $spam;
-							$spam = true;	// Flag as SPAM
-							if($debug)
-							{
-								print "SPAM caller<br>\n";
-							}
+							$this->spam = true;	// Flag as SPAM
+							$this->DebugPrint( "SPAM caller" );
 						}
 					}
 				}

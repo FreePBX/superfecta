@@ -28,44 +28,33 @@ class PhoneSpamFilter_UK extends superfecta_base {
 
 		if(!$this->IsValidNumber('UK', $thenumber))
 		{
-			if($debug)
-			{
-				print "Skipping Source - Non UK number: {$thenumber}<br>\n";
-			}
+			$this->DebugPrint( "Skipping Source - Non UK number: {$thenumber}" );
 		}
 		else
 		{
-			if($debug)
-			{
-				print "Searching PhoneSpamFilter (UK) ... ";
-			}
+			$this->DebugPrint( "Searching PhoneSpamFilter (UK) ... " );
 			
 			$url = "http://www.phonespamfilter.co.uk/check.php?phone=$thenumber";
 			$value = get_url_contents($url);
 			
 			if(is_numeric($value))
 			{
-				if($debug)
-				{
-					print ' value of '.$value.' returned ... ';
-				}
+				$this->DebugPrint( ' value of '.$value.' returned ... ' );
+
 				$score = $value;
 				if($score > $run_param['SPAM_Threshold'])
 				{
 					$this->spam = true;
-					if($debug)
-					{
-						print " determined to be SPAM<br>\n";
-					}
+					$this->DebugPrint( " determined to be SPAM" );
 				}
-				else if($debug)
+				else
 				{
-					print "Not a SPAM caller<br>\n";
+					$this->DebugPrint( "Not a SPAM caller" );
 				}
 			}
-			else if($debug)
+			else
 			{
-				print "not found<br>\n";
+				$this->DebugPrint( "not found" );
 			}
 		}
 			
