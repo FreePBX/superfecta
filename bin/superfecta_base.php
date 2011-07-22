@@ -1,5 +1,6 @@
 <?php
 class superfecta_base {
+	private $cli = FALSE;
 	public $debug = FALSE;
 	public $thenumber;
 	public $db; //The database
@@ -859,12 +860,12 @@ class superfecta_base {
 	
 	function DebugEcho($string)
 	{
-		if($this->debug){ echo "{$string}"; }	
+		if($this->debug){ $this->out("{$string}"); }	
 	}
 	
 	function DebugPrint($string)
 	{
-		if($this->debug){ print "{$string}<br>\n"; }	
+		if($this->debug){ $this->outn("{$string}"); }	
 	}
 
 }
