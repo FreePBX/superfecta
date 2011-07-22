@@ -1,17 +1,62 @@
 <data>
 	<source>
+		<name>source-Google_Maps_UK.module</name>
+		<modified>1311376350</modified>
+		<md5>950d95adc7f030ceab22a3e7aaddd1a7</md5>
+		<version_requirement>3.0</version_requirement>
+	</source>
+	<source>
+		<name>source-Infobel.module</name>
+		<modified>1311376350</modified>
+		<md5>e1e03adc13df722096666f3b03383a41</md5>
+		<version_requirement>3.0</version_requirement>
+	</source>
+	<source>
+		<name>source-LDAP.module</name>
+		<modified>1311376350</modified>
+		<md5>bebe05f1a3736b4a1efc9c8f62ccc6a4</md5>
+		<version_requirement>3.0</version_requirement>
+	</source>
+	<source>
+		<name>source-Number_Guru.module</name>
+		<modified>1311376350</modified>
+		<md5>c8acbea000d08d7e35907e80aca5c0f4</md5>
+		<version_requirement>3.0</version_requirement>
+	</source>
+	<source>
+		<name>source-PhoneSpamFilter_UK.module</name>
+		<modified>1311376350</modified>
+		<md5>8d22d7c491f420bf38884421b7af8ce8</md5>
+		<version_requirement>3.0</version_requirement>
+	</source>
+	<source>
+		<name>source-Send_to_YAC.module</name>
+		<modified>1311376350</modified>
+		<md5>d3c6ef676a5390919926732c63b021be</md5>
+		<version_requirement>3.0</version_requirement>
+	</source>
+	<source>
 		<name>source-Superfecta_Cache.module</name>
-		<modified>1308882243</modified>
-		<md5>0672b66b7a7254fbf5e5783222d60f47</md5>
+		<modified>1311376350</modified>
+		<md5>9d8039a511a8cb9ab4c4249f6f2e2bc8</md5>
+		<version_requirement>3.0</version_requirement>
+	</source>
+	<source>
+		<name>source-Telepest_UK.module</name>
+		<modified>1311376350</modified>
+		<md5>563172e93542c5658bb1349bec8b92fb</md5>
+		<version_requirement>3.0</version_requirement>
+	</source>
+	<source>
+		<name>source-UKPhoneInfo_UK.module</name>
+		<modified>1311376350</modified>
+		<md5>31fc1210a276ab97aed5a26f1a32e345</md5>
+		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
 		<name>source-Who_Called.module</name>
-		<modified>1308882243</modified>
-		<md5>8cf7a97e8268c8c98a8402d9e9368396</md5>
-	</source>
-	<source>
-		<name>source-Google_Maps_UK.module</name>
-		<modified>1308882243</modified>
-		<md5>8cf7a97e8268c8c98a8402d9e9368396</md5>
+		<modified>1311376350</modified>
+		<md5>d99c7904d5715160fd6709cc817b1603</md5>
+		<version_requirement>3.0</version_requirement>
 	</source>
 </data>
