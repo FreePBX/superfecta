@@ -35,7 +35,7 @@ foreach (glob("bin/*.module") as $filename) {
 		if($old_source_list_xml['data']['source'][$location[2]]['md5'] != $md5_sum) {
 			echo "\t".$class_name." has changed since last time this script ran\n";
 			$source_list_array[$i]['name'] = $path_parts['basename'];
-			$source_list_array[$i]['modified'] = time();
+			$source_list_array[$i]['modified'] = filemtime($filename);
 			$source_list_array[$i]['md5'] = $md5_sum;
 			$source_list_array[$i]['version_requirement'] = (isset($settings['version_requirement'])) ? $settings['version_requirement'] : 'NULL';
 		} else {
@@ -48,7 +48,7 @@ foreach (glob("bin/*.module") as $filename) {
 	} else {
 		echo "\t".$class_name." is new and has not been added since last time script ran\n";
 		$source_list_array[$i]['name'] = $path_parts['basename'];
-		$source_list_array[$i]['modified'] = time();
+		$source_list_array[$i]['modified'] = filemtime($filename);
 		$source_list_array[$i]['md5'] = $md5_sum;
 		$source_list_array[$i]['version_requirement'] = (isset($settings['version_requirement'])) ? $settings['version_requirement'] : 'NULL';
 	}
