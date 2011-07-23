@@ -30,6 +30,12 @@
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
+		<name>source-Send_to_Soundbridge.module</name>
+		<modified>1311454946</modified>
+		<md5>0db699867abe624b13276773894dc679</md5>
+		<version_requirement>3.0</version_requirement>
+	</source>
+	<source>
 		<name>source-Send_to_YAC.module</name>
 		<modified>1309682221</modified>
 		<md5>d3c6ef676a5390919926732c63b021be</md5>
