@@ -16,7 +16,7 @@ class superfecta_single extends superfecta_base {
 		$sources = explode(",",$this->scheme_param['sources']);
 		foreach($sources as $data) {
 			$superfecta->caller_id = '';
-			$start_time = mctime_float();
+			$start_time = $this->mctime_float();
 			
 			$sql = "SELECT field,value FROM superfectaconfig WHERE source = '".$this->scheme_name."_".$data."'";
 			$run_param = $this->db->getAssoc($sql);
@@ -31,7 +31,7 @@ class superfecta_single extends superfecta_base {
 				if(method_exists($source_class, 'get_caller_id')) {
 					$caller_id = $source_class->get_caller_id($this->thenumber,$run_param);
 					unset($source_class);
-					$caller_id = _utf8_decode($caller_id);
+					$caller_id = $this->_utf8_decode($caller_id);
 
 
 					if(($this->first_caller_id == '') && ($caller_id != '')) {
@@ -39,7 +39,7 @@ class superfecta_single extends superfecta_base {
 						$winning_source = $data;
 						if($this->debug)
 						{
-							$end_time_whole = mctime_float();
+							$end_time_whole = $this->mctime_float();
 						}
 					}
 				} elseif($this->debug) {
@@ -53,11 +53,11 @@ class superfecta_single extends superfecta_base {
 			{
 				if($caller_id != '')
 				{
-					print "'" . utf8_encode($caller_id)."'<br>\nresult <img src='images/scrollup.gif'> took ".number_format((mctime_float()-$start_time),4)." seconds.<br>\n<br>\n";
+					print "'" . utf8_encode($caller_id)."'<br>\nresult <img src='images/scrollup.gif'> took ".number_format(($this->mctime_float()-$start_time),4)." seconds.<br>\n<br>\n";
 				}
 				else
 				{
-					print "result <img src='images/scrollup.gif'> took ".number_format((mctime_float()-$start_time),4)." seconds.<br>\n<br>\n";
+					print "result <img src='images/scrollup.gif'> took ".number_format(($this->mctime_float()-$start_time),4)." seconds.<br>\n<br>\n";
 				}
 			}
 			else if($caller_id != '')

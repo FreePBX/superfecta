@@ -167,7 +167,7 @@ class superfecta_base {
 		foreach($array as $pattern){
 			// Strip off any leading underscore
 			$pattern = (substr($pattern,0,1) == "_")?trim(substr($pattern,1)):trim($pattern);
-			if($match = match_pattern($pattern,$number)){
+			if($match = $this->match_pattern($pattern,$number)){
 				break;
 			}elseif($pattern == $number){
 				$match = $number;
@@ -349,7 +349,7 @@ class superfecta_base {
 	  	$string= html_entity_decode($string);
 	  	$tmp = $string;
 		$count = 0;
-		while (isutf8($tmp))
+		while ($this->isutf8($tmp))
 	  	{
 	  		$tmp = utf8_decode($tmp);
 			$count++;

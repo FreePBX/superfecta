@@ -54,7 +54,7 @@ class superfecta_multi extends superfecta_base {
 	
 	function run_parent() {
 		// We are a multifecta parent
-		$multifecta_start_time = mctime_float();
+		$multifecta_start_time = $this->mctime_float();
 		// Clean up multifecta records that are over 10 minutes old
 		$query = "DELETE mf, mfc FROM superfecta_mf mf, superfecta_mf_child mfc
 				WHERE mf.timestamp_start < ".$this->db->quoteSmart($multifecta_start_time - (60*10))."
@@ -101,7 +101,7 @@ class superfecta_multi extends superfecta_base {
 		$sources = explode(",",$this->scheme_param['sources']);
 		$multifecta_count = 1;
 		foreach($sources as $data) {
-			$multifecta_child_start_time = mctime_float();
+			$multifecta_child_start_time = $this->mctime_float();
 			$query = "INSERT INTO superfecta_mf_child (
 						superfecta_mf_id,
 						priority,
@@ -130,7 +130,7 @@ class superfecta_multi extends superfecta_base {
 			$multifecta_count++;
 		}
 		if($this->debug){
-			$this->outn("Parent took ".number_format((mctime_float()-$multifecta_start_time),4)." seconds to spawn children.<br>\n");
+			$this->outn("Parent took ".number_format(($this->mctime_float()-$multifecta_start_time),4)." seconds to spawn children.<br>\n");
 		}
 		$query = "SELECT superfecta_mf_child_id, priority, cnam, spam_text, spam, source, cached
 				FROM superfecta_mf_child
@@ -139,8 +139,8 @@ class superfecta_multi extends superfecta_base {
 				ORDER BY priority
 				";
 		$loop_limit = 200; // Loop 200 times maximum, just incase our timeout function fails
-		$loop_start_time = mctime_float();
-		$loop_cur_time = mctime_float();
+		$loop_start_time = $this->mctime_float();
+		$loop_cur_time = $this->mctime_float();
 		$loop_priority_time_limit = $this->scheme_param['multifecta_timeout'];
 		$loop_time_limit = ($this->scheme_param['Curl_Timeout'] + .5); //Give us an extra half second over CURL
 		$multifecta_timeout_hit = false;
@@ -156,7 +156,7 @@ class superfecta_multi extends superfecta_base {
 			$spam = '';
 			$spam_source = '';
 			$spam_child_id = false;
-			$loop_cur_time = mctime_float();
+			$loop_cur_time = $this->mctime_float();
 			while($res2 && ($row2 = $res2->fetchRow(DB_FETCHMODE_ASSOC))){
 				/*** FUTURE
 				echo "<pre>";
@@ -231,7 +231,7 @@ class superfecta_multi extends superfecta_base {
 			}
 		}
 		
-		$multifecta_parent_end_time = mctime_float();
+		$multifecta_parent_end_time = $this->mctime_float();
 		$query = "UPDATE superfecta_mf
 			SET timestamp_end = ".$this->db->quoteSmart($multifecta_parent_end_time);
 			if($winning_child_id){
@@ -264,7 +264,7 @@ class superfecta_multi extends superfecta_base {
 	}
 	
 	function run_child() {
-		$start_time = mctime_float();
+		$start_time = $this->mctime_float();
 		
 		$sql = "SELECT field,value FROM superfectaconfig WHERE source = '".$this->scheme_name."_".$this->source."'";
 		$run_param = $this->db->getAssoc($sql);
@@ -282,7 +282,7 @@ class superfecta_multi extends superfecta_base {
 			if(method_exists($source_class, 'get_caller_id')) {
 				$caller_id = $source_class->get_caller_id($this->thenumber,$run_param);
 				unset($source_class);
-				$caller_id = _utf8_decode($caller_id);
+				$caller_id = $this->_utf8_decode($caller_id);
 
 				if(isset($this->multifecta_id)) {
 					$this->caller_id_array[$this->multifecta_id] = $caller_id;
@@ -294,9 +294,9 @@ class superfecta_multi extends superfecta_base {
 						echo "<br/>Returned Result was: ".$caller_id;
 					}
 				}
-				$end_time_whole = mctime_float();
+				$end_time_whole = $this->mctime_float();
 				
-				$multifecta_child_cname_time = mctime_float();
+				$multifecta_child_cname_time = $this->mctime_float();
 				$query = "UPDATE superfecta_mf_child
 						SET timestamp_cnam = ".$this->db->quoteSmart($multifecta_child_cname_time);
 						if($caller_id){
