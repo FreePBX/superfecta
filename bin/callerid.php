@@ -23,7 +23,7 @@ if(php_sapi_name() == 'cli' && empty($_SERVER['REMOTE_ADDR'])) {
 	$shortopts .= "d"; // These options do not accept values
 	$options = getopt($shortopts);
 	if(isset($options)) {
-		$scheme_name = "base_".$options['s'];
+		$scheme_name_request = "base_".$options['s'];
 		$debug = isset($options['d']) ? true : false;
 		$multifecta_id = isset($options['m']) ? $options['m'] : false;
 		$thenumber_orig = isset($options['n']) ? $options['n'] : false;
@@ -32,156 +32,176 @@ if(php_sapi_name() == 'cli' && empty($_SERVER['REMOTE_ADDR'])) {
 	}
 } else {
 	$cli = false;
-	$scheme_name = "base_".(isset($_REQUEST['scheme'])) ? trim($_REQUEST['scheme']) : '';
+	$scheme_name_request = "base_".(isset($_REQUEST['scheme'])) ? trim($_REQUEST['scheme']) : '';
 	$debug = (((isset($_REQUEST['debug'])) ? $_REQUEST['debug'] : '') == 'yes') ? true : false;
 	$thenumber_orig = (isset($_REQUEST['thenumber'])) ? trim($_REQUEST['thenumber']) : '';
 	$DID = (isset($_REQUEST['DID'])) ? trim($_REQUEST['DID']) : '';
 }
 
 //Die on Scheme unknown
-if(trim($scheme_name) == '') {
-	die("No Scheme Assigned/Known!");
-}
-
-//Get Scheme Params
-$param = array();
-$query = "SELECT * FROM superfectaconfig";
-$res = $db->query($query);
-if (DB::IsError($res)){
-	die("Unable to load scheme parameters: " . $res->getMessage() .  "<br>");
-}
-while ($row = $res->fetchRow(DB_FETCHMODE_ASSOC))
-{
-	$param[$row['source']][$row['field']] = $row['value'];
-}
-
-if(!array_key_exists($scheme_name,$param)) {
-	die('Scheme Does not Exist!');
-}
-
-$scheme_param = $param[$scheme_name];
-
-require_once('superfecta_base.php');
-if(isset($scheme_param['enable_multifecta'])) {
-	require_once('superfecta_multi.php');
-	//require_once('superfecta_pcntl.php');
-	$superfecta = NEW superfecta_multi($multifecta_id,$db,$amp_conf,$debug,$thenumber_orig,$scheme_name,$scheme_param,$source);
-	$superfecta->type = 'MULTI';
+if(trim($scheme_name_request) == '') {
+	if(!$cli) {
+		$sql = 'SELECT `source` FROM `superfectaconfig` WHERE `field` = CONVERT(_utf8 \'sources\' USING latin1) COLLATE latin1_swedish_ci';
+		$data = $db->getAll($sql, array(), DB_FETCHMODE_ASSOC);
+		$i=0;
+		foreach($data as $list) {
+			$scheme_name_array[$i] = $list['source'];
+			$i++;
+		}
+	} else {
+		die('No Scheme Assigned/Known!');
+	}
 } else {
-	require_once('superfecta_single.php');
-	$superfecta = NEW superfecta_single($db,$amp_conf,$debug,$thenumber_orig,$scheme_name,$scheme_param);
-	$superfecta->type = 'SUPER';
+	$scheme_name_array[0] = $scheme_name_request;
 }
-$superfecta->cli = $cli;
-$superfecta->DID = $DID;
 
-//We only want to run all of this if it's a parent-multifecta or the original code (single-fecta), No need to run this for every child
-if(($superfecta->debug) && (($superfecta->type == 'SUPER') || (($superfecta->type == 'MULTI') && ($superfecta->multi_type == 'PARENT')))){
-	// If debugging, report all errors
-	error_reporting(E_ALL & E_NOTICE); // -1 was not letting me see the wood for the trees.
-	ini_set('display_errors', '1');
-	$superfecta->outn("<strong>Debug is on</strong>");
-	$superfecta->outn("<strong>The Original Number: </strong>". $superfecta->thenumber_orig);
-	$superfecta->outn("<strong>The Scheme: </strong>". $superfecta->scheme_name);
-	$superfecta->outn("<strong>Scheme Type: </strong>".$superfecta->type."FECTA");
-	$superfecta->out("<strong>is CLI: </strong>");
-	$superfecta->outn($cli ? 'true' : 'false');
-	$start_time_whole = mctime_float();
-	$end_time_whole = 0;
-	$superfecta->outn("<b>Debugging Enabled, will not stop after first result.");
-	$superfecta->outn("Scheme Variables:</b><pre>". print_r($superfecta->scheme_param,TRUE) . "</pre>");
-}
-$superfecta->thenumber = ereg_replace('[^0-9]+', '', $superfecta->thenumber_orig);
-$superfecta->curl_timeout = $scheme_param['Curl_Timeout'];
+foreach($scheme_name_array as $list) {
+	$scheme_name = $list;
 
-$run_this_scheme = true;
-
-//We only want to run all of this if it's a parent-multifecta or the original code (single-fecta), No need to run this for every child
-if(($superfecta->type == 'SUPER') || (($superfecta->type == 'MULTI') && ($superfecta->multi_type == 'PARENT'))) {
-	// Determine if this is the correct DID, if this scheme is limited to a DID.
-	$rule_match = match_pattern_all( (isset($scheme_param['DID'])) ? $scheme_param['DID'] : '', $superfecta->DID );
-	if($rule_match['number']){
-		if($superfecta->debug){$superfecta->outn("Matched DID Rule: '".$rule_match['pattern']."' with '".$rule_match['number']."'");}
-	}elseif($rule_match['status']){
-		if($superfecta->debug){$superfecta->outn("No matching DID rules.");}
-		$run_this_scheme = false;
+	//Get Scheme Params
+	$param = array();
+	$query = "SELECT * FROM superfectaconfig";
+	$res = $db->query($query);
+	if (DB::IsError($res)){
+		die("Unable to load scheme parameters: " . $res->getMessage() .  "<br>");
 	}
-
-	// Determine if the CID matches any patterns defined for this scheme
-	$rule_match = match_pattern_all((isset($scheme_param['CID_rules']))?$scheme_param['CID_rules']:'', $superfecta->thenumber );
-	if($rule_match['number'] && $run_this_scheme){
-		if($superfecta->debug){$superfecta->outn("Matched CID Rule: '".$rule_match['pattern']."' with '".$rule_match['number']."'");}
-		$superfecta->thenumber = $rule_match['number'];
-	}elseif($rule_match['status'] && $run_this_scheme){
-		if($superfecta->debug){$superfecta->outn("No matching CID rules.");}
-		$run_this_scheme = false;
-	}
-
-	//if a prefix lookup is enabled, look it up, and truncate the result to 10 characters
-	///Clean these up, set NULL values instead of blanks then don't check for ''
-	$superfecta->prefix = '';
-	if((isset($scheme_param['Prefix_URL'])) && (trim($scheme_param['Prefix_URL']) != ''))
+	while ($row = $res->fetchRow(DB_FETCHMODE_ASSOC))
 	{
-		if($superfecta->debug)
-		{
-			$start_time = mctime_float();
-		}
-	
-		$superfecta->prefix = get_url_contents(str_replace("[thenumber]",$superfecta->thenumber,$scheme_param['Prefix_URL']));
-
-		if($superfecta->debug)
-		{
-			$superfecta->outn("Prefix Url defined ...");
-			if($superfecta->prefix !='')
-			{
-				$superfecta->outn("returned: ".$superfecta->prefix);
-			}
-			else
-			{
-				$superfecta->outn("result was empty");
-			}
-			$superfecta->outn("result <img src='images/scrollup.gif'> took ".number_format((mctime_float()-$start_time),4)." seconds.");
-		}
+		$param[$row['source']][$row['field']] = $row['value'];
 	}
 
-	if($run_this_scheme) {
+	if(!array_key_exists($scheme_name,$param)) {
+		die('Scheme Does not Exist!');
+	}
+
+	$scheme_param = $param[$scheme_name];
+
+	require_once('superfecta_base.php');
+	if(isset($scheme_param['enable_multifecta'])) {
+		require_once('superfecta_multi.php');
+		//require_once('superfecta_pcntl.php');
+		$superfecta = NEW superfecta_multi($multifecta_id,$db,$amp_conf,$debug,$thenumber_orig,$scheme_name,$scheme_param,$source);
+		$superfecta->type = 'MULTI';
+	} else {
+		require_once('superfecta_single.php');
+		$superfecta = NEW superfecta_single($db,$amp_conf,$debug,$thenumber_orig,$scheme_name,$scheme_param);
+		$superfecta->type = 'SUPER';
+	}
+	$superfecta->cli = $cli;
+	$superfecta->DID = $DID;
+
+	//We only want to run all of this if it's a parent-multifecta or the original code (single-fecta), No need to run this for every child
+	if(($superfecta->debug) && (($superfecta->type == 'SUPER') || (($superfecta->type == 'MULTI') && ($superfecta->multi_type == 'PARENT')))){
+		// If debugging, report all errors
+		error_reporting(E_ALL & E_NOTICE); // -1 was not letting me see the wood for the trees.
+		ini_set('display_errors', '1');
+		$superfecta->outn("<strong>Debug is on</strong>");
+		$superfecta->outn("<strong>The Original Number: </strong>". $superfecta->thenumber_orig);
+		$superfecta->outn("<strong>The Scheme: </strong>". $superfecta->scheme_name);
+		$superfecta->outn("<strong>Scheme Type: </strong>".$superfecta->type."FECTA");
+		$superfecta->out("<strong>is CLI: </strong>");
+		$superfecta->outn($cli ? 'true' : 'false');
+		$start_time_whole = mctime_float();
+		$end_time_whole = 0;
+		$superfecta->outn("<b>Debugging Enabled, will not stop after first result.");
+		$superfecta->outn("Scheme Variables:</b><pre>". print_r($superfecta->scheme_param,TRUE) . "</pre>");
+	}
+	$superfecta->thenumber = ereg_replace('[^0-9]+', '', $superfecta->thenumber_orig);
+	$superfecta->curl_timeout = $scheme_param['Curl_Timeout'];
+
+	$run_this_scheme = true;
+
+	//We only want to run all of this if it's a parent-multifecta or the original code (single-fecta), No need to run this for every child
+	if(($superfecta->type == 'SUPER') || (($superfecta->type == 'MULTI') && ($superfecta->multi_type == 'PARENT'))) {
+		// Determine if this is the correct DID, if this scheme is limited to a DID.
+		$rule_match = match_pattern_all( (isset($scheme_param['DID'])) ? $scheme_param['DID'] : '', $superfecta->DID );
+		if($rule_match['number']){
+			if($superfecta->debug){$superfecta->outn("Matched DID Rule: '".$rule_match['pattern']."' with '".$rule_match['number']."'");}
+		}elseif($rule_match['status']){
+			if($superfecta->debug){$superfecta->outn("No matching DID rules.");}
+			$run_this_scheme = false;
+		}
+
+		// Determine if the CID matches any patterns defined for this scheme
+		$rule_match = match_pattern_all((isset($scheme_param['CID_rules']))?$scheme_param['CID_rules']:'', $superfecta->thenumber );
+		if($rule_match['number'] && $run_this_scheme){
+			if($superfecta->debug){$superfecta->outn("Matched CID Rule: '".$rule_match['pattern']."' with '".$rule_match['number']."'");}
+			$superfecta->thenumber = $rule_match['number'];
+		}elseif($rule_match['status'] && $run_this_scheme){
+			if($superfecta->debug){$superfecta->outn("No matching CID rules.");}
+			$run_this_scheme = false;
+		}
+
+		//if a prefix lookup is enabled, look it up, and truncate the result to 10 characters
+		///Clean these up, set NULL values instead of blanks then don't check for ''
+		$superfecta->prefix = '';
+		if((isset($scheme_param['Prefix_URL'])) && (trim($scheme_param['Prefix_URL']) != ''))
+		{
+			if($superfecta->debug)
+			{
+				$start_time = mctime_float();
+			}
+	
+			$superfecta->prefix = get_url_contents(str_replace("[thenumber]",$superfecta->thenumber,$scheme_param['Prefix_URL']));
+
+			if($superfecta->debug)
+			{
+				$superfecta->outn("Prefix Url defined ...");
+				if($superfecta->prefix !='')
+				{
+					$superfecta->outn("returned: ".$superfecta->prefix);
+				}
+				else
+				{
+					$superfecta->outn("result was empty");
+				}
+				$superfecta->outn("result <img src='images/scrollup.gif'> took ".number_format((mctime_float()-$start_time),4)." seconds.");
+			}
+		}
+
+		if($run_this_scheme) {
+			if(!$cli) {
+				$callerid = $superfecta->web_debug();				
+			} else {
+				$callerid = $superfecta->get_results();			
+			}
+				
+			if ($callerid !='')
+			{
+				//$first_caller_id = _utf8_decode($first_caller_id);
+				$callerid = strip_tags($callerid);
+				$callerid = trim ($callerid);
+				if ($superfecta->charsetIA5)
+				{
+					$callerid = stripAccents($callerid);
+				}
+				$callerid = preg_replace ( "/[\";']/", "", $callerid);
+				//limit caller id to the first 60 char
+				$callerid = substr($callerid,0,60);
+			}
+	
+			$superfecta->send_results($callerid);
+	
+			if(!$superfecta->debug) {
+				if($cli) {
+					echo $superfecta->prefix.$callerid;
+				} else {
+					echo $scheme_name.": ".$superfecta->prefix.$callerid."<br/>\n";
+				}
+			} else {
+				$superfecta->out("<b>Returned Result would be: ");
+				$callerid = utf8_encode($superfecta->prefix.$callerid);
+				$superfecta->outn($callerid);
+				$end_time_whole = ($end_time_whole == 0) ? mctime_float() : $end_time_whole;
+				$superfecta->outn("result <img src='images/scrollup.gif'> took ".number_format(($end_time_whole-$start_time_whole),4)." seconds.</b>");
+			}
+		}
+	} elseif(($superfecta->type == 'MULTI') && ($superfecta->multi_type == 'CHILD')) {
 		if(!$cli) {
 			$callerid = $superfecta->web_debug();				
 		} else {
 			$callerid = $superfecta->get_results();			
 		}
-				
-		if ($callerid !='')
-		{
-			//$first_caller_id = _utf8_decode($first_caller_id);
-			$callerid = strip_tags($callerid);
-			$callerid = trim ($callerid);
-			if ($superfecta->charsetIA5)
-			{
-				$callerid = stripAccents($callerid);
-			}
-			$callerid = preg_replace ( "/[\";']/", "", $callerid);
-			//limit caller id to the first 60 char
-			$callerid = substr($callerid,0,60);
-		}
-	
-		$superfecta->send_results($callerid);
-	
-		if(!$superfecta->debug) {
-			echo $superfecta->prefix.$callerid;
-		} else {
-			$superfecta->out("<b>Returned Result would be: ");
-			$callerid = utf8_encode($superfecta->prefix.$callerid);
-			$superfecta->outn($callerid);
-			$end_time_whole = ($end_time_whole == 0) ? mctime_float() : $end_time_whole;
-			$superfecta->outn("result <img src='images/scrollup.gif'> took ".number_format(($end_time_whole-$start_time_whole),4)." seconds.</b>");
-		}
-	}
-} elseif(($superfecta->type == 'MULTI') && ($superfecta->multi_type == 'CHILD')) {
-	if(!$cli) {
-		$callerid = $superfecta->web_debug();				
-	} else {
-		$callerid = $superfecta->get_results();			
 	}
 }
 
