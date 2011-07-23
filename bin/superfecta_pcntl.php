@@ -352,8 +352,7 @@ class superfecta_multi extends superfecta_base {
 	}
 	
 	function send_results($caller_id) {
-		$sql = "SELECT field,value FROM asterisk.superfectaconfig WHERE source = '".$this->scheme_name."_".$data."'";
-		$run_param = $this->db->getAssoc($sql);
+
 		$sources = explode(",",$this->scheme_param['sources']);
 		
 		if($this->debug)
@@ -363,6 +362,9 @@ class superfecta_multi extends superfecta_base {
 		foreach($sources as $source_name)
 		{
 			// Run the source
+			$sql = "SELECT field,value FROM asterisk.superfectaconfig WHERE source = '".$this->scheme_name."_".$data."'";
+			$run_param = $this->db->getAssoc($sql);
+			
 			if(file_exists("source-".$source_name.".module")) {
 				require_once("source-".$source_name.".module");
 				$source_class = NEW $source_name;
