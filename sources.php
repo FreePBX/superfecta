@@ -175,6 +175,7 @@ if($check_updates == 'on')
 			$update_array[$this_source_name]['link'] = UPDATE_SERVER.$sources['name'];
 			$update_array[$this_source_name]['date'] = $sources['modified'];
 			$update_array[$this_source_name]['md5'] = $sources['md5'];
+			$update_array[$this_source_name]['version_requirement'] = $sources['version_requirement'];
 		}
 		
 		//Download a new version of superfecta_base
@@ -183,7 +184,7 @@ if($check_updates == 'on')
 		//rename and keep old file if it exists
 		if(is_file("bin/superfecta_base.php"))
 		{
-			//rename("bin/superfecta_base.php","bin/old_superfecta_base.php");
+			rename("bin/superfecta_base.php","bin/old_superfecta_base.php");
 			unlink("bin/superfecta_base.php");
 		}
 		file_put_contents("bin/superfecta_base.php",$superfecta_base_data);
