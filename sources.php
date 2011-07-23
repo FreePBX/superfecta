@@ -186,9 +186,9 @@ if($check_updates == 'on')
 		{
 			rename("bin/superfecta_base.php","bin/old_superfecta_base.php");
 			unlink("bin/superfecta_base.php");
-			unlink("bin/old_superfecta_base.php");
 		}
 		file_put_contents("bin/superfecta_base.php",$superfecta_base_data);
+		unlink("bin/old_superfecta_base.php");
 		/*
 		$update_site_unavailable = true;
 		$check_updates = 'off';
