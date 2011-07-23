@@ -13,9 +13,11 @@
 //	the Free Software Foundation; either version 2 of the License, or
 //	(at your option) any later version.
 //
+require("bin/superfecta_base.php");
+$superfecta = new superfecta_base;
 
 $scheme = (isset($_REQUEST['scheme'])) ? $_REQUEST['scheme'] : '';
-$module_info = superfecta_xml2array("modules/superfecta/module.xml");
+$module_info = $superfecta->xml2array("modules/superfecta/module.xml");
 
 if(count($_POST))
 {
