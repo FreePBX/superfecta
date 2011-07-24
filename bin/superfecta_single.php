@@ -30,6 +30,7 @@ class superfecta_single extends superfecta_base {
 				$source_class->db = $this->db;
 				if(method_exists($source_class, 'get_caller_id')) {
 					$caller_id = $source_class->get_caller_id($this->thenumber,$run_param);
+					$this->spam = $source_class->spam;
 					unset($source_class);
 					$caller_id = $this->_utf8_decode($caller_id);
 
@@ -73,7 +74,7 @@ class superfecta_single extends superfecta_base {
 		
 		if($this->debug)
 		{
-			$this->out("Post CID retrieval processing.");
+			$this->outn("Post CID retrieval processing.");
 		}	
 		foreach($sources as $source_name)
 		{

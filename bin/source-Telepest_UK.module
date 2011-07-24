@@ -39,7 +39,7 @@ class Telepest_UK extends superfecta_base {
 				$this->DebugPrint( "Searching Telepest.co.uk ... " );
 				
 				$url = "http://www.telepest.co.uk/$thenumber";
-				$value = get_url_contents($url);
+				$value = $this->get_url_contents($url);
 				
 				$start = strpos($value, $thenumber.' is not in our database of possible telepests');
 				if($start >0)

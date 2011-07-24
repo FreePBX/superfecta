@@ -187,8 +187,8 @@ class superfecta_multi extends superfecta_base {
 					// We dont break out of the loop for spam though.  We'll just keep
 					// checking it over and over until we get a cnam or we time-out.
 					$spam_text = (($row2['spam_text'])?$row2['spam_text']:$spam_text);
-					if($row2['spam_text'] && (!$spam_text)){
-						$spam = $row2['spam'];
+					if($row2['spam']){
+						$this->spam = TRUE;
 						$spam_text = $row2['spam_text'];
 						$spam_source = $row2['source'];
 						$spam_child_id = $row2['superfecta_mf_child_id'];
@@ -281,6 +281,8 @@ class superfecta_multi extends superfecta_base {
 	
 			if(method_exists($source_class, 'get_caller_id')) {
 				$caller_id = $source_class->get_caller_id($this->thenumber,$run_param);
+				$this->spam = $source_class->spam;
+				$this->cache_found = $source_class->cache_found;
 				unset($source_class);
 				$caller_id = $this->_utf8_decode($caller_id);
 

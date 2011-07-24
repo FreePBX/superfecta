@@ -181,16 +181,18 @@ foreach($scheme_name_array as $list) {
 			}
 	
 			$superfecta->send_results($callerid);
-	
+			
+			$spam_text = ($superfecta->spam) ? $scheme_param['SPAM_Text'] : '';
+
 			if(!$superfecta->debug) {
 				if($cli) {
-					echo $superfecta->prefix.$callerid;
+					echo $spam_text." ".$superfecta->prefix.$callerid;
 				} else {
-					echo $scheme_name.": ".$superfecta->prefix.$callerid."<br/>\n";
+					echo $scheme_name.": ".$spam_text." ".$superfecta->prefix.$callerid."<br/>\n";
 				}
 			} else {
 				$superfecta->out("<b>Returned Result would be: ");
-				$callerid = utf8_encode($superfecta->prefix.$callerid);
+				$callerid = utf8_encode($spam_text." ".$superfecta->prefix.$callerid);
 				$superfecta->outn($callerid);
 				$end_time_whole = ($end_time_whole == 0) ? $superfecta->mctime_float() : $end_time_whole;
 				$superfecta->outn("result <img src='images/scrollup.gif'> took ".number_format(($end_time_whole-$start_time_whole),4)." seconds.</b>");

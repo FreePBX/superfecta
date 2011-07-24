@@ -182,6 +182,7 @@ if($check_updates == 'on')
 		$superfecta_base_data = $superfecta->get_url_contents(UPDATE_SERVER.'superfecta_base.php');
 			
 		//rename and keep old file if it exists
+		echo "on";
 		if(is_file("bin/superfecta_base.php"))
 		{
 			rename("bin/superfecta_base.php","bin/old_superfecta_base.php");
