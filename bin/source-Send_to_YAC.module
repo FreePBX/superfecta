@@ -42,10 +42,7 @@ class Send_to_YAC extends superfecta_base {
 	    	$yac_text = $yac_cnam.'~'.$thenumber;
 			shell_exec('/bin/echo -e -n "@CALL'.$yac_text.'"|nc -w 1 '.$run_param['Server_address'].' '.$run_param['Server_TCP_Port'].'');
 	
-			if($debug)
-			{
-				print "Send to YAC: ${yac_text}<br><br>";
-			}
+			$this->DebugPrint("Send to YAC: ${yac_text}");
 		}
 
 		return($thenumber);
