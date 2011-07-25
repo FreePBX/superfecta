@@ -41,7 +41,7 @@ class Number_Guru extends superfecta_base {
 
 				// Search NumberGuru USA
 				$url = "http://www.numberguru.com/s/{$thenumber}";
-				$value = get_url_contents($url);
+				$value = $this->get_url_contents($url);
 		
 				// Check for CNAM lookup
 				if(isset($run_param['Get_Caller_ID_Name']) && $run_param['Get_Caller_ID_Name'] == 'on')
