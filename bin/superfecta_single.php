@@ -22,7 +22,7 @@ class superfecta_single extends superfecta_base {
 			$sql = "SELECT field,value FROM superfectaconfig WHERE source = '".$this->scheme_name."_".$data."'";
 			$run_param = $this->db->getAssoc($sql);
 
-			$source_name = "bin/source-".$data.".module";
+			$source_name = $this->amp_conf['AMPWEBROOT']."/admin/modules/superfecta/bin/source-".$data.".module";
 				        			
 			if(file_exists($source_name)) {
 				require_once($source_name);
