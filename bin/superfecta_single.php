@@ -10,6 +10,7 @@ class superfecta_single extends superfecta_base {
 		$this->amp_conf = $amp_conf;
 		$this->thenumber_orig = $thenumber_orig;
 		$this->scheme_param = $scheme_param;
+		$this->path_location = dirname(__FILE__);
 	}
 	
 	function get_results() {
@@ -22,8 +23,7 @@ class superfecta_single extends superfecta_base {
 			$sql = "SELECT field,value FROM superfectaconfig WHERE source = '".$this->scheme_name."_".$data."'";
 			$run_param = $this->db->getAssoc($sql);
 
-			$source_name = $this->amp_conf['AMPWEBROOT']."/admin/modules/superfecta/bin/source-".$data.".module";
-				        			
+			$source_name = $this->path_location."/source-".$data.".module";
 			if(file_exists($source_name)) {
 				require_once($source_name);
 				$source_class = NEW $data;
@@ -82,7 +82,7 @@ class superfecta_single extends superfecta_base {
 			// Run the source
 			$sql = "SELECT field,value FROM superfectaconfig WHERE source = '".$this->scheme_name."_".$source_name."'";
 			$run_param = $this->db->getAssoc($sql);
-			$source_file = "bin/source-".$source_name.".module";
+			$source_file = $this->path_location."/source-".$source_name.".module";
 			if(file_exists($source_file)) {
 				require_once($source_file);
 				$source_class = NEW $source_name;
@@ -93,6 +93,8 @@ class superfecta_single extends superfecta_base {
 				} else {
 					print "Method 'post_processing' doesn't exist<br\>\n"; 
 				}
+			} else {
+				$this->DebugPrint("Couldn't load ".$source_name. " for post processing");
 			}
 		}
 	}

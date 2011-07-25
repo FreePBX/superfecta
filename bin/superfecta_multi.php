@@ -13,6 +13,7 @@ class superfecta_multi extends superfecta_base {
 		$this->thenumber_orig = $thenumber_orig;
 		$this->scheme_param = $scheme_param;
 		$this->source = $source;
+		$this->path_location = dirname(__FILE__);
 		if($multifecta_id){
 			$this->multi_type = 'CHILD';
 		} else {
@@ -271,8 +272,10 @@ class superfecta_multi extends superfecta_base {
         
 		print_r($run_param);
 		
-		if(file_exists("source-".$this->source.".module")) {
-			require_once("source-".$this->source.".module");
+		$source_file = $this->path_location."/source-".$this->source.".module";
+		
+		if(file_exists($source_file)) {
+			require_once($source_file);
 			$source_class = NEW $this->source;
 			//Gotta be a better way to do this
 			$source_class->debug = $this->debug;
