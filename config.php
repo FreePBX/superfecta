@@ -7,8 +7,8 @@ if(file_exists("/etc/freepbx.conf")) {
 	require("/etc/asterisk/freepbx.conf");
 } else {
 	//This is > FreePBX 2.8	
-	chdir(dirname(__FILE__));
-	require_once("../../functions.inc.php");	
+	$functions_location = str_replace("modules/superfecta", "", dirname(__FILE__))."functions.inc.php";
+	require_once($functions_location);	
 	require_once 'DB.php';
 	define("AMP_CONF", "/etc/amportal.conf");
 	$amp_conf = parse_amportal_conf(AMP_CONF);
