@@ -13,7 +13,8 @@ Original script by Nerd Vittles. (Google for Caller Id Trifecta)
 	01-03-2010  	Version 2.3.0  Updates to remove need for Caller ID Lookup module
 	01-04-2010  	Version 2.3.0  Updates for running multiple sources at the same time (Multifecta)
 ***/
-require_once('../config.php');
+$config_location = str_replace("/bin", "", dirname(__FILE__))."/config.php";
+require_once($config_location);
 
 //Determine CLI or HTTP
 if(php_sapi_name() == 'cli' && empty($_SERVER['REMOTE_ADDR'])) {
