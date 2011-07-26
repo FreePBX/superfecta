@@ -207,3 +207,23 @@ foreach($scheme_name_array as $list) {
 		}
 	}
 }
+
+function FnDeprecated($fnName) { die("<strong>Error - </strong>Function <strong>{$fnName}</strong> is deprecated."); }
+ 
+function cisf_find_area ($area_array, $full_number) { FnDeprecated(__FUNCTION__); }
+
+function cisf_url_encode_array($arr) { FnDeprecated(__FUNCTION__); }
+
+function get_url_contents($url,$post_data=false,$referrer=false,$cookie_file=false,$useragent=false) { FnDeprecated(__FUNCTION__); }
+
+function mctime_float() { FnDeprecated(__FUNCTION__); }
+
+function match_pattern_all($array, $number) { FnDeprecated(__FUNCTION__); }
+
+function match_pattern($pattern, $number) { FnDeprecated(__FUNCTION__); }
+
+function stripAccents($string) { FnDeprecated(__FUNCTION__); }
+
+function isutf8($string) { FnDeprecated(__FUNCTION__); }
+
+function _utf8_decode($string) { FnDeprecated(__FUNCTION__); }

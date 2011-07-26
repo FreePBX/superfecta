@@ -1,8 +1,8 @@
 <data>
 	<source>
 		<name>source-Google_Maps_UK.module</name>
-		<modified>1311148801</modified>
-		<md5>950d95adc7f030ceab22a3e7aaddd1a7</md5>
+		<modified>1311718897</modified>
+		<md5>66c7c482157382dba717b9c1958ac2e1</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
@@ -19,8 +19,8 @@
 	</source>
 	<source>
 		<name>source-Number_Guru.module</name>
-		<modified>1311148801</modified>
-		<md5>c8acbea000d08d7e35907e80aca5c0f4</md5>
+		<modified>1311622675</modified>
+		<md5>2a74867c9c8fa0695fe127abb814bca7</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
@@ -31,14 +31,14 @@
 	</source>
 	<source>
 		<name>source-Send_to_Soundbridge.module</name>
-		<modified>1311454946</modified>
-		<md5>0db699867abe624b13276773894dc679</md5>
+		<modified>1311531828</modified>
+		<md5>44ade48b9f9a409ef5caab2b28a1664a</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
 		<name>source-Send_to_YAC.module</name>
-		<modified>1309682221</modified>
-		<md5>d3c6ef676a5390919926732c63b021be</md5>
+		<modified>1311531606</modified>
+		<md5>c5259fcd41de8039abe5ebe159221d8a</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
@@ -49,8 +49,8 @@
 	</source>
 	<source>
 		<name>source-Telepest_UK.module</name>
-		<modified>1311148801</modified>
-		<md5>563172e93542c5658bb1349bec8b92fb</md5>
+		<modified>1311510039</modified>
+		<md5>b12c691bc8e912e142957e67e63fbf1d</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
