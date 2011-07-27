@@ -21,14 +21,10 @@ class Infobel extends superfecta_base {
 	
 	function get_caller_id($thenumber,$run_param=array()) 
 	{
-		//This debug variable allows simple copy and past of most sources.
-		$debug = $this->debug;
 		$caller_id = "";		
 
-		if($debug)
-		{
-			print 'Searching Infobel...<br> ';
-		}
+		$this->DebugPrint ('Searching Infobel...');
+
 		$Country = 'None';
 		//BE: 8 to 9 digits; FR: 9 digits, IT: 8 to 11 digits, AU: 4 to 13 digits, DK: 8 digits, LU: 6 to 9 digits, ES: 9 digits, DE:6 to 12. 
 	
@@ -201,10 +197,7 @@ class Infobel extends superfecta_base {
 			$Country = $run_param['Default_Country'];
 		}
 		
-		if($debug)
-		{
-			print $Country . ' : ';
-		}
+		$this->DebugEcho($Country . ' : ');
 		
 		switch ($Country)
 		{
@@ -242,7 +235,7 @@ class Infobel extends superfecta_base {
 		{
 	
 			$url = $url . "&qPhone=" . $loc_number. "&qSelLang3=&SubmitREV=Zoek&inphCoordType=EPSG";
-			$sresult =  get_url_contents($url);
+			$sresult = $this->get_url_contents($url);
 	
 			switch ($Country)
 			{
@@ -273,14 +266,14 @@ class Infobel extends superfecta_base {
 			{
 				$caller_id = strip_tags($sname);			
 			}
-			else if($debug)
+			else
 			{
-				print "not found<br>\n";
+				$this->DebugPrint( "not found" );
 			}
 		}
-		else if($debug)
+		else
 		{
-			print "country source not found<br>\n";
+			$this->DebugPrint ("country source not found");
 		}			
 		
 		return $caller_id;

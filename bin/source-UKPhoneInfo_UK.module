@@ -31,7 +31,7 @@ class UKPhoneInfo_UK extends superfecta_base {
 			$url = "http://www.ukphoneinfo.com/search.php?Submit=Submit&d=nl";
 			
 			$url = $url . "&GNG=" . $thenumber;
-			$sresult =  get_url_contents($url);
+			$sresult = $this->get_url_contents($url);
 			
 			if(preg_match_all('=<h2[^>]*>(.*)</h2>=siU', $sresult, $sname))
 			{

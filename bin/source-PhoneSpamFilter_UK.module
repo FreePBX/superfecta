@@ -35,7 +35,7 @@ class PhoneSpamFilter_UK extends superfecta_base {
 			$this->DebugPrint( "Searching PhoneSpamFilter (UK) ... " );
 			
 			$url = "http://www.phonespamfilter.co.uk/check.php?phone=$thenumber";
-			$value = get_url_contents($url);
+			$value = $this->get_url_contents($url);
 			
 			if(is_numeric($value))
 			{
