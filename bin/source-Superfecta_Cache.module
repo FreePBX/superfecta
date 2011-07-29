@@ -49,9 +49,13 @@ class Superfecta_Cache extends superfecta_base {
 			//This debug variable allows simple copy and past of most sources.
 			$debug = $this->debug;
 			$caller_id = "";
-			
+
+			// Compatbility for v3.x onwards
+			if(method_exists($this, 'match_pattern_all')){
+				$rule_match = $this->match_pattern_all(isset($run_param['CID_Exclusion_Rules'])?$run_param['CID_Exclusion_Rules']:'' , $thenumber);
+			}
 			// Compatbility for pre 2.2.4
-			if(function_exists("match_pattern_all")){ 
+			elseif(function_exists("match_pattern_all")){ 
 				$rule_match = match_pattern_all(isset($run_param['CID_Exclusion_Rules'])?$run_param['CID_Exclusion_Rules']:'' , $thenumber);
 			}else{
 				if($debug){
@@ -97,8 +101,13 @@ class Superfecta_Cache extends superfecta_base {
 	function post_processing($cache_found,$winning_source,$first_caller_id,$run_param,$thenumber) {
 			//This debug variable allows simple copy and past of most sources.
 			$debug = $this->debug;
+
+			// Compatbility for v3.x onwards
+			if(method_exists($this, 'match_pattern_all')){
+				$rule_match = $this->match_pattern_all(isset($run_param['CID_Exclusion_Rules'])?$run_param['CID_Exclusion_Rules']:'' , $thenumber);
+			}
 			// Compatbility for pre 2.2.4
-			if(function_exists("match_pattern_all")){ 
+			elseif(function_exists("match_pattern_all")){ 
 				$rule_match = match_pattern_all(isset($run_param['CID_Exclusion_Rules'])?$run_param['CID_Exclusion_Rules']:'' , $thenumber);
 			}else{
 				$rule_match = array('status'=>false,'number'=>false);
