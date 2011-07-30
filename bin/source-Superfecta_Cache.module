@@ -45,29 +45,15 @@ class Superfecta_Cache extends superfecta_base {
 		return($settings);
 	}
 	
-	function get_caller_id($thenumber,$run_param=array()) {
-			//This debug variable allows simple copy and past of most sources.
-			$debug = $this->debug;
+	function get_caller_id($thenumber,$run_param=array()) 
+	{
 			$caller_id = "";
 
-			// Compatbility for v3.x onwards
-			if(method_exists($this, 'match_pattern_all')){
-				$rule_match = $this->match_pattern_all(isset($run_param['CID_Exclusion_Rules'])?$run_param['CID_Exclusion_Rules']:'' , $thenumber);
-			}
-			// Compatbility for pre 2.2.4
-			elseif(function_exists("match_pattern_all")){ 
-				$rule_match = match_pattern_all(isset($run_param['CID_Exclusion_Rules'])?$run_param['CID_Exclusion_Rules']:'' , $thenumber);
-			}else{
-				if($debug){
-					print "Cache CID rules require Superfecta 2.2.4 or higher.<br>\n";
-				}
-				$rule_match = array('status'=>false,'number'=>false);
-			}
-			if((!$rule_match['status']) || (!$rule_match['number'])){
-				if($debug)
-				{
-					print "Searching Superfecta Cache ... ";
-				}
+			$rule_match = $this->match_pattern_all(isset($run_param['CID_Exclusion_Rules'])?$run_param['CID_Exclusion_Rules']:'' , $thenumber);
+
+			if((!$rule_match['status']) || (!$rule_match['number']))
+			{
+				$this->DebugPrint("Searching Superfecta Cache ... ");
 
 				//clear old cache
 				$sql = "DELETE FROM superfectacache WHERE dateentered < DATE_SUB(NOW(),INTERVAL ".(isset($run_param['Cache_Timeout'])?$run_param['Cache_Timeout']:$source_param['Cache_Timeout']['default'])." DAY)";
@@ -87,31 +73,21 @@ class Superfecta_Cache extends superfecta_base {
 					$caller_id = $sres;
 					$cache_found = true;
 				}
-				else if($debug)
+				else
 				{
-					print "not found<br>\n";
+					$this->DebugPrint( "not found" );
 				}
-			}elseif($debug){
-				print "Matched cache exclusion rule: '".$rule_match['pattern']."' with: '".$rule_match['number']."'<br>\nSkipping cache 
-		lookup.<br>\n";
+			}else{
+				$this->DebugPrint("Matched cache exclusion rule: '{$rule_match['pattern']}' with: '{$rule_match['number']}'");
+				$this->DebugPrint("Skipping cache lookup.");
 			}
 			return($caller_id);	
 	}
 	
-	function post_processing($cache_found,$winning_source,$first_caller_id,$run_param,$thenumber) {
-			//This debug variable allows simple copy and past of most sources.
-			$debug = $this->debug;
+	function post_processing($cache_found,$winning_source,$first_caller_id,$run_param,$thenumber) 
+	{
+			$rule_match = $this->match_pattern_all(isset($run_param['CID_Exclusion_Rules'])?$run_param['CID_Exclusion_Rules']:'' , $thenumber);
 
-			// Compatbility for v3.x onwards
-			if(method_exists($this, 'match_pattern_all')){
-				$rule_match = $this->match_pattern_all(isset($run_param['CID_Exclusion_Rules'])?$run_param['CID_Exclusion_Rules']:'' , $thenumber);
-			}
-			// Compatbility for pre 2.2.4
-			elseif(function_exists("match_pattern_all")){ 
-				$rule_match = match_pattern_all(isset($run_param['CID_Exclusion_Rules'])?$run_param['CID_Exclusion_Rules']:'' , $thenumber);
-			}else{
-				$rule_match = array('status'=>false,'number'=>false);
-			}
 			if((!$rule_match['status']) || (!$rule_match['number'])){
 				if(!$cache_found && ($first_caller_id != ''))
 				{
@@ -119,14 +95,11 @@ class Superfecta_Cache extends superfecta_base {
 									VALUES($thenumber,'$first_caller_id',NOW())";
 									
 					$this->db->query($sql);					
-					if($debug)
-					{
-						print "Caller ID data added to cache.<br>\n<br>\n";
-					}
+					$this->DebugPrint("Caller ID data added to cache.");
 				}
-			}elseif($debug){
-				print "Matched cache exclusion rule: '".$rule_match['pattern']."' with: '".$rule_match['number']."'<br>\nSkipping cache 
-		storage.<br>\n";
+			}else{
+				$this->DebugPrint ("Matched cache exclusion rule: '{$rule_match['pattern']}' with: '{$rule_match['number']}'");
+				$this->DebugPrint ("Skipping cache storage.");
 			}
 	}
 }
