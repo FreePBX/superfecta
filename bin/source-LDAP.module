@@ -24,8 +24,6 @@ class LDAP extends superfecta_base {
 	}
 	
 	function get_caller_id($thenumber,$run_param=array()) {
-		//This debug variable allows simple copy and past of most sources.
-		$debug = $this->debug;
 		$caller_id = "";		
 
 		$this->DebugPrint( "Searching LDAP for number: {$thenumber}");
@@ -133,9 +131,9 @@ class LDAP extends superfecta_base {
 		{
 			$caller_id = $name;
 		}
-		else if($debug)
+		else
 		{
-			print "not found<br>\n";
+			$this->DebugPrint( "not found" );
 		}
 		
 		return $caller_id;
