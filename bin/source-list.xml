@@ -6,6 +6,12 @@
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
+		<name>source-Asterisk_Phonebook.module</name>
+		<modified>1312150658</modified>
+		<md5>2c18ac2a6df1280c711a375353215e61</md5>
+		<version_requirement>3.0</version_requirement>
+	</source>
+	<source>
 		<name>source-Google_Maps_UK.module</name>
 		<modified>1311718897</modified>
 		<md5>66c7c482157382dba717b9c1958ac2e1</md5>
@@ -67,8 +73,8 @@
 	</source>
 	<source>
 		<name>source-Who_Called.module</name>
-		<modified>1309682221</modified>
-		<md5>d99c7904d5715160fd6709cc817b1603</md5>
+		<modified>1312147438</modified>
+		<md5>881d400ae35bd4a560198d38fc85e07c</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
 </data>

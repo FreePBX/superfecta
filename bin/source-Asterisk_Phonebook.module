@@ -1,0 +1,39 @@
+<?php
+class Asterisk_Phonebook extends superfecta_base {
+
+	function settings() {
+		//configuration / display parameters
+		//The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
+		$settings['desc'] = "Searches the built in Asterisk Phonebook for caller ID information. This is a very fast source of information.<br>If you are caching to the phonebook, this should be the first lookup source.";
+		$settings['version_requirement'] = "3.0";
+
+		return($settings);
+	}
+	
+	function get_caller_id($thenumber,$run_param=array()) 
+	{
+		$caller_id = "";		
+
+		$this->DebugPrint( "Searching Asterisk Phonebook ... ");
+
+		//connect to the asterisk manager		
+		$functions_location = str_replace("modules/superfecta/bin", "", str_replace("//","/",dirname(__FILE__)))."common/php-asmanager.php";
+		require_once($functions_location) or $this->DebugDie("Cannot load {$functions_location}");	
+		$astman	= new AGI_AsteriskManager();
+		
+		$name = $astman->database_get('cidname',$thenumber);
+		
+		// If we found a match, return it
+		if(strlen($name) > 1)
+		{
+			$caller_id = $name;
+		}
+		else
+		{
+			$this->DebugPrint( "not found" );
+		}
+		
+		return $caller_id;
+	}
+	
+}
