@@ -7,42 +7,8 @@
 #	the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
 #############################################################################
 
-require_once 'DB.php';
-define("AMP_CONF", "/etc/amportal.conf");
-define("UPDATE_SERVER", "https://raw.github.com/tm1000/Caller-ID-Superfecta/master/bin/");
-
-$amp_conf = parse_amportal_conf(AMP_CONF);
-if (count($amp_conf) == 0)
-{
-	fatal("FAILED");
-}
-
-function parse_amportal_conf($filename)
-{
-	$file = file($filename);
-	foreach ($file as $line)
-	{
-		if (preg_match("/^\s*([a-zA-Z0-9_]+)\s*=\s*(.*)\s*([;#].*)?/",$line,$matches))
-		{
-			$conf[ $matches[1] ] = $matches[2];
-		}
-	}
-	return $conf;
-}
-
-$dsn = array(
-		'phptype'  => 'mysql',
-		'username' => $amp_conf['AMPDBUSER'],
-		'password' => $amp_conf['AMPDBPASS'],
-		'hostspec' => $amp_conf['AMPDBHOST'],
-		'database' => $amp_conf['AMPENGINE'],
-);
-$options = array();
-$db =& DB::connect($dsn, $options);
-if (PEAR::isError($db))
-{
-	die($db->getMessage());
-}
+require("config.php");
+define("UPDATE_SERVER", "https://raw.github.com/tm1000/Caller-ID-Superfecta/v2.2.4.x/bin/");
 
 $selected_source = (isset($_REQUEST['selected_source'])) ? $_REQUEST['selected_source'] : '';
 $src_up = '';
@@ -199,11 +165,17 @@ if($check_updates == 'on')
 	{
 		$update_array = array();
 		$source_list = superfecta_xml2array2(UPDATE_SERVER.'source-list.xml');
+		
 		foreach($source_list['data']['source'] as $sources) {
-			$this_source_name = substr(substr(trim($sources['name']),7),0,-7);
-			$update_array[$this_source_name]['link'] = UPDATE_SERVER.$sources['name'];
-			$update_array[$this_source_name]['date'] = $sources['modified'];
-			$update_array[$this_source_name]['md5'] = $sources['md5'];
+			
+			$this_source_name = basename(trim($sources['name']));
+			$this_source_name = pathinfo($this_source_name);
+			$this_source_name2 = str_replace(".".$this_source_name['extension'],"",$this_source_name['basename']);
+			$this_source_name2 = str_replace("source-", "", $this_source_name2);
+			
+			$update_array[$this_source_name2]['link'] = UPDATE_SERVER.$sources['name'];
+			$update_array[$this_source_name2]['date'] = $sources['modified'];
+			$update_array[$this_source_name2]['md5'] = $sources['md5'];
 		}
 		/*
 		$update_site_unavailable = true;
