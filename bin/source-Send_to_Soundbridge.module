@@ -58,14 +58,14 @@ class Send_to_Soundbridge extends superfecta_base {
 			}
 			else
 			{
-			    die("Invalid Font size requested.");
+			    $this->DebugDie("Invalid Font size requested.");
 			}
 			
 			$errno='';
 			$errstr='';
 			
 			// connect to the SoundBridge
-			$fRoku = fsockopen($run_param['Server_address'], 4444, $errno, $errstr, 10) or die ("Could not connect to Roku SoundBridge");
+			$fRoku = fsockopen($run_param['Server_address'], 4444, $errno, $errstr, 10) or $this->DebugDie("Could not connect to Roku SoundBridge");
 			stream_set_blocking($fRoku, 0);
 			usleep(100000);
 	

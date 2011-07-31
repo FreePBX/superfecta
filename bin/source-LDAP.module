@@ -30,12 +30,12 @@ class LDAP extends superfecta_base {
 
 		// By default, the found name is empty
 		$name = "";
-	
+
 		// check if php-ldap is installed
-		function_exists('ldap_connect') or die ("LDAP functions not available - please check if php-ldap is installed");
+		function_exists('ldap_connect') or $this->DebugDie("LDAP functions not available - please check if php-ldap is installed");
 	
 		// parse host and port info 
-		$connection = @parse_url($run_param['LDAP_Host']) or die("No LDAP host specified - Check config LDAP_Host");
+		$connection = @parse_url($run_param['LDAP_Host']) or $this->DebugDie("No LDAP host specified - Check config LDAP_Host");
 		// print_r($connection); echo("<br>\n");
 	
 		// set default to ldap
@@ -52,7 +52,7 @@ class LDAP extends superfecta_base {
 		}
 		else 
 		{
-			die("Unable to determine LDAP server name");
+			$this->DebugDie("Unable to determine LDAP server name");
 		}
 	
 		// build DC string from host name supplied
@@ -75,22 +75,22 @@ class LDAP extends superfecta_base {
 		}
 	
 		// Prepare connection to LDAP server
-		$ad=@ldap_connect("{$scheme}://{$server}") or die ("Could not connect to {$scheme}://{$server}");
+		$ad=@ldap_connect("{$scheme}://{$server}") or $this->DebugDie("Could not connect to {$scheme}://{$server}");
 		
 		// Set protocol version
-		ldap_set_option($ad, LDAP_OPT_PROTOCOL_VERSION, 3) or die ("Could not set ldap protocol");
+		ldap_set_option($ad, LDAP_OPT_PROTOCOL_VERSION, 3) or $this->DebugDie("Could not set ldap protocol");
 		
 		// Set this option for AD on Windows Server 2003 per PHP manual
-		ldap_set_option($ad, LDAP_OPT_REFERRALS, 0) or die ("Could not set option referrals");
+		ldap_set_option($ad, LDAP_OPT_REFERRALS, 0) or $this->DebugDie("Could not set option referrals");
 	
 		// Attempt to set 5 second timeout
 		if (defined('LDAP_OPT_NETWORK_TIMEOUT')) {
 			// This option isn't present before PHP 5.3.
-			ldap_set_option($ad, constant('LDAP_OPT_NETWORK_TIMEOUT'), 5) or die ("Could not set network timeout");
+			ldap_set_option($ad, constant('LDAP_OPT_NETWORK_TIMEOUT'), 5) or $this->DebugDie("Could not set network timeout");
 		}
 			
 		// Establish connection with LDAP server
-		$bd=@ldap_bind($ad, "cn={$run_param['LDAP_User']}, {$dc}", "{$run_param['LDAP_Password']}") or die ("Could not bind to {$scheme}://{$server}");
+		$bd=@ldap_bind($ad, "cn={$run_param['LDAP_User']}, {$dc}", "{$run_param['LDAP_Password']}") or $this->DebugDie("Could not bind to {$scheme}://{$server}");
 			
 		// Check for OU to limit search
 		if(strlen($run_param['LDAP_Unit'])>0)

@@ -19,8 +19,8 @@
 	</source>
 	<source>
 		<name>source-LDAP.module</name>
-		<modified>1312059820</modified>
-		<md5>6dbdc549ec7c6ea6051d1ae72de3232a</md5>
+		<modified>1312132711</modified>
+		<md5>5e38acafd6b7f44e9f45ecb3ed9a94be</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
@@ -37,8 +37,8 @@
 	</source>
 	<source>
 		<name>source-Send_to_Soundbridge.module</name>
-		<modified>1311531828</modified>
-		<md5>44ade48b9f9a409ef5caab2b28a1664a</md5>
+		<modified>1312133097</modified>
+		<md5>8cd5f525d402f4cf70fe6b2d92f4b8a5</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
