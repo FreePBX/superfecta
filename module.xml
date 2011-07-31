@@ -1,7 +1,7 @@
 <module>
 	<rawname>superfecta</rawname>
 	<name>CID Superfecta</name>
-	<version>3.0.1</version>
+	<version>3.0.1alpha1</version>
 	<candisable>no</candisable>
 	<canuninstall>yes</canuninstall>
 	<type>setup</type>
