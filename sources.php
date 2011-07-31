@@ -7,41 +7,8 @@
 #	the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
 #############################################################################
 
-require_once 'DB.php';
-define("AMP_CONF", "/etc/amportal.conf");
-
-$amp_conf = parse_amportal_conf(AMP_CONF);
-if (count($amp_conf) == 0)
-{
-	fatal("FAILED");
-}
-
-function parse_amportal_conf($filename)
-{
-	$file = file($filename);
-	foreach ($file as $line)
-	{
-		if (preg_match("/^\s*([a-zA-Z0-9_]+)\s*=\s*(.*)\s*([;#].*)?/",$line,$matches))
-		{
-			$conf[ $matches[1] ] = $matches[2];
-		}
-	}
-	return $conf;
-}
-
-$dsn = array(
-		'phptype'  => 'mysql',
-		'username' => $amp_conf['AMPDBUSER'],
-		'password' => $amp_conf['AMPDBPASS'],
-		'hostspec' => $amp_conf['AMPDBHOST'],
-		'database' => $amp_conf['AMPENGINE'],
-);
-$options = array();
-$db =& DB::connect($dsn, $options);
-if (PEAR::isError($db))
-{
-	die($db->getMessage());
-}
+require("config.php");
+define("UPDATE_SERVER", "https://raw.github.com/tm1000/Caller-ID-Superfecta/v2.2.4.x/bin/");
 
 $selected_source = (isset($_REQUEST['selected_source'])) ? $_REQUEST['selected_source'] : '';
 $src_up = '';
@@ -193,34 +160,28 @@ ksort($src_print);
 if($check_updates == 'on')
 {
 	$update_array = array();
-	$update_content = get_url_contents('http://projects.colsolgrp.net/projects/list_files/superfecta');
-	if(($update_content == '') || (strpos($update_content,'The system is currently in Maintenance Mode. Please try again later.') !== false))
+	// Load files available on live update
+	if(($check_updates == 'on') || ($update_file != ''))
 	{
-		//site un-available, give error.
+		$update_array = array();
+		$source_list = superfecta_xml2array2(UPDATE_SERVER.'source-list.xml');
+		
+		foreach($source_list['data']['source'] as $sources) {
+			
+			$this_source_name = basename(trim($sources['name']));
+			$this_source_name = pathinfo($this_source_name);
+			$this_source_name2 = str_replace(".".$this_source_name['extension'],"",$this_source_name['basename']);
+			$this_source_name2 = str_replace("source-", "", $this_source_name2);
+			
+			$update_array[$this_source_name2]['link'] = UPDATE_SERVER.$sources['name'];
+			$update_array[$this_source_name2]['date'] = $sources['modified'];
+			$update_array[$this_source_name2]['md5'] = $sources['md5'];
+		}
+		/*
 		$update_site_unavailable = true;
 		$check_updates = 'off';
-	}
-	else
-	{
-		$update_content = html2text($update_content);
-		$update_content = substr($update_content,(strpos($update_content,'Caller ID Superfecta Source Files') + 33));
-		$update_content = substr($update_content,0,strpos($update_content,'[LINK: /versions/show'));
-		$update_content = str_replace("\t","|||",$update_content);
-		$update_content = str_replace("]","|||",$update_content);
-		$update_content = str_replace("\n","",$update_content);
-		$tmp_array = explode("[LINK: ",$update_content);
-		foreach($tmp_array as $val)
-		{
-			$tmp2_array = explode("|||",$val);
-			if(!empty($tmp2_array[0]))
-			{
-				$this_source_name = substr(substr(trim($tmp2_array[1]),7),0,-4);
-				$update_array[$this_source_name]['link'] = "http://projects.colsolgrp.net".trim($tmp2_array[0]);
-				$update_array[$this_source_name]['date'] = strtotime(trim($tmp2_array[2])) - (60*60*24);	//to correct for time zones, give a time that is 24 hours older than the file actually is.
-			}
-		}
-		//print_r($update_array);
-	}
+		*/
+	}	
 }
 
 print '<input type="hidden" name="src_up" value="">
@@ -617,5 +578,155 @@ function html2text($badStr)
 	$goodStr = wordwrap( $goodStr );
 	//make sure there are no more than 3 linebreaks in a row and trim whitespace
 	return preg_replace( "/^\n*|\n*$/", '', preg_replace( "/[ \t]+(\n|$)/", "$1", preg_replace( "/\n(\s*\n){2}/", "\n\n\n", preg_replace( "/\r\n?|\f/", "\n", str_replace( chr(160), ' ', $goodStr ) ) ) ) );
+}
+
+/**
+Parse XML file into an array
+*/
+function superfecta_xml2array2($url, $get_attributes = 1, $priority = 'tag')
+{
+	$contents = "";
+	if (!function_exists('xml_parser_create'))
+	{
+		return array ();
+	}
+	$parser = xml_parser_create('');
+	if(!($fp = @ fopen($url, 'rb')))
+	{
+		return array ();
+	}
+	while(!feof($fp))
+	{
+		$contents .= fread($fp, 8192);
+	}
+	fclose($fp);
+	xml_parser_set_option($parser, XML_OPTION_TARGET_ENCODING, "UTF-8");
+	xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, 0);
+	xml_parser_set_option($parser, XML_OPTION_SKIP_WHITE, 1);
+	xml_parse_into_struct($parser, trim($contents), $xml_values);
+	xml_parser_free($parser);
+	if(!$xml_values)
+	{
+		return; //Hmm...
+	}
+	$xml_array = array ();
+	$parents = array ();
+	$opened_tags = array ();
+	$arr = array ();
+	$current = & $xml_array;
+	$repeated_tag_index = array ();
+	foreach ($xml_values as $data)
+	{
+		unset ($attributes, $value);
+		extract($data);
+		$result = array ();
+		$attributes_data = array ();
+		if (isset ($value))
+		{
+			if($priority == 'tag')
+			{
+				$result = $value;
+			}
+			else
+			{
+				$result['value'] = $value;
+			}
+		}
+		if(isset($attributes) and $get_attributes)
+		{
+			foreach($attributes as $attr => $val)
+			{
+				if($priority == 'tag')
+				{
+					$attributes_data[$attr] = $val;
+				}
+				else
+				{
+					$result['attr'][$attr] = $val; //Set all the attributes in a array called 'attr'
+				}
+			}
+		}
+		if ($type == "open")
+		{
+			$parent[$level -1] = & $current;
+			if(!is_array($current) or (!in_array($tag, array_keys($current))))
+			{
+				$current[$tag] = $result;
+				if($attributes_data)
+				{
+					$current[$tag . '_attr'] = $attributes_data;
+				}
+				$repeated_tag_index[$tag . '_' . $level] = 1;
+				$current = & $current[$tag];
+			}
+			else
+			{
+				if (isset ($current[$tag][0]))
+				{
+					$current[$tag][$repeated_tag_index[$tag . '_' . $level]] = $result;
+					$repeated_tag_index[$tag . '_' . $level]++;
+				}
+				else
+				{
+					$current[$tag] = array($current[$tag],$result);
+					$repeated_tag_index[$tag . '_' . $level] = 2;
+					if(isset($current[$tag . '_attr']))
+					{
+						$current[$tag]['0_attr'] = $current[$tag . '_attr'];
+						unset ($current[$tag . '_attr']);
+					}
+				}
+				$last_item_index = $repeated_tag_index[$tag . '_' . $level] - 1;
+				$current = & $current[$tag][$last_item_index];
+			}
+		}
+		else if($type == "complete")
+		{
+			if(!isset ($current[$tag]))
+			{
+				$current[$tag] = $result;
+				$repeated_tag_index[$tag . '_' . $level] = 1;
+				if($priority == 'tag' and $attributes_data)
+				{
+					$current[$tag . '_attr'] = $attributes_data;
+				}
+			}
+			else
+			{
+				if (isset ($current[$tag][0]) and is_array($current[$tag]))
+				{
+					$current[$tag][$repeated_tag_index[$tag . '_' . $level]] = $result;
+					if ($priority == 'tag' and $get_attributes and $attributes_data)
+					{
+						$current[$tag][$repeated_tag_index[$tag . '_' . $level] . '_attr'] = $attributes_data;
+					}
+					$repeated_tag_index[$tag . '_' . $level]++;
+				}
+				else
+				{
+					$current[$tag] = array($current[$tag],$result);
+					$repeated_tag_index[$tag . '_' . $level] = 1;
+					if ($priority == 'tag' and $get_attributes)
+					{
+						if (isset ($current[$tag . '_attr']))
+						{
+							$current[$tag]['0_attr'] = $current[$tag . '_attr'];
+							unset ($current[$tag . '_attr']);
+						}
+						if ($attributes_data)
+						{
+							$current[$tag][$repeated_tag_index[$tag . '_' . $level] . '_attr'] = $attributes_data;
+						}
+					}
+					$repeated_tag_index[$tag . '_' . $level]++; //0 and 1 index is already taken
+				}
+			}
+		}
+		else if($type == 'close')
+		{
+			$current = & $parent[$level -1];
+		}
+	}
+	return ($xml_array);
 }
 ?>
