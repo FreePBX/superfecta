@@ -23,14 +23,12 @@ class Who_Called extends superfecta_base {
 
 		if( (!$this->IsValidNumber('US',$thenumber)) && (!$this->IsValidNumber('CA',$thenumber)) )
 		{
-			if($debug)
-			{
-				print "Skipping Source - Not a valid US/CAN number: ".$thenumber."<br>\n";
-			}
+			$this->DebugPrint( "Skipping Source - Not a valid US/CAN number: ".$thenumber);
 		}
 		else
 		{
-			if($debug) { print "Searching Who Called ... ";	}
+			$this->DebugPrint( "Searching Who Called ... ");
+			
 			$url = "http://whocalled.us/do?action=getWho&name=".$run_param['Username']."&pass=".$run_param['Password']."&phoneNumber=$thenumber";
 			$value = $this->get_url_contents($url);
 
@@ -40,18 +38,18 @@ class Who_Called extends superfecta_base {
 			$cid = substr($st_cid,4);
 			if($success=='1')
 			{
-			  if($cid != '')
-			  {
+				if($cid != '')
+			  	{
 					$caller_id = $cid;
-			  }
-			  else if($debug)
+				}
+			  	else
 				{
-					print "not found<br>\n";
+					$this->DebugPrint( "not found");
 				}
 			}
-			else if($debug)
+			else
 			{
-				print "Error in Lookup.<br>\n";
+				$this->DebugPrint( "Error in Lookup.");
 			}
 		}
 		return($caller_id);
@@ -63,10 +61,8 @@ class Who_Called extends superfecta_base {
 		//return the value back to Who Called if the user has enabled it and the result didn't come from cache. This will truncate the string to 15 characters
 		if(!$cache_found && ($winning_source != 'Who_Called') && ($first_caller_id != '') && ($run_param['Return_to_Who_Called'] == 'on'))
 		{
-			if($debug)
-			{
-				print "Reporting value back to Who Called ... ";
-			}
+			$this->DebugPrint( "Reporting value back to Who Called ... ");
+			
 			$url = "http://whocalled.us/do?action=report&name=".$run_param['Username']."&pass=".$run_param['Password']."&phoneNumber=$thenumber&date=".date('Y-m-d')."&callerID=".urlencode(substr($first_caller_id,0,15));
 			$value = get_url_contents($url);
 			if($debug)
