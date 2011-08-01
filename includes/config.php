@@ -35,4 +35,15 @@ if(file_exists("/etc/freepbx.conf")) {
 	}
 	require_once($phpasman_location);
 	$astman	= new AGI_AsteriskManager();
+	
+	// attempt to connect to asterisk manager proxy
+	if(!isset($amp_conf["ASTMANAGERPROXYPORT"]) || !$res = $astman->connect("127.0.0.1:".$amp_conf["ASTMANAGERPROXYPORT"], $amp_conf["AMPMGRUSER"] , $amp_conf["AMPMGRPASS"], 'off'))
+	{
+		// attempt to connect directly to asterisk, if no proxy or if proxy failed
+		if (!$res = $astman->connect("127.0.0.1:".$amp_conf["ASTMANAGERPORT"], $amp_conf["AMPMGRUSER"] , $amp_conf["AMPMGRPASS"], 'off'))
+		{
+			// couldn't connect at all
+			die('Could Not Connect to Asterisk Manager!');
+		}
+	}
 }
