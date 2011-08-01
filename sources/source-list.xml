@@ -1,8 +1,8 @@
 <data>
 	<source>
 		<name>source-Any_Who.module</name>
-		<modified>1312129348</modified>
-		<md5>2152e61fbd079db977e6bf23cb494cbf</md5>
+		<modified>1312179035</modified>
+		<md5>0caf22da7006163204428045fdcd2aaa</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
@@ -63,6 +63,12 @@
 		<name>source-Telepest_UK.module</name>
 		<modified>1311510039</modified>
 		<md5>b12c691bc8e912e142957e67e63fbf1d</md5>
+		<version_requirement>3.0</version_requirement>
+	</source>
+	<source>
+		<name>source-Trunk_Provided.module</name>
+		<modified>1312178855</modified>
+		<md5>a2c0972f2047813d03a4cccaea572ae8</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>

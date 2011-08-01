@@ -5,7 +5,7 @@ class Any_Who extends superfecta_base {
 		$settings['desc'] = "http://whitepages.anywho.com - These listings include data from the AnyWho White Pages data source.";
 		
 		$settings['param'] = array();
-		$settings['source_param'] = $source_param;
+		$settings['source_param'] = array();
 		$settings['version_requirement'] = "3.0";
 
 		return($settings);

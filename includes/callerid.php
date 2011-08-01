@@ -107,7 +107,7 @@ foreach($scheme_name_array as $list) {
 		$superfecta->outn("Scheme Variables:</b><pre>". print_r($superfecta->scheme_param,TRUE) . "</pre>");
 	}
 	//$superfecta->thenumber = ereg_replace('[^0-9]+', '', $superfecta->thenumber_orig);
-	$superfecta->thenumber = preg_replace('/\+[1-9]/i','',$superfecta->thenumber_orig);
+	$superfecta->thenumber = preg_replace('/\+[1-9]/','',$superfecta->thenumber_orig);
 	$superfecta->curl_timeout = $scheme_param['Curl_Timeout'];
 
 	$run_this_scheme = true;
