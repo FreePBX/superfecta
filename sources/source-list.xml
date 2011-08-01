@@ -12,6 +12,12 @@
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
+		<name>source-Canada411.module</name>
+		<modified>1312227321</modified>
+		<md5>d4dd26a3a38fd8ed8467bea9532b0b5b</md5>
+		<version_requirement>3.0</version_requirement>
+	</source>
+	<source>
 		<name>source-Google_Maps_UK.module</name>
 		<modified>1311718897</modified>
 		<md5>66c7c482157382dba717b9c1958ac2e1</md5>
