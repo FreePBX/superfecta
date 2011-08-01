@@ -4,12 +4,12 @@ if(php_sapi_name() != 'cli' && !empty($_SERVER['REMOTE_ADDR'])) {
 	die('This must be run from the command line interface (CLI)');
 }
 echo "This script will generate & update the source-list.xml file which is used for the superfecta online updating system inside the module\n\n";
-require("bin/superfecta_base.php");
+require("includes/superfecta_base.php");
 $superfecta = new superfecta_base;
-$old_source_list_xml = $superfecta->xml2array("bin/source-list.xml");
+$old_source_list_xml = $superfecta->xml2array("sources/source-list.xml");
 $i = 0;
 $source_list_array = array();
-foreach (glob("bin/*.module") as $filename) {
+foreach (glob("sources/*.module") as $filename) {
 	$path_parts = pathinfo($filename);
 	$class_name = str_replace(".".$path_parts['extension'],"",$path_parts['basename']);
 	$class_name = str_replace("source-","",$class_name);
@@ -68,4 +68,4 @@ foreach($source_list_array as $data) {
 }
 $final_xml .= "</data>";
 
-file_put_contents('bin/source-list.xml',$final_xml);
+file_put_contents('sources/source-list.xml',$final_xml);

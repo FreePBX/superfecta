@@ -6,11 +6,10 @@
 #	This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by
 #	the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
 #############################################################################
-define("UPDATE_SERVER", "https://raw.github.com/tm1000/Caller-ID-Superfecta/v3.x/bin/");
-require("config.php");
-require("bin/superfecta_base.php");
+define("UPDATE_SERVER", "https://raw.github.com/tm1000/Caller-ID-Superfecta/v3.x/sources/");
+require_once("includes/config.php");
+require_once("includes/superfecta_base.php");
 $superfecta = new superfecta_base;
-
 
 $selected_source = (isset($_REQUEST['selected_source'])) ? $_REQUEST['selected_source'] : '';
 $src_up = '';
@@ -39,6 +38,8 @@ $src_cnt = 1;
 $src_files = array();
 $update_site_unavailable = false;
 
+
+
 //process updates from online server first
 if($update_file != '')
 {
@@ -46,47 +47,49 @@ if($update_file != '')
 	$parsed_path = pathinfo($parsed_url['path']);
 
 	//rename and keep old file if it exists
-	if(is_file("bin/".$parsed_path['basename']))
+	if(is_file("sources/".$parsed_path['basename']))
 	{
-		rename("bin/".$parsed_path['basename'],"bin/old_".$parsed_path['basename']);
+		rename("sources/".$parsed_path['basename'],"sources/old_".$parsed_path['basename']);
 	}
-	copy($update_file,"bin/".$parsed_path['basename']);
+	copy($update_file,"sources/".$parsed_path['basename']);
 }
 
 //delete file if requested.
 if($delete_file != '')
 {
 	//right now we're keeping and "old_" files just in case the user wants to revert back in the future
-	if(is_file("bin/source-".$delete_file.".module"))
+	if(is_file("sources/source-".$delete_file.".module"))
 	{
-		unlink("bin/source-".$delete_file.".module");
+		unlink("sources/source-".$delete_file.".module");
 	}
 }
 
 //revert to old file if requested
 if($revert_file != '')
 {
-	if(is_file("bin/old_source-".$revert_file.".module"))
+	if(is_file("sources/old_source-".$revert_file.".module"))
 	{
-		if(is_file("bin/source-".$revert_file.".module"))
+		if(is_file("sources/source-".$revert_file.".module"))
 		{
-			unlink("bin/source-".$revert_file.".module");
+			unlink("sources/source-".$revert_file.".module");
 		}
-		rename("bin/old_source-".$revert_file.".module","bin/source-".$revert_file.".module");
+		rename("sources/old_source-".$revert_file.".module","sources/source-".$revert_file.".module");
 	}
 }
 
 //get a list of the files that are on this local server
-foreach (glob("bin/source-*.module") as $filename)
+foreach (glob("sources/source-*.module") as $filename)
 {
 	if($filename != '')
 	{
 		$source_desc = '';
 		$source_param = array();
-		require_once('bin/superfecta_base.php');
-		require_once($filename);		
-		$this_source_name = substr(substr($filename,11),0,-7);	
-		$source_class = NEW $this_source_name;
+		
+		require_once($filename);
+			
+		$this_source_name = str_replace(".module","",str_replace("sources/source-","",$filename));
+		$source_class = NEW $this_source_name;		
+		
 		$settings = $source_class->settings();	
 		$src_files[$this_source_name]['desc'] = $settings['desc'];		
 		$src_files[$this_source_name]['param'] = $settings['param'];
@@ -104,6 +107,8 @@ foreach (glob("bin/source-*.module") as $filename)
 		}
 	}
 }
+
+
 
 //go through previously enabled sources
 $sql = "SELECT value FROM superfectaconfig WHERE source='$scheme' AND field='sources'";
@@ -133,6 +138,7 @@ foreach($res_src as $val)
 		}
 	}
 }
+
 
 $enabled_cnt = count($src_print);
 
@@ -338,7 +344,7 @@ foreach($src_print as $val)
 				<a href="javascript:document.forms.CIDSources.delete_file.value=\''.$val['name'].'\';document.forms.CIDSources.submit();"><img src="modules/superfecta/delete.gif" border="0" alt="Delete Button" title="Delete This Source File"></a>
 			</td>
 			<td>';
-	if(is_file("bin/old_source-".$val['name'].".module"))
+	if(is_file("sources/old_source-".$val['name'].".module"))
 	{
 		print '<a href="javascript:document.forms.CIDSources.revert_file.value=\''.$val['name'].'\';document.forms.CIDSources.submit();"><img src="modules/superfecta/revert.gif" border="0" alt="Revert Button" title="Revert to previous version of this file."></a>';
 	}
@@ -359,7 +365,7 @@ foreach($src_print as $val)
 	{
 		if(key_exists($val['name'],$update_array))
 		{
-			$this_last_update = filemtime("bin/source-".$val['name'].".module");
+			$this_last_update = filemtime("sources/source-".$val['name'].".module");
 			if($update_array[$val['name']]['date'] > $this_last_update)
 			{
 				print ' <a href="javascript:document.forms.CIDSources.update_file.value=\''.$update_array[$val['name']]['link'].'\';document.forms.CIDSources.submit();">update available</a>';

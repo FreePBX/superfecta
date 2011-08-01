@@ -10,7 +10,7 @@ class superfecta_single extends superfecta_base {
 		$this->amp_conf = $amp_conf;
 		$this->thenumber_orig = $thenumber_orig;
 		$this->scheme_param = $scheme_param;
-		$this->path_location = dirname(__FILE__);
+		$this->path_location = str_replace("includes/processors","sources",dirname(__FILE__));
 	}
 	
 	function get_results() {

@@ -13,7 +13,7 @@
 //	the Free Software Foundation; either version 2 of the License, or
 //	(at your option) any later version.
 //
-require("bin/superfecta_base.php");
+require("includes/superfecta_base.php");
 $superfecta = new superfecta_base;
 
 $scheme = (isset($_REQUEST['scheme'])) ? $_REQUEST['scheme'] : '';
@@ -447,7 +447,7 @@ function Ht_debug(thenumber,testdid,checkall)
 		isWorking = true;
 		divname = 'debug';
 		document.getElementById(divname).innerHTML = "<img src='modules/superfecta/loading.gif' style='margin: 20px auto 20px 150px;'>";
-		http.open("POST", "modules/superfecta/bin/callerid.php", true);
+		http.open("POST", "modules/superfecta/includes/callerid.php", true);
 		http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 		http.setRequestHeader("Content-length", poststr.length);
 		http.setRequestHeader("Connection", "close");

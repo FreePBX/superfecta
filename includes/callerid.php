@@ -13,8 +13,7 @@ Original script by Nerd Vittles. (Google for Caller Id Trifecta)
 	01-03-2010  	Version 2.3.0  Updates to remove need for Caller ID Lookup module
 	01-04-2010  	Version 2.3.0  Updates for running multiple sources at the same time (Multifecta)
 ***/
-$config_location = str_replace("/bin", "", dirname(__FILE__))."/config.php";
-require_once($config_location);
+require_once(dirname(__FILE__)."/config.php");
 
 //Determine CLI or HTTP
 if(php_sapi_name() == 'cli' && empty($_SERVER['REMOTE_ADDR'])) {
@@ -77,14 +76,14 @@ foreach($scheme_name_array as $list) {
 
 	$scheme_param = $param[$scheme_name];
 
-	require_once('superfecta_base.php');
+	require_once(dirname(__FILE__).'/superfecta_base.php');
 	if(isset($scheme_param['enable_multifecta'])) {
-		require_once('superfecta_multi.php');
+		require_once(dirname(__FILE__).'/processors/superfecta_multi.php');
 		//require_once('superfecta_pcntl.php');
 		$superfecta = NEW superfecta_multi($multifecta_id,$db,$amp_conf,$debug,$thenumber_orig,$scheme_name,$scheme_param,$source);
 		$superfecta->type = 'MULTI';
 	} else {
-		require_once('superfecta_single.php');
+		require_once(dirname(__FILE__).'/processors/superfecta_single.php');
 		$superfecta = NEW superfecta_single($db,$amp_conf,$debug,$thenumber_orig,$scheme_name,$scheme_param);
 		$superfecta->type = 'SUPER';
 	}
@@ -107,7 +106,8 @@ foreach($scheme_name_array as $list) {
 		$superfecta->outn("<b>Debugging Enabled, will not stop after first result.");
 		$superfecta->outn("Scheme Variables:</b><pre>". print_r($superfecta->scheme_param,TRUE) . "</pre>");
 	}
-	$superfecta->thenumber = ereg_replace('[^0-9]+', '', $superfecta->thenumber_orig);
+	//$superfecta->thenumber = ereg_replace('[^0-9]+', '', $superfecta->thenumber_orig);
+	$superfecta->thenumber = preg_replace('/\+[1-9]/i','',$superfecta->thenumber_orig);
 	$superfecta->curl_timeout = $scheme_param['Curl_Timeout'];
 
 	$run_this_scheme = true;
