@@ -80,11 +80,11 @@ foreach($scheme_name_array as $list) {
 	if(isset($scheme_param['enable_multifecta'])) {
 		require_once(dirname(__FILE__).'/processors/superfecta_multi.php');
 		//require_once('superfecta_pcntl.php');
-		$superfecta = NEW superfecta_multi($multifecta_id,$db,$amp_conf,$debug,$thenumber_orig,$scheme_name,$scheme_param,$source);
+		$superfecta = NEW superfecta_multi($multifecta_id,$db,$amp_conf,$astman,$debug,$thenumber_orig,$scheme_name,$scheme_param,$source);
 		$superfecta->type = 'MULTI';
 	} else {
 		require_once(dirname(__FILE__).'/processors/superfecta_single.php');
-		$superfecta = NEW superfecta_single($db,$amp_conf,$debug,$thenumber_orig,$scheme_name,$scheme_param);
+		$superfecta = NEW superfecta_single($db,$amp_conf,$astman,$debug,$thenumber_orig,$scheme_name,$scheme_param);
 		$superfecta->type = 'SUPER';
 	}
 	$superfecta->cli = $cli;

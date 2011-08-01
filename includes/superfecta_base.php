@@ -4,6 +4,8 @@ class superfecta_base {
 	public $debug = FALSE;
 	public $thenumber;
 	public $db; //The database
+	public $astman; //Asterisk Manager Object
+	public $amp_conf; //Amp Conf array
 	public $caller_id = '';
 	public $charsetIA5 = true;
 	public $first_caller_id = '';

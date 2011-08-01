@@ -15,14 +15,9 @@ class Asterisk_Phonebook extends superfecta_base {
 		$caller_id = "";		
 
 		$this->DebugPrint( "Searching Asterisk Phonebook ... ");
-
-		//connect to the asterisk manager		
-		$functions_location = str_replace("modules/superfecta/bin", "", str_replace("//","/",dirname(__FILE__)))."common/php-asmanager.php";
-		require_once($functions_location) or $this->DebugDie("Cannot load {$functions_location}");	
-		$astman	= new AGI_AsteriskManager();
 		
-		$name = $astman->database_get('cidname',$thenumber);
-		
+		$name = $this->astman->database_get('cidname',$thenumber);
+				
 		// If we found a match, return it
 		if(strlen($name) > 1)
 		{

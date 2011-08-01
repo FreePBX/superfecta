@@ -1,7 +1,7 @@
 <?php
 
 class superfecta_multi extends superfecta_base {
-	function __construct($multifecta_id,$db,$amp_conf,$debug,$thenumber_orig,$scheme_name,$scheme_param,$source) {
+	function __construct($multifecta_id,$db,$amp_conf,$astman,$debug,$thenumber_orig,$scheme_name,$scheme_param,$source) {
 		//Check if we are a multifecta child, if so, get our variables from our child record
 		$this->multifecta_id = $multifecta_id;
 		$this->debug = $debug;
@@ -10,6 +10,7 @@ class superfecta_multi extends superfecta_base {
 		$this->scheme = $scheme_name;
 		$this->db = $db;
 		$this->amp_conf = $amp_conf;
+		$this->astman = $astman;
 		$this->thenumber_orig = $thenumber_orig;
 		$this->scheme_param = $scheme_param;
 		$this->source = $source;
@@ -301,7 +302,7 @@ class superfecta_multi extends superfecta_base {
 			$source_class->debug = $this->debug;
 			$source_class->amp_conf = $this->amp_conf;
 			$source_class->db = $this->db;
-	
+			$source_class->astman = $this->astman;
 			if(method_exists($source_class, 'get_caller_id')) {
 				$caller_id = $source_class->get_caller_id($this->thenumber,$run_param);
 				unset($source_class);

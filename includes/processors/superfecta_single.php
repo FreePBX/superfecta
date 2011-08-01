@@ -1,13 +1,14 @@
 <?php
 
 class superfecta_single extends superfecta_base {
-	function __construct($db,$amp_conf,$debug,$thenumber_orig,$scheme_name,$scheme_param) {
+	function __construct($db,$amp_conf,$astman,$debug,$thenumber_orig,$scheme_name,$scheme_param) {
 		$this->debug = $debug;
 		$sn = explode("_", $scheme_name);
 		$this->scheme_name = $sn[1];
 		$this->scheme = $scheme_name;
 		$this->db = $db;
 		$this->amp_conf = $amp_conf;
+		$this->astman = $astman;
 		$this->thenumber_orig = $thenumber_orig;
 		$this->scheme_param = $scheme_param;
 		$this->path_location = str_replace("includes/processors","sources",dirname(__FILE__));
@@ -31,6 +32,7 @@ class superfecta_single extends superfecta_base {
 				$source_class->debug = $this->debug;
 				$source_class->amp_conf = $this->amp_conf;
 				$source_class->db = $this->db;
+				$source_class->astman = $this->astman;
 				if(method_exists($source_class, 'get_caller_id')) {
 					$caller_id = $source_class->get_caller_id($this->thenumber,$run_param);
 					$this->spam = $source_class->spam;
