@@ -383,7 +383,7 @@ class superfecta_base {
 					}
 					else
 					{
-						if($this->debug) { print basename(__FILE__).":".__LINE__." Failing ${country} number test<br>"; }
+						$this->DebugPrint( basename(__FILE__).":".__LINE__." Failing ${country} number test" );
 						return false;
 					}
 		
@@ -403,7 +403,7 @@ class superfecta_base {
 						}			
 						else
 						{
-							if($this->debug) { print basename(__FILE__).":".__LINE__." Failing ${country} number test<br>"; }
+							$this->DebugPrint( basename(__FILE__).":".__LINE__." Failing ${country} number test" );
 							return false;
 						}
 					}
@@ -412,7 +412,7 @@ class superfecta_base {
 				// number
 			    if(strlen($thenumber) < 10)
 				{
-					if($this->debug) { print basename(__FILE__).":".__LINE__." Failing ${country} number test<br>"; }
+					$this->DebugPrint( basename(__FILE__).":".__LINE__." Failing ${country} number test" );
 					return false;
 				}
 
@@ -492,7 +492,7 @@ class superfecta_base {
 						
 				if(!$TFnpa && ((!$validnpaUS) && (!$validnpaCAN)))
 				{
-					if($this->debug) { print basename(__FILE__).":".__LINE__." Failing ${country} number test<br>"; }
+					$this->DebugPrint( basename(__FILE__).":".__LINE__." Failing ${country} number test" );
 					return false;
 				}
 			} // end US/CA
@@ -518,7 +518,7 @@ class superfecta_base {
 							}			
 							else
 							{
-								if($this->debug) { print basename(__FILE__).":".__LINE__." Failing ${country} number test<br>"; }
+								$this->DebugPrint( basename(__FILE__).":".__LINE__." Failing ${country} number test" );
 								return false;
 							}
 						}
@@ -536,7 +536,7 @@ class superfecta_base {
 			
 			    if(strlen($thenumber) < 8)
 				{
-					if($this->debug) { print basename(__FILE__).":".__LINE__." Failing ${country} number test<br>"; }
+					$this->DebugPrint( basename(__FILE__).":".__LINE__." Failing ${country} number test" );
 					return false;
 				}	
 						
@@ -660,7 +660,7 @@ class superfecta_base {
 
 					if((!$validSTD) && (!$validNGN))
 					{
-						if($this->debug) { print basename(__FILE__).":".__LINE__." Failing ${country} number test<br>"; }
+						$this->DebugPrint( basename(__FILE__).":".__LINE__." Failing ${country} number test" );
 						return false;
 					}
 				}
@@ -668,10 +668,7 @@ class superfecta_base {
 			break;
 			
 			default:
-				if($this->debug)
-				{
-					print "Unknown Country Code ${country} passed to IsValidNumber: ".$country."<br>\n";
-				}
+				$this->DebugPrint("Unknown Country Code ${country} passed to IsValidNumber: ${country}");
 				break;
 		} // end Country switch
 				
