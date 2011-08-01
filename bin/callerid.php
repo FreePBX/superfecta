@@ -40,24 +40,13 @@ $scheme = (isset($_REQUEST['scheme'])) ? trim($_REQUEST['scheme']) : '';
 if($debug)
 {
 	//Report all errors, FreePBX hides them
-    error_reporting(-1);
+    error_reporting(E_ALL & E_NOTICE); // -1 was not letting me see the wood for the trees.
     ini_set('display_errors', 1);
 	$start_time_whole = mctime_float();
 	$end_time_whole = 0;
 }
 
 require('../config.php');
-
-// attempt to connect to asterisk manager proxy
-if(!isset($amp_conf["ASTMANAGERPROXYPORT"]) || !$res = $astman->connect("127.0.0.1:".$amp_conf["ASTMANAGERPROXYPORT"], $amp_conf["AMPMGRUSER"] , $amp_conf["AMPMGRPASS"], 'off'))
-{
-	// attempt to connect directly to asterisk, if no proxy or if proxy failed
-	if (!$res = $astman->connect("127.0.0.1:".$amp_conf["ASTMANAGERPORT"], $amp_conf["AMPMGRUSER"] , $amp_conf["AMPMGRPASS"], 'off'))
-	{
-		// couldn't connect at all
-		unset( $astman );
-	}
-}
 
 $param = array();
 $query = "SELECT * FROM superfectaconfig";
