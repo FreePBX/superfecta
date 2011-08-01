@@ -39,9 +39,17 @@ class Number_Guru extends superfecta_base {
 				
 				$this->DebugPrint( "Searching NumberGuru ... ");
 
-				// Search NumberGuru USA
+				// www.numberguru.com needs a cookie
+           		$temp_cookie_file = tempnam("/tmp", "CURLCOOKIE");
+				// Get the cookie set
+				$value = $this->get_url_contents("http://www.numberguru.com",false,"http://www.numberguru.com",$temp_cookie_file);
+
+				// Perform lookup using cookie
 				$url = "http://www.numberguru.com/s/{$thenumber}";
-				$value = $this->get_url_contents($url);
+				$value = $this->get_url_contents($url,false,"http://www.numberguru.com",$temp_cookie_file);
+
+				// Delete the temporary cookie
+		        @unlink($temp_cookie_file);
 		
 				// Check for CNAM lookup
 				if(isset($run_param['Get_Caller_ID_Name']) && $run_param['Get_Caller_ID_Name'] == 'on')
