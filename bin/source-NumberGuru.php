@@ -148,9 +148,16 @@ if(($usage_mode == 'get caller id') && (($run_param['Get_SPAM_Score'] == 'on') |
 	}
 	else
 	{
+		// www.numberguru.com needs a cookie
+		$temp_cookie_file = tempnam(function_exists('sys_get_temp_dir') ? realpath(sys_get_temp_dir()) : NULL, "CURLCOOKIE");
+		// Get the cookie set
+		$value = get_url_contents("http://www.numberguru.com",false,"http://www.numberguru.com",$temp_cookie_file);
 		// Search NumberGuru USA
 		$url = "http://www.numberguru.com/s/{$thenumber}";
-		$value = get_url_contents($url);
+		// Perform lookup using cookie
+		$value = get_url_contents($url,false,"http://www.numberguru.com",$temp_cookie_file);
+		// Delete the temporary cookie
+		@unlink($temp_cookie_file);
 
 		// Check for CNAM lookup
 		if(isset($run_param['Get_Caller_ID_Name']) && $run_param['Get_Caller_ID_Name'] == 'on')
@@ -158,7 +165,7 @@ if(($usage_mode == 'get caller id') && (($run_param['Get_SPAM_Score'] == 'on') |
 			// By default, the found name is empty
 			$name = "";
 		
-			// Grab the first result from google maps that matches our phone number
+			// Grab the first result that matches our phone number
 			$pattern = "/<div class=\"callout_details_left caller_id\">Owner's Name:<\/div>\s*<div class=\"callout_details_right caller_id\">(.*)<\/div>/";
 			preg_match($pattern, $value, $match);
 			if(isset($match[1]) && strlen($match[1])){
