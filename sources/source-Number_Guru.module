@@ -40,7 +40,7 @@ class Number_Guru extends superfecta_base {
 				$this->DebugPrint( "Searching NumberGuru ... ");
 
 				// www.numberguru.com needs a cookie
-           		$temp_cookie_file = tempnam("/tmp", "CURLCOOKIE");
+           		$temp_cookie_file = tempnam(function_exists('sys_get_temp_dir') ? realpath(sys_get_temp_dir()) : NULL, "CURLCOOKIE");
 				// Get the cookie set
 				$value = $this->get_url_contents("http://www.numberguru.com",false,"http://www.numberguru.com",$temp_cookie_file);
 
