@@ -1,4 +1,5 @@
 <?php
+define("LOCAL_PATH", str_replace("includes","",dirname(__FILE__)));
 if(file_exists("/etc/freepbx.conf")) {
 	//This is FreePBX 2.9+
 	require("/etc/freepbx.conf");
@@ -31,7 +32,7 @@ if(file_exists("/etc/freepbx.conf")) {
 	//connect to the asterisk manager
 	$phpasman_location = str_replace("modules/superfecta/includes", "", dirname(__FILE__))."common/php-asmanager.php";
 	if(!file_exists($phpasman_location)) {
-		die('Please update line 32 of config.php to reflect proper astman location');
+		die('Please update line 33 of config.php to reflect proper astman location');
 	}
 	require_once($phpasman_location);
 	$astman	= new AGI_AsteriskManager();

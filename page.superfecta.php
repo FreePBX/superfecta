@@ -298,9 +298,9 @@ if($scheme != "")
 //uncomment line below to see the available array values in $module_info.
 //print '<pre>'.print_r($module_info,true).'</pre>';
 
-print '<p align="center" style="font-size:10px;">The CallerID Superfecta module is maintained by the Community at<a target="_blank" href="http://projects.colsolgrp.net/projects/show/superfecta"> CSG Software Projects</a>, and by the forum users at <a target="_blank" href="http://www.pbxinaflash.com/forum">PBX In A Flash Forums</a>.<br>The Superfecta was Modularized for FreePBX by Tony Shiffer, based on an earlier (non module) work by <a target="_blank" href="http://www.nerdvittles.com">Ward Mundy</a>.<br>  
-		<a target="_blank" href="http://projects.colsolgrp.net/projects/superfecta/wiki">This Module\'s wiki pages can be found here.</a>
-		<br><br><a target="_blank" href="http://projects.colsolgrp.net/versions/show/76">Module version '.$module_info['module']['version'].'</a></p>';
+print '<p align="center" style="font-size:10px;">This Project is now hosted/maintained at <a href="https://github.com/tm1000/Caller-ID-Superfecta">https://github.com/tm1000/Caller-ID-Superfecta</a> Feel free to fork/help/complain<br />The CallerID Superfecta module was maintained by the Community at<a target="_blank" href="http://projects.colsolgrp.net/projects/show/superfecta"> CSG Software Projects</a>, and by the forum users at <a target="_blank" href="http://www.pbxinaflash.com/forum">PBX In A Flash Forums</a>.<br>The Superfecta was Modularized for FreePBX by Tony Shiffer, based on an earlier (non module) work by <a target="_blank" href="http://www.nerdvittles.com">Ward Mundy</a>.<br>  
+		<a target="_blank" href="https://github.com/tm1000/Caller-ID-Superfecta/wiki">This Module\'s wiki pages can be found here.</a>
+		<br><br><a target="_blank" href="https://github.com/tm1000/Caller-ID-Superfecta/issues?sort=created&amp;direction=desc&amp;state=open">Module version '.$module_info['module']['version'].'</a></p>';
 ?>
 <script language="javascript">
 <!--
