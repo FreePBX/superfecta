@@ -6,7 +6,7 @@
 
 //configuration / display parameters
 //The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
-$source_desc = "Query a local or remote MS SQL database.";
+$source_desc = "Query a local or remote MS SQL database. Requires non-standard dependancy, MS SQL for PHP";
 $source_param = array();
 $source_param['DB_Host']['desc'] = 'Host address of the database. (localhost if the database is on the same server as FreePBX)';
 $source_param['DB_Host']['type'] = 'text';
