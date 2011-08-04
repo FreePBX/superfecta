@@ -197,7 +197,7 @@ class superfecta_base {
 		$tmp = "";
 		$expression = "";
 		$new_number = false;
-		$remove = "";
+		$remove = NULL;
 		$insert = "";
 		$error = false;
 		$wildcard = false;
@@ -270,6 +270,7 @@ class superfecta_base {
 					break;
 				case '|':
 					// Any numbers/expression before the '|' will be stripped
+					
 					if(!$wildcard){
 						if($remove){
 							$error = "Cannot have more than one '|'";
@@ -303,7 +304,7 @@ class superfecta_base {
 			if($debug){print $error." - position $i<br>\n";}
 		}else{
 			// Else try out the regular expressions we built
-			if($remove){
+			if(isset($remove)){
 				// If we had a removal expression, se if it works
 				if(preg_match("/^".$remove."/i",$number,$matches)){
 					$number = substr($number,strlen($matches[0]));
