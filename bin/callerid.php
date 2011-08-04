@@ -441,7 +441,7 @@ function match_pattern($pattern, $number)
 	$tmp = "";
 	$expression = "";
 	$new_number = false;
-	$remove = "";
+	$remove = NULL;
 	$insert = "";
 	$error = false;
 	$wildcard = false;
@@ -547,7 +547,7 @@ function match_pattern($pattern, $number)
 		if($debug){print $error." - position $i<br>\n";}
 	}else{
 		// Else try out the regular expressions we built
-		if($remove){
+		if(isset($remove)){
 			// If we had a removal expression, se if it works
 			if(preg_match("/^".$remove."/i",$number,$matches)){
 				$number = substr($number,strlen($matches[0]));
