@@ -22,7 +22,8 @@ $module_info = $superfecta->xml2array("modules/superfecta/module.xml");
 if(count($_POST))
 {
 	superfecta_setConfig();
-	$scheme = (($_POST['scheme_name_orig'] == '') && ($_POST['scheme_name'] != '')) ? 'base_'.$_POST['scheme_name'] : '';
+	$scheme = ($_POST['scheme_name'] == $_POST['scheme_name_orig']) ? $_POST['scheme_name_orig'] : $_POST['scheme_name'];
+	$scheme = "base_".$scheme;
 }
 
 $schemeup = (isset($_REQUEST['schemeup'])) ? $_REQUEST['schemeup'] : '';
