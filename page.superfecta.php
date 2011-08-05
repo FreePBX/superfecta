@@ -24,7 +24,15 @@ if(count($_POST))
 	superfecta_setConfig();
 	$scheme = ($_POST['scheme_name'] == $_POST['scheme_name_orig']) ? $_POST['scheme_name_orig'] : $_POST['scheme_name'];
 	$scheme = "base_".$scheme;
+	
+	$type = $_POST['goto0'];
+	$destination = $_POST[$type.'0'];
+	
+	//Now save the $destination into the database
+	//Return the $destination in the superfecta.agi script and use it such as this: $agi->exec_goto($destination) EG: $agi->exec_goto(context,extension,priority)
 }
+
+$goto = NULL;
 
 $schemeup = (isset($_REQUEST['schemeup'])) ? $_REQUEST['schemeup'] : '';
 $schemedown = (isset($_REQUEST['schemedown'])) ? $_REQUEST['schemedown'] : '';
@@ -205,8 +213,6 @@ if($scheme != "")
 		$did_test_html = '';
 		$did_test_script = "'',";
 	}
-	
-	$goto = NULL;
 
 	print '<h2><u>Data Sources</u></h2>
 		<p>Select which data source(s) to use for your lookups, and the order in which you want them used:</p>
