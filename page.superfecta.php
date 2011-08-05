@@ -205,6 +205,8 @@ if($scheme != "")
 		$did_test_html = '';
 		$did_test_script = "'',";
 	}
+	
+	$goto = NULL;
 
 	print '<h2><u>Data Sources</u></h2>
 		<p>Select which data source(s) to use for your lookups, and the order in which you want them used:</p>
@@ -275,6 +277,10 @@ if($scheme != "")
 						<tr>
 							<td><a href="javascript:return(false);" class="info">CID Prefix URL<span>If you wish to prefix information on the caller id you can specify a url here where that prefix can be retrieved.<br>The data will not be parsed in any way, and will be truncated to the first 10 characters.<br>Example URL: http://www.example.com/GetCID.php?phone_number=[thenumber]<br>[thenumber] will be replaced with the full 10 digit phone number when the URL is called.</span></a></td>
 							<td><input type="text" name="Prefix_URL" size="23" maxlength="255" value="'.(isset($conf['Prefix_URL'])? $conf['Prefix_URL'] : '' ).'"></td>
+						</tr>
+						<tr>
+							<td>Send Spam Call To:</td>
+							<td>'.drawselects($goto,0,FALSE,FALSE).'</td>			
 						</tr>
 					</table>
 					<p><a target="_blank" href="modules/superfecta/disclaimer.html">(License Terms)&nbsp; </a><input type="submit" value="Agree and Save" name="Save"></p>
