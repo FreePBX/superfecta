@@ -38,7 +38,9 @@ class Canada411 extends superfecta_base {
 				preg_match($pattern, $value, $match);
 				if(isset($match[1]) && (strlen(trim(strip_tags($match[1]))))){
 					$name = trim(strip_tags($match[1]));
-					break;
+					if($name<>"UNAVAILABLE"){
+						break;
+					}
 				}
 			}
 					
