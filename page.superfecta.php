@@ -318,12 +318,14 @@ if($scheme != "")
 								<input type="checkbox" onclick="toggleInterceptor()" name="enable_interceptor" value="Y" ' . $spam_int . '>
 							</td>
 						</tr>
-                                                <tr class="incerceptorCell">
-                                                        <td colspan="2">Send Spam Call To:</td>
-                                                </tr>
-                                                <tr class="incerceptorCell">
-                                                        <td colspan="2">'.drawselects($goto,0,FALSE,FALSE).'</td>
-                                                </tr>
+					</table>
+					<table id="InterceptorVector" border="0">
+                        <tr class="incerceptorCell">
+                                <td colspan="2">Send Spam Call To:</td>
+                        </tr>
+                        <tr class="incerceptorCell">
+                                <td colspan="2">'.drawselects($goto,0,FALSE,FALSE).'</td>
+                        </tr>
 					</table>
 					<p><a target="_blank" href="modules/superfecta/disclaimer.html">(License Terms)&nbsp; </a><input type="submit" value="Agree and Save" name="Save"></p>
 					<p style="font-size:12px;">(* By clicking on either the &quot;Agree and Save&quot;<br>button, or the &quot;Debug&quot; button on this form<br>you are agreeing to the Caller ID Superfecta<br>Licensing Terms.)</p>
@@ -530,14 +532,14 @@ function reset_infoboxes(){
 
 function toggleInterceptor() {
 	
-	if(document.Superfecta.enable_interceptor.checked)
+	var row = document.getElementById("InterceptorVector");
+	if(document.Superfecta.enable_interceptor.checked && row)
 	{
-                $('.'+'incerceptorCell').show();
+    	row.style.display = '';
 	}
 	else
 	{
-                $('.'+'incerceptorCell').hide();
-
+         row.style.display = 'none';
 	}
 }
 
