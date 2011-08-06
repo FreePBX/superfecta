@@ -285,9 +285,21 @@ if($scheme != "")
 							<td><input type="text" name="Prefix_URL" size="23" maxlength="255" value="'.(isset($conf['Prefix_URL'])? $conf['Prefix_URL'] : '' ).'"></td>
 						</tr>
 						<tr>
-							<td>Send Spam Call To:</td>
-							<td>'.drawselects($goto,0,FALSE,FALSE).'</td>			
+							<td><a href="javascript:return(false);" class="info">Enable SPAM Interception<span>When enabled, Spam calls can be diverted or terminated.</span></a></td>
+							<td>
+								<input type="checkbox" onclick="toggleInterceptor()" name="enable_interceptor" value="Y"' . ( ( (isset($conf['enable_interceptor'])) && ($conf['enable_interceptor'] == 'Y') ) ? 'checked' : '' ) . '>
+							</td>
 						</tr>
+
+						<table id="InterceptorVector" border="0">
+							<tr>
+								<td valign="top">
+								<td>Send Spam Call To:</td>
+							</tr>
+							<tr>
+								<td>'.drawselects($goto,0,FALSE,FALSE).'</td>			
+							</tr>
+						</table>
 					</table>
 					<p><a target="_blank" href="modules/superfecta/disclaimer.html">(License Terms)&nbsp; </a><input type="submit" value="Agree and Save" name="Save"></p>
 					<p style="font-size:12px;">(* By clicking on either the &quot;Agree and Save&quot;<br>button, or the &quot;Debug&quot; button on this form<br>you are agreeing to the Caller ID Superfecta<br>Licensing Terms.)</p>
@@ -442,6 +454,7 @@ function Ht_Generate_List(first_run,scheme)
 	{
 		setTimeout("Ht_Generate_List('" + first_run + "')",100);
 	}
+	toggleInterceptor();
 }
 
 function Ht_debug(thenumber,testdid,checkall)
@@ -491,6 +504,19 @@ function reset_infoboxes(){
 	}
 }
 
+function toggleInterceptor() {
+
+	var row = document.getElementById("InterceptorVector");
+	
+	if(document.Superfecta.enable_interceptor.checked)
+	{
+		row.style.display = '';
+	}
+	else
+	{
+		row.style.display = 'none';
+	}
+}
 
 function decision(message, url)
 {
