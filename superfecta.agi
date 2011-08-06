@@ -3,6 +3,7 @@
 
 	require('/var/lib/asterisk/agi-bin/phpagi.php');
 	$agi = new AGI();
+        $agi->answer();
 	$scheme_return = $agi->get_variable("CIDSFSCHEME");
 	if(($scheme_return['result']) && (trim($scheme_return['data']) != '')) {
 		$scheme = $scheme_return['data'];
@@ -14,7 +15,10 @@
 	$thenumber = $agi->request['agi_callerid'];
 	chdir(dirname(__FILE__) . '/bin');
 	if($result = trim(shell_exec('/usr/bin/php ' . dirname(__FILE__) . '/includes/callerid.php -s '.$sn[1].' -n ' . $thenumber . ' -i '.$did))){
-		$agi->set_variable("lookupcid", $result);
+            $data = unserialize($result);
+            $agi->set_variable("lookupcid", $data['cid']);
+            if(!empty($data['destination'])) {
+                $parts = explode(",",$data['destination']);
+                $agi->goto_dest($parts[0],$parts[1],$parts[2]);
+            }
 	}
-
-?>

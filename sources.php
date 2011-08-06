@@ -90,11 +90,10 @@ foreach (glob("sources/source-*.module") as $filename)
 		$this_source_name = str_replace(".module","",str_replace("sources/source-","",$filename));
 		$source_class = NEW $this_source_name;		
 		
-		$settings = $source_class->settings();	
-		$src_files[$this_source_name]['desc'] = $settings['desc'];		
-		$src_files[$this_source_name]['param'] = $settings['param'];
-		$source_param = $settings['source_param'];
-		$src_files[$this_source_name]['param'] = $settings['source_param'];
+		$settings = $source_class->settings();
+		$src_files[$this_source_name]['desc'] = isset($settings['desc']) ? $settings['desc'] : 'N/A';
+		$source_param = isset($settings['source_param']) ? $settings['source_param'] : array();
+		$src_files[$this_source_name]['param'] = isset($settings['source_param']) ? $settings['source_param'] : array();
 						
 		//update the database if this source was the last displayed form.
 		if($source_param_form == $this_source_name)

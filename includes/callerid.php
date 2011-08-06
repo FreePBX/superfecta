@@ -77,16 +77,31 @@ foreach($scheme_name_array as $list) {
 	$scheme_param = $param[$scheme_name];
 
 	require_once(dirname(__FILE__).'/superfecta_base.php');
-	if(isset($scheme_param['enable_multifecta'])) {
-		require_once(dirname(__FILE__).'/processors/superfecta_multi.php');
+
+        switch($scheme_param['processor']) {
+            case 'superfecta_multi.php':
+                require_once(dirname(__FILE__).'/processors/superfecta_multi.php');
 		//require_once('superfecta_pcntl.php');
 		$superfecta = NEW superfecta_multi($multifecta_id,$db,$amp_conf,$astman,$debug,$thenumber_orig,$scheme_name,$scheme_param,$source);
 		$superfecta->type = 'MULTI';
-	} else {
-		require_once(dirname(__FILE__).'/processors/superfecta_single.php');
+                break;
+            case 'superfecta_single.php':
+                require_once(dirname(__FILE__).'/processors/superfecta_single.php');
 		$superfecta = NEW superfecta_single($db,$amp_conf,$astman,$debug,$thenumber_orig,$scheme_name,$scheme_param);
 		$superfecta->type = 'SUPER';
-	}
+                break;
+            case 'superfecta_pcntl.php' :
+                require_once(dirname(__FILE__).'/processors/superfecta_single.php');
+		$superfecta = NEW superfecta_single($db,$amp_conf,$astman,$debug,$thenumber_orig,$scheme_name,$scheme_param);
+		$superfecta->type = 'SUPER';
+                //$superfecta->outn("PCNTL not yet supported, running single instead");
+                break;
+            default:
+                require_once(dirname(__FILE__).'/processors/superfecta_single.php');
+		$superfecta = NEW superfecta_single($db,$amp_conf,$astman,$debug,$thenumber_orig,$scheme_name,$scheme_param);
+		$superfecta->type = 'SUPER';
+                break;
+        }
 	$superfecta->cli = $cli;
 	$superfecta->DID = $DID;
 
@@ -99,6 +114,7 @@ foreach($scheme_name_array as $list) {
 		$superfecta->outn("<strong>The Original Number: </strong>". $superfecta->thenumber_orig);
 		$superfecta->outn("<strong>The Scheme: </strong>". $superfecta->scheme_name);
 		$superfecta->outn("<strong>Scheme Type: </strong>".$superfecta->type."FECTA");
+                $superfecta->outn("<strong>SPAM Destination: </strong>".$scheme_param['spam_destination']);
 		$superfecta->out("<strong>is CLI: </strong>");
 		$superfecta->outn($cli ? 'true' : 'false');
 		$start_time_whole = $superfecta->mctime_float();
@@ -187,7 +203,10 @@ foreach($scheme_name_array as $list) {
 
 			if(!$superfecta->debug) {
 				if($cli) {
-					echo $spam_text." ".$superfecta->prefix.$callerid;
+					//echo $spam_text." ".$superfecta->prefix.$callerid;
+                                        $final_data['cid'] = $spam_text." ".$superfecta->prefix.$callerid;
+                                        $final_data['destination'] = $scheme_param['spam_destination'];
+                                        echo serialize($final_data);
 				} else {
 					echo $scheme_name.": ".$spam_text." ".$superfecta->prefix.$callerid."<br/>\n";
 				}

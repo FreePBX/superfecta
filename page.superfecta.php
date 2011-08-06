@@ -24,10 +24,7 @@ if(count($_POST))
 	superfecta_setConfig();
 	$scheme = ($_POST['scheme_name'] == $_POST['scheme_name_orig']) ? $_POST['scheme_name_orig'] : $_POST['scheme_name'];
 	$scheme = "base_".$scheme;
-	
-	$type = $_POST['goto0'];
-	$destination = $_POST[$type.'0'];
-	
+
 	//Now save the $destination into the database
 	//Return the $destination in the superfecta.agi script and use it such as this: $agi->exec_goto($destination) EG: $agi->exec_goto(context,extension,priority)
 }
@@ -205,6 +202,16 @@ print '</ul>
 if($scheme != "")
 {
 	$conf = superfecta_getConfig($scheme);
+        $goto = (!empty($conf['spam_destination'])) ? $conf['spam_destination'] : '';
+        //Get list of processors
+        $list = array();
+        $conf['processor'] = ((!isset($conf['processor'])) OR (empty($conf['processor']))) ? 'superfecta_single.php' : $conf['processor'];
+        $processors_loc = dirname(__FILE__);
+        foreach (glob($processors_loc."/includes/processors/*.php") as $filename) {
+            $name = explode("_",basename($filename));
+            $selected = ($conf['processor'] == basename($filename)) ? 'selected' : '';
+            $list[] = "<option value='".basename($filename)."' $selected>".str_replace(".php","",$name[1])."</option>";
+        }
 
 	if (isset($conf['DID']) && (strlen(trim($conf['DID'])))){
 		$did_test_html = '<a href="javascript:return(false);" class="info">DID Number:<span>DID number to test this scheme against</span></a> <input type="text" size="15" maxlength="20" name="testdid"><br>';
@@ -256,24 +263,24 @@ if($scheme != "")
 								<textarea tabindex="2" id="dialrules" cols="20" rows="5" name="CID_rules">'.(isset($conf['CID_rules']) ? $conf['CID_rules'] : '' ).'</textarea>
 						 		</td>
 						</tr>
+                                                <tr>
+                                                    <td>&nbsp;</td>
+                                                    <td>&nbsp;</td>
+                                                </tr>
 						<tr>
 							<td><a href="javascript:return(false);" class="info">Lookup Timeout<span>Specify a timeout in seconds for each source. If the source fails to return a result within the alloted time, the script will move on.</span></a></td>
 							<td><input type="text" name="Curl_Timeout" size="4" maxlength="5" value="'.$conf['Curl_Timeout'].'"></td>
 						</tr>
 						<tr>
-							<td><a href="javascript:return(false);" class="info">SPAM Text<span>This text will be prepended to Caller ID information to help you identify calls as SPAM calls.</span></a></td>
-							<td><input type="text" name="SPAM_Text" size="23" maxlength="20" value="'.$conf['SPAM_Text'].'"></td>
-						</tr>
-						<tr>
-							<td><a href="javascript:return(false);" class="info">SPAM Text Substituted<span>When enabled, the text entered in "SPAM Text" (above) will replace the CID completely rather than pre-pending the CID value.</span></a></td>
+							<td><a href="javascript:return(false);" class="info">Superfecta Processor<span>These are the types of Superfecta Processors:<br /><strong>MULTI:</strong> Multifecta, runs all sources at the same time<br /><strong>PCNTL:</strong> not working yet<br /><strong>SINGLE:</strong> Runs all sources in specified order, like old superfecta</span></a></td>
 							<td>
-								<input type="checkbox" name="SPAM_Text_Substitute" value="Y"' . ( ( (isset($conf['SPAM_Text_Substitute'])) && ($conf['SPAM_Text_Substitute'] == 'Y') ) ? 'checked' : '' ) . '>
-							</td>
-						</tr>
-						<tr>
-							<td><a href="javascript:return(false);" class="info">Enable Multifecta<span>When enabled, all sources in this scheme will be run simultaneously.</span></a></td>
-							<td>
-								<input type="checkbox" name="enable_multifecta" value="Y"' . ( ( (isset($conf['enable_multifecta'])) && ($conf['enable_multifecta'] == 'Y') ) ? 'checked' : '' ) . '>
+                                                            <select name="processor">';
+
+                                                            foreach($list as $data) {
+                                                                echo $data;
+                                                            }
+
+                                                            print '</select>
 							</td>
 						</tr>
 						<tr>
@@ -283,6 +290,24 @@ if($scheme != "")
 						<tr>
 							<td><a href="javascript:return(false);" class="info">CID Prefix URL<span>If you wish to prefix information on the caller id you can specify a url here where that prefix can be retrieved.<br>The data will not be parsed in any way, and will be truncated to the first 10 characters.<br>Example URL: http://www.example.com/GetCID.php?phone_number=[thenumber]<br>[thenumber] will be replaced with the full 10 digit phone number when the URL is called.</span></a></td>
 							<td><input type="text" name="Prefix_URL" size="23" maxlength="255" value="'.(isset($conf['Prefix_URL'])? $conf['Prefix_URL'] : '' ).'"></td>
+						</tr>
+                                               <tr>
+                                                    <td>&nbsp;</td>
+                                                    <td>&nbsp;</td>
+                                                </tr>
+                                                <tr>
+							<td><a href="javascript:return(false);" class="info">SPAM Text<span>This text will be prepended to Caller ID information to help you identify calls as SPAM calls.</span></a></td>
+							<td><input type="text" name="SPAM_Text" size="23" maxlength="20" value="'.$conf['SPAM_Text'].'"></td>
+						</tr>
+						<tr>
+							<td><a href="javascript:return(false);" class="info">SPAM Text Substituted<span>When enabled, the text entered in "SPAM Text" (above) will replace the CID completely rather than pre-pending the CID value.</span></a></td>
+							<td>
+								<input type="checkbox" name="SPAM_Text_Substitute" value="Y"' . ( ( (isset($conf['SPAM_Text_Substitute'])) && ($conf['SPAM_Text_Substitute'] == 'Y') ) ? 'checked' : '' ) . '>
+							</td>
+						</tr>
+                                                <tr>
+							<td><a href="javascript:return(false);" class="info">SPAM Send Threshold<span>This is the threshold to send the call to the specified destination below</span></a></td>
+							<td><input type="text" name="SPAM_threshold" size="4" maxlength="2" value="'.$conf['SPAM_threshold'].'"></td>
 						</tr>
 						<tr>
 							<td><a href="javascript:return(false);" class="info">Enable SPAM Interception<span>When enabled, Spam calls can be diverted or terminated.</span></a></td>

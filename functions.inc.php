@@ -158,9 +158,12 @@ function superfecta_setConfig()
 	$http_username = mysql_real_escape_string(utf8_decode($_POST['http_username']));
 	$SPAM_Text = mysql_real_escape_string($_POST['SPAM_Text']);
 	$SPAM_Text_Substitute = (isset($_POST['SPAM_Text_Substitute'])) ? mysql_real_escape_string($_POST['SPAM_Text_Substitute']) : 'N';
-	$enable_multifecta =  mysql_real_escape_string(utf8_decode($_POST['enable_multifecta']));
+	$processor =  mysql_real_escape_string(utf8_decode($_POST['processor']));
 	$multifecta_timeout =  mysql_real_escape_string(utf8_decode($_POST['multifecta_timeout']));
 	$error = false;
+
+        $type = mysql_real_escape_string($_POST['goto0']);
+	$destination = mysql_real_escape_string($_POST[$type.'0']);
 
 	//see if the scheme name has changed, and make sure that there isn't already one named the new name.
 	if($scheme_name == "")
@@ -192,17 +195,14 @@ function superfecta_setConfig()
 	if(!$error)
 	{
 		//update database
+            	$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('base_".$scheme_name."','spam_destination','$destination')";
+		sql($sql);
 		$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('base_".$scheme_name."','Prefix_URL','$Prefix_URL')";
 		sql($sql);
 		$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('base_".$scheme_name."','Curl_Timeout','$Curl_Timeout')";
 		sql($sql);
-		if($enable_multifecta == 'Y') {
-			$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('base_".$scheme_name."','enable_multifecta','$enable_multifecta')";
-			sql($sql);
-		} else {
-			$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('base_".$scheme_name."','enable_multifecta',NULL)";
-			sql($sql);	
-		}
+		$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('base_".$scheme_name."','processor','$processor')";
+		sql($sql);
 		$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('base_".$scheme_name."','multifecta_timeout','$multifecta_timeout')";
 		sql($sql);
 		$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('base_".$scheme_name."','SPAM_Text','$SPAM_Text')";
