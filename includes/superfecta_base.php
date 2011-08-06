@@ -1,7 +1,8 @@
 <?php
 class superfecta_base {
-	private $cli = FALSE;
-	public $debug = FALSE;
+	protected $cli = FALSE;
+	protected $spam = false;
+	protected $debug = FALSE;
 	public $thenumber;
 	public $db; //The database
 	public $astman; //Asterisk Manager Object
@@ -13,13 +14,20 @@ class superfecta_base {
 	public $spam_text = '';
 	public $cache_found = false;
 	public $single_source = false;
-	public $spam = false;
 	public $winning_source = '';
 	public $usage_mode = 'get caller id';
 	public $src_array = array();
 	public $multifecta_id = false;
 	public $multifecta_parent_id = false;
 	public $curl_timeout = '1.5';
+	
+	function isCLI() { return $this->cli; }
+	function isSpam() { return $this->spam; }
+	function isDebug() { return $this->debug; }
+
+	function setCLI($bValue) { $this->cli = $bValue; }
+	function setSpam($bValue) { $this->spam = $bValue; }
+	function setDebug($bValue) { $this->debug = $bValue; }
 	
 	//public $thenumber_orig = (isset($_REQUEST['thenumber'])) ? trim($_REQUEST['thenumber']) : '';
 	//public $DID = (isset($_REQUEST['testdid'])) ? trim($_REQUEST['testdid']) : '';

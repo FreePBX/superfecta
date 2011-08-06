@@ -102,19 +102,19 @@ foreach($scheme_name_array as $list) {
 		$superfecta->type = 'SUPER';
                 break;
         }
-	$superfecta->cli = $cli;
+	$superfecta->setCLI($cli);
 	$superfecta->DID = $DID;
 
 	//We only want to run all of this if it's a parent-multifecta or the original code (single-fecta), No need to run this for every child
-	if(($superfecta->debug) && (($superfecta->type == 'SUPER') || (($superfecta->type == 'MULTI') && ($superfecta->multi_type == 'PARENT')))){
+	if(($superfecta->isDebug()) && (($superfecta->type == 'SUPER') || (($superfecta->type == 'MULTI') && ($superfecta->multi_type == 'PARENT')))){
 		// If debugging, report all errors
-		error_reporting(E_ALL & E_NOTICE); // -1 was not letting me see the wood for the trees.
+		error_reporting(E_ALL | E_NOTICE); // -1 was not letting me see the wood for the trees.
 		ini_set('display_errors', '1');
 		$superfecta->outn("<strong>Debug is on</strong>");
 		$superfecta->outn("<strong>The Original Number: </strong>". $superfecta->thenumber_orig);
 		$superfecta->outn("<strong>The Scheme: </strong>". $superfecta->scheme_name);
 		$superfecta->outn("<strong>Scheme Type: </strong>".$superfecta->type."FECTA");
-                $superfecta->outn("<strong>SPAM Destination: </strong>".$scheme_param['spam_destination']);
+		$superfecta->outn("<strong>SPAM Destination: </strong>".$scheme_param['spam_destination']);
 		$superfecta->out("<strong>is CLI: </strong>");
 		$superfecta->outn($cli ? 'true' : 'false');
 		$start_time_whole = $superfecta->mctime_float();
@@ -133,19 +133,19 @@ foreach($scheme_name_array as $list) {
 		// Determine if this is the correct DID, if this scheme is limited to a DID.
 		$rule_match = $superfecta->match_pattern_all( (isset($scheme_param['DID'])) ? $scheme_param['DID'] : '', $superfecta->DID );
 		if($rule_match['number']){
-			if($superfecta->debug){$superfecta->outn("Matched DID Rule: '".$rule_match['pattern']."' with '".$rule_match['number']."'");}
+			if($superfecta->isDebug()){$superfecta->outn("Matched DID Rule: '".$rule_match['pattern']."' with '".$rule_match['number']."'");}
 		}elseif($rule_match['status']){
-			if($superfecta->debug){$superfecta->outn("No matching DID rules.");}
+			if($superfecta->isDebug()){$superfecta->outn("No matching DID rules.");}
 			$run_this_scheme = false;
 		}
 
 		// Determine if the CID matches any patterns defined for this scheme
 		$rule_match = $superfecta->match_pattern_all((isset($scheme_param['CID_rules']))?$scheme_param['CID_rules']:'', $superfecta->thenumber );
 		if($rule_match['number'] && $run_this_scheme){
-			if($superfecta->debug){$superfecta->outn("Matched CID Rule: '".$rule_match['pattern']."' with '".$rule_match['number']."'");}
+			if($superfecta->isDebug()){$superfecta->outn("Matched CID Rule: '".$rule_match['pattern']."' with '".$rule_match['number']."'");}
 			$superfecta->thenumber = $rule_match['number'];
 		}elseif($rule_match['status'] && $run_this_scheme){
-			if($superfecta->debug){$superfecta->outn("No matching CID rules.");}
+			if($superfecta->isDebug()){$superfecta->outn("No matching CID rules.");}
 			$run_this_scheme = false;
 		}
 
@@ -154,14 +154,14 @@ foreach($scheme_name_array as $list) {
 		$superfecta->prefix = '';
 		if((isset($scheme_param['Prefix_URL'])) && (trim($scheme_param['Prefix_URL']) != ''))
 		{
-			if($superfecta->debug)
+			if($superfecta->isDebug())
 			{
 				$start_time = $superfecta->mctime_float();
 			}
 	
 			$superfecta->prefix = $superfecta->get_url_contents(str_replace("[thenumber]",$superfecta->thenumber,$scheme_param['Prefix_URL']));
 
-			if($superfecta->debug)
+			if($superfecta->isDebug())
 			{
 				$superfecta->outn("Prefix Url defined ...");
 				if($superfecta->prefix !='')
@@ -199,9 +199,9 @@ foreach($scheme_name_array as $list) {
 	
 			$superfecta->send_results($callerid);
 			
-			$spam_text = ($superfecta->spam) ? $scheme_param['SPAM_Text'] : '';
+			$spam_text = ($superfecta->isSpam()) ? $scheme_param['SPAM_Text'] : '';
 
-			if(!$superfecta->debug) {
+			if(!$superfecta->isDebug()) {
 				if($cli) {
 					//echo $spam_text." ".$superfecta->prefix.$callerid;
                                         $final_data['cid'] = $spam_text." ".$superfecta->prefix.$callerid;
