@@ -537,7 +537,7 @@ function toggleInterceptor() {
 	{
     	row.style.display = '';
 	}
-	else
+	else if(row)
 	{
          row.style.display = 'none';
 	}
