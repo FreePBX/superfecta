@@ -148,6 +148,8 @@ function superfecta_did_list($id=false) {
 function superfecta_setConfig()
 {
 	//clean up
+        $enable_interceptor = mysql_real_escape_string(utf8_decode($_POST['enable_interceptor']));
+        $enable_interceptor = (isset($enable_interceptor) && $enable_interceptor == 'Y') ? TRUE : FALSE;
 	$scheme_name = mysql_real_escape_string($_POST['scheme_name']);
 	$scheme_name_orig = mysql_real_escape_string($_POST['scheme_name_orig']);
 	$DID = mysql_real_escape_string($_POST['DID']);
@@ -195,6 +197,12 @@ function superfecta_setConfig()
 	if(!$error)
 	{
 		//update database
+                if($enable_interceptor) {
+                	$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('base_".$scheme_name."','spam_interceptor','Y')";
+                } else {
+                	$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('base_".$scheme_name."','spam_interceptor','N')";
+                }
+                sql($sql);
             	$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('base_".$scheme_name."','spam_destination','$destination')";
 		sql($sql);
 		$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('base_".$scheme_name."','Prefix_URL','$Prefix_URL')";

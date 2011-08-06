@@ -205,7 +205,8 @@ foreach($scheme_name_array as $list) {
 				if($cli) {
 					//echo $spam_text." ".$superfecta->prefix.$callerid;
                                         $final_data['cid'] = $spam_text." ".$superfecta->prefix.$callerid;
-                                        $final_data['destination'] = $scheme_param['spam_destination'];
+                                        $spam_dest = (!empty($scheme_param['spam_interceptor']) && ($scheme_param['spam_interceptor'] == 'Y')) ? $scheme_param['spam_destination'] : '';
+                                        $final_data['destination'] = $spam_dest;
                                         echo serialize($final_data);
 				} else {
 					echo $scheme_name.": ".$spam_text." ".$superfecta->prefix.$callerid."<br/>\n";

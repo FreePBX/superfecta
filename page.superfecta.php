@@ -202,7 +202,10 @@ print '</ul>
 if($scheme != "")
 {
 	$conf = superfecta_getConfig($scheme);
+
         $goto = (!empty($conf['spam_destination'])) ? $conf['spam_destination'] : '';
+        $spam_int = (!empty($conf['spam_interceptor']) && ($conf['spam_interceptor'] == 'Y')) ? 'checked' : '';
+
         //Get list of processors
         $list = array();
         $conf['processor'] = ((!isset($conf['processor'])) OR (empty($conf['processor']))) ? 'superfecta_single.php' : $conf['processor'];
@@ -312,7 +315,7 @@ if($scheme != "")
 						<tr>
 							<td><a href="javascript:return(false);" class="info">Enable SPAM Interception<span>When enabled, Spam calls can be diverted or terminated.</span></a></td>
 							<td>
-								<input type="checkbox" onclick="toggleInterceptor()" name="enable_interceptor" value="Y"' . ( ( (isset($conf['enable_interceptor'])) && ($conf['enable_interceptor'] == 'Y') ) ? 'checked' : '' ) . '>
+								<input type="checkbox" onclick="toggleInterceptor()" name="enable_interceptor" value="Y" ' . $spam_int . '>
 							</td>
 						</tr>
 
