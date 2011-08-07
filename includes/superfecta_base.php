@@ -20,13 +20,14 @@ class superfecta_base {
 	public $multifecta_id = false;
 	public $multifecta_parent_id = false;
 	public $curl_timeout = '1.5';
+	public $spam_count = '0';
 	
 	function isCLI() { return $this->cli; }
 	function isSpam() { return $this->spam; }
 	function isDebug() { return $this->debug; }
 
 	function setCLI($bValue) { $this->cli = $bValue; }
-	function setSpam($bValue) { $this->spam = $bValue; }
+	function setSpam($bValue) { $this->spam = $bValue;}
 	function setDebug($bValue) { $this->debug = $bValue; }
 	
 	//public $thenumber_orig = (isset($_REQUEST['thenumber'])) ? trim($_REQUEST['thenumber']) : '';

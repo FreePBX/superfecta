@@ -201,17 +201,20 @@ foreach($scheme_name_array as $list) {
 			
 			$spam_text = ($superfecta->isSpam()) ? $scheme_param['SPAM_Text'] : '';
 
+			$spam_dest = (!empty($scheme_param['spam_interceptor']) && ($scheme_param['spam_interceptor'] == 'Y')) ? $scheme_param['spam_destination'] : '';
+			$spam_dest = ($superfecta->spam_count >= $scheme_param['SPAM_threshold']) ? $spam_dest : '';
 			if(!$superfecta->isDebug()) {
 				if($cli) {
-					//echo $spam_text." ".$superfecta->prefix.$callerid;
                                         $final_data['cid'] = $spam_text." ".$superfecta->prefix.$callerid;
-                                        $spam_dest = (!empty($scheme_param['spam_interceptor']) && ($scheme_param['spam_interceptor'] == 'Y')) ? $scheme_param['spam_destination'] : '';
                                         $final_data['destination'] = $spam_dest;
                                         echo serialize($final_data);
 				} else {
 					echo $scheme_name.": ".$spam_text." ".$superfecta->prefix.$callerid."<br/>\n";
 				}
 			} else {
+				if(!empty($spam_dest)) {
+				    $superfecta->outn("<b>SPAM Call sent to:</b> ".$spam_dest);
+				}
 				$superfecta->out("<b>Returned Result would be: ");
 				$callerid = utf8_encode($spam_text." ".$superfecta->prefix.$callerid);
 				$superfecta->outn($callerid);

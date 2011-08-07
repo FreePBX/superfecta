@@ -36,6 +36,7 @@ class superfecta_single extends superfecta_base {
 				if(method_exists($source_class, 'get_caller_id')) {
 					$caller_id = $source_class->get_caller_id($this->thenumber,$run_param);
 					$this->setSpam($source_class->isSpam());
+					if($source_class->isSpam()) { $this->spam_count++; }
 					unset($source_class);
 					$caller_id = $this->_utf8_decode($caller_id);
 

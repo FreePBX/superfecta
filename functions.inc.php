@@ -162,6 +162,7 @@ function superfecta_setConfig()
 	$SPAM_Text_Substitute = (isset($_POST['SPAM_Text_Substitute'])) ? mysql_real_escape_string($_POST['SPAM_Text_Substitute']) : 'N';
 	$processor =  mysql_real_escape_string(utf8_decode($_POST['processor']));
 	$multifecta_timeout =  mysql_real_escape_string(utf8_decode($_POST['multifecta_timeout']));
+	$SPAM_threshold = mysql_real_escape_string($_POST['SPAM_threshold']);
 	$error = false;
 
         $type = mysql_real_escape_string($_POST['goto0']);
@@ -221,6 +222,8 @@ function superfecta_setConfig()
 		sql($sql);
 		$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('base_".$scheme_name."','CID_rules','$CID_rules')";
 		sql($sql);
+		$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('base_".$scheme_name."','SPAM_threshold','$SPAM_threshold')";
+		sql($sql);
 		print '<p><strong>CID Scheme Updated</strong></p>';
 	}
 
@@ -269,6 +272,9 @@ function superfecta_getConfig($scheme)
 	}
 	if(!isset($return['enable_multifecta'])){
 		$return['enable_multifecta'] = '';
+	}
+	if(!isset($return['SPAM_threshold'])){
+		$return['SPAM_threshold'] = '3';
 	}
 
 	return $return;

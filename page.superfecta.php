@@ -308,10 +308,6 @@ if($scheme != "")
 								<input type="checkbox" name="SPAM_Text_Substitute" value="Y"' . ( ( (isset($conf['SPAM_Text_Substitute'])) && ($conf['SPAM_Text_Substitute'] == 'Y') ) ? 'checked' : '' ) . '>
 							</td>
 						</tr>
-                                                <tr>
-							<td><a href="javascript:return(false);" class="info">SPAM Send Threshold<span>This is the threshold to send the call to the specified destination below</span></a></td>
-							<td><input type="text" name="SPAM_threshold" size="4" maxlength="2" value="'.$conf['SPAM_threshold'].'"></td>
-						</tr>
 						<tr>
 							<td><a href="javascript:return(false);" class="info">Enable SPAM Interception<span>When enabled, Spam calls can be diverted or terminated.</span></a></td>
 							<td>
@@ -320,6 +316,10 @@ if($scheme != "")
 						</tr>
 					</table>
 					<table id="InterceptorVector" border="0">
+			<tr>
+				<td><a href="javascript:return(false);" class="info">SPAM Send Threshold<span>This is the threshold to send the call to the specified destination below</span></a></td>
+				<td><input type="text" name="SPAM_threshold" size="4" maxlength="2" value="'.$conf['SPAM_threshold'].'"></td>
+			</tr>
                         <tr class="incerceptorCell">
                                 <td colspan="2">Send Spam Call To:</td>
                         </tr>

@@ -185,6 +185,7 @@ class superfecta_multi extends superfecta_base {
 					$spam_text = (($row2['spam_text'])?$row2['spam_text']:$spam_text);
 					if($row2['spam']){
 						$this->setSpam(TRUE);
+						$this->spam_count++;
 						$spam_text = $row2['spam_text'];
 						$spam_source = $row2['source'];
 						$spam_child_id = $row2['superfecta_mf_child_id'];
