@@ -18,6 +18,12 @@
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
+		<name>source-FreeCNAM.module</name>
+		<modified>1312741360</modified>
+		<md5>c85ad67c3a414344abf5681bc4f5c683</md5>
+		<version_requirement>3.0</version_requirement>
+	</source>
+	<source>
 		<name>source-Google_Maps_UK.module</name>
 		<modified>1311718897</modified>
 		<md5>66c7c482157382dba717b9c1958ac2e1</md5>
