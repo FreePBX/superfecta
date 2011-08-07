@@ -1,0 +1,45 @@
+<?php
+class LocalTel_CH extends superfecta_base {
+	function settings() {
+
+		$settings['desc'] = "http://www.freecnam.org       This data source returns CNAM data listed at FreeCNAM.";
+		$settings['version_requirement'] = "3.0";
+
+		return($settings);
+	}
+	
+	function get_caller_id($thenumber,$run_param=array()) {
+		
+		$caller_id="";
+		
+		if( (!$this->IsValidNumber('CH',$thenumber)) )
+		{
+			$this->DebugPrint( "Skipping Source - Not a valid Swiss number: ".$thenumber);
+		}
+		else
+		{
+			$this->DebugPrint( "Searching Local.ch-Swiss ... ");
+			
+			$url="http://tel.search.ch/index.en.html?was=$thenumber";
+			$value = $this->get_url_contents($url);
+			$name='';
+	
+			$pattern = "/class=\"(?:fn|fn org)\">(.*)<\/a>/";
+			preg_match($pattern, $value, $match);
+			if(isset($match[1]) && strlen($match[1])){
+				$name = trim(strip_tags($match[1]));
+			}	
+		
+	        if (strlen($name) > 1)
+	        {
+				$caller_id = strip_tags($name);
+	        }
+	        else
+	        {
+	        	$this->DebugPrint("not found");
+	        }
+		}
+		return($caller_id);
+	}
+	
+}

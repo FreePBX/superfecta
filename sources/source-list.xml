@@ -42,6 +42,12 @@
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
+		<name>source-LocalTel_CH.module</name>
+		<modified>1312745562</modified>
+		<md5>be53f4d0964bff89c496c55715e091ee</md5>
+		<version_requirement>3.0</version_requirement>
+	</source>
+	<source>
 		<name>source-Number_Guru.module</name>
 		<modified>1312316413</modified>
 		<md5>ed2c63612928320d13d22170da9a2de3</md5>
@@ -57,6 +63,12 @@
 		<name>source-Send_to_Soundbridge.module</name>
 		<modified>1312133097</modified>
 		<md5>8cd5f525d402f4cf70fe6b2d92f4b8a5</md5>
+		<version_requirement>3.0</version_requirement>
+	</source>
+	<source>
+		<name>source-Send_to_URL.module</name>
+		<modified>1312743856</modified>
+		<md5>23f543754157ce6a63ebfdb49f59f779</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>

@@ -696,6 +696,56 @@ class superfecta_base {
 				}
 			} //end UK
 			break;
+
+			case "CH" :
+			{
+				//check for the correct 11 digits Swiss phone numbers in international format.
+				if (strlen($thenumber) == 10)
+				{
+					if (substr($thenumber,0,1) != '0')
+					{
+						$number_error = true;
+					}
+				}
+				// country code + number
+				if (strlen($thenumber) == 11)
+				{
+					if (substr($thenumber,0,2) == '41')
+					{
+						$thenumber = '0'.substr($thenumber,2);
+					}
+					else
+					{
+						$number_error = true;
+					}
+			
+				}
+				// international dialing prefix + country code + number
+				if (strlen($thenumber) > 11)
+				{
+					if (substr($thenumber,0,4) == '0041')
+					{
+						$thenumber = '0'.substr($thenumber, 4);
+					}
+					else
+					{
+						if (substr($thenumber,0,5) == '01141')
+						{
+							$thenumber = '0'.substr($thenumber,5);
+						}			
+						else
+						{
+							$number_error = true;
+						}
+					}
+				}	
+				// number
+			    if(strlen($thenumber) < 10)
+				{
+					$number_error = true;
+				}
+			} //end CH
+			break;
 			
 			default:
 				$this->DebugPrint("Unknown Country Code ${country} passed to IsValidNumber: ${country}");
