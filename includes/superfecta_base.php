@@ -1098,4 +1098,15 @@ class superfecta_base {
 	    }
 	}
 
+	function ContainsKeywords($name, $keywords)
+	{
+		$key_words = array();
+		$temp_array = explode(',',$keywords);
+		foreach($temp_array as $val)
+		{
+			$key_words[] = trim($val);
+		}
+		
+		return (($name == str_ireplace($key_words,'',$name)) ? false : true);
+	}
 }

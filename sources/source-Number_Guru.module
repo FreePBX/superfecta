@@ -12,6 +12,10 @@ class Number_Guru extends superfecta_base {
 		$source_param['Spam_Threshold']['type'] = 'number';
 		$source_param['Spam_Threshold']['default'] = '60';
 		
+		$source_param['Ignore_Keywords']['desc'] = 'If the trunk provided caller id includes any of the keywords listed  here, the trunk provided value will be ignored and other sources will be used to find the value.<br> Seperate keywords with commas.';
+		$source_param['Ignore_Keywords']['type'] = 'textarea';
+		$source_param['Ignore_Keywords']['default'] = 'unknown, toll free, unlisted, (N/A), wireless caller';
+		
 		$settings['desc'] = "http://www.numberguru.com - 	US free CNAM lookup.<br><br>This data source requires Superfecta Module version 3.0 or higher.";
 		
 		$settings['param'] = array();
@@ -67,7 +71,15 @@ class Number_Guru extends superfecta_base {
 					// If we found a match, return it
 					if(strlen($name) > 1 && $name<>"UNAVAILABLE")
 					{
-						$caller_id = $name;
+						$keywords = (isset($run_param['Ignore_Keywords'])?$run_param['Ignore_Keywords']:$source_param['Ignore_Keywords']['default']);
+						if(!$this->ContainsKeywords($name, $keywords))
+						{
+							$caller_id = $name;
+						}
+						else
+						{
+							$this->DebugPrint("Result '{$name}' contains flagged key words, returning nothing");							
+						}
 					}
 					else
 					{
