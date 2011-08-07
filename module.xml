@@ -1,9 +1,7 @@
 <module>
 	<rawname>superfecta</rawname>
 	<name>CID Superfecta</name>
-	<version>2.2.5</version>
-	<candisable>no</candisable>
-	<canuninstall>yes</canuninstall>
+	<version>2.2.5.1</version>
 	<type>setup</type>
 	<category>Inbound Call Control</category>
 	<publisher>github.com/tm1000/Caller-ID-Superfecta</publisher> 
@@ -12,6 +10,7 @@
 	       Provides simultaneous use of, and complete control over multiple caller id data sources.
 	</description>
 	<changelog>
+		*2.2.5.1* Allow disable
 		*2.2.5* Using github now, changed and updated update scripts
 		*2.2.4* Maintenance and Feature Release. See Tickets  #220, #222, #237, #245, #260, #265, #320, #321, #338, #349, #350, #360, #365, #377, #379, #384, #388, #389, #395, #396, #399, #402, #404, #407, #411, #412, #413, #416, #417, #418, #421 (http://projects.colsolgrp.net/versions/show/76)(12/22/10)		
 		*2.2.3* Maintenance Release. See Tickets: #224, #229, #233, #234, #235, #236, #238, #240, #241 (http://projects.colsolgrp.net/projects/superfecta/issues)(11-24-09)		
