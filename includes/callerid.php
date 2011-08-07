@@ -205,9 +205,12 @@ foreach($scheme_name_array as $list) {
 			$spam_dest = ($superfecta->get_SpamCount() >= $scheme_param['SPAM_threshold']) ? $spam_dest : '';
 			if(!$superfecta->isDebug()) {
 				if($cli) {
-                                        $final_data['cid'] = $spam_text." ".$superfecta->get_Prefix().$callerid;
-                                        $final_data['destination'] = $spam_dest;
-                                        echo serialize($final_data);
+					if($callerid != '') {
+					    $final_data['cid'] = $spam_text." ".$superfecta->get_Prefix().$callerid;
+					    $final_data['destination'] = $spam_dest;
+					    echo serialize($final_data);
+					    break;
+					}
 				} else {
 					echo $scheme_name.": ".$spam_text." ".$superfecta->get_Prefix().$callerid."<br/>\n";
 				}
