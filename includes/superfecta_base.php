@@ -26,6 +26,7 @@ class superfecta_base {
 	function isSpam() { return $this->spam; }
 	function isDebug() { return $this->debug; }
 	function isCharSetIA5() { return $this->charsetIA5; }
+	function isCacheFound() { return $this->cache_found; }
 	 
 	function get_thenumber() { return $this->thenumber; }
 	function get_CurlTimeout() { return $this->curl_timeout; }
@@ -46,6 +47,7 @@ class superfecta_base {
 	function set_AsteriskManager($sValue) { $this->astman = $sValue; }
 	function set_CharSetIA5($sValue) { $this->charsetIA5 = $sValue; }
 	function set_SpamCount($nValue) { $this->spam_count = $nValue; }
+	function set_CacheFound($bValue) { $this->cache_found = $bValue; }
 
 	
 	//public $thenumber_orig = (isset($_REQUEST['thenumber'])) ? trim($_REQUEST['thenumber']) : '';

@@ -273,14 +273,14 @@ class superfecta_multi extends superfecta_base {
 			$source_class = NEW $this->source;
 			//Gotta be a better way to do this
 			$source_class->setDebug($this->isDebug());
-			$source_class->amp_conf = $this->amp_conf;
-			$source_class->db = $this->db;
-			$source_class->astman = $this->astman;
+			$source_class->set_AmpConf( $this->amp_conf );
+			$source_class->set_DB( $this->db );
+			$source_class->set_AsteriskManager( $this->astman );
 			$source_class->thenumber_orig = $this->thenumber_orig;
 			if(method_exists($source_class, 'get_caller_id')) {
 				$caller_id = $source_class->get_caller_id($this->thenumber,$run_param);
 				$this->setSpam($source_class->isSpam());
-				$this->cache_found = $source_class->cache_found;
+				$this->cache_found = $source_class->isCacheFound();
 				unset($source_class);
 				$caller_id = $this->_utf8_decode($caller_id);
 
@@ -336,7 +336,7 @@ class superfecta_multi extends superfecta_base {
 		foreach($sources as $source_name)
 		{
 			// Run the source
-			$sql = "SELECT field,value FROM superfectaconfig WHERE source = '".$this->scheme_name."_".$data."'";
+			$sql = "SELECT field,value FROM superfectaconfig WHERE source = '".$this->scheme_name."_".$source_name."'";
 			$run_param = $this->db->getAssoc($sql);
 			
 			if(file_exists("source-".$source_name.".module")) {
