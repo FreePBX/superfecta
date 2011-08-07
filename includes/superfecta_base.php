@@ -3,32 +3,50 @@ class superfecta_base {
 	protected $cli = FALSE;
 	protected $spam = false;
 	protected $debug = FALSE;
-	public $thenumber;
-	public $db; //The database
-	public $astman; //Asterisk Manager Object
-	public $amp_conf; //Amp Conf array
-	public $caller_id = '';
-	public $charsetIA5 = true;
-	public $first_caller_id = '';
-	public $prefix = '';
-	public $spam_text = '';
-	public $cache_found = false;
-	public $single_source = false;
-	public $winning_source = '';
-	public $usage_mode = 'get caller id';
-	public $src_array = array();
-	public $multifecta_id = false;
-	public $multifecta_parent_id = false;
-	public $curl_timeout = '1.5';
-	public $spam_count = '0';
-	
+	protected $thenumber;
+	protected $db; //The database
+	protected $astman; //Asterisk Manager Object
+	protected $amp_conf; //Amp Conf array
+	protected $caller_id = '';
+	protected $charsetIA5 = true;
+	protected $first_caller_id = '';
+	protected $prefix = '';
+	protected $spam_text = '';
+	protected $cache_found = false;
+	protected $single_source = false;
+	protected $winning_source = '';
+	protected $usage_mode = 'get caller id';
+	protected $src_array = array();
+	protected $multifecta_id = false;
+	protected $multifecta_parent_id = false;
+	protected $curl_timeout = '1.5';
+	protected $spam_count = 0;
+		
 	function isCLI() { return $this->cli; }
 	function isSpam() { return $this->spam; }
 	function isDebug() { return $this->debug; }
+	function isCharSetIA5() { return $this->charsetIA5; }
+	 
+	function get_thenumber() { return $this->thenumber; }
+	function get_CurlTimeout() { return $this->curl_timeout; }
+	function get_Prefix() { return $this->prefix; }
+	function get_AmpConf() { return $this->amp_conf; }
+	function get_DB() { return $this->db; }
+	function get_AsteriskManager() { return $this->astman; }
+	function get_SpamCount() { return $this->spam_count; }
 
 	function setCLI($bValue) { $this->cli = $bValue; }
-	function setSpam($bValue) { $this->spam = $bValue;}
+	function setSpam($bValue) { $this->spam = $bValue; }
 	function setDebug($bValue) { $this->debug = $bValue; }
+	function set_thenumber($sValue) { $this->thenumber = $sValue; }
+	function set_CurlTimeout($sValue) { $this->curl_timeout = $sValue; }
+	function set_Prefix($sValue) { $this->prefix = $sValue; }
+	function set_AmpConf($sValue) { $this->amp_conf = $sValue; }
+	function set_DB($sValue) { $this->db = $sValue; }
+	function set_AsteriskManager($sValue) { $this->astman = $sValue; }
+	function set_CharSetIA5($sValue) { $this->charsetIA5 = $sValue; }
+	function set_SpamCount($nValue) { $this->spam_count = $nValue; }
+
 	
 	//public $thenumber_orig = (isset($_REQUEST['thenumber'])) ? trim($_REQUEST['thenumber']) : '';
 	//public $DID = (isset($_REQUEST['testdid'])) ? trim($_REQUEST['testdid']) : '';

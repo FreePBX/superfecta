@@ -30,13 +30,15 @@ class superfecta_single extends superfecta_base {
 				$source_class = NEW $data;
 				//Gotta be a better way to do this
 				$source_class->setDebug($this->isDebug());
-				$source_class->amp_conf = $this->amp_conf;
-				$source_class->db = $this->db;
-				$source_class->astman = $this->astman;
+				$source_class->set_AmpConf( $this->amp_conf );
+				$source_class->set_DB( $this->db );
+				$source_class->set_AsteriskManager( $this->astman );
 				if(method_exists($source_class, 'get_caller_id')) {
 					$caller_id = $source_class->get_caller_id($this->thenumber,$run_param);
 					$this->setSpam($source_class->isSpam());
-					if($source_class->isSpam()) { $this->spam_count++; }
+					if($source_class->isSpam()) { 
+						$this->set_SpamCount( $this->get_SpamCount() + 1);
+					}
 					unset($source_class);
 					$caller_id = $this->_utf8_decode($caller_id);
 
@@ -89,7 +91,7 @@ class superfecta_single extends superfecta_base {
 			if(file_exists($source_file)) {
 				require_once($source_file);
 				$source_class = NEW $source_name;
-				$source_class->db = $this->db;
+				$source_class->set_DB( $this->db );
 				$source_class->setDebug($this->isDebug());
 				if(method_exists($source_class, 'post_processing')) {					
 					$caller_id = $source_class->post_processing(FALSE,NULL,$this->first_caller_id,$run_param,$this->thenumber_orig);

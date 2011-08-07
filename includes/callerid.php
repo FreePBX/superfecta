@@ -123,8 +123,8 @@ foreach($scheme_name_array as $list) {
 		$superfecta->outn("Scheme Variables:</b><pre>". print_r($superfecta->scheme_param,TRUE) . "</pre>");
 	}
 	//$superfecta->thenumber = ereg_replace('[^0-9]+', '', $superfecta->thenumber_orig);
-	$superfecta->thenumber = preg_replace('/^\+[1-9]/','',$superfecta->thenumber_orig);
-	$superfecta->curl_timeout = $scheme_param['Curl_Timeout'];
+	$superfecta->set_thenumber( preg_replace('/^\+[1-9]/','',$superfecta->thenumber_orig) );
+	$superfecta->set_CurlTimeout( $scheme_param['Curl_Timeout']);
 
 	$run_this_scheme = true;
 
@@ -140,10 +140,10 @@ foreach($scheme_name_array as $list) {
 		}
 
 		// Determine if the CID matches any patterns defined for this scheme
-		$rule_match = $superfecta->match_pattern_all((isset($scheme_param['CID_rules']))?$scheme_param['CID_rules']:'', $superfecta->thenumber );
+		$rule_match = $superfecta->match_pattern_all((isset($scheme_param['CID_rules']))?$scheme_param['CID_rules']:'', $superfecta->get_thenumber() );
 		if($rule_match['number'] && $run_this_scheme){
 			if($superfecta->isDebug()){$superfecta->outn("Matched CID Rule: '".$rule_match['pattern']."' with '".$rule_match['number']."'");}
-			$superfecta->thenumber = $rule_match['number'];
+			$superfecta->set_thenumber( $rule_match['number'] );
 		}elseif($rule_match['status'] && $run_this_scheme){
 			if($superfecta->isDebug()){$superfecta->outn("No matching CID rules.");}
 			$run_this_scheme = false;
@@ -151,7 +151,7 @@ foreach($scheme_name_array as $list) {
 
 		//if a prefix lookup is enabled, look it up, and truncate the result to 10 characters
 		///Clean these up, set NULL values instead of blanks then don't check for ''
-		$superfecta->prefix = '';
+		$superfecta->set_Prefix('');
 		if((isset($scheme_param['Prefix_URL'])) && (trim($scheme_param['Prefix_URL']) != ''))
 		{
 			if($superfecta->isDebug())
@@ -159,14 +159,14 @@ foreach($scheme_name_array as $list) {
 				$start_time = $superfecta->mctime_float();
 			}
 	
-			$superfecta->prefix = $superfecta->get_url_contents(str_replace("[thenumber]",$superfecta->thenumber,$scheme_param['Prefix_URL']));
+			$superfecta->set_Prefix( $superfecta->get_url_contents(str_replace("[thenumber]",$superfecta->get_thenumber(),$scheme_param['Prefix_URL'])));
 
 			if($superfecta->isDebug())
 			{
 				$superfecta->outn("Prefix Url defined ...");
 				if($superfecta->prefix !='')
 				{
-					$superfecta->outn("returned: ".$superfecta->prefix);
+					$superfecta->outn("returned: ".$superfecta->get_Prefix());
 				}
 				else
 				{
@@ -188,7 +188,7 @@ foreach($scheme_name_array as $list) {
 				//$first_caller_id = _utf8_decode($first_caller_id);
 				$callerid = strip_tags($callerid);
 				$callerid = trim ($callerid);
-				if ($superfecta->charsetIA5)
+				if ($superfecta->isCharSetIA5())
 				{
 					$callerid = $superfecta->stripAccents($callerid);
 				}
@@ -202,7 +202,7 @@ foreach($scheme_name_array as $list) {
 			$spam_text = ($superfecta->isSpam()) ? $scheme_param['SPAM_Text'] : '';
 
 			$spam_dest = (!empty($scheme_param['spam_interceptor']) && ($scheme_param['spam_interceptor'] == 'Y')) ? $scheme_param['spam_destination'] : '';
-			$spam_dest = ($superfecta->spam_count >= $scheme_param['SPAM_threshold']) ? $spam_dest : '';
+			$spam_dest = ($superfecta->get_SpamCount() >= $scheme_param['SPAM_threshold']) ? $spam_dest : '';
 			if(!$superfecta->isDebug()) {
 				if($cli) {
                                         $final_data['cid'] = $spam_text." ".$superfecta->prefix.$callerid;
@@ -216,7 +216,7 @@ foreach($scheme_name_array as $list) {
 				    $superfecta->outn("<b>SPAM Call sent to:</b> ".$spam_dest);
 				}
 				$superfecta->out("<b>Returned Result would be: ");
-				$callerid = utf8_encode($spam_text." ".$superfecta->prefix.$callerid);
+				$callerid = utf8_encode($spam_text." ".$superfecta->get_Prefix().$callerid);
 				$superfecta->outn($callerid);
 				$end_time_whole = ($end_time_whole == 0) ? $superfecta->mctime_float() : $end_time_whole;
 				$superfecta->outn("result <img src='images/scrollup.gif'> took ".number_format(($end_time_whole-$start_time_whole),4)." seconds.</b>");
