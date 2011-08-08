@@ -22,15 +22,22 @@ function superfecta_hook_core($viewing_itemid, $target_menuid) {
 		$info = explode("/",$viewing_itemid);
 		$sql = "SELECT scheme FROM superfecta_to_incoming WHERE extension = '".$info[0]."'";
 		$scheme = $db->getOne($sql);
+
+		$first = '<option value="ALL_ALL" {$selected}>ALL</option>';
+		$has_selected = FALSE;
 		foreach($schemes as $data) {
 			if($scheme == $data['source']) {
 				$selected = 'selected';
+				$has_selected = TRUE;
 			} else {
 				$selected = '';
 			}
 			$name = explode("_",$data['source']);
-			$html .= '<option value="'.$data['source'].'" '.$selected.'>'.$name[1].'</option>';
+			$last .= '<option value="'.$data['source'].'" '.$selected.'>'.$name[1].'</option>';
 		}
+		$selected = ($has_selected) ? 'selected' : '';
+		$first = str_replace('{$selected}',$selected,$first);
+		$html .= $first.$last;
 		$html.= '</select>
 		</td></tr>';
 		

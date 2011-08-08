@@ -39,8 +39,8 @@ if(php_sapi_name() == 'cli' && empty($_SERVER['REMOTE_ADDR'])) {
 }
 
 //Die on Scheme unknown
-if(trim($scheme_name_request) == '') {
-	if(!$cli) {
+if((trim($scheme_name_request) == '') OR ($scheme_name_request == 'base_ALL_ALL')) {
+	if((!$cli) OR ($scheme_name_request == 'base_ALL_ALL')) {
 		$sql = 'SELECT `source` FROM `superfectaconfig` WHERE `field` = CONVERT(_utf8 \'sources\' USING latin1) COLLATE latin1_swedish_ci';
 		$data = $db->getAll($sql, array(), DB_FETCHMODE_ASSOC);
 		$i=0;
@@ -205,11 +205,14 @@ foreach($scheme_name_array as $list) {
 			$spam_dest = ($superfecta->get_SpamCount() >= $scheme_param['SPAM_threshold']) ? $spam_dest : '';
 			if(!$superfecta->isDebug()) {
 				if($cli) {
-                                        $final_data['cid'] = $spam_text." ".$superfecta->prefix.$callerid;
-                                        $final_data['destination'] = $spam_dest;
-                                        echo serialize($final_data);
+					if($callerid != '') {
+					    $final_data['cid'] = $spam_text." ".$superfecta->get_Prefix().$callerid;
+					    $final_data['destination'] = $spam_dest;
+					    echo serialize($final_data);
+					    break;
+					}
 				} else {
-					echo $scheme_name.": ".$spam_text." ".$superfecta->prefix.$callerid."<br/>\n";
+					echo $scheme_name.": ".$spam_text." ".$superfecta->get_Prefix().$callerid."<br/>\n";
 				}
 			} else {
 				if(!empty($spam_dest)) {
