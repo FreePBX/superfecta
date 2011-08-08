@@ -159,6 +159,12 @@ if(($usage_mode == 'get caller id') && (($run_param['Get_SPAM_Score'] == 'on') |
 		// Delete the temporary cookie
 		@unlink($temp_cookie_file);
 
+        // Check for Capture Code
+        if(strstr($value, "Please verify your humanity, and forgive the inconvenience"))
+        {
+			die("NumberGuru has blocked searches from this IP.  Please visit the site to solve the captcha first.<br>");
+        }
+        
 		// Check for CNAM lookup
 		if(isset($run_param['Get_Caller_ID_Name']) && $run_param['Get_Caller_ID_Name'] == 'on')
 		{
