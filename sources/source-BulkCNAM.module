@@ -1,0 +1,45 @@
+<?php
+class BulkCNAM extends superfecta_base {
+	function settings() {
+
+		$settings['desc'] = "http://www.bulkcnam.com - This module provides lookups from the AsteriskCNAM.com lookup service.";
+		$settings['param'] = array();
+
+		$source_param = array();
+		$source_param['API_Key']['desc'] = 'API Key gotten from bulkcnam.com';
+		$source_param['API_Key']['type'] = 'text';
+		
+		$settings['source_param'] = $source_param;
+		$settings['version_requirement'] = "3.0";
+
+		return($settings);
+	}
+	
+	function get_caller_id($thenumber,$run_param=array()) {
+		
+		$caller_id="";
+		
+		if( (!$this->IsValidNumber('US',$thenumber)) && (!$this->IsValidNumber('CA',$thenumber)) )
+		{
+			$this->DebugPrint( "Skipping Source - Not a valid US/CAN number: ".$thenumber);
+		}
+		else
+		{
+			$this->DebugPrint( "Searching BulkCNAM ... ");
+			
+			$url="http://cnam.bulkcnam.com/query-simple.php?id=".$run_param['API_Key']."&did=$thenumber";
+	        $sname =  $this->get_url_contents($url);
+	
+	        if (strlen($sname) > 1)
+	        {
+				$caller_id = strip_tags($sname);
+	        }
+	        else
+	        {
+	        	$this->DebugPrint("not found");
+	        }
+		}
+		return($caller_id);
+	}
+	
+}

@@ -12,6 +12,12 @@
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
+		<name>source-BulkCNAM.module</name>
+		<modified>1312932269</modified>
+		<md5>7c12433d5d854ddae810a945c3eb7a56</md5>
+		<version_requirement>3.0</version_requirement>
+	</source>
+	<source>
 		<name>source-Canada411.module</name>
 		<modified>1312683333</modified>
 		<md5>51b9e296f6c96fd40c628329dcd7b70b</md5>
