@@ -2,7 +2,7 @@
 class LocalTel_CH extends superfecta_base {
 	function settings() {
 
-		$settings['desc'] = "http://www.freecnam.org       This data source returns CNAM data listed at FreeCNAM.";
+		$settings['desc'] = "http://local.ch - 	These listings include business and residential data for Switzerland.";
 		$settings['version_requirement'] = "3.0";
 
 		return($settings);
