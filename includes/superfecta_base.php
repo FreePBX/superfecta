@@ -59,6 +59,7 @@ class superfecta_base {
 	}
 
 	function get_caller_id($thenumber,$run_param=array()) {
+		$this->DebugPrint("Searching ". str_replace("_", " ", get_class($this))  ." ...");
 		//Is this the best way to do this?
 		$caller_id = NULL; 
 		return($caller_id);
