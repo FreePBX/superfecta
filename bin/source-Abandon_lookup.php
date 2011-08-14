@@ -2,10 +2,10 @@
 // this file is designed to be used as an include that is part of a loop.
 
 
-// CID Superfecata lookup to stop a lookup from progressing.
+// CID Superfecata lookup to stop a search from progressing.
 
 //  Collect info
-	$source_desc = "Artifically sets the CNAM to a user defined value so that no further lookups will be performed";
+	$source_desc = "Artificially sets the CNAM to a user defined value so that no further lookups will be performed";
 	$source_param['artificial']['desc'] = 'Text string to be used as the CNAM';
 	$source_param['artificial']['type'] = 'text';
 	$source_param['artificial']['default'] = 'Unknown';
