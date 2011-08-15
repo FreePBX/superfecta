@@ -395,8 +395,8 @@ class superfecta_base {
 	  	return $string;
 	}
 	
-	function IsValidNumber($country, $thenumber)
-	{
+	function IsValidNumber($country, $thenumber, &$rPart1=null, &$rPart2=null , &$rPart3=null )
+	{	
 		$number_error = false;
 
 		switch ($country)
@@ -526,6 +526,11 @@ class superfecta_base {
 					$this->DebugPrint( basename(__FILE__).":".__LINE__." Failing ${country} number test" );
 					return false;
 				}
+				
+				// Set the NPA, NXX & Station if passed by reference.
+				if(isset($rPart1)) { $rPart1 = $npa; }
+				if(isset($rPart2)) { $rPart2 = $nxx; }
+				if(isset($rPart3)) { $rPart3 = $station; }
 			} // end US/CA
 			break;
 			

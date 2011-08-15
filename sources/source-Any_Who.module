@@ -14,19 +14,15 @@ class Any_Who extends superfecta_base {
 	function get_caller_id($thenumber,$run_param=array()) 
 	{		
 		$caller_id="";
-		
-		if( (!$this->IsValidNumber('US',$thenumber)) && (!$this->IsValidNumber('CA',$thenumber)) )
+		$npa=""; $nxx=""; $station="";
+				
+		if( (!$this->IsValidNumber('US',$thenumber, $npa, $nxx, $station)) 
+		 && (!$this->IsValidNumber('CA',$thenumber, $npa, $nxx, $station)) )
 		{
 			$this->DebugPrint( "Skipping Source - Not a valid US/CAN number: ".$thenumber);
 		}
 		else
 		{
-			$thenumber = (substr($thenumber,0,1) == 1) ? substr($thenumber,1) : $thenumber;
-
-			$npa = substr($thenumber,0,3);
-			$nxx = substr($thenumber,3,3);
-			$station = substr($thenumber,6,4);
-
 			$this->DebugPrint( "Searching Any Who with (${npa})${nxx}-${station} ... ");
 
 			$url = "http://whitepages.anywho.com/results.php?&qnpa=$npa&qp=".$nxx.$station;
