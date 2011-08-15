@@ -28,7 +28,7 @@ class superfecta_multi extends superfecta_base {
 
 			$res = $this->db->query($query);
 			if (DB::IsError($res)){
-				die("Unable to load child record: " . $res->getMessage() .  "<br>");
+				$this->DebugDie("Unable to load child record: " . $res->getMessage() );
 			}
 			if($row = $res->fetchRow(DB_FETCHMODE_ASSOC)){
 
@@ -41,7 +41,7 @@ class superfecta_multi extends superfecta_base {
 				}
 				$this->single_source = $row['source'];
 			}else{
-				die("Unable to load multifecta child record '".$this->multifecta_id."'");
+				$this->DebugDie("Unable to load multifecta child record '".$this->multifecta_id."'");
 			}
 		}
 	}
@@ -64,7 +64,7 @@ class superfecta_multi extends superfecta_base {
 				";
 		$res2 = $this->db->query($query);
 		if (DB::IsError($res2)){
-			die("Unable to delete old multifecta records: " . $res2->getMessage() .  "<br>");
+			$this->DebugDie("Unable to delete old multifecta records: " . $res2->getMessage() );
 		}
 
 		// Prepare for launching children.
@@ -86,7 +86,7 @@ class superfecta_multi extends superfecta_base {
 		// Create the parent record
 		$res2 = $this->db->query($query);
 		if (DB::IsError($res2)){
-			die("Unable to create parent record: " . $res2->getMessage() .  "<br>");
+			$this->DebugDie("Unable to create parent record: " . $res2->getMessage() );
 		}
 		// (jkiel - 01/04/2011) Get id of the parent record 
 		// (jkiel - 01/04/2011) [Insert complaints on Pear DB not supporting a last_insert_id method here]
@@ -116,11 +116,11 @@ class superfecta_multi extends superfecta_base {
 			// Create the child record
 			$res2 = $this->db->query($query);
 			if (DB::IsError($res2)){
-				die("Unable to create child record: " . $res2->getMessage() .  "<br>");
+				$this->DebugDie("Unable to create child record: " . $res2->getMessage() );
 			}
 			if($superfecta_mf_child_id = (($this->amp_conf["AMPDBENGINE"] == "sqlite3") ? sqlite_last_insert_rowid($this->db->connection) : mysql_insert_id($this->db->connection))){
 				if($this->isDebug()){
-					$this->outn("Spawning child ".$superfecta_mf_child_id.":". $data);
+					$this->DebugPrint("Spawning child ".$superfecta_mf_child_id.":". $data);
 					exec('/usr/bin/php /var/www/html/admin/modules/superfecta/includes/callerid.php -s '.$this->scheme_name.' -n '.$this->thenumber_orig.' -m ' . $superfecta_mf_child_id . ' -r '.$data.' > log-'.$superfecta_mf_child_id.'.log 2>&1 &');
 				} else {
 					exec('/usr/bin/php /var/www/html/admin/modules/superfecta/includes/callerid.php -s '.$this->scheme_name.' -n '.$this->thenumber_orig.' -d -m ' . $superfecta_mf_child_id . ' -r '.$data.' > /dev/null 2>&1 &');
@@ -145,7 +145,7 @@ class superfecta_multi extends superfecta_base {
 		while($loop_limit && (($loop_cur_time - $loop_start_time)<=$loop_time_limit)){
 			$res2 = $this->db->query($query);
 			if (DB::IsError($res2)){
-				die("Unable to search for winning child: " . $res2->getMessage() .  "<br>");
+				$this->DebugDie("Unable to search for winning child: " . $res2->getMessage() );
 			}
 			$winning_child_id = false;
 			$last_priority = 0;
@@ -317,7 +317,7 @@ class superfecta_multi extends superfecta_base {
 						";
 				$res = $this->db->query($query);
 				if (DB::IsError($res)){
-					die("Unable to update child: " . $res->getMessage() .  "<br>");
+					$this->DebugDie("Unable to update child: " . $res->getMessage() );
 				}
 			} else {
 				$this->DebugPrint( "Function 'get_caller_id' does not exist!" );

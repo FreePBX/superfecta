@@ -44,7 +44,7 @@ class superfecta_multi extends superfecta_base {
 				";
 		$res2 = $this->db->query($query);
 		if (DB::IsError($res2)){
-			die("Unable to delete old multifecta records: " . $res2->getMessage() .  "<br>");
+			$this->DebugDie("Unable to delete old multifecta records: " . $res2->getMessage() .  "<br>");
 		}
 
 		// Prepare for launching children.
@@ -66,7 +66,7 @@ class superfecta_multi extends superfecta_base {
 		// Create the parent record
 		$res2 = $this->db->query($query);
 		if (DB::IsError($res2)){
-			die("Unable to create parent record: " . $res2->getMessage() .  "<br>");
+			$this->DebugDie("Unable to create parent record: " . $res2->getMessage() .  "<br>");
 		}
 		// (jkiel - 01/04/2011) Get id of the parent record 
 		// (jkiel - 01/04/2011) [Insert complaints on Pear DB not supporting a last_insert_id method here]
@@ -74,11 +74,9 @@ class superfecta_multi extends superfecta_base {
 		if($superfecta_mf_id = (($this->amp_conf["AMPDBENGINE"] == "sqlite3") ? sqlite_last_insert_rowid($this->db->connection) : mysql_insert_id($this->db->connection)))
 		{
 			// We have the parent record id
-			if($this->debug) {
-				$this->outn("Multifecta Parent ID:".$superfecta_mf_id."<br>\n");
-			}
+			$this->DebugPrint("Multifecta Parent ID:".$superfecta_mf_id."\n");
 		}else{
-			die("Unable to get parent record id<br>");
+			$this->DebugDie("Unable to get parent record id");
 		}
 		$sources = explode(",",$this->scheme_param['sources']);
 		$multifecta_count = 1;
@@ -106,13 +104,13 @@ class superfecta_multi extends superfecta_base {
 				// Create the child record
 				$res2 = $this->db->query($query);
 				if (DB::IsError($res2)){
-					die("Unable to create child record: " . $res2->getMessage() .  ":$pid<br>");
+					$this->DebugDie("Unable to create child record: " . $res2->getMessage() .  ":{$pid}");
 				}
 				$pid_list[$multifecta_count] = $pid;
 			} else {
 				 $this->multifecta_id = getmypid();
 			     //$this->run_child();
-				 die();
+				 $this->DebugDie("");
 			}
 			$multifecta_count++;
 		}
@@ -125,9 +123,8 @@ class superfecta_multi extends superfecta_base {
 			$notfinished = FALSE;
 		}
 		
-		if($this->debug){
-			$this->outn("Parent took ".number_format((mctime_float()-$multifecta_start_time),4)." seconds to spawn children.<br>\n");
-		}
+		$this->DebugPrint("Parent took ".number_format((mctime_float()-$multifecta_start_time),4)." seconds to spawn children.\n");
+
 		$query = "SELECT superfecta_mf_child_id, priority, cnam, spam_text, spam, source, cached
 				FROM asterisk.superfecta_mf_child
 				WHERE superfecta_mf_id = ".$this->db->quoteSmart($superfecta_mf_id)."
@@ -146,7 +143,7 @@ class superfecta_multi extends superfecta_base {
 		while($loop_limit && (($loop_cur_time - $loop_start_time)<=$loop_time_limit)){
 			$res2 = $this->db->query($query);
 			if (DB::IsError($res2)){
-				die("Unable to search for winning child: " . $res2->getMessage() .  "<br>");
+				$this->DebugDie("Unable to search for winning child: " . $res2->getMessage() );
 			}
 			$winning_child_id = false;
 			$last_priority = 0;
@@ -178,9 +175,7 @@ class superfecta_multi extends superfecta_base {
 				){
 					if((!$multifecta_timeout_hit) && (($loop_cur_time - $loop_start_time)>$loop_priority_time_limit)){
 						$multifecta_timeout_hit = true;
-						if($this->debug){
-							$this->outn("Multifecta Timeout reached.  Taking first child with a CNAM result.");
-						}
+						$this->DebugPrint("Multifecta Timeout reached.  Taking first child with a CNAM result.");
 					}
 					// Record the results of any spam sources
 					// We dont break out of the loop for spam though.  We'll just keep
@@ -211,7 +206,7 @@ class superfecta_multi extends superfecta_base {
 				usleep(50000); // sleep for 1/20 second. Short delay, but should help from taxing the system too much.
 			}else{
 				if($this->debug){
-					$this->outn("Maximum timeout reached.  Will not wait for any more children.");
+					$this->DebugPrint("Maximum timeout reached.  Will not wait for any more children.");
 					break;
 				}
 			}
@@ -246,17 +241,17 @@ class superfecta_multi extends superfecta_base {
 				";
 		$res2 = $this->db->query($query);
 					
-		if($this->debug && $loop_cur_time){
-			$this->outn("Parent waited " . number_format(($loop_cur_time - $loop_start_time),4) . " seconds for children's results.");
+		if($loop_cur_time){
+			$this->DebugPrint("Parent waited " . number_format(($loop_cur_time - $loop_start_time),4) . " seconds for children's results.");
 		}
-		if($this->debug && $first_caller_id){
-			$this->outn("Winning CNAM child source ".$winning_child_id.":". $winning_source.", with: ".$first_caller_id);
+		if($first_caller_id){
+			$this->DebugPrint("Winning CNAM child source ".$winning_child_id.":". $winning_source.", with: ".$first_caller_id);
 		}
-		if($this->debug && $spam_text){
-			$this->outn("Winning SPAM child source ".$spam_child_id.":". $spam_source);
+		if($spam_text){
+			$this->DebugPrint("Winning SPAM child source ".$spam_child_id.":". $spam_source);
 		}
-		if($this->debug && (!$first_caller_id) && (!$spam_text)){
-			$this->outn("No winning SPAM or CNAM children found in allotted time.");
+		if((!$first_caller_id) && (!$spam_text)){
+			$this->DebugPrint("No winning SPAM or CNAM children found in allotted time.");
 			return(FALSE);
 		}	
 		return($first_caller_id);		
@@ -271,7 +266,7 @@ class superfecta_multi extends superfecta_base {
 
 		$res = $this->db->query($query);
 		if (DB::IsError($res)){
-			die("Unable to load child record: " . $res->getMessage() .  "<br>");
+			$this->DebugDie("Unable to load child record: " . $res->getMessage() .  "<br>");
 		}
 		if($row = $res->fetchRow(DB_FETCHMODE_ASSOC)){
 			print_r($row);
@@ -284,7 +279,7 @@ class superfecta_multi extends superfecta_base {
 			}
 			$this->single_source = $row['source'];
 		}else{
-			die("Unable to load multifecta child record '".$this->multifecta_id."'");
+			$this->DebugDie("Unable to load multifecta child record '".$this->multifecta_id."'");
 		}
 		
 		$start_time = mctime_float();
@@ -313,10 +308,7 @@ class superfecta_multi extends superfecta_base {
 				}
 				if(($this->first_caller_id == '') && ($caller_id != ''))
 				{
-					if($this->debug)
-					{
-						echo "<br/>Returned Result was: ".$caller_id;
-					}
+					$this->DebugPrint ("<br/>Returned Result was: ".$caller_id);
 				}
 				$end_time_whole = mctime_float();
 				
@@ -344,13 +336,13 @@ class superfecta_multi extends superfecta_base {
 						";
 				$res = $this->db->query($query);
 				if (DB::IsError($res)){
-					die("Unable to update child: " . $res->getMessage() .  "<br>");
+					$this->DebugDie("Unable to update child: " . $res->getMessage() .  "<br>");
 				}
-			} elseif($this->debug) {
-				print "Function 'get_caller_id' does not exist!<br>\n";
+			} else {
+				$this->DebugPrint( "Function 'get_caller_id' does not exist!\n");
 			}
-		} elseif($this->debug) {
-			print "Unable to find source '".$this->source."' skipping..<br\>\n";
+		} else {
+			$this->DebugPrint( "Unable to find source '".$this->source."' skipping..\n");
 		}
 	}
 	
@@ -358,10 +350,8 @@ class superfecta_multi extends superfecta_base {
 
 		$sources = explode(",",$this->scheme_param['sources']);
 		
-		if($this->debug)
-		{
-			$this->outn("Post CID retrieval processing.");
-		}	
+		$this->DebugPrint("Post CID retrieval processing.");
+
 		foreach($sources as $source_name)
 		{
 			// Run the source
