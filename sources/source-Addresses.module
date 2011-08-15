@@ -1,0 +1,48 @@
+<?php
+class Addresses extends superfecta_base {
+	function settings() {
+
+		$settings['desc'] = "http://phonenumbers.addresses.com - This will return only residential listings, business listings will not be returned.";
+		
+		$settings['param'] = array();
+		$settings['source_param'] = array();
+		$settings['version_requirement'] = "3.0";
+
+		return($settings);
+	}
+	
+	function get_caller_id($thenumber,$run_param=array()) 
+	{		
+		$caller_id="";
+		$npa=""; $nxx=""; $station="";
+				
+		if( (!$this->IsValidNumber('US',$thenumber, $npa, $nxx, $station)) 
+		 && (!$this->IsValidNumber('CA',$thenumber, $npa, $nxx, $station)) )
+		{
+			$this->DebugPrint( "Skipping Source - Not a valid US/CAN number: ".$thenumber);
+		}
+		else
+		{
+			$this->DebugPrint( "Searching Addresses White Pages with (${npa})${nxx}-${station} ... ");
+
+			$url="http://phonenumbers.addresses.com/results.php?ReportType=33&qfilter[pro]=on&qi=0&qk=10&qnpa=$npa&qp=".$nxx.$station;
+			$value = $this->get_url_contents($url);
+	
+			$this->DebugPrint( "URL = ${url} ... ");
+			$this->DebugDie("Need to write a new regex to parse web site ... bye ...");
+			
+			// If we found a match, return it
+			if(strlen($value) > 1)
+			{
+				$caller_id = strip_tags($sname);
+			}
+			else
+			{
+				$this->DebugPrint( "not found");
+			}
+				
+		}
+		return($caller_id);
+	}
+	
+}

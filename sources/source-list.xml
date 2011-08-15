@@ -1,8 +1,14 @@
 <data>
 	<source>
+		<name>source-Addresses.module</name>
+		<modified>1313438648</modified>
+		<md5>3156900376787808024a1cc5378cbfd7</md5>
+		<version_requirement>3.0</version_requirement>
+	</source>
+	<source>
 		<name>source-Any_Who.module</name>
-		<modified>1312179035</modified>
-		<md5>0caf22da7006163204428045fdcd2aaa</md5>
+		<modified>1313435987</modified>
+		<md5>18100e092bd3bca3484067b4ff7f7457</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
