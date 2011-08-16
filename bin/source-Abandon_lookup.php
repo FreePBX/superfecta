@@ -18,9 +18,9 @@ if($usage_mode == 'get caller id')
 
 	if($debug)
 	{
-		print "<br/>Setting CNAM to:".$run_param['artificial']." ...";
+		print "<br/>Setting CNAM to:".$run_param['Artificial_CNAM']." ...";
 	}
 
 
-	$caller_id = trim($run_param['artificial']);
+	$caller_id = trim($run_param['Artificial_CNAM']);
 }
