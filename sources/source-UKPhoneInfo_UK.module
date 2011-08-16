@@ -11,10 +11,7 @@ class UKPhoneInfo_UK extends superfecta_base {
 	}
 	
 	function get_caller_id($thenumber,$run_param=array()) {
-		//This debug variable allows simple copy and past of most sources.
-		$debug = $this->debug;
-
-		$caller_id = "";		
+		$caller_id = ""; $name="";		
 
 		// Validate number
 		if(!$this->IsValidNumber('UK', $thenumber))
@@ -25,24 +22,21 @@ class UKPhoneInfo_UK extends superfecta_base {
 		{
 			$this->DebugPrint( 'Searching UKPhoneInfo ...');
 
-			// By default, the found name is empty
-			$sname = "";
-	
-			$url = "http://www.ukphoneinfo.com/search.php?Submit=Submit&d=nl";
+			$url = "http://www.ukphoneinfo.com/search.php?Submit=Submit&d=nl";			
+			$url .= "&GNG=" . $thenumber;
 			
-			$url = $url . "&GNG=" . $thenumber;
 			$sresult = $this->get_url_contents($url);
 			
-			if(preg_match_all('=<h2[^>]*>(.*)</h2>=siU', $sresult, $sname))
+			if($this->SearchURL($url, "=<h2[^>]*>(.*)</h2>=siU", $match))
 			{
-				if (is_array($sname) && count($sname[1]) > 0)
-				{
-					$sname = $sname[1][0];
+				if(isset($match[1]) && strlen($match[1])){
+					$name = trim(strip_tags($match[1]));
 				}
-				
-				if ($sname != "")
+
+				// If we found a match, return it
+				if(strlen($name) > 1)
 				{
-					$caller_id = strip_tags($sname);			
+					$caller_id = $name;
 				}
 			}
 			else
