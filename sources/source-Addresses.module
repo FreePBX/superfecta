@@ -13,7 +13,7 @@ class Addresses extends superfecta_base {
 	
 	function get_caller_id($thenumber,$run_param=array()) 
 	{		
-		$caller_id="";
+		$caller_id=""; $name="";
 		$npa=""; $nxx=""; $station="";
 				
 		if( (!$this->IsValidNumber('US',$thenumber, $npa, $nxx, $station)) 
@@ -27,14 +27,22 @@ class Addresses extends superfecta_base {
 
 			$url="http://phonenumbers.addresses.com/results.php?ReportType=33&qfilter[pro]=on&qi=0&qk=10&qnpa=$npa&qp=".$nxx.$station;
 			$value = $this->get_url_contents($url);
-	
-			$this->DebugPrint( "URL = ${url} ... ");
-			$this->DebugDie("Need to write a new regex to parse web site ... bye ...");
-			
+
+			// Grab the first result that matches our phone number
+			$pattern = "/searchFName=(.*)&searchLName=(.*)&/U";
+			preg_match($pattern, $value, $match);
+
+			if(isset($match[1]) && strlen($match[1])){
+				$name = trim(strip_tags($match[1]));				
+				if(isset($match[2]) && strlen($match[2])){
+					$name .= " ".trim(strip_tags($match[2]));
+				}
+			}
+
 			// If we found a match, return it
 			if(strlen($value) > 1)
 			{
-				$caller_id = strip_tags($sname);
+				$caller_id = strip_tags($name);
 			}
 			else
 			{

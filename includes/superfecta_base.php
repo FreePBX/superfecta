@@ -414,7 +414,6 @@ class superfecta_base {
 					}
 					else
 					{
-						$this->DebugPrint( basename(__FILE__).":".__LINE__." Failing ${country} number test" );
 						return false;
 					}
 		
@@ -434,7 +433,6 @@ class superfecta_base {
 						}			
 						else
 						{
-							$this->DebugPrint( basename(__FILE__).":".__LINE__." Failing ${country} number test" );
 							return false;
 						}
 					}
@@ -443,7 +441,6 @@ class superfecta_base {
 				// number
 			    if(strlen($thenumber) < 10)
 				{
-					$this->DebugPrint( basename(__FILE__).":".__LINE__." Failing ${country} number test" );
 					return false;
 				}
 
@@ -523,7 +520,6 @@ class superfecta_base {
 						
 				if(!$TFnpa && ((!$validnpaUS) && (!$validnpaCAN)))
 				{
-					$this->DebugPrint( basename(__FILE__).":".__LINE__." Failing ${country} number test" );
 					return false;
 				}
 				
@@ -554,7 +550,6 @@ class superfecta_base {
 							}			
 							else
 							{
-								$this->DebugPrint( basename(__FILE__).":".__LINE__." Failing ${country} number test" );
 								return false;
 							}
 						}
@@ -572,7 +567,6 @@ class superfecta_base {
 			
 			    if(strlen($thenumber) < 8)
 				{
-					$this->DebugPrint( basename(__FILE__).":".__LINE__." Failing ${country} number test" );
 					return false;
 				}	
 						
@@ -696,7 +690,6 @@ class superfecta_base {
 
 					if((!$validSTD) && (!$validNGN))
 					{
-						$this->DebugPrint( basename(__FILE__).":".__LINE__." Failing ${country} number test" );
 						return false;
 					}
 				}
