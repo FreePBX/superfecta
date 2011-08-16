@@ -2,7 +2,7 @@
 class superfecta_base {
 	protected $cli = FALSE;
 	protected $spam = false;
-	protected $debug = FALSE;
+	protected $debug = 0; // Default to OFF
 	protected $thenumber;
 	protected $db; //The database
 	protected $astman; //Asterisk Manager Object
@@ -24,7 +24,7 @@ class superfecta_base {
 		
 	function isCLI() { return $this->cli; }
 	function isSpam() { return $this->spam; }
-	function isDebug() { return $this->debug; }
+	function isDebug() { return ((intval($this->debug) > 0) ? true : false); }
 	function isCharSetIA5() { return $this->charsetIA5; }
 	function isCacheFound() { return $this->cache_found; }
 	 
@@ -38,7 +38,7 @@ class superfecta_base {
 
 	function setCLI($bValue) { $this->cli = $bValue; }
 	function setSpam($bValue) { $this->spam = $bValue; }
-	function setDebug($bValue) { $this->debug = $bValue; }
+	function setDebug($nLevel) { $this->debug = ((intval($nLevel) > 0) ? intval($nLevel) : 0); }
 	function set_thenumber($sValue) { $this->thenumber = $sValue; }
 	function set_CurlTimeout($sValue) { $this->curl_timeout = $sValue; }
 	function set_Prefix($sValue) { $this->prefix = $sValue; }
@@ -221,7 +221,7 @@ class superfecta_base {
 
 	function match_pattern($pattern, $number)
 	{
-		global $debug;
+// WHY		global $debug;
 		$pattern = trim($pattern);
 		$p_array = str_split($pattern);
 		$tmp = "";
@@ -1065,14 +1065,14 @@ class superfecta_base {
         return false;
     }
 	
-	function DebugEcho($string)
+	function DebugEcho($string, $level=1)
 	{
-		if($this->debug){ $this->out("{$string}"); }	
+		if((intval($this->debug) >= intval($level))){ $this->out("{$string}"); }	
 	}
 	
-	function DebugPrint($string)
+	function DebugPrint($string, $level=1)
 	{
-		if($this->debug){ $this->outn("{$string}"); }	
+		if((intval($this->debug) >= intval($level))){ $this->outn("{$string}"); }	
 	}
 
 	function DebugDie($sError)

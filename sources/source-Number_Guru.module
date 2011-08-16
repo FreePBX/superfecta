@@ -104,6 +104,8 @@ class Number_Guru extends superfecta_base {
 					if(isset($match[1]) && strlen($match[1]))
 					{
 						$score = $match[1];
+						$this->DebugPrint( "SPAM score = {$score}", 3);
+						$this->DebugPrint( "Threshold = " . (isset($run_param['Spam_Threshold']) ? $run_param['Spam_Threshold'] : 0), 3);
 						if(isset($run_param['Spam_Threshold']) && $score>=$run_param['Spam_Threshold'])
 						{
 							$this->spam = true;	// Flag as SPAM

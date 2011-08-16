@@ -30,6 +30,7 @@ class Google_Maps_UK extends superfecta_base {
 	
 			// We'll be searching google maps
 			$url = "http://maps.google.co.uk/m?q=%22{$thenumber}%22";
+			$this->DebugPrint("URL={$url}", 2);
 			$value = $this->get_url_contents($url);
 	
 			// Grab the first result from google maps that matches our phone number

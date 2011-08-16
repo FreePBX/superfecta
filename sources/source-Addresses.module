@@ -26,6 +26,7 @@ class Addresses extends superfecta_base {
 			$this->DebugPrint( "Searching Addresses White Pages with (${npa})${nxx}-${station} ... ");
 
 			$url="http://phonenumbers.addresses.com/results.php?ReportType=33&qfilter[pro]=on&qi=0&qk=10&qnpa=$npa&qp=".$nxx.$station;
+			$this->DebugPrint("URL={$url}", 2);
 			$value = $this->get_url_contents($url);
 
 			// Grab the first result that matches our phone number
