@@ -1,8 +1,8 @@
 <data>
 	<source>
 		<name>source-Addresses.module</name>
-		<modified>1313522000</modified>
-		<md5>c2ed860d06064c94fdf4cae86a16cd34</md5>
+		<modified>1313524945</modified>
+		<md5>7297fb070681c9154127bbef0e527448</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
@@ -37,8 +37,8 @@
 	</source>
 	<source>
 		<name>source-Google_Maps_UK.module</name>
-		<modified>1313520376</modified>
-		<md5>1eedfa39d034cfaccd08669951a84e79</md5>
+		<modified>1313524743</modified>
+		<md5>39e63ea768b2d5389a1a8ebd19abd7fd</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
@@ -55,8 +55,8 @@
 	</source>
 	<source>
 		<name>source-LocalTel_CH.module</name>
-		<modified>1313097336</modified>
-		<md5>3faeef9af5a1028b9b5fbeb053b45a3e</md5>
+		<modified>1313525086</modified>
+		<md5>6aa482d7c4f9937f43320fb76cf91dfa</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>

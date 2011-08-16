@@ -26,12 +26,10 @@ class Addresses extends superfecta_base {
 			$this->DebugPrint( "Searching Addresses White Pages with (${npa})${nxx}-${station} ... ");
 
 			$url="http://phonenumbers.addresses.com/results.php?ReportType=33&qfilter[pro]=on&qi=0&qk=10&qnpa=$npa&qp=".$nxx.$station;
-			$this->DebugPrint("URL={$url}", 2);
-			$value = $this->get_url_contents($url);
-
 			// Grab the first result that matches our phone number
 			$pattern = "/searchFName=(.*)&searchLName=(.*)&/U";
-			preg_match($pattern, $value, $match);
+
+			$this->SearchURL($url, $pattern, $match);
 
 			if(isset($match[1]) && strlen($match[1])){
 				$name = trim(strip_tags($match[1]));				
@@ -41,7 +39,7 @@ class Addresses extends superfecta_base {
 			}
 
 			// If we found a match, return it
-			if(strlen($value) > 1)
+			if(strlen($name) > 1)
 			{
 				$caller_id = strip_tags($name);
 			}

@@ -1108,4 +1108,11 @@ class superfecta_base {
 		
 		return (($name == str_ireplace($key_words,'',$name)) ? false : true);
 	}
+	
+	function SearchURL($url, $pattern, &$match)
+	{
+		$this->DebugPrint("Search URL={$url}", 2);
+		$value = $this->get_url_contents($url);
+		return preg_match($pattern, $value, $match);
+	}
 }
