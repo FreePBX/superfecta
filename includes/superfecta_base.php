@@ -222,7 +222,6 @@ class superfecta_base {
 
 	function match_pattern($pattern, $number)
 	{
-// WHY		global $debug;
 		$pattern = trim($pattern);
 		$p_array = str_split($pattern);
 		$tmp = "";
@@ -332,7 +331,7 @@ class superfecta_base {
 		if($error){
 			// If we had any error, report them
 			$match = false;
-			if($debug){print $error." - position $i<br>\n";}
+			$this->DebugPrint( $error." - position $i<br>\n" );
 		}else{
 			// Else try out the regular expressions we built
 			if(isset($remove)){
