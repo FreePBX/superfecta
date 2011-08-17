@@ -151,9 +151,9 @@ class superfecta_base {
 		}
 
 		$ret = trim(curl_exec($crl));
-		if(curl_error($crl) && $this->debug)
+		if(curl_error($crl))
 		{
-			print ' '.curl_error($crl).' ';
+			$this->DebugPrint(" ".curl_error($crl)." ");
 		}
 
 		//if debug is turned on, return the error number if the page fails.
@@ -1067,17 +1067,17 @@ class superfecta_base {
 	
 	function DebugEcho($string, $level=1)
 	{
-		if($this->isDebug($level)){ $this->out("{$string}"); }	
+		if($this->isDebug($level)){ $this->out($string); }	
 	}
 	
 	function DebugPrint($string, $level=1)
 	{
-		if($this->isDebug($level)){ $this->outn("{$string}"); }	
+		if($this->isDebug($level)){ $this->outn($string); }	
 	}
 
 	function DebugDie($sError)
 	{
-		if($this->isDebug() && (!$this->cli))
+		if($this->isDebug(2) && (!$this->cli))
 		{
 		    echo "<hr /><div><strong>".$sError."</strong><br /><table border='1'>";
 		    $sOut=""; $aCallstack=debug_backtrace();
