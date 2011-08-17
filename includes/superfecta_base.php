@@ -24,7 +24,7 @@ class superfecta_base {
 		
 	function isCLI() { return $this->cli; }
 	function isSpam() { return $this->spam; }
-	function isDebug() { return ((intval($this->debug) > 0) ? true : false); }
+	function isDebug($level=1) { return ((intval($this->debug) >= intval($level)) ? true : false); }
 	function isCharSetIA5() { return $this->charsetIA5; }
 	function isCacheFound() { return $this->cache_found; }
 	 
@@ -35,6 +35,7 @@ class superfecta_base {
 	function get_DB() { return $this->db; }
 	function get_AsteriskManager() { return $this->astman; }
 	function get_SpamCount() { return $this->spam_count; }
+	function get_DebugLevel() { return intval($this->debug); }
 
 	function setCLI($bValue) { $this->cli = $bValue; }
 	function setSpam($bValue) { $this->spam = $bValue; }
@@ -1067,17 +1068,17 @@ class superfecta_base {
 	
 	function DebugEcho($string, $level=1)
 	{
-		if((intval($this->debug) >= intval($level))){ $this->out("{$string}"); }	
+		if($this->isDebug($level)){ $this->out("{$string}"); }	
 	}
 	
 	function DebugPrint($string, $level=1)
 	{
-		if((intval($this->debug) >= intval($level))){ $this->outn("{$string}"); }	
+		if($this->isDebug($level)){ $this->outn("{$string}"); }	
 	}
 
 	function DebugDie($sError)
 	{
-		if($this->debug && (!$this->cli))
+		if($this->isDebug() && (!$this->cli))
 		{
 		    echo "<hr /><div><strong>".$sError."</strong><br /><table border='1'>";
 		    $sOut=""; $aCallstack=debug_backtrace();

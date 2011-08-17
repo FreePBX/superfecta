@@ -108,7 +108,11 @@ foreach($scheme_name_array as $list) {
 	//We only want to run all of this if it's a parent-multifecta or the original code (single-fecta), No need to run this for every child
 	if(($superfecta->isDebug()) && (($superfecta->type == 'SUPER') || (($superfecta->type == 'MULTI') && ($superfecta->multi_type == 'PARENT')))){
 		// If debugging, report all errors
-		error_reporting(E_ALL | E_NOTICE); // -1 was not letting me see the wood for the trees.
+		if($superfecta->isDebug(3)){
+			error_reporting(E_ALL | E_NOTICE | E_STRICT); 
+		} else {
+			error_reporting(E_ALL | E_NOTICE); // -1 was not letting me see the wood for the trees.
+		}
 		ini_set('display_errors', '1');
 		$superfecta->outn("<strong>Debug is on</strong>");
 		$superfecta->outn("<strong>The Original Number: </strong>". $superfecta->thenumber_orig);
