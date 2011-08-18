@@ -1,4 +1,9 @@
 <?php
+
+defined('DEBUG_INFO') or define('DEBUG_INFO', 1);
+defined('DEBUG_WARN') or define('DEBUG_WARN', 2);
+defined('DEBUG_ALL') or define('DEBUG_ALL', 3);
+
 class superfecta_base {
 	protected $cli = FALSE;
 	protected $spam = false;
@@ -24,7 +29,7 @@ class superfecta_base {
 		
 	function isCLI() { return $this->cli; }
 	function isSpam() { return $this->spam; }
-	function isDebug($level=1) { return ((intval($this->debug) >= intval($level)) ? true : false); }
+	function isDebug($level=DEBUG_INFO) { return ((intval($this->debug) >= intval($level)) ? true : false); }
 	function isCharSetIA5() { return $this->charsetIA5; }
 	function isCacheFound() { return $this->cache_found; }
 	 
@@ -1065,19 +1070,19 @@ class superfecta_base {
         return false;
     }
 	
-	function DebugEcho($string, $level=1)
+	function DebugEcho($string, $level=DEBUG_INFO)
 	{
 		if($this->isDebug($level)){ $this->out($string); }	
 	}
 	
-	function DebugPrint($string, $level=1)
+	function DebugPrint($string, $level=DEBUG_INFO)
 	{
 		if($this->isDebug($level)){ $this->outn($string); }	
 	}
 
 	function DebugDie($sError)
 	{
-		if($this->isDebug(2) && (!$this->cli))
+		if($this->isDebug(DEBUG_WARN) && (!$this->cli))
 		{
 		    echo "<hr /><div><strong>".$sError."</strong><br /><table border='1'>";
 		    $sOut=""; $aCallstack=debug_backtrace();
@@ -1111,7 +1116,7 @@ class superfecta_base {
 	
 	function SearchURL($url, $pattern, &$match)
 	{
-		$this->DebugPrint("Search URL={$url}", 2);
+		$this->DebugPrint("Search URL={$url}", DEBUG_WARN);
 		$value = $this->get_url_contents($url);
 		return preg_match($pattern, $value, $match);
 	}
