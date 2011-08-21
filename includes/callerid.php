@@ -212,6 +212,7 @@ foreach($scheme_name_array as $list) {
 					    $final_data['cid'] = $spam_text." ".$superfecta->get_Prefix().$callerid;
 					    $final_data['destination'] = $spam_dest;
 					    echo serialize($final_data);
+                                            //This takes us out of the loop so that we don't get multiple returned results like: AndrewNAGY,ANDREWAndrewWIRELESS CALLER
 					    break;
 					}
 				} else {
@@ -227,6 +228,7 @@ foreach($scheme_name_array as $list) {
 				$superfecta->outn($callerid);
 				$end_time_whole = ($end_time_whole == 0) ? $superfecta->mctime_float() : $end_time_whole;
 				$superfecta->outn("result <img src='images/scrollup.gif'> took ".number_format(($end_time_whole-$start_time_whole),4)." seconds.</b>");
+                                $superfecta->outn("<hr>");
 			}
 		}
 	} elseif(($superfecta->type == 'MULTI') && ($superfecta->multi_type == 'CHILD')) {
