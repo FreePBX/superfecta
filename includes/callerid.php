@@ -31,7 +31,8 @@ if(php_sapi_name() == 'cli' && empty($_SERVER['REMOTE_ADDR'])) {
 	}
 } else {
 	$cli = false;
-	$scheme_name_request = "base_".(isset($_REQUEST['scheme'])) ? trim($_REQUEST['scheme']) : '';
+        $_REQUEST['scheme'] = str_replace('base_', '', $_REQUEST['scheme']);
+	$scheme_name_request = (isset($_REQUEST['scheme'])) ? "base_".trim($_REQUEST['scheme']) : '';
         $debug = isset($_REQUEST['debug']) ? $_REQUEST['debug'] : 0;
 	$thenumber_orig = (isset($_REQUEST['thenumber'])) ? trim($_REQUEST['thenumber']) : '';
 	$DID = (isset($_REQUEST['DID'])) ? trim($_REQUEST['DID']) : '';
