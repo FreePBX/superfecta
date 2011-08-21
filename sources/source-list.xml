@@ -96,6 +96,12 @@
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
+		<name>source-Telco_Data.module</name>
+		<modified>1313962196</modified>
+		<md5>7805f9dd07ebbd29604b5aab85fd8028</md5>
+		<version_requirement>3.0</version_requirement>
+	</source>
+	<source>
 		<name>source-Telepest_UK.module</name>
 		<modified>1311510039</modified>
 		<md5>b12c691bc8e912e142957e67e63fbf1d</md5>
