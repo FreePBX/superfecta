@@ -30,6 +30,7 @@ class superfecta_base {
 	function isCLI() { return $this->cli; }
 	function isSpam() { return $this->spam; }
 	function isDebug($level=DEBUG_INFO) { return ((intval($this->debug) >= intval($level)) ? true : false); }
+        function getDebug() { return $this->debug; }
 	function isCharSetIA5() { return $this->charsetIA5; }
 	function isCacheFound() { return $this->cache_found; }
 	 

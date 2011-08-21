@@ -332,12 +332,12 @@ if($scheme != "")
 					</form>
 				</td>
 				<td valign="top">
-					<form name="debug_form" action="javascript:Ht_debug(document.forms.debug_form.thenumber.value,'.$did_test_script.'document.forms.debug_form.Allscheme.checked);">
+					<form name="debug_form" action="javascript:Ht_debug(document.forms.debug_form.thenumber.value,'.$did_test_script.'document.forms.debug_form.Allscheme.checked,document.forms.debug_form.debug.value);">
 						<p>Test a phone number against the selected sources.<br>
 						'.$did_test_html.'
 						<a href="javascript:return(false);" class="info">Phone Number:<span>Phone number to test this scheme against.</span></a> <input type="text" size="15" maxlength="20" name="thenumber"> <input type="submit" value="Debug"><br>
 						<font size=2><input type="checkbox" name="Allscheme" value="All">
-						<a href="javascript:return(false);" class="info">Test all CID schemes<span>When enabled, the debug function will test the number entered against all of the configured CID schemes.<br>When disabled, debug only checks up to the first scheme that provides positive results.</span></a></font></p>
+						<a href="javascript:return(false);" class="info">Test all CID schemes<span>When enabled, the debug function will test the number entered against all of the configured CID schemes.<br>When disabled, debug only checks up to the first scheme that provides positive results.</span></a> <br/>Debug Level:<select name="debug" id="debug_level"><option value="1">INFO</option><option value="2">WARN</option><option value="3">ALL</option></select></font></p>
 					</form>
 					<div id="debug" style="background-color: #E0E0E0; width:100%"></div>
 				</td>
@@ -483,12 +483,12 @@ function Ht_Generate_List(first_run,scheme)
 	toggleInterceptor();
 }
 
-function Ht_debug(thenumber,testdid,checkall)
+function Ht_debug(thenumber,testdid,checkall,debuglevel)
 {
 	thenumber = thenumber || "";
 	testdid = testdid || "";
 	checkall = checkall || false;
-	var poststr = "debug=yes&thenumber=" + thenumber + "&testdid=" + testdid;
+	var poststr = "debug=" + debuglevel + "&thenumber=" + thenumber + "&testdid=" + testdid;
 	if(!checkall)
 	{
 		poststr = poststr + "&scheme=<?php print $scheme ?>";

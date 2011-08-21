@@ -33,7 +33,7 @@ if(php_sapi_name() == 'cli' && empty($_SERVER['REMOTE_ADDR'])) {
 } else {
 	$cli = false;
 	$scheme_name_request = "base_".(isset($_REQUEST['scheme'])) ? trim($_REQUEST['scheme']) : '';
-	$debug = (((isset($_REQUEST['debug'])) ? $_REQUEST['debug'] : '') == 'yes') ? true : false;
+        $debug = isset($_REQUEST['debug']) ? $_REQUEST['debug'] : 0;
 	$thenumber_orig = (isset($_REQUEST['thenumber'])) ? trim($_REQUEST['thenumber']) : '';
 	$DID = (isset($_REQUEST['DID'])) ? trim($_REQUEST['DID']) : '';
 }
@@ -104,17 +104,17 @@ foreach($scheme_name_array as $list) {
         }
 	$superfecta->setCLI($cli);
 	$superfecta->DID = $DID;
-
+        
 	//We only want to run all of this if it's a parent-multifecta or the original code (single-fecta), No need to run this for every child
 	if(($superfecta->isDebug()) && (($superfecta->type == 'SUPER') || (($superfecta->type == 'MULTI') && ($superfecta->multi_type == 'PARENT')))){
 		// If debugging, report all errors
 		if($superfecta->isDebug(3)){
-			error_reporting(E_ALL | E_NOTICE | E_STRICT); 
+			error_reporting(E_ALL | E_NOTICE); //strict is way too much information! :-( 
 		} else {
-			error_reporting(E_ALL | E_NOTICE); // -1 was not letting me see the wood for the trees.
+			error_reporting(E_ALL); // -1 was not letting me see the wood for the trees.
 		}
 		ini_set('display_errors', '1');
-		$superfecta->outn("<strong>Debug is on</strong>");
+		$superfecta->outn("<strong>Debug is on and set at level ".$superfecta->getDebug()."</strong>");
 		$superfecta->outn("<strong>The Original Number: </strong>". $superfecta->thenumber_orig);
 		$superfecta->outn("<strong>The Scheme: </strong>". $superfecta->scheme_name);
 		$superfecta->outn("<strong>Scheme Type: </strong>".$superfecta->type."FECTA");
