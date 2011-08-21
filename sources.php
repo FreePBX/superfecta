@@ -11,6 +11,9 @@ require_once("includes/config.php");
 require_once("includes/superfecta_base.php");
 $superfecta = new superfecta_base;
 
+$module_info = $superfecta->xml2array("module.xml");
+$version = preg_replace('/(alpha|beta)/i', '.0.', $module_info['module']['version']);
+
 $selected_source = (isset($_REQUEST['selected_source'])) ? $_REQUEST['selected_source'] : '';
 $src_up = '';
 $src_down = '';
@@ -175,18 +178,25 @@ if($check_updates == 'on')
 	{
 		$update_array = array();
 		$source_list = $superfecta->xml2array(UPDATE_SERVER.'source-list.xml');
-		foreach($source_list['data']['source'] as $sources) {
-			$this_source_name = substr(substr(trim($sources['name']),7),0,-7);
-			$update_array[$this_source_name]['link'] = UPDATE_SERVER.$sources['name'];
-			$update_array[$this_source_name]['date'] = $sources['modified'];
-			$update_array[$this_source_name]['md5'] = $sources['md5'];
-			$update_array[$this_source_name]['version_requirement'] = $sources['version_requirement'];
-		}
+                
+                if(array_key_exists('source', $source_list['data'])) {
+                    foreach($source_list['data']['source'] as $sources) {
+                            if($sources['version_requirement'] <= $version) {
+                                $this_source_name = substr(substr(trim($sources['name']),7),0,-7);
+                                $update_array[$this_source_name]['link'] = UPDATE_SERVER.$sources['name'];
+                                $update_array[$this_source_name]['date'] = $sources['modified'];
+                                $update_array[$this_source_name]['md5'] = $sources['md5'];
+                                $update_array[$this_source_name]['version_requirement'] = $sources['version_requirement'];
+                            } else {
+                                $this_source_name = substr(substr(trim($sources['name']),7),0,-7);
+                                $update_array[$this_source_name]['outdated'] = $sources['version_requirement'];
+                            }
+                    }
+                } else {
+                    $update_site_unavailable = true;
+                    $check_updates = 'off';
+                }
 		
-		/*
-		$update_site_unavailable = true;
-		$check_updates = 'off';
-		*/
 	}	
 }
 
@@ -365,11 +375,19 @@ foreach($src_print as $val)
 		if(key_exists($val['name'],$update_array))
 		{
 			$this_last_update = filemtime("sources/source-".$val['name'].".module");
-			if($update_array[$val['name']]['date'] > $this_last_update)
-			{
-				print ' <a href="javascript:document.forms.CIDSources.update_file.value=\''.$update_array[$val['name']]['link'].'\';document.forms.CIDSources.submit();">update available</a>';
-			}
-		}
+                        if(!key_exists('outdated',$update_array[$val['name']])) {
+                            if($update_array[$val['name']]['date'] > $this_last_update)
+                            {
+                                    print ' <a href="javascript:document.forms.CIDSources.update_file.value=\''.$update_array[$val['name']]['link'].'\';document.forms.CIDSources.submit();">update available</a>';
+                            }
+                            else
+                            {
+                                    print ' <i><font color="green">Up-to-date</green></i>';
+                            }
+                        } else {
+                            print ' unsupported version of superfecta, need '.$update_array[$val['name']]['outdated'];
+                        }
+                }
 		else
 		{
 			print ' unsupported module';
