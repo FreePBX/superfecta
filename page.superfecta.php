@@ -337,7 +337,7 @@ if($scheme != "")
 						'.$did_test_html.'
 						<a href="javascript:return(false);" class="info">Phone Number:<span>Phone number to test this scheme against.</span></a> <input type="text" size="15" maxlength="20" name="thenumber"> <input type="submit" value="Debug"><br>
 						<font size=2><input type="checkbox" name="Allscheme" value="All">
-						<a href="javascript:return(false);" class="info">Test all CID schemes<span>When enabled, the debug function will test the number entered against all of the configured CID schemes.<br>When disabled, debug only checks up to the first scheme that provides positive results.</span></a> <br/>Debug Level:<select name="debug" id="debug_level"><option value="1">INFO</option><option value="2">WARN</option><option value="3">ALL</option></select></font></p>
+						<a href="javascript:return(false);" class="info">Test all CID schemes<span>When enabled, the debug function will test the number entered against all of the configured CID schemes.<br>When disabled, debug only checks up to the first scheme that provides positive results.</span></a> <br/>Debug Level:<select name="debug" id="debug_level"><option value="0">NONE</option><option value="1" selected>INFO</option><option value="2">WARN</option><option value="3">ALL</option></select></font></p>
 					</form>
 					<div id="debug" style="background-color: #E0E0E0; width:100%"></div>
 				</td>

@@ -215,6 +215,7 @@ foreach($scheme_name_array as $list) {
 					    break;
 					}
 				} else {
+                                        //We are still web-bing it up, just don't want any crap to be shown. so lets only show the scheme
 					echo $scheme_name.": ".$spam_text." ".$superfecta->get_Prefix().$callerid."<br/>\n";
 				}
 			} else {
