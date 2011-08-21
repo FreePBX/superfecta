@@ -1081,6 +1081,14 @@ class superfecta_base {
 		if($this->isDebug($level)){ $this->outn($string); }	
 	}
 
+	function DebugDump($v, $level=DEBUG_ALL)
+	{
+			if($this->isDebug($level))
+			{
+				$this->out("<pre>");var_dump($v); $this->out("</pre><br/>");
+			}
+	}
+
 	function DebugDie($sError)
 	{
 		if($this->isDebug(DEBUG_WARN) && (!$this->cli))
@@ -1119,6 +1127,10 @@ class superfecta_base {
 	{
 		$this->DebugPrint("Search URL={$url}", DEBUG_WARN);
 		$value = $this->get_url_contents($url);
-		return preg_match($pattern, $value, $match);
+		
+		$result = preg_match($pattern, $value, $match);
+		$this->DebugDump($match);
+
+		return $result;
 	}
 }
