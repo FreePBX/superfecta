@@ -29,7 +29,7 @@ class superfecta_single extends superfecta_base {
 				require_once($source_name);
 				$source_class = NEW $data;
 				//Gotta be a better way to do this
-				$source_class->setDebug($this->isDebug());
+				$source_class->setDebug($this->getDebug());
 				$source_class->set_AmpConf( $this->amp_conf );
 				$source_class->set_DB( $this->db );
 				$source_class->set_AsteriskManager( $this->astman );
@@ -92,7 +92,7 @@ class superfecta_single extends superfecta_base {
 				require_once($source_file);
 				$source_class = NEW $source_name;
 				$source_class->set_DB( $this->db );
-				$source_class->setDebug($this->isDebug());
+				$source_class->setDebug($this->getDebug());
 				if(method_exists($source_class, 'post_processing')) {					
 					$caller_id = $source_class->post_processing(FALSE,NULL,$this->first_caller_id,$run_param,$this->thenumber_orig);
 				} else {

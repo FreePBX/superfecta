@@ -19,12 +19,11 @@ require_once(dirname(__FILE__)."/config.php");
 if(php_sapi_name() == 'cli' && empty($_SERVER['REMOTE_ADDR'])) {
 	$cli = true;
 	$shortopts  = "";
-	$shortopts .= "s:m:n:r:i";  // Required value
-	$shortopts .= "d"; // These options do not accept values
+	$shortopts .= "d:s:m:n:r:i";  // Required value
 	$options = getopt($shortopts);
 	if(isset($options)) {
 		$scheme_name_request = "base_".$options['s'];
-		$debug = isset($options['d']) ? true : false;
+		$debug = isset($options['d']) ? $options['d'] : 0;
 		$multifecta_id = isset($options['m']) ? $options['m'] : false;
 		$thenumber_orig = isset($options['n']) ? $options['n'] : false;
 		$source = isset($options['r']) ? $options['r'] : false;

@@ -36,9 +36,6 @@ class superfecta_multi extends superfecta_base {
 				$this->thenumber_orig = $row['cidnum'];
 				$this->DID = $row['extension'];
 				$this->multifecta_parent_id = $row['superfecta_mf_id'];
-				if($row['debug']){
-					$this->setDebug(true);
-				}
 				$this->single_source = $row['source'];
 			}else{
 				$this->DebugDie("Unable to load multifecta child record '".$this->multifecta_id."'");
@@ -121,9 +118,9 @@ class superfecta_multi extends superfecta_base {
 			if($superfecta_mf_child_id = (($this->amp_conf["AMPDBENGINE"] == "sqlite3") ? sqlite_last_insert_rowid($this->db->connection) : mysql_insert_id($this->db->connection))){
 				if($this->isDebug()){
 					$this->DebugPrint("Spawning child ".$superfecta_mf_child_id.":". $data);
-					exec('/usr/bin/php /var/www/html/admin/modules/superfecta/includes/callerid.php -s '.$this->scheme_name.' -n '.$this->thenumber_orig.' -m ' . $superfecta_mf_child_id . ' -r '.$data.' > log-'.$superfecta_mf_child_id.'.log 2>&1 &');
+					exec('/usr/bin/php /var/www/html/admin/modules/superfecta/includes/callerid.php -s '.$this->scheme_name.' -n '.$this->thenumber_orig.' -d '.$this->getDebug().' -m ' . $superfecta_mf_child_id . ' -r '.$data.' > log-'.$superfecta_mf_child_id.'.log 2>&1 &');
 				} else {
-					exec('/usr/bin/php /var/www/html/admin/modules/superfecta/includes/callerid.php -s '.$this->scheme_name.' -n '.$this->thenumber_orig.' -d -m ' . $superfecta_mf_child_id . ' -r '.$data.' > /dev/null 2>&1 &');
+					exec('/usr/bin/php /var/www/html/admin/modules/superfecta/includes/callerid.php -s '.$this->scheme_name.' -n '.$this->thenumber_orig.' -m ' . $superfecta_mf_child_id . ' -r '.$data.' > /dev/null 2>&1 &');
 					
 				}
 			}
@@ -272,7 +269,7 @@ class superfecta_multi extends superfecta_base {
 			require_once($source_file);
 			$source_class = NEW $this->source;
 			//Gotta be a better way to do this
-			$source_class->setDebug($this->isDebug());
+			$source_class->setDebug($this->getDebug());
 			$source_class->set_AmpConf( $this->amp_conf );
 			$source_class->set_DB( $this->db );
 			$source_class->set_AsteriskManager( $this->astman );
