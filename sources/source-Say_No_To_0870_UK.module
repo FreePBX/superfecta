@@ -1,0 +1,53 @@
+<?php
+class Say_No_To_0870_UK extends superfecta_base {
+
+	function settings() {
+		//configuration / display parameters
+		//The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
+		$source_desc = "http://http://www.saynoto0870.com - 	These listings include Non-Geographical Alternative Business Telephone Numbers for the UK.<br><br>";
+		$settings['desc'] = $source_desc;
+		$settings['version_requirement'] = "3.0";
+		return($settings);
+	}
+	
+	function get_caller_id($thenumber,$run_param=array()) {
+
+		$caller_id = "";		
+
+		if(!$this->IsValidNumber('UK', $thenumber))
+		{
+			$this->DebugPrint("Skipping Source - Non UK number: {$thenumber}");
+		}
+		else
+		{
+			$this->DebugPrint("Searching SayNoTo0870 for number: {$thenumber}");
+			
+			// By default, the found name is empty
+			$name = "";
+	
+			// We'll be searching google maps
+			$url = "http://www.saynoto0870.com/numbersearch.php";
+			$PostData = array("number" => $thenumber);
+
+			// Grab the first result from google maps that matches our phone number
+			$pattern = <<<EOF
+/<tr>\s*<td.*<a.*target=\"\_blank\">(.*)<\/a><\/td>/U
+EOF;
+			$result = preg_match($pattern, $this->get_url_contents($url, $PostData), $match);
+						
+			if(isset($match[1]) && strlen($match[1])){
+				$name = trim(strip_tags($match[1]));
+			}
+			// If we found a match, return it
+			if(strlen($name) > 1)
+			{
+				$caller_id = $name;
+			}
+			else
+			{
+				$this->DebugPrint("not found");
+			}
+		}
+		return($caller_id);
+	}
+}

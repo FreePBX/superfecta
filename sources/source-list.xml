@@ -72,6 +72,12 @@
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
+		<name>source-Say_No_To_0870_UK.module</name>
+		<modified>1314369822</modified>
+		<md5>1254d7ea3bb27aff59a64894841a9155</md5>
+		<version_requirement>3.0</version_requirement>
+	</source>
+	<source>
 		<name>source-Send_to_Soundbridge.module</name>
 		<modified>1312133097</modified>
 		<md5>8cd5f525d402f4cf70fe6b2d92f4b8a5</md5>
