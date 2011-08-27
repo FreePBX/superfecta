@@ -10,11 +10,11 @@ class LocalTel_CH extends superfecta_base {
 	
 	function get_caller_id($thenumber,$run_param=array()) {
 		
-		$caller_id=""; $name="";
+		$caller_id="";
 		
 		if( (!$this->IsValidNumber('CH',$thenumber)) )
 		{
-			$this->DebugPrint( "Skipping Source - Not a valid Swiss number: ".$thenumber);
+			$this->DebugPrint( "Skipping Source - Not a valid Swiss number: {$thenumber}");
 		}
 		else
 		{
@@ -23,20 +23,9 @@ class LocalTel_CH extends superfecta_base {
 			$url="http://tel.search.ch/index.en.html?was=$thenumber";
 			$pattern = "/class=\"(?:fn|fn org)\">(.*)<\/a>/";
 
-			$this->SearchURL($url, $pattern, $match);
-
-			if(isset($match[1]) && strlen($match[1])){
-				$name = trim(strip_tags($match[1]));
-			}	
-		
-	        if (strlen($name) > 1)
-	        {
-				$caller_id = strip_tags($name);
-	        }
-	        else
-	        {
-	        	$this->DebugPrint("not found");
-	        }
+			if($this->SearchURL($url, $pattern, $match)) {
+				$caller_id = $this->ExtractMatch($match);
+			}
 		}
 		return($caller_id);
 	}

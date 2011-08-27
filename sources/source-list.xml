@@ -25,8 +25,8 @@
 	</source>
 	<source>
 		<name>source-CanPagesCA.module</name>
-		<modified>1314475535</modified>
-		<md5>37627829655ec3d91da319dd727d6a4c</md5>
+		<modified>1314480453</modified>
+		<md5>9f36cfd357db87a015eee7d1453d0b16</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
@@ -61,8 +61,8 @@
 	</source>
 	<source>
 		<name>source-LocalTel_CH.module</name>
-		<modified>1313525086</modified>
-		<md5>6aa482d7c4f9937f43320fb76cf91dfa</md5>
+		<modified>1314486307</modified>
+		<md5>d8302018fe3a5026f7cf4cc1d5dd16b3</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
@@ -79,7 +79,7 @@
 	</source>
 	<source>
 		<name>source-Say_No_To_0870_UK.module</name>
-		<modified>1314479421</modified>
+		<modified>1314486472</modified>
 		<md5>8fd500ba081f1aeb6cca6e969c4ce7d8</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
