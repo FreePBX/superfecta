@@ -1149,4 +1149,18 @@ class superfecta_base {
 
 		return $result;
 	}
+	
+	function ExtractMatch($match, $index=1)
+	{
+		$name = "";
+		
+		if(isset($match[$index]) && strlen($match[$index])){
+			$name = trim(strip_tags($match[$index]));
+		}
+		else
+		{
+			$this->DebugPrint("not found");
+		}
+		return $name;
+	}
 }

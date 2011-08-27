@@ -27,25 +27,14 @@ class Say_No_To_0870_UK extends superfecta_base {
 	
 			// We'll be searching google maps
 			$url = "http://www.saynoto0870.com/numbersearch.php";
+			$PostData = array("number" => $thenumber);
 
 			// Grab the first result from google maps that matches our phone number
 			$pattern = <<<EOF
 /<tr>\s*<td.*<a.*target=\"\_blank\">(.*)<\/a><\/td>/U
 EOF;
-
-			$this->SearchURL($url, $pattern, $match, array("number" => $thenumber) );
-			
-			if(isset($match[1]) && strlen($match[1])){
-				$name = trim(strip_tags($match[1]));
-			}
-			// If we found a match, return it
-			if(strlen($name) > 1)
-			{
-				$caller_id = $name;
-			}
-			else
-			{
-				$this->DebugPrint("not found");
+			if($this->SearchURL($url, $pattern, $match, $PostData ) ) {
+				$caller_id = $this->ExtractMatch($match);
 			}
 		}
 		return($caller_id);

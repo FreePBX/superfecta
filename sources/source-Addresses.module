@@ -29,25 +29,12 @@ class Addresses extends superfecta_base {
 			// Grab the first result that matches our phone number
 			$pattern = "/searchFName=(.*)&searchLName=(.*)&/U";
 
-			$this->SearchURL($url, $pattern, $match);
-
-			if(isset($match[1]) && strlen($match[1])){
-				$name = trim(strip_tags($match[1]));				
-				if(isset($match[2]) && strlen($match[2])){
-					$name .= " ".trim(strip_tags($match[2]));
-				}
-			}
-
-			// If we found a match, return it
-			if(strlen($name) > 1)
+			if($this->SearchURL($url, $pattern, $match))
 			{
-				$caller_id = strip_tags($name);
+				$name1 = $this->ExtractMatch($match,1);
+				$name2 = $this->ExtractMatch($match,2);
+				$caller_id = ($name2) ? trim($name1." ".$name2) : $name1;
 			}
-			else
-			{
-				$this->DebugPrint( "not found");
-			}
-				
 		}
 		return($caller_id);
 	}

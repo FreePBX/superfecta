@@ -1,8 +1,8 @@
 <data>
 	<source>
 		<name>source-Addresses.module</name>
-		<modified>1313524945</modified>
-		<md5>7297fb070681c9154127bbef0e527448</md5>
+		<modified>1314466363</modified>
+		<md5>5780bd679ba13b78c5974816ed67bfff</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
@@ -24,6 +24,12 @@
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
+		<name>source-CanPagesCA.module</name>
+		<modified>1314465849</modified>
+		<md5>b66b5bc779357c055e42b6d4eecc52f8</md5>
+		<version_requirement>3.0</version_requirement>
+	</source>
+	<source>
 		<name>source-Canada411.module</name>
 		<modified>1312683333</modified>
 		<md5>51b9e296f6c96fd40c628329dcd7b70b</md5>
@@ -37,8 +43,8 @@
 	</source>
 	<source>
 		<name>source-Google_Maps_UK.module</name>
-		<modified>1313954358</modified>
-		<md5>65eb06bc9b8da7774c072f85aba2969e</md5>
+		<modified>1314465673</modified>
+		<md5>e7d1a44856896a7b3b70726913c6f523</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
@@ -73,8 +79,8 @@
 	</source>
 	<source>
 		<name>source-Say_No_To_0870_UK.module</name>
-		<modified>1314454787</modified>
-		<md5>3f9d0aefdd9eeaaa83fc757185b79ce3</md5>
+		<modified>1314465770</modified>
+		<md5>45f0af78286560a5cb5f220fcb07f326</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
@@ -121,8 +127,8 @@
 	</source>
 	<source>
 		<name>source-UKPhoneInfo_UK.module</name>
-		<modified>1313527689</modified>
-		<md5>c7d963ada705df484988187acd7a4a75</md5>
+		<modified>1314465884</modified>
+		<md5>68829a13b4d8c0e0253012be03b85986</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>

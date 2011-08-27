@@ -24,20 +24,8 @@ class UKPhoneInfo_UK extends superfecta_base {
 
 			$url = "http://www.ukphoneinfo.com/search.php?Submit=Submit&d=nl&GNG={$thenumber}";			
 
-			if($this->SearchURL($url, "=<h2[^>]*>(.*)</h2>=siU", $match))
-			{
-				if(isset($match[1]) && strlen($match[1])){
-					$name = trim(strip_tags($match[1]));
-				}
-				// If we found a match, return it
-				if(strlen($name) > 1)
-				{
-					$caller_id = $name;
-				}
-			}
-			else
-			{
-				$this->DebugPrint( "not found" );
+			if($this->SearchURL($url, "=<h2[^>]*>(.*)</h2>=siU", $match)) {
+				$caller_id = $this->ExtractMatch($match);
 			}
 		}
 		return($caller_id);
