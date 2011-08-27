@@ -1,0 +1,46 @@
+<?php
+class CanPagesCA extends superfecta_base {
+	function settings() {
+		
+		$settings['desc'] = "http://www.canpages.ca - 	These listings include business and residential data for Canada.";
+		$settings['version_requirement'] = "3.0";
+
+		return($settings);
+	}
+	
+	function get_caller_id($thenumber,$run_param=array()) {
+		$caller_id="";
+		$npa=""; $nxx=""; $station="";
+		
+		if(!$this->IsValidNumber('CA',$thenumber, $npa, $nxx, $station))
+		{
+			$this->DebugPrint( "Skipping Source - Non Canadian number: ".$thenumber);
+		}
+		else
+		{				
+			$this->DebugPrint( "Searching www.canpages.ca - ({$npa}) {$nxx}-{$station}...");
+
+	 		// By default, there is no match
+			$name = "";
+	
+			$url="http://www.canpages.ca/rl/index.jsp?fi=Search&lang=0&val={$thenumber}";
+	
+			$pattern = <<<EOF
+/class=\"header_listing\">(\.+)<\/a>.+<span class=\"phone\">.+\({$npa}\) {$nxx}-{$station}<\/span>/smU
+EOF;
+			$this->DebugDie($pattern);
+
+			// Patterns to search for
+			$regexp = array(
+				$pattern, 								// Residential match
+				"/style=\"font-size: 13px\">(.+)<\/a>/" // Business match
+			);
+	
+			if($this->SearchURL($url, $regexp, $match)) {
+				$caller_id = $this->ExtractMatch($match);
+			}
+		}
+		return($caller_id);
+	}
+	
+}
