@@ -1123,12 +1123,28 @@ class superfecta_base {
 		return (($name == str_ireplace($key_words,'',$name)) ? false : true);
 	}
 	
-	function SearchURL($url, $pattern, &$match)
+	function SearchURL($url, $regexp, &$match, $PostData=null)
 	{
 		$this->DebugPrint("Search URL={$url}", DEBUG_WARN);
-		$value = $this->get_url_contents($url);
+		$value = $this->get_url_contents($url, $PostData);
 		
-		$result = preg_match($pattern, $value, $match);
+		if (is_array($regexp))
+		{
+			// Look through each pattern to see if we find a match -- take the first match
+			foreach ($regexp as $pattern){
+				$this->DebugPrint("Testing pattern={$pattern}", DEBUG_WARN);
+				$result = preg_match($pattern, $value, $match);
+				if($result){
+					break;
+				}
+			}
+		} 
+		else 
+		{		
+			$this->DebugPrint("Testing pattern={$regexp}", DEBUG_WARN);
+			$result = preg_match($regexp, $value, $match);
+		}
+		
 		$this->DebugDump($match);
 
 		return $result;
