@@ -35,6 +35,7 @@ class superfecta_single extends superfecta_base {
 				$source_class->set_AsteriskManager( $this->astman );
 				if(method_exists($source_class, 'get_caller_id')) {
 					$caller_id = $source_class->get_caller_id($this->thenumber,$run_param);
+					$this->set_CacheFound($source_class->isCacheFound());
 					$this->setSpam($source_class->isSpam());
 					if($source_class->isSpam()) { 
 						$this->set_SpamCount( $this->get_SpamCount() + 1);
@@ -94,7 +95,7 @@ class superfecta_single extends superfecta_base {
 				$source_class->set_DB( $this->db );
 				$source_class->setDebug($this->getDebug());
 				if(method_exists($source_class, 'post_processing')) {					
-					$caller_id = $source_class->post_processing(FALSE,NULL,$this->first_caller_id,$run_param,$this->thenumber_orig);
+					$caller_id = $source_class->post_processing($this->isCacheFound(),NULL,$this->first_caller_id,$run_param,$this->thenumber_orig);
 				} else {
 					print "Method 'post_processing' doesn't exist<br\>\n"; 
 				}

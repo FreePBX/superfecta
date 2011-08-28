@@ -193,7 +193,7 @@ class superfecta_multi extends superfecta_base {
 						$first_caller_id = $row2['cnam'];
 						$winning_child_id = $row2['superfecta_mf_child_id'];
 						$winning_source = $row2['source'];
-						$cache_found = $row2['cached'];
+						$this->set_CacheFound($row2['cached']);
 						break;
 					}
 					$last_priority ++;
@@ -256,6 +256,7 @@ class superfecta_multi extends superfecta_base {
 	}
 	
 	function run_child() {
+		$cache_found = FALSE;
 		$start_time = $this->mctime_float();
 		
 		$sql = "SELECT field,value FROM superfectaconfig WHERE source = '".$this->scheme_name."_".$this->source."'";
@@ -277,7 +278,7 @@ class superfecta_multi extends superfecta_base {
 			if(method_exists($source_class, 'get_caller_id')) {
 				$caller_id = $source_class->get_caller_id($this->thenumber,$run_param);
 				$this->setSpam($source_class->isSpam());
-				$this->cache_found = $source_class->isCacheFound();
+				$cache_found = $source_class->isCacheFound();
 				unset($source_class);
 				$caller_id = $this->_utf8_decode($caller_id);
 
@@ -305,7 +306,7 @@ class superfecta_multi extends superfecta_base {
 							$query .= ",
 							spam = ".$this->db->quoteSmart($this->spam);
 						}
-						if($this->cache_found){
+						if($cache_found){
 							$query .= ",
 							cached = 1";
 						}
@@ -329,20 +330,20 @@ class superfecta_multi extends superfecta_base {
 		$sources = explode(",",$this->scheme_param['sources']);
 		
 		$this->DebugPrint("Post CID retrieval processing.");
-
 		foreach($sources as $source_name)
 		{
 			// Run the source
 			$sql = "SELECT field,value FROM superfectaconfig WHERE source = '".$this->scheme_name."_".$source_name."'";
 			$run_param = $this->db->getAssoc($sql);
 			
-			if(file_exists("source-".$source_name.".module")) {
-				require_once("source-".$source_name.".module");
+			$source_file = $this->path_location."/source-".$source_name.".module";
+			if(file_exists($source_file)) {
+				require_once($source_file);
 				$source_class = NEW $source_name;
-				$source_class->db = $this->db;
+				$source_class->set_DB( $this->db );
 				$source_class->setDebug($this->isDebug());
-				if(method_exists($source_class, 'post_processing')) {					
-					$caller_id = $source_class->post_processing(FALSE,NULL,$caller_id,$run_param,$this->thenumber_orig);
+				if(method_exists($source_class, 'post_processing')) {
+					$caller_id = $source_class->post_processing($this->isCacheFound(),NULL,$caller_id,$run_param,$this->thenumber_orig);
 				} else {
 					print "Method 'post_processing' doesn't exist<br\>\n"; 
 				}

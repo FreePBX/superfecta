@@ -71,7 +71,7 @@ class Superfecta_Cache extends superfecta_base {
 				if(($sres != '') && !is_numeric($sres))
 				{
 					$caller_id = $sres;
-					$cache_found = true;
+					$this->set_CacheFound(TRUE);
 				}
 				else
 				{
@@ -87,7 +87,6 @@ class Superfecta_Cache extends superfecta_base {
 	function post_processing($cache_found,$winning_source,$first_caller_id,$run_param,$thenumber) 
 	{
 			$rule_match = $this->match_pattern_all(isset($run_param['CID_Exclusion_Rules'])?$run_param['CID_Exclusion_Rules']:'' , $thenumber);
-
 			if((!$rule_match['status']) || (!$rule_match['number'])){
 				if(!$cache_found && ($first_caller_id != ''))
 				{
@@ -95,7 +94,7 @@ class Superfecta_Cache extends superfecta_base {
 									VALUES($thenumber,'$first_caller_id',NOW())";
 									
 					$this->db->query($sql);					
-					$this->DebugPrint("Caller ID data added to cache.");
+					$this->DebugPrint("Caller ID data added to Superfecta_Cache.");
 				}
 			}else{
 				$this->DebugPrint ("Matched cache exclusion rule: '{$rule_match['pattern']}' with: '{$rule_match['number']}'");
