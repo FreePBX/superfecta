@@ -1123,10 +1123,12 @@ class superfecta_base {
 		return (($name == str_ireplace($key_words,'',$name)) ? false : true);
 	}
 	
-	function SearchURL($url, $regexp, &$match, $PostData=null)
+	function SearchURL($url, $regexp, &$match, $PostData=null,$strip_trn = FALSE)
 	{
 		$this->DebugPrint("Search URL={$url}", DEBUG_WARN);
 		$value = $this->get_url_contents($url, $PostData);
+                
+                $value = ($strip_trn) ? preg_replace('/[\n\r\t]*/i', '', $value) : $value;
 		
 		if (is_array($regexp))
 		{

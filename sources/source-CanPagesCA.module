@@ -25,18 +25,16 @@ class CanPagesCA extends superfecta_base {
 	
 			$url="http://www.canpages.ca/rl/index.jsp?fi=Search&lang=0&val={$thenumber}";
 	
-			$pattern = <<<EOF
-/class=\"header_listing\">(\.+)<\/a>.+<span class=\"phone\">.+\({$npa}\) {$nxx}-{$station}<\/span>/smU
-EOF;
-			$this->DebugDie($pattern);
+			$pattern = '/class=\"header_listing\">(.*)<span class=\"phone\">/i';
 
+                        
 			// Patterns to search for
 			$regexp = array(
 				$pattern, 								// Residential match
 				"/style=\"font-size: 13px\">(.+)<\/a>/" // Business match
 			);
 	
-			if($this->SearchURL($url, $regexp, $match)) {
+			if($this->SearchURL($url, $regexp, $match,NULL,TRUE)) {
 				$caller_id = $this->ExtractMatch($match);
 			}
 		}
