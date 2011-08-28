@@ -25,7 +25,7 @@ class CanPagesCA extends superfecta_base {
 	
 			$url="http://www.canpages.ca/rl/index.jsp?fi=Search&lang=0&val={$thenumber}";
 	
-			$pattern = '/class=\"header_listing\">(.*)<span class=\"phone\">/i';
+			$pattern = '/class=\"header_listing\">(.*)<\/a>.+<span class=\"phone\">\('.$npa.'\).*'.$nxx.'-'.$station.'/i';
 
                         
 			// Patterns to search for

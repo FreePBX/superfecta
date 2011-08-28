@@ -1085,7 +1085,11 @@ class superfecta_base {
 	{
 			if($this->isDebug($level))
 			{
+                                foreach($v as $key => $data) {
+                                    $v[$key] = htmlentities($data); //Get rid of useless HTML tags!
+                                }
 				$this->out("<pre>");var_dump($v); $this->out("</pre><br/>");
+                                //html_entity_decode()
 			}
 	}
 
