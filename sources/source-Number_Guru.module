@@ -32,7 +32,7 @@ class Number_Guru extends superfecta_base {
 		//Paste old source '$usage_mode == 'get caller id' here:
 		$caller_id="";
 		
-		if( (!$this->IsValidNumber('US',$thenumber)) && (!$this->IsValidNumber('CA',$thenumber)) )
+		if(!$this->IsValidNumber( array('US','CA') ,$thenumber))
 		{
 			$this->DebugPrint( "Skipping Source - Not a valid US/CAN number: ".$thenumber);
 		}

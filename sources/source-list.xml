@@ -1,14 +1,14 @@
 <data>
 	<source>
 		<name>source-Addresses.module</name>
-		<modified>1314466363</modified>
-		<md5>5780bd679ba13b78c5974816ed67bfff</md5>
+		<modified>1314567869</modified>
+		<md5>b4a866c3ea6634459b1d7cb139a0aff8</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
 		<name>source-Any_Who.module</name>
-		<modified>1313435987</modified>
-		<md5>18100e092bd3bca3484067b4ff7f7457</md5>
+		<modified>1314568276</modified>
+		<md5>626e3a20ad9f33677e3326c3861dbf37</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
@@ -19,8 +19,8 @@
 	</source>
 	<source>
 		<name>source-BulkCNAM.module</name>
-		<modified>1312932269</modified>
-		<md5>7c12433d5d854ddae810a945c3eb7a56</md5>
+		<modified>1314568537</modified>
+		<md5>a27978484f18401c136c35120caa0e7a</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
@@ -37,8 +37,8 @@
 	</source>
 	<source>
 		<name>source-FreeCNAM.module</name>
-		<modified>1312741360</modified>
-		<md5>c85ad67c3a414344abf5681bc4f5c683</md5>
+		<modified>1314568513</modified>
+		<md5>3057272ebf65bb71c57f22ce08b1e7f4</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
@@ -67,8 +67,8 @@
 	</source>
 	<source>
 		<name>source-Number_Guru.module</name>
-		<modified>1313693344</modified>
-		<md5>d87073b70d19e79531921a30b7dc82be</md5>
+		<modified>1314568546</modified>
+		<md5>96a6f5bf5e3934cc1b42bb7377d740c4</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
@@ -133,8 +133,8 @@
 	</source>
 	<source>
 		<name>source-White_Pages.module</name>
-		<modified>1314515593</modified>
-		<md5>93ebff92d74aa0a9a15bf5cef518fb2e</md5>
+		<modified>1314568481</modified>
+		<md5>ec2e53b105658b947db913077947b3ef</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
@@ -145,8 +145,8 @@
 	</source>
 	<source>
 		<name>source-Yellow_Pages.module</name>
-		<modified>1314514467</modified>
-		<md5>b19d60adede1f7ed531c78190f72651d</md5>
+		<modified>1314568601</modified>
+		<md5>855bc5950104f8bd6a30222052f9c321</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
 </data>

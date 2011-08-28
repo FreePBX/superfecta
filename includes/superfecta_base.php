@@ -405,6 +405,20 @@ class superfecta_base {
 	{	
 		$number_error = false;
 
+		// loop through each country in the array.
+		if(is_array($country)) 
+		{
+			foreach ($country as $region) 
+			{
+				if($this->IsValidNumber($region, $thenumber, $rPart1, $rPart2, $rPart3))
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
+		// Process the Country passed as variable.
 		switch ($country)
 		{
 			case "US" :

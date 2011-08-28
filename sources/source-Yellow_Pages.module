@@ -12,7 +12,7 @@ class Yellow_Pages extends superfecta_base {
 		$caller_id="";
 		$npa=""; $nxx=""; $station="";
 		
-		if((!$this->IsValidNumber('CA',$thenumber, $npa, $nxx, $station)) AND (!$this->IsValidNumber('US',$thenumber, $npa, $nxx, $station)))
+		if(!$this->IsValidNumber( array('US','CA') ,$thenumber, $npa, $nxx, $station))
 		{
 			$this->DebugPrint( "Skipping Source - Non Canadian/US number: ".$thenumber);
 		}

@@ -16,8 +16,7 @@ class Addresses extends superfecta_base {
 		$caller_id=""; $name="";
 		$npa=""; $nxx=""; $station="";
 				
-		if( (!$this->IsValidNumber('US',$thenumber, $npa, $nxx, $station)) 
-		 && (!$this->IsValidNumber('CA',$thenumber, $npa, $nxx, $station)) )
+		if(!$this->IsValidNumber( array('US','CA') ,$thenumber, $npa, $nxx, $station))
 		{
 			$this->DebugPrint( "Skipping Source - Not a valid US/CAN number: ".$thenumber);
 		}
