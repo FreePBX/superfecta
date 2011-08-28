@@ -1132,6 +1132,7 @@ class superfecta_base {
 		$this->DebugPrint("Search URL={$url}", DEBUG_WARN);
 		$value = $this->get_url_contents($url, $PostData);
                 
+                //Remove all newlines, carriage returns and tabs from content if needed
                 $value = ($strip_trn) ? preg_replace('/[\n\r\t]*/i', '', $value) : $value;
 		
 		if (is_array($regexp))
