@@ -30,9 +30,8 @@ class Say_No_To_0870_UK extends superfecta_base {
 			$PostData = array("number" => $thenumber);
 
 			// Grab the first result that matches our phone number
-			$pattern = <<<EOF
-/<tr>\s*<td.*<a.*target=\"\_blank\">(.*)<\/a><\/td>/U
-EOF;
+			$pattern = '/<tr>\s*<td.*<a.*target=\"_blank\">(.*)<\/a><\/td>/U';
+			
 			if($this->SearchURL($url, $pattern, $match, $PostData ) ) {
 				$caller_id = $this->ExtractMatch($match);
 			}

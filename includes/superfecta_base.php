@@ -1142,7 +1142,7 @@ class superfecta_base {
 		{
 			// Look through each pattern to see if we find a match -- take the first match
 			foreach ($regexp as $pattern){
-				$this->DebugPrint("Testing pattern={$pattern}", DEBUG_WARN);
+				$this->DebugPrint("Testing pattern=".htmlentities($pattern), DEBUG_WARN);
 				$result = preg_match($pattern, $value, $match);
 				if($result){
 					break;
