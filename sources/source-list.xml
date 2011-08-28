@@ -25,8 +25,8 @@
 	</source>
 	<source>
 		<name>source-CanPagesCA.module</name>
-		<modified>1314480453</modified>
-		<md5>9f36cfd357db87a015eee7d1453d0b16</md5>
+		<modified>1314497248</modified>
+		<md5>83ea8a78e1b0ba8496e95a2b79f6ab47</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
@@ -132,9 +132,21 @@
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
+		<name>source-White_Pages.module</name>
+		<modified>1314515593</modified>
+		<md5>93ebff92d74aa0a9a15bf5cef518fb2e</md5>
+		<version_requirement>3.0</version_requirement>
+	</source>
+	<source>
 		<name>source-Who_Called.module</name>
 		<modified>1312147438</modified>
 		<md5>881d400ae35bd4a560198d38fc85e07c</md5>
+		<version_requirement>3.0</version_requirement>
+	</source>
+	<source>
+		<name>source-Yellow_Pages.module</name>
+		<modified>1314514467</modified>
+		<md5>b19d60adede1f7ed531c78190f72651d</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
 </data>

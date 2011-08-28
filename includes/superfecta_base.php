@@ -1132,8 +1132,11 @@ class superfecta_base {
 		$this->DebugPrint("Search URL={$url}", DEBUG_WARN);
 		$value = $this->get_url_contents($url, $PostData);
                 
-                //Remove all newlines, carriage returns and tabs from content if needed
-                $value = ($strip_trn) ? preg_replace('/[\n\r\t]*/i', '', $value) : $value;
+		//Remove all newlines, carriage returns and tabs from content if needed
+		$value = ($strip_trn) ? preg_replace('/[\n\r\t]*/i', '', $value) : $value;
+
+		$this->DebugPrint("Returned Content (w/Stripped \\n\\r\\t):<br /><textarea rows='2' cols='20'>".$value."</textarea>",DEBUG_ALL);
+
 		
 		if (is_array($regexp))
 		{
@@ -1148,10 +1151,10 @@ class superfecta_base {
 		} 
 		else 
 		{		
-			$this->DebugPrint("Testing pattern={$regexp}", DEBUG_WARN);
+			$this->DebugPrint("Testing pattern=".htmlentities($regexp), DEBUG_WARN);
 			$result = preg_match($regexp, $value, $match);
 		}
-		
+		$this->DebugPrint("Dumping Matches", DEBUG_WARN);
 		$this->DebugDump($match);
 
 		return $result;
@@ -1162,6 +1165,8 @@ class superfecta_base {
 		$name = "";
 		
 		if(isset($match[$index]) && strlen($match[$index])){
+			//putting this here too just incase we need to remove newlines and such from found elements
+			$match[$index] = preg_replace('/[\n\r\t]*/i', '', $match[$index]);
 			$name = trim(strip_tags($match[$index]));
 		}
 		else

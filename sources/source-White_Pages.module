@@ -1,0 +1,33 @@
+<?php
+class White_Pages extends superfecta_base {
+	function settings() {
+		
+		$settings['desc'] = "http://www.whitepages.com - These listings will return both residential and business listings. Some Canada data available.";
+		$settings['version_requirement'] = "3.0";
+
+		return($settings);
+	}
+	
+	function get_caller_id($thenumber,$run_param=array()) {
+		$caller_id="";
+		$npa=""; $nxx=""; $station="";
+		
+		if((!$this->IsValidNumber('CA',$thenumber, $npa, $nxx, $station)) AND (!$this->IsValidNumber('US',$thenumber, $npa, $nxx, $station)))
+		{
+			$this->DebugPrint( "Skipping Source - Non Canadian/US number: ".$thenumber);
+		}
+		else
+		{				
+			$this->DebugPrint("Searching Yellow Pages ... ");
+			$url="http://www.whitepages.com/business/reverse_phone?phone_number=${thenumber}";
+
+			$pattern = '/show_details_fields: true,name:\'(.*)\',city:\'[a-z]/i';
+			
+			if($this->SearchURL($url, $pattern, $match,NULL,TRUE)) {
+				$caller_id = $this->ExtractMatch($match);
+			}
+		}
+		return($caller_id);
+	}
+	
+}
