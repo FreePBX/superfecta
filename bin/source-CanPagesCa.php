@@ -48,14 +48,14 @@ if($usage_mode == 'get caller id')
 			if (substr($thenumber,0,4) == '0111')
 			{
 				$thenumber = substr($thenumber,4);
-			}			
+			}
 			else
 			{
 				$number_error = true;
 			}
 		}
 
-	}	
+	}
 	// number
 	if(strlen($thenumber) < 10)
 	{
@@ -67,10 +67,12 @@ if($usage_mode == 'get caller id')
 	{
 		$thenumber = (substr($thenumber,0,1) == 1) ? substr($thenumber,1) : $thenumber;
 		$npa = substr($thenumber,0,3);
+		$nxx = substr($thenumber,3,3);
+                $station = substr($thenumber,6,4);
 		
 		// Check for valid CAN NPA
 		$npalistCAN = array(
-			"204", "226", "249", "250", "289", "306", "343", "365", "403", "416", "418", "438", 
+			"204", "226", "249", "250", "289", "306", "343", "365", "403", "416", "418", "438",
 			"450", "506", "514", "519", "579", "581", "587", "604", "613", "647",
 			"705", "709", "778", "780", "807", "819", "867", "873", "902", "905",
 			"800", "866", "877", "888"
@@ -99,11 +101,17 @@ if($usage_mode == 'get caller id')
 		// Set the url we're searching for
 		$url="http://www.canpages.ca/rl/index.jsp?fi=Search&lang=0&val=$thenumber";
 		$value = get_url_contents($url);
-		
+
+                // Strip newlines and crs from URL so regexp works
+                $value = preg_replace('/[\n\r\t]*/i', '', $value);
+
+
 		// Patterns to search for
-		$regexp = array(
-			"/class=\"header_listing\">(.+)<\/a>/", // Residential match
-			"/style=\"font-size: 13px\">(.+)<\/a>/", // Business match
+		$regexp = array
+                (
+			"/class=\"header_listing\">(.+)<\/a>.+<span class=\"phone\">\($npa\) $nxx-$station<\/span>/", // working residential match
+ 			"/style=\"font-size: 13px\">(.+)<\/h3>/", // works for single business return not working for mult business
+
 		);
 
 		// By default, there is no match
