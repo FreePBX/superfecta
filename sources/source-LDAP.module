@@ -109,7 +109,7 @@ class LDAP extends superfecta_base {
 		$this->DebugEcho( "Searching {$dn} ... ");
 		
 		// perform LDAP search - only return CN to conserve bandwidth
-		if($rs = @ldap_search($ad, $dn, "(|(telephoneNumber=*{$thenumber})(mobile=*{$thenumber})(homeTelephoneNumber=*{$thenumber}))", array('cn')))
+		if($rs = @ldap_search($ad, $dn,	"(|(telephoneNumber=*{$thenumber})(mobile=*{$thenumber})(homeTelephoneNumber=*{$thenumber}))", array($this->isDebug(DEBUG_ALL) ? '*' : 'cn')))
 		{
 			if($info = ldap_get_entries($ad, $rs))
 			{	
@@ -117,7 +117,7 @@ class LDAP extends superfecta_base {
 
 				if($info["count"] > 0)
 				{
-					// var_dump($info[0]);
+					$this->DebugDump($info[0], DEBUG_ALL);
 					$name = $info[0]["cn"][0];
 				}
 			}
