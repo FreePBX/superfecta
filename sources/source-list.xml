@@ -55,8 +55,8 @@
 	</source>
 	<source>
 		<name>source-LDAP.module</name>
-		<modified>1312132711</modified>
-		<md5>5e38acafd6b7f44e9f45ecb3ed9a94be</md5>
+		<modified>1314644982</modified>
+		<md5>e3f3e4757f8af0c06d62376d057895d7</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
@@ -133,8 +133,8 @@
 	</source>
 	<source>
 		<name>source-White_Pages.module</name>
-		<modified>1314568481</modified>
-		<md5>ec2e53b105658b947db913077947b3ef</md5>
+		<modified>1314645959</modified>
+		<md5>349b214b8d7d9426991fb17053d46439</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>

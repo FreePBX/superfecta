@@ -18,7 +18,7 @@ class White_Pages extends superfecta_base {
 		}
 		else
 		{				
-			$this->DebugPrint("Searching Yellow Pages ... ");
+			$this->DebugPrint("Searching White Pages ... ");
 			$url="http://www.whitepages.com/business/reverse_phone?phone_number=${thenumber}";
 
 			$pattern = '/show_details_fields: true,name:\'(.*)\',city:\'[a-z]/i';
