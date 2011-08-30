@@ -11,6 +11,9 @@ require_once("includes/config.php");
 require_once("includes/superfecta_base.php");
 $superfecta = new superfecta_base;
 
+$categories = json_decode($_REQUEST['cats']);
+$categories = (!empty($categories)) ? $categories : array('0' => 'ALL');
+
 $module_info = $superfecta->xml2array("module.xml");
 $version = preg_replace('/(alpha|beta)/i', '.0.', $module_info['module']['version']);
 
@@ -79,8 +82,8 @@ if($revert_file != '')
 		rename("sources/old_source-".$revert_file.".module","sources/source-".$revert_file.".module");
 	}
 }
-
 //get a list of the files that are on this local server
+                        print_r($categories);
 foreach (glob("sources/source-*.module") as $filename)
 {
 	if($filename != '')
@@ -94,19 +97,24 @@ foreach (glob("sources/source-*.module") as $filename)
 		$source_class = NEW $this_source_name;		
 		
 		$settings = $source_class->settings();
-		$src_files[$this_source_name]['desc'] = isset($settings['desc']) ? $settings['desc'] : 'N/A';
-		$source_param = isset($settings['source_param']) ? $settings['source_param'] : array();
-		$src_files[$this_source_name]['param'] = isset($settings['source_param']) ? $settings['source_param'] : array();
-						
-		//update the database if this source was the last displayed form.
-		if($source_param_form == $this_source_name)
-		{
-			foreach($source_param as $key=>$val)
-			{
-				$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('".substr($scheme,5).'_'.$this_source_name."','$key','".mysql_real_escape_string(utf8_decode($_REQUEST[$key]))."')";
-				$db->query($sql);
-			}
-		}
+                $groups = isset($settings['groups']) ? $settings['groups'] : NULL;
+                $glist = explode(',',$groups);
+                $glist[] = 'ALL';
+                if(in_array(array('ALL','NONE'), $glist)) {
+                    $src_files[$this_source_name]['desc'] = isset($settings['desc']) ? $settings['desc'] : 'N/A';
+                    $source_param = isset($settings['source_param']) ? $settings['source_param'] : array();
+                    $src_files[$this_source_name]['param'] = isset($settings['source_param']) ? $settings['source_param'] : array();
+
+                    //update the database if this source was the last displayed form.
+                    if($source_param_form == $this_source_name)
+                    {
+                            foreach($source_param as $key=>$val)
+                            {
+                                    $sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('".substr($scheme,5).'_'.$this_source_name."','$key','".mysql_real_escape_string(utf8_decode($_REQUEST[$key]))."')";
+                                    $db->query($sql);
+                            }
+                    }
+                }
 	}
 }
 

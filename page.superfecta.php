@@ -223,10 +223,48 @@ if($scheme != "")
 		$did_test_html = '';
 		$did_test_script = "'',";
 	}
+//get a list of the files that are on this local server
+        $groups_list = array();
+        require_once("/var/www/html/admin/modules/superfecta/includes/superfecta_base.php");
+        foreach (glob("/var/www/html/admin/modules/superfecta/sources/source-*.module") as $filename)
+        {
+                if($filename != '')
+                {
+                        $source_desc = '';
+                        $source_param = array();
+
+                        require_once($filename);
+
+                        $this_source_name = str_replace(".module","",str_replace("/var/www/html/admin/modules/superfecta/sources/source-","",$filename));
+                        $source_class = NEW $this_source_name;		
+
+                        $settings = $source_class->settings();
+                        $groups = isset($settings['groups']) ? $settings['groups'] : NULL;
+
+                        $glist = explode(',',$groups);
+                        $groups_list['ALL'][] = $this_source_name;
+                        foreach ($glist as $data) {
+                            if(!empty($data)) {
+                                $data = strtoupper($data);
+                                $groups_list[$data][] = $this_source_name;
+                            }
+                        }
+                        unset($source_class);
+
+                }
+        }
 
 	print '<h2><u>Data Sources</u></h2>
+            <p>Categories: <select class="cats" multiple="multiple" size="2">';
+        
+        foreach($groups_list as $key => $data) {
+            $selected = '';
+            echo '<option value="'.$key.'" '.$selected.'>'.$key.'</option>';
+        }
+
+print '</select></p>
 		<p>Select which data source(s) to use for your lookups, and the order in which you want them used:</p>
-		<form method="POST" action="javascript:Ht_Generate_List(\'\',\''.$scheme.'\');" name="CIDSources">
+		<form method="POST" action="javascript:Ht_Generate_List(\'\',\''.$scheme.'\',\'ALL\');" name="CIDSources">
 			<div id="CIDSourcesList"></div>
 			<br><br>
 		</form>
@@ -359,6 +397,46 @@ var isWorking = false;
 var divname = '';
 var http = getHTTPObject();
 
+$(".cats").change(function () {
+      var str =new Array();
+      var i = 0;
+      $(".cats option:selected").each(function () {
+            str[i] = $(this).text();
+            i ++; 
+          });
+      Ht_Generate_List('','<?php echo $scheme;?>',str);
+    })
+    .change();
+    
+function array2json(arr) {
+    var parts = [];
+    var is_list = (Object.prototype.toString.apply(arr) === '[object Array]');
+
+    for(var key in arr) {
+    	var value = arr[key];
+        if(typeof value == "object") { //Custom handling for arrays
+            if(is_list) parts.push(array2json(value)); /* :RECURSION: */
+            else parts[key] = array2json(value); /* :RECURSION: */
+        } else {
+            var str = "";
+            if(!is_list) str = '"' + key + '":';
+
+            //Custom handling for multiple data types
+            if(typeof value == "number") str += value; //Numbers
+            else if(value === false) str += 'false'; //The booleans
+            else if(value === true) str += 'true';
+            else str += '"' + value + '"'; //All other things
+            // :TODO: Is there any more datatype we should be in the lookout for? (Functions?)
+
+            parts.push(str);
+        }
+    }
+    var json = parts.join(",");
+    
+    if(is_list) return '[' + json + ']';//Return numerical JSON
+    return '{' + json + '}';//Return associative JSON
+}
+
 function getHTTPObject()
 {
 	var xmlhttp;
@@ -410,11 +488,12 @@ function Ht_Response()
 	}
 }
 
-function Ht_Generate_List(first_run,scheme)
+function Ht_Generate_List(first_run,scheme,cat)
 {
 	first_run = first_run || "";
 	scheme = scheme || "";
-	var poststr = "first_run=" + first_run + "&scheme=" + scheme;
+        cat = array2json(cat);
+	var poststr = "first_run=" + first_run + "&scheme=" + scheme + "&cats=" + cat;
 
 	if(document.forms.CIDSources.src_list)
 	{
