@@ -409,7 +409,8 @@ class superfecta_base {
 		if(!is_array($country)){
 			$country = array_map('trim', explode(",",$country));		
 		} 
-		else 
+
+		if(is_array($country)){
 		{
 			// loop through each country in the array.
 			foreach ($country as $region) 
