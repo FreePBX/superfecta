@@ -405,9 +405,13 @@ class superfecta_base {
 	{	
 		$number_error = false;
 
-		// loop through each country in the array.
-		if(is_array($country)) 
+		// If we did not get an array, it's probably a list. Convert it to an array.
+		if(!is_array($country)){
+			$country = array_map('trim', explode(",",$country));		
+		} 
+		else 
 		{
+			// loop through each country in the array.
 			foreach ($country as $region) 
 			{
 				if($this->IsValidNumber($region, $thenumber, $rPart1, $rPart2, $rPart3))
