@@ -406,11 +406,11 @@ class superfecta_base {
 		$number_error = false;
 
 		// If we did not get an array, it's probably a list. Convert it to an array.
-		if(!is_array($country)){
+		if((!is_array($country)) && strpos($country, ",")){
 			$country = array_map('trim', explode(",",$country));		
 		} 
 
-		if(is_array($country)){
+		if(is_array($country))
 		{
 			// loop through each country in the array.
 			foreach ($country as $region) 
@@ -770,7 +770,44 @@ class superfecta_base {
 				}
 			} //end CH
 			break;
-			
+
+			case "SE":
+			{
+				// international dialing prefix + country code + number
+				if (strlen($thenumber) > 8)
+				{
+					if (substr($thenumber,0,2) == '46')
+					{
+						$thenumber = '0'.substr($thenumber, 2);
+					}
+					else if (substr($thenumber,0,4) == '0046')
+					{
+						$thenumber = '0'.substr($thenumber, 4);
+					}
+					else if (substr($thenumber,0,5) == '01146')
+					{
+						$thenumber = '0'.substr($thenumber,5);
+					}			
+					else
+					{
+						$number_error = true;
+					}
+				}	
+				// number
+				if(strlen($thenumber) < 11)
+				{
+					if (substr($thenumber,0,1) == '0')
+					{
+						$number_error = false;
+					}
+					else
+					{
+						$number_error = true;
+					}
+				}
+			}
+			break; // end SE
+						
 			default:
 				$this->DebugPrint("Unknown Country Code ${country} passed to IsValidNumber: ${country}");
 				break;
