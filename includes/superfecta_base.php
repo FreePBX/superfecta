@@ -807,7 +807,30 @@ class superfecta_base {
 				}
 			}
 			break; // end SE
-						
+
+			case "AU":
+			{
+				// Validate number
+				if($match = match_pattern("0[2356789]XXXXXXXX",$thenumber)){
+					// Land line
+					$num1 = substr($thenumber,0,2);
+					$num2 = substr($thenumber,2,4);
+					$num3 = substr($thenumber,6,4);			
+				}elseif($match = match_pattern("04XXXXXXXX",$thenumber)){
+					// Mobile number
+					$num1 = substr($thenumber,0,4);
+					$num2 = substr($thenumber,4,3);
+					$num3 = substr($thenumber,7,3);
+				}else{
+					return false;
+				}
+				// Set the number parts if passed by reference.
+				if(isset($rPart1)) { $rPart1 = $num1; }
+				if(isset($rPart2)) { $rPart2 = $num2; }
+				if(isset($rPart3)) { $rPart3 = $num3; }
+			}
+			break; // end AU
+										
 			default:
 				$this->DebugPrint("Unknown Country Code ${country} passed to IsValidNumber: ${country}");
 				break;
