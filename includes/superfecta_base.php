@@ -93,6 +93,16 @@ class superfecta_base {
 			echo strip_tags($message) . "\n";
 		}
 	}
+        
+        function in_array_recursive($needle, $haystack) {
+            $it = new RecursiveIteratorIterator(new RecursiveArrayIterator($needle));
+            foreach ($it AS $element) {
+                if(in_array($element, $haystack)) {
+                    return true;
+                }
+            }
+            return false;
+        }
 
 	/**
 	Search an array of area codes against phone number to find one that matches.
