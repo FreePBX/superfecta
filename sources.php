@@ -13,7 +13,7 @@ $superfecta = new superfecta_base;
 
 if (!function_exists('json_decode')) {
     require_once(dirname(__FILE__)."/includes/JSON/JSON.php");
-    function json_decode2($input) {
+    function json_decode($input) {
         $json = new Services_JSON();
         $output = $json->decode($input);
         return((!is_object($output)) ? $output : '');
