@@ -11,6 +11,15 @@ require_once("includes/config.php");
 require_once("includes/superfecta_base.php");
 $superfecta = new superfecta_base;
 
+if (!function_exists('json_decode')) {
+    require_once(dirname(__FILE__)."/includes/JSON/JSON.php");
+    function json_decode2($input) {
+        $json = new Services_JSON();
+        $output = $json->decode($input);
+        return((!is_object($output)) ? $output : '');
+    }
+}
+
 $categories = json_decode($_REQUEST['cats']);
 $categories = (!empty($categories)) ? $categories : array('0' => 'ALL');
 
@@ -83,7 +92,6 @@ if($revert_file != '')
 	}
 }
 //get a list of the files that are on this local server
-                        print_r($categories);
 foreach (glob("sources/source-*.module") as $filename)
 {
 	if($filename != '')
@@ -100,7 +108,7 @@ foreach (glob("sources/source-*.module") as $filename)
                 $groups = isset($settings['groups']) ? $settings['groups'] : NULL;
                 $glist = explode(',',$groups);
                 $glist[] = 'ALL';
-                if(in_array(array('ALL','NONE'), $glist)) {
+                if($superfecta->in_array_recursive($categories, $glist)) {
                     $src_files[$this_source_name]['desc'] = isset($settings['desc']) ? $settings['desc'] : 'N/A';
                     $source_param = isset($settings['source_param']) ? $settings['source_param'] : array();
                     $src_files[$this_source_name]['param'] = isset($settings['source_param']) ? $settings['source_param'] : array();

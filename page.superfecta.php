@@ -225,8 +225,9 @@ if($scheme != "")
 	}
 //get a list of the files that are on this local server
         $groups_list = array();
-        require_once("/var/www/html/admin/modules/superfecta/includes/superfecta_base.php");
-        foreach (glob("/var/www/html/admin/modules/superfecta/sources/source-*.module") as $filename)
+        
+        require_once(dirname(__FILE__)."/includes/superfecta_base.php");
+        foreach (glob(dirname(__FILE__)."/sources/source-*.module") as $filename)
         {
                 if($filename != '')
                 {
@@ -235,7 +236,7 @@ if($scheme != "")
 
                         require_once($filename);
 
-                        $this_source_name = str_replace(".module","",str_replace("/var/www/html/admin/modules/superfecta/sources/source-","",$filename));
+                        $this_source_name = str_replace(".module","",str_replace(dirname(__FILE__)."/sources/source-","",$filename));
                         $source_class = NEW $this_source_name;		
 
                         $settings = $source_class->settings();
