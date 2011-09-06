@@ -265,7 +265,7 @@ if($scheme != "")
 
 print '</select></p>
 		<p>Select which data source(s) to use for your lookups, and the order in which you want them used:</p>
-		<form method="POST" action="javascript:Ht_Generate_List(\'\',\''.$scheme.'\',\'ALL\');" name="CIDSources">
+		<form method="POST" action="javascript:Ht_Generate_List(\'\',\''.$scheme.'\',\'NULL\');" name="CIDSources">
 			<div id="CIDSourcesList"></div>
 			<br><br>
 		</form>
@@ -438,6 +438,10 @@ function array2json(arr) {
     return '{' + json + '}';//Return associative JSON
 }
 
+  function is_null(input){
+    return input==null;
+  }
+
 function getHTTPObject()
 {
 	var xmlhttp;
@@ -493,7 +497,16 @@ function Ht_Generate_List(first_run,scheme,cat)
 {
 	first_run = first_run || "";
 	scheme = scheme || "";
-        cat = array2json(cat);
+        if(cat == 'NULL') {
+            var cat =new Array();
+            var i = 0;
+            $(".cats option:selected").each(function () {
+                cat[i] = $(this).text();
+                i ++; 
+            });
+        } else {
+            cat = array2json(cat);
+        }
 	var poststr = "first_run=" + first_run + "&scheme=" + scheme + "&cats=" + cat;
 
 	if(document.forms.CIDSources.src_list)
@@ -631,7 +644,7 @@ function decision(message, url)
 <?php
 if(($scheme != "") && ($scheme != "new"))
 {
-	print 'Ht_Generate_List(1,"'.$scheme.'");';
+	print 'Ht_Generate_List(1,"'.$scheme.'","ALL");';
 }
 print '
 //-->

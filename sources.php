@@ -92,6 +92,7 @@ if($revert_file != '')
 	}
 }
 //get a list of the files that are on this local server
+print_r($categories);
 foreach (glob("sources/source-*.module") as $filename)
 {
 	if($filename != '')
@@ -103,7 +104,6 @@ foreach (glob("sources/source-*.module") as $filename)
 			
 		$this_source_name = str_replace(".module","",str_replace("sources/source-","",$filename));
 		$source_class = NEW $this_source_name;		
-		
 		$settings = $source_class->settings();
                 $groups = isset($settings['groups']) ? $settings['groups'] : NULL;
                 $glist = explode(',',$groups);
@@ -125,8 +125,6 @@ foreach (glob("sources/source-*.module") as $filename)
                 }
 	}
 }
-
-
 
 //go through previously enabled sources
 $sql = "SELECT value FROM superfectaconfig WHERE source='$scheme' AND field='sources'";
