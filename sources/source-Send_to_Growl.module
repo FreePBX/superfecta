@@ -1,0 +1,46 @@
+<?php
+
+require_once("/var/www/html/admin/modules/superfecta/includes/php-growl/class.growl.php");
+
+class Send_to_Growl extends superfecta_base {
+
+	function settings() {
+		//configuration / display parameters
+		//The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
+		$settings['desc'] = "This source will send the number and the Caller ID to a Growl Client e.g. MAC or iPhone.";
+		$settings['version_requirement'] = "3.0";
+
+		$source_param = array();
+		$source_param['Server_address']['desc'] = 'Specify the Client IP address.';
+		$source_param['Server_address']['type'] = 'text';
+		$source_param['Server_address']['default'] = '';
+
+		$settings['param'] = array();
+		$settings['source_param'] = $source_param;
+
+		return($settings);
+	}
+
+	function post_processing($cache_found,$winning_source,$first_caller_id,$run_param,$thenumber) 
+	{
+		if (($run_param['Server_address'] !='') && ($first_caller_id != ''))
+		{
+	        $growl = new Growl($run_param['Server_address']);
+	        
+	        // Adding and registering your notifications with Growl only needs to be done once per computer. 
+	        // Growl will remember your app after this.
+	        $growl->addNotification('CallerID Superfecta');
+	        //$growl->addNotification('Another Notification');
+	        $growl->register();
+
+			$text = "{$thenumber}\n" . strftime("%c"); 	        
+	        // Send a notification
+	        $growl->notify('Incoming Call', $first_caller_id, $text);			
+	
+			$this->DebugPrint( "Send to Growl: \"{$first_caller_id} {$text}\"<br><br>" );
+		}
+
+		return($thenumber);
+	}
+	
+}
