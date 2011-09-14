@@ -14,7 +14,9 @@ class Send_to_Growl extends superfecta_base {
 		$source_param['Server_address']['desc'] = 'Specify the Client IP address.';
 		$source_param['Server_address']['type'] = 'text';
 		$source_param['Server_address']['default'] = '';
-
+		$source_param['Server_password']['desc'] = 'Specify the password required to connect. Leave blank if not used.';
+		$source_param['Server_password']['type'] = 'text';
+		$source_param['Server_password']['default'] = '';
 		$settings['param'] = array();
 		$settings['source_param'] = $source_param;
 
@@ -25,7 +27,7 @@ class Send_to_Growl extends superfecta_base {
 	{
 		if (($run_param['Server_address'] !='') && ($first_caller_id != ''))
 		{
-	        $growl = new Growl($run_param['Server_address']);
+	        $growl = new Growl($run_param['Server_address'], (isset($run_param['Server_password']) ? $run_param['Server_password'] : '' ));
 	        
 	        // Adding and registering your notifications with Growl only needs to be done once per computer. 
 	        // Growl will remember your app after this.
