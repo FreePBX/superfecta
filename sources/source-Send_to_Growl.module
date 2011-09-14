@@ -1,6 +1,6 @@
 <?php
 
-require_once("/var/www/html/admin/modules/superfecta/includes/php-growl/class.growl.php");
+require_once(dirname(dirname(__FILE__))."/includes/php-growl/class.growl.php");
 
 class Send_to_Growl extends superfecta_base {
 
