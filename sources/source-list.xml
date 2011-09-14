@@ -66,6 +66,12 @@
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
+		<name>source-Lokaldelen_SE.module</name>
+		<modified>1316036802</modified>
+		<md5>389de640a79e0a8bef34ac45ef6188f3</md5>
+		<version_requirement>3.0</version_requirement>
+	</source>
+	<source>
 		<name>source-Number_Guru.module</name>
 		<modified>1314568546</modified>
 		<md5>96a6f5bf5e3934cc1b42bb7377d740c4</md5>
@@ -81,6 +87,12 @@
 		<name>source-Say_No_To_0870_UK.module</name>
 		<modified>1314548221</modified>
 		<md5>9d0ca7f9ee8e39bbb7afbe14351c986d</md5>
+		<version_requirement>3.0</version_requirement>
+	</source>
+	<source>
+		<name>source-Send_to_Growl.module</name>
+		<modified>1316024253</modified>
+		<md5>ccbd4274696f1010b3683709578d493d</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
@@ -139,8 +151,8 @@
 	</source>
 	<source>
 		<name>source-Who_Called.module</name>
-		<modified>1312147438</modified>
-		<md5>881d400ae35bd4a560198d38fc85e07c</md5>
+		<modified>1315256027</modified>
+		<md5>facc4c862dff355690f19381b983999f</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
