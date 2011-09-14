@@ -1,4 +1,5 @@
 <?php
+	// Source used from https://github.com/tylerhall/php-growl
     class Growl
     {
         const GROWL_PRIORITY_LOW = -2;
