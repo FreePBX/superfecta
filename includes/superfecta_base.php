@@ -88,7 +88,8 @@ class superfecta_base {
 	
 	function outn($message) {
 		if(!$this->cli) {
-			echo $message . "</br>";
+			echo $message;
+			echo "<br>";
 		} else {
 			echo strip_tags($message) . "\n";
 		}
