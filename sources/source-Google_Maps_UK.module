@@ -12,24 +12,21 @@ class Google_Maps_UK extends superfecta_base {
 	
 	function get_caller_id($thenumber,$run_param=array()) {
 
-		$caller_id = "";		
+		$caller_id = null;		
 
-		if(!$this->IsValidNumber('UK', $thenumber))
+		if(!$this->IsValidNumber('UK', $this->thenumber))
 		{
-			$this->DebugPrint("Skipping Source - Non UK number: {$thenumber}");
+			$this->DebugPrint("Skipping Source - Non UK number: {$this->thenumber}");
 		}
 		else
 		{
-			$this->DebugPrint("Searching maps.google.co.uk for number: {$thenumber}");
+			$this->DebugPrint("Searching maps.google.co.uk for number: {$this->thenumber}");
 			
-			// By default, the found name is empty
-			$name = "";
-	
 			// We'll be searching google maps
-			$url = "http://maps.google.co.uk/?mode=search&q={$thenumber}";
+			$url = "http://maps.google.co.uk/?mode=search&q={$this->thenumber}";
 
 			// Grab the first result from google maps that matches our phone number
-			$pattern="/title:\'{$thenumber}.*sxti:\'(.*)\'/U";
+			$pattern="/title:\'{$this->thenumber}.*sxti:\'(.*)\'/U";
 			
 			if($this->SearchURL($url, $pattern, $match)){
 				$caller_id = $this->ExtractMatch($match);

@@ -15,7 +15,6 @@ class PagineBianche_IT extends superfecta_base {
 	function get_caller_id($thenumber,$run_param=array()) {
 
 		$caller_id = null;		
-//		$this->thenumber = $thenumber;
 		
 		if(!$this->IsValidNumber('IT', $this->thenumber))
 		{
