@@ -415,6 +415,7 @@ class superfecta_base {
 	function IsValidNumber($country, $thenumber, &$rPart1=null, &$rPart2=null , &$rPart3=null )
 	{	
 		$number_error = false;
+		$thenumber=preg_replace('/[^0-9^\.]/',"",$thenumber); // strip non-digits 
 
 		// If we did not get an array, it's probably a list. Convert it to an array.
 		if((!is_array($country)) && strpos($country, ",")){
@@ -842,6 +843,31 @@ class superfecta_base {
 			}
 			break; // end AU
 										
+			case "IT":
+			{
+				// Test for Italy
+				if (strlen($thenumber) > 10)
+				{
+					if (substr($thenumber,0,2) == '39')
+					{	
+						$num1 = substr($thenumber,2);
+					}
+					else if (substr($thenumber,0,4) == '0039')
+					{
+						$num1 = substr($thenumber,4);
+					} 
+					else if (substr($thenumber,0,5) == '01139')
+					{
+						$num1 = substr($thenumber,5);
+					}else{
+						return false;
+					}
+					// Set the number parts if passed by reference.
+					if(isset($rPart1)) { $rPart1 = $num1; }
+				}
+			}
+			break; // end IT
+
 			default:
 				$this->DebugPrint("Unknown Country Code ${country} passed to IsValidNumber: ${country}");
 				break;
