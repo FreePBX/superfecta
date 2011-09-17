@@ -850,20 +850,18 @@ class superfecta_base {
 				{
 					if (substr($thenumber,0,2) == '39')
 					{	
-						$num1 = substr($thenumber,2);
+						$thenumber = substr($thenumber,2);
 					}
 					else if (substr($thenumber,0,4) == '0039')
 					{
-						$num1 = substr($thenumber,4);
+						$thenumber = substr($thenumber,4);
 					} 
 					else if (substr($thenumber,0,5) == '01139')
 					{
-						$num1 = substr($thenumber,5);
+						$thenumber = substr($thenumber,5);
 					}else{
 						return false;
 					}
-					// Set the number parts if passed by reference.
-					if(isset($rPart1)) { $rPart1 = $num1; }
 				}
 			}
 			break; // end IT
@@ -873,6 +871,12 @@ class superfecta_base {
 				break;
 		} // end Country switch
 				
+		// Set the corrected number		
+		if(!$number_error)
+		{
+			$this->thenumber = $thenumber;
+		}
+		
 		return ($number_error ? false : true);
 	}
 	

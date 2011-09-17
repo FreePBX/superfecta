@@ -275,6 +275,8 @@ class superfecta_multi extends superfecta_base {
 			$source_class->set_DB( $this->db );
 			$source_class->set_AsteriskManager( $this->astman );
 			$source_class->thenumber_orig = $this->thenumber_orig;
+			$source_class->set_thenumber( $this->thenumber );
+			
 			if(method_exists($source_class, 'get_caller_id')) {
 				$caller_id = $source_class->get_caller_id($this->thenumber,$run_param);
 				$this->setSpam($source_class->isSpam());

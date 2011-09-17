@@ -33,6 +33,8 @@ class superfecta_single extends superfecta_base {
 				$source_class->set_AmpConf( $this->amp_conf );
 				$source_class->set_DB( $this->db );
 				$source_class->set_AsteriskManager( $this->astman );
+				$source_class->set_thenumber( $this->thenumber );
+				
 				if(method_exists($source_class, 'get_caller_id')) {
 					$caller_id = $source_class->get_caller_id($this->thenumber,$run_param);
 					$this->set_CacheFound($source_class->isCacheFound());

@@ -15,23 +15,20 @@ class PagineBianche_IT extends superfecta_base {
 	function get_caller_id($thenumber,$run_param=array()) {
 
 		$caller_id = null;		
-		$number1 = "";
+//		$this->thenumber = $thenumber;
 		
-		if(!$this->IsValidNumber('IT', $thenumber, $number1))
+		if(!$this->IsValidNumber('IT', $this->thenumber))
 		{
-			$this->DebugPrint( "Skipping Source - Non Italian number: {$thenumber}" );
+			$this->DebugPrint( "Skipping Source - Non Italian number: {$this->thenumber}" );
 		}
 		else
 		{
-			$this->DebugPrint( "Searching PagineBianche - {$number1} ... " );
+			$this->DebugPrint( "Searching PagineBianche - {$this->thenumber} ... " );
 
-			if($number1)
-			{			
-				$url = "http://www.paginebianche.it/execute.cgi?ver=default&font=default&btt=1&ts=106&cb=8&l=it&mr=10&rk=&om=&qs={$number1}";			
-				
-				if($this->SearchURL($url, '=<h3.class\=\"org\"[^>]*>(.*)</h3>=siU', $match)){
-					$caller_id = $this->ExtractMatch($match);
-				}
+			$url = "http://www.paginebianche.it/execute.cgi?ver=default&font=default&btt=1&ts=106&cb=8&l=it&mr=10&rk=&om=&qs={$this->thenumber}";			
+			
+			if($this->SearchURL($url, '=<h3.class\=\"org\"[^>]*>(.*)</h3>=siU', $match)){
+				$caller_id = $this->ExtractMatch($match);
 			}
 		}
 			
