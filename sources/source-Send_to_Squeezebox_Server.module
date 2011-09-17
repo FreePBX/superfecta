@@ -1,0 +1,56 @@
+<?php
+class Send_to_Squeezebox_Server extends superfecta_base {
+
+	function settings() {
+		//configuration / display parameters
+		//The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
+		$settings['desc'] = "This source will send the number and the Caller ID to Squeezebox server.<br>Enter the URL to the destination Squeezebox server in the format `http://url:port`.<br>This datasource should be one of the last data sources on your list, as it does not provide any data of its own, and can only send what information has been collected before it is run.";
+		$settings['version_requirement'] = "3.0";
+
+		$source_param = array();
+
+		$source_param['URL_address']['desc'] = 'Specify the URL:Port to the Squeezebox server installation. (Example: http://script.somewhere.com:9000)';
+		$source_param['URL_address']['type'] = 'text';
+		$source_param['URL_address']['default'] = 'http://url:9000';
+		$source_param['Display_Setting']['desc'] = 'Specify the way you want the number to be displayed on your Squeezebox';
+		$source_param['Display_Setting']['type'] = 'select';
+		$source_param['Display_Setting']['option'][1] = '(132) 456-7890';
+		$source_param['Display_Setting']['option'][2] = '132-456-7890';
+		$source_param['Display_Setting']['option'][3] = '12 34 56 78 90';
+		$source_param['Display_Setting']['option'][4] = 'No Formatting';
+		$source_param['Display_Setting']['default'] = 4;
+
+		$settings['param'] = array();
+		$settings['source_param'] = $source_param;
+
+		return($settings);
+	}
+
+	function post_processing($cache_found,$winning_source,$first_caller_id,$run_param,$thenumber) 
+	{
+		if (($run_param['URL_address'] !='') && ($first_caller_id != ''))
+		{
+			$thenumberformated = $thenumber;
+			switch ($run_param['Display_Setting'])
+			{
+				case 1:
+				case 2:
+				case 3:
+					$settings = $this->settings();
+					$mask = $settings["source_param"]['Format_Incomming_Number']['option'][$run_param['Display_Setting']];
+					$thenumberformated=$this->FormatNumber($thenumber, $mask);
+					break;
+			}
+	
+			$clid1=urlencode($first_caller_id);
+			$clid2=urlencode($thenumberformated);
+			
+			$url=$run_param['URL_address'].'/status.txt?p0=display&p1='.$clid2.'&p2='.$clid1.'&p3=30&player=*';
+			
+			$this->DebugPrint( "Send to Squeezebox: " . $run_param['URL_address'] );
+			$value = get_url_contents($url);
+				
+			return($thenumber);
+		}
+	}
+}
