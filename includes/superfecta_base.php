@@ -1296,4 +1296,24 @@ class superfecta_base {
 		}
 		return $name;
 	}
+
+	function FormatNumber($thenumber, $mask)
+	{
+		$sResult = $thenumber;
+		$thenumber = preg_replace('/[^0-9^\.]/',"",$thenumber);  // strip non-digits
+		
+		// If mask fits the number after removing other characters
+		if(strlen($thenumber) == strlen(preg_replace('/[^0-9^\.]/',"",$mask)))
+		{
+			for($sResult="", $m=0, $n=0; $m<strlen($mask); $m++) 
+			{
+				if(is_numeric(substr($mask,$m,1))) {
+					$sResult .= substr($thenumber,$n++,1);
+				} else {
+					$sResult .= substr($mask,$m,1);
+				}
+			}
+		}
+		return $sResult;
+	}
 }
