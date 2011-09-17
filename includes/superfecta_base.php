@@ -823,12 +823,12 @@ class superfecta_base {
 			case "AU":
 			{
 				// Validate number
-				if($match = match_pattern("0[2356789]XXXXXXXX",$thenumber)){
+				if($match = $this->match_pattern("0[2356789]XXXXXXXX",$thenumber)){
 					// Land line
 					$num1 = substr($thenumber,0,2);
 					$num2 = substr($thenumber,2,4);
 					$num3 = substr($thenumber,6,4);			
-				}elseif($match = match_pattern("04XXXXXXXX",$thenumber)){
+				}elseif($match = $this->match_pattern("04XXXXXXXX",$thenumber)){
 					// Mobile number
 					$num1 = substr($thenumber,0,4);
 					$num2 = substr($thenumber,4,3);
