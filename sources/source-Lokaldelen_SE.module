@@ -12,15 +12,15 @@ class Lokaldelen_SE extends superfecta_base {
 		
 		$caller_id=null;
 		
-		if( (!$this->IsValidNumber('SE',$thenumber)) )
+		if( (!$this->IsValidNumber('SE', $this->thenumber)) )
 		{
-			$this->DebugPrint( "Skipping Source - Not a valid Swedish number: {$thenumber}");
+			$this->DebugPrint( "Skipping Source - Not a valid Swedish number: {$this->thenumber}");
 		}
 		else
 		{
 			$this->DebugPrint( "Searching Lokaldelen.se ... ");
 			
-			$url="http://www.lokaldelen.se/navigator/-/$thenumber/1/";
+			$url="http://www.lokaldelen.se/navigator/-/$this->thenumber/1/";
 			$pattern = "/<a class='fn openPreview'.*>(.*)<\/a>/U";
 
 			if($this->SearchURL($url, $pattern, $match)) {
