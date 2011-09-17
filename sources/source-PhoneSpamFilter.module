@@ -1,5 +1,5 @@
 <?php
-class PhoneSpamFilter_US extends superfecta_base {
+class PhoneSpamFilter extends superfecta_base {
 
 	function settings() {
 		//configuration / display parameters
