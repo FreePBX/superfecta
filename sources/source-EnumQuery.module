@@ -1,0 +1,38 @@
+<?php
+class EnumQuery extends superfecta_base {
+
+	function settings() {
+		//configuration / display parameters
+		//The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
+		$source_desc = "http://www.enumquery.com       This data source returns the user provided extended CNAM data listed in their ENUM (e164) registrations.  Registrants must have specified CNAM data in one of the supported e164 registries for this data source to return a value.<br>See www.enumquery.com for list of supported registries.";
+
+		$settings['desc'] = $source_desc;
+		$settings['version_requirement'] = "3.0";
+
+		return($settings);
+	}
+	
+	function get_caller_id($thenumber,$run_param=array()) {
+
+		$caller_id = null;		
+
+		if(!$this->IsValidNumber('US,CA', $this->thenumber))
+		{
+			$this->DebugPrint( "Skipping Source - Non US/CAN number: {$this->thenumber}" );
+		}
+		else
+		{
+			$this->DebugPrint( "Searching EnumQuery - {$this->thenumber} ... " );
+
+			$url = "http://enumquery.com/lookup?e164=1{$this->thenumber}"
+			
+			$pattern = '/CN=(.*);/isU';
+			
+			if($this->SearchURL($url, $pattern, $match)){
+				$caller_id = $this->ExtractMatch($match);
+			}
+		}
+			
+		return($caller_id);
+	}
+}
