@@ -32,6 +32,6 @@ class Google_Maps_UK extends superfecta_base {
 				$caller_id = $this->ExtractMatch($match);
 			}
 		}
-		return($caller_id);
+		return( str_replace(array('\x27'), array("'"), $caller_id) );
 	}
 }
