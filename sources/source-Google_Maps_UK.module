@@ -33,6 +33,6 @@ class Google_Maps_UK extends superfecta_base {
 			}
 		}
 
-		return $this->StripHexCodes($caller_id);		
+		return $caller_id;		
 	}
 }

@@ -1355,7 +1355,8 @@ class superfecta_base {
 		if(isset($match[$index]) && strlen($match[$index])){
 			//putting this here too just incase we need to remove newlines and such from found elements
 			$match[$index] = preg_replace('/[\n\r\t]*/i', '', $match[$index]);
-			$name = trim(strip_tags($match[$index]));
+			// Remove any ASCII embedded HEX codes e.g. \x27
+			$name = $this->StripHexCodes(trim(strip_tags($match[$index])));
 		}
 		else
 		{
