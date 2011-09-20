@@ -1383,4 +1383,18 @@ class superfecta_base {
 		}
 		return $sResult;
 	}
+	
+	function StripHexCodes($value)
+	{
+		// Search for \x99 pattern - note 4 backslashes translates to '\\' when called
+		while(preg_match("/\\\\x([0-9][0-9])/", $value, $match))
+		{
+			// Fetch HEX value from regex match.
+			$hex = $this->ExtractMatch($match);
+
+			// Convert escaped hex to ASCII character  e.g. \x27 to chr(39)
+			$value = str_replace("\x{$hex}", chr(hexdec($hex)), $value);
+		}
+		return $value;	
+	}
 }

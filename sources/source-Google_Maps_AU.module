@@ -32,10 +32,7 @@ class Google_Maps_AU extends superfecta_base {
 				$caller_id = $this->ExtractMatch($match);
 			}
 		}
-		while($pos=strstr($caller_id, '\x')) {
-			// Convert escaped hex to ASCII character  e.g. \x27 to chr(39)
-			$caller_id = str_replace(substr($pos,0,4), chr(hexdec(substr($pos,2,2))), $caller_id);
-		}
-		return $caller_id;
+
+		return $this->StripHexCodes($caller_id);		
 	}
 }
