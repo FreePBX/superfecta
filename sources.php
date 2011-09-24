@@ -92,7 +92,7 @@ if($revert_file != '')
 	}
 }
 //get a list of the files that are on this local server
-print_r($categories);
+//print_r($categories);
 foreach (glob("sources/source-*.module") as $filename)
 {
 	if($filename != '')

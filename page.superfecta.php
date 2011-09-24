@@ -254,7 +254,7 @@ if($scheme != "")
 
                 }
         }
-
+        /*
 	print '<h2><u>Data Sources</u></h2>
             <p>Categories: <select class="cats" multiple="multiple" size="2">';
         
@@ -262,10 +262,12 @@ if($scheme != "")
             $selected = '';
             echo '<option value="'.$key.'" '.$selected.'>'.$key.'</option>';
         }
+         * 
+         */
 
 print '</select></p>
 		<p>Select which data source(s) to use for your lookups, and the order in which you want them used:</p>
-		<form method="POST" action="javascript:Ht_Generate_List(\'\',\''.$scheme.'\',\'NULL\');" name="CIDSources">
+		<form method="POST" action="javascript:Ht_Generate_List(\'\',\''.$scheme.'\');" name="CIDSources">
 			<div id="CIDSourcesList"></div>
 			<br><br>
 		</form>
@@ -493,10 +495,11 @@ function Ht_Response()
 	}
 }
 
-function Ht_Generate_List(first_run,scheme,cat)
+function Ht_Generate_List(first_run,scheme)
 {
 	first_run = first_run || "";
 	scheme = scheme || "";
+        /*
         if(cat == 'NULL') {
             var cat =new Array();
             var i = 0;
@@ -508,6 +511,8 @@ function Ht_Generate_List(first_run,scheme,cat)
             cat = array2json(cat);
         }
 	var poststr = "first_run=" + first_run + "&scheme=" + scheme + "&cats=" + cat;
+        */
+       	var poststr = "first_run=" + first_run + "&scheme=" + scheme;
 
 	if(document.forms.CIDSources.src_list)
 	{
@@ -564,8 +569,6 @@ function Ht_Generate_List(first_run,scheme,cat)
 		divname = 'CIDSourcesList';
 		http.open("POST", "modules/superfecta/sources.php", true);
 		http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-		http.setRequestHeader("Content-length", poststr.length);
-		http.setRequestHeader("Connection", "close");
 		http.onreadystatechange = Ht_Response;
 		http.send(poststr);
 	}

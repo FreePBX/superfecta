@@ -24,7 +24,7 @@ class EnumQuery extends superfecta_base {
 		{
 			$this->DebugPrint( "Searching EnumQuery - {$this->thenumber} ... " );
 
-			$url = "http://enumquery.com/lookup?e164=1{$this->thenumber}"
+			$url = "http://enumquery.com/lookup?e164=1{$this->thenumber}";
 			
 			$pattern = '/CN=(.*);/isU';
 			
