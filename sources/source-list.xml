@@ -36,15 +36,33 @@
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
+		<name>source-EnumQuery.module</name>
+		<modified>1316949374</modified>
+		<md5>8218f760b7166df31484d3bc34cfe2b9</md5>
+		<version_requirement>3.0</version_requirement>
+	</source>
+	<source>
 		<name>source-FreeCNAM.module</name>
 		<modified>1314568513</modified>
 		<md5>3057272ebf65bb71c57f22ce08b1e7f4</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
+		<name>source-Google_Maps_AU.module</name>
+		<modified>1316542164</modified>
+		<md5>62ba2118c39af4af26754e96e1c89806</md5>
+		<version_requirement>3.0</version_requirement>
+	</source>
+	<source>
 		<name>source-Google_Maps_UK.module</name>
-		<modified>1314465673</modified>
-		<md5>e7d1a44856896a7b3b70726913c6f523</md5>
+		<modified>1316542056</modified>
+		<md5>8b6be96b66d538ee6db262f309973fcb</md5>
+		<version_requirement>3.0</version_requirement>
+	</source>
+	<source>
+		<name>source-Hitta_SE.module</name>
+		<modified>1316282275</modified>
+		<md5>432c0d7be68432dc14be7f4feb2cf2e1</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
@@ -67,8 +85,8 @@
 	</source>
 	<source>
 		<name>source-Lokaldelen_SE.module</name>
-		<modified>1316036802</modified>
-		<md5>389de640a79e0a8bef34ac45ef6188f3</md5>
+		<modified>1316282423</modified>
+		<md5>94c2726eb81025e622551dd33b2a5add</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
@@ -78,15 +96,63 @@
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
+		<name>source-Paginasblancas_AR.module</name>
+		<modified>1316355444</modified>
+		<md5>9cf0b2f8bb3baacb9584e4fd1bdd1a70</md5>
+		<version_requirement>3.0</version_requirement>
+	</source>
+	<source>
+		<name>source-PagineBianche_IT.module</name>
+		<modified>1316274330</modified>
+		<md5>7c6084df8ccdf042dd6328aa4713901d</md5>
+		<version_requirement>3.0</version_requirement>
+	</source>
+	<source>
+		<name>source-Personlookup_AU.module</name>
+		<modified>1316301981</modified>
+		<md5>70a97e18c33f6a3e707777793da5af57</md5>
+		<version_requirement>3.0</version_requirement>
+	</source>
+	<source>
+		<name>source-PhoneLookup_UK.module</name>
+		<modified>1316122181</modified>
+		<md5>3d51c530c91034523dff564caeb4dbab</md5>
+		<version_requirement>3.0</version_requirement>
+	</source>
+	<source>
+		<name>source-PhoneSpamFilter.module</name>
+		<modified>1316257748</modified>
+		<md5>0882e2b9312b8d84103c143e8fc13fe9</md5>
+		<version_requirement>3.0</version_requirement>
+	</source>
+	<source>
 		<name>source-PhoneSpamFilter_UK.module</name>
 		<modified>1311788559</modified>
 		<md5>01364b2341134c8d365712ecb35b7c55</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
+		<name>source-ReversePhoneBooks_UK.module</name>
+		<modified>1318962588</modified>
+		<md5>fb466110a677f5012b6122535a47b051</md5>
+		<version_requirement>3.0</version_requirement>
+	</source>
+	<source>
+		<name>source-Reversephones_AU.module</name>
+		<modified>1316462045</modified>
+		<md5>340ae9307034abc9c9cadd98227c9f96</md5>
+		<version_requirement>3.0</version_requirement>
+	</source>
+	<source>
 		<name>source-Say_No_To_0870_UK.module</name>
 		<modified>1314548221</modified>
 		<md5>9d0ca7f9ee8e39bbb7afbe14351c986d</md5>
+		<version_requirement>3.0</version_requirement>
+	</source>
+	<source>
+		<name>source-Send_to_Dreambox.module</name>
+		<modified>1316292777</modified>
+		<md5>98056026dd7828be0b5e6233cbaa2335</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
@@ -102,9 +168,27 @@
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
+		<name>source-Send_to_Squeezebox_Server.module</name>
+		<modified>1316293548</modified>
+		<md5>ecca7e419fd8fa7327592ccea8234de4</md5>
+		<version_requirement>3.0</version_requirement>
+	</source>
+	<source>
 		<name>source-Send_to_URL.module</name>
 		<modified>1312743856</modified>
 		<md5>23f543754157ce6a63ebfdb49f59f779</md5>
+		<version_requirement>3.0</version_requirement>
+	</source>
+	<source>
+		<name>source-Send_to_Winunciator.module</name>
+		<modified>1316344508</modified>
+		<md5>9fcc788242fa808a13231418419c6a65</md5>
+		<version_requirement>3.0</version_requirement>
+	</source>
+	<source>
+		<name>source-Send_to_XBMC.module</name>
+		<modified>1316290519</modified>
+		<md5>52970e8cf5581a3b5d9edb9afc9823b1</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
@@ -132,6 +216,12 @@
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
+		<name>source-Truelocal_AU.module</name>
+		<modified>1316275558</modified>
+		<md5>3e2c7adaf8f0a88af42f5301490f528e</md5>
+		<version_requirement>3.0</version_requirement>
+	</source>
+	<source>
 		<name>source-Trunk_Provided.module</name>
 		<modified>1312178855</modified>
 		<md5>a2c0972f2047813d03a4cccaea572ae8</md5>
@@ -141,6 +231,12 @@
 		<name>source-UKPhoneInfo_UK.module</name>
 		<modified>1314465884</modified>
 		<md5>68829a13b4d8c0e0253012be03b85986</md5>
+		<version_requirement>3.0</version_requirement>
+	</source>
+	<source>
+		<name>source-VoIPCNAM.module</name>
+		<modified>1316297767</modified>
+		<md5>5a7150a7ead3c2ed0b99f2716c265e30</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
 	<source>
@@ -159,6 +255,12 @@
 		<name>source-Yellow_Pages.module</name>
 		<modified>1314568601</modified>
 		<md5>855bc5950104f8bd6a30222052f9c321</md5>
+		<version_requirement>3.0</version_requirement>
+	</source>
+	<source>
+		<name>source-Yellowpages_AU.module</name>
+		<modified>1316865636</modified>
+		<md5>4355d20c86eb440a0e883da0d7eec1f4</md5>
 		<version_requirement>3.0</version_requirement>
 	</source>
 </data>

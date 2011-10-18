@@ -1,0 +1,63 @@
+<?php
+class ReversePhoneBooks_UK extends superfecta_base {
+
+	function settings() {
+		//configuration / display parameters
+		//The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
+		$source_desc = "http://www.reversephonebooks.co.uk - A datasource devoted to identifying telemarketers. These listings are provided by other users of this service.";
+
+		$settings['desc'] = $source_desc;
+		$settings['version_requirement'] = "3.0";
+
+		$source_param = array();
+		$source_param['SPAM_Threshold']['desc'] = 'Specify the # of listings required to mark a call as spam.';
+		$source_param['SPAM_Threshold']['type'] = 'number';
+		$source_param['SPAM_Threshold']['default'] = 5;
+
+		$settings['param'] = array();
+		$settings['source_param'] = $source_param;
+
+		return($settings);
+	}
+	
+	function get_caller_id($thenumber,$run_param=array()) {
+		$caller_id = NULL;		
+
+		if(!$this->IsValidNumber('UK', $this->thenumber))
+		{
+			$this->DebugPrint( "Skipping Source - Non UK number: {$this->thenumber}" );
+		}
+		else
+		{
+			$this->DebugPrint( "Searching ReversePhoneBooks.co.uk ... " );
+			
+			$url = "http://www.reversephonebooks.co.uk/{$this->thenumber}-phone-number";
+			$value = $this->get_url_contents($url);
+
+			$pattern = "/<p>There are (\d+) reported complaint([s]*) for phone number/";
+			
+			if($this->SearchURL($url, $pattern, $match))
+			{
+				$value = $this->ExtractMatch($match);
+				if(is_numeric($value))
+				{
+					$this->DebugPrint( " value of {$value} returned ... " );
+	
+					$score = $value;
+					if($score > $run_param['SPAM_Threshold'])
+					{
+						$this->spam = true;
+						$this->DebugPrint( " determined to be SPAM" );
+					}
+					else
+					{
+						$this->DebugPrint( "Not a SPAM caller" );
+					}
+					return($caller_id);
+				}
+			}
+			$this->DebugPrint( "not found" );
+			return(NULL);
+		}			
+	}
+}
