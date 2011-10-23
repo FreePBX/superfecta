@@ -20,7 +20,7 @@ if (!function_exists('json_decode')) {
     }
 }
 
-$categories = json_decode($_REQUEST['cats']);
+//$categories = json_decode($_REQUEST['cats']);
 $categories = (!empty($categories)) ? $categories : array('0' => 'ALL');
 
 $module_info = $superfecta->xml2array("module.xml");
