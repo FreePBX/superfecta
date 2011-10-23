@@ -16,6 +16,11 @@ class LDAP extends superfecta_base {
 		$source_param['LDAP_Password']['type'] = 'password';
 		$source_param['LDAP_Unit']['desc'] = 'Organizational Unit to search.<br><br>Leave blank to search all OU.';
 		$source_param['LDAP_Unit']['type'] = 'text';
+		$source_param['LDAP_Format']['type'] = 'select';
+		$source_param['LDAP_Format']['option'][1] = '(cn) e.g. Joe Bloggs';
+		$source_param['LDAP_Format']['option'][2] = '(sn,givenname) e.g. Bloggs, Joe';
+		$source_param['LDAP_Format']['option'][3] = '(givenname sn) e.g. Joe Bloggs';
+		$source_param['LDAP_Format']['default'] = '1';
 
 		$settings['param'] = array();
 		$settings['source_param'] = $source_param;
@@ -24,7 +29,7 @@ class LDAP extends superfecta_base {
 	}
 	
 	function get_caller_id($thenumber,$run_param=array()) {
-		$caller_id = "";		
+		$caller_id = null;		
 
 		$this->DebugPrint( "Searching LDAP for number: {$thenumber}");
 
@@ -73,7 +78,23 @@ class LDAP extends superfecta_base {
 				$scheme = 'ldaps';
 			}
 		}
-	
+
+		// #50 - Allow for different output fields		
+		$fields = array('1' => 'cn', 			// CommonName
+						'2' => 'sn,givenname', 	// LastName, FirstName
+						'3' => 'givenname sn' 	// FirstName LastName
+						);
+
+		// Validate Formatting Options
+		if(array_key_exists($run_param['LDAP_Format'], $fields) )
+		{
+			$fieldlist = preg_split("/[\s,]+/", $fields[ $run_param['LDAP_Format'] ]);
+		}
+		else
+		{
+		    $this->DebugDie("Invalid Format requested.");
+		}
+						
 		// Prepare connection to LDAP server
 		$ad=@ldap_connect("{$scheme}://{$server}") or $this->DebugDie("Could not connect to {$scheme}://{$server}");
 		
@@ -107,9 +128,9 @@ class LDAP extends superfecta_base {
 		}
 	
 		$this->DebugEcho( "Searching {$dn} ... ");
-		
+
 		// perform LDAP search - only return CN to conserve bandwidth
-		if($rs = @ldap_search($ad, $dn,	"(|(telephoneNumber=*{$thenumber})(mobile=*{$thenumber})(homeTelephoneNumber=*{$thenumber}))", array($this->isDebug(DEBUG_ALL) ? '*' : 'cn')))
+		if($rs = @ldap_search($ad, $dn,	"(|(telephoneNumber=*{$thenumber})(mobile=*{$thenumber})(homeTelephoneNumber=*{$thenumber}))", $this->isDebug(DEBUG_ALL) ? array('*') : $fieldlist))
 		{
 			if($info = ldap_get_entries($ad, $rs))
 			{	
@@ -118,7 +139,14 @@ class LDAP extends superfecta_base {
 				if($info["count"] > 0)
 				{
 					$this->DebugDump($info[0], DEBUG_ALL);
-					$name = $info[0]["cn"][0];
+					$name="";
+
+					// #50 - loop and add comma if required. 
+					foreach($fieldlist as $field)
+					{
+						$name .= $info[0][$field][0];
+						$name .= (strpos(" ".$fields[$run_param['LDAP_Format']], "{$field}," ,1) ? ", " : " " );
+					}
 				}
 			}
 		}
@@ -127,9 +155,9 @@ class LDAP extends superfecta_base {
 		ldap_unbind($ad);
 		
 		// If we found a match, return it
-		if(strlen($name) > 1)
+		if(strlen(trim($name)) > 1)
 		{
-			$caller_id = $name;
+			$caller_id = trim( $name );
 		}
 		else
 		{
