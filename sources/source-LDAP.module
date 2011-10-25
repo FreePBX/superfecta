@@ -1,4 +1,7 @@
 <?php
+define("LDAP_OPENLDAP", "1");
+define("LDAP_OPENDIRECTORY", "2");
+
 class LDAP extends superfecta_base {
 
 	function settings() {
@@ -14,12 +17,25 @@ class LDAP extends superfecta_base {
 		$source_param['LDAP_User']['type'] = 'text';
 		$source_param['LDAP_Password']['desc'] = 'Password used to connect to the LDAP server';
 		$source_param['LDAP_Password']['type'] = 'password';
+		$source_param['LDAP_Server']['desc'] = 'Authentication Username to connect to the LDAP server';
+		$source_param['LDAP_Server']['type'] = 'select';
+		$source_param['LDAP_Server']['option'][LDAP_OPENLDAP] = 'Open LDAP';
+		$source_param['LDAP_Server']['option'][LDAP_OPENDIRECTORY] = 'Apple Open Directory';
+		$source_param['LDAP_Server']['default'] = LDAP_OPENLDAP;
 		$source_param['LDAP_Unit']['desc'] = 'Organizational Unit to search.<br><br>Leave blank to search all OU.';
 		$source_param['LDAP_Unit']['type'] = 'text';
+		$source_param['LDAP_Format']['desc'] = "Specify the format required.<br><br>Valid values are<br><pre>
+		1 - Common Name
+		2 - LastName, FirstName
+		3 - FirstName LastName
+		4 - Organization - Lastname (cn if Organization blank)
+		5 - AppleCompany - Lastname (cn if Company blank)</pre>";
 		$source_param['LDAP_Format']['type'] = 'select';
 		$source_param['LDAP_Format']['option'][1] = '(cn) e.g. Joe Bloggs';
-		$source_param['LDAP_Format']['option'][2] = '(sn,givenname) e.g. Bloggs, Joe';
+		$source_param['LDAP_Format']['option'][2] = '(sn, givenname) e.g. Bloggs, Joe';
 		$source_param['LDAP_Format']['option'][3] = '(givenname sn) e.g. Joe Bloggs';
+		$source_param['LDAP_Format']['option'][4] = '(o - sn) e.g. Acme - Bloggs';
+		$source_param['LDAP_Format']['option'][5] = '(applecompany - sn) e.g. Acme - Bloggs';
 		$source_param['LDAP_Format']['default'] = '1';
 
 		$settings['param'] = array();
@@ -80,15 +96,24 @@ class LDAP extends superfecta_base {
 		}
 
 		// #50 - Allow for different output fields		
-		$fields = array('1' => 'cn', 			// CommonName
-						'2' => 'sn,givenname', 	// LastName, FirstName
-						'3' => 'givenname sn' 	// FirstName LastName
+		$fields = array('1' => 'cn', 				// CommonName
+						'2' => 'sn, givenname', 	// LastName, FirstName
+						'3' => 'givenname sn', 		// FirstName LastName
+						'4' => 'o - sn', 			// Organisation LastName
+						'5' => 'apple-company - sn' // Company LastName
 						);
 
 		// Validate Formatting Options
 		if(array_key_exists($run_param['LDAP_Format'], $fields) )
 		{
 			$fieldlist = preg_split("/[\s,]+/", $fields[ $run_param['LDAP_Format'] ]);
+			
+			if(array_search("-", $fieldlist)){unset($fieldlist[array_search("-", $fieldlist)]);}
+
+			// Add 'cn' to field list if not present
+			if(!array_search('cn', $fieldlist)){$fieldlist[]='cn';}
+			
+			$fieldlist=array_unique($fieldlist);
 		}
 		else
 		{
@@ -110,8 +135,18 @@ class LDAP extends superfecta_base {
 			ldap_set_option($ad, constant('LDAP_OPT_NETWORK_TIMEOUT'), 5) or $this->DebugDie("Could not set network timeout");
 		}
 			
+		// Set user id
+		if($run_param['LDAP_Server'] == LDAP_OPENDIRECTORY)
+		{
+			$UID="uid={$run_param['LDAP_User']},cn=users, {$dc}";
+		}
+		else
+		{
+			$UID="cn={$run_param['LDAP_User']}, {$dc}";
+		}
+
 		// Establish connection with LDAP server
-		$bd=@ldap_bind($ad, "cn={$run_param['LDAP_User']}, {$dc}", "{$run_param['LDAP_Password']}") or $this->DebugDie("Could not bind to {$scheme}://{$server}");
+		$bd=@ldap_bind($ad, $UID, "{$run_param['LDAP_Password']}") or $this->DebugDie("Could not bind to {$scheme}://{$server}");
 			
 		// Check for OU to limit search
 		if(strlen($run_param['LDAP_Unit'])>0)
@@ -130,7 +165,7 @@ class LDAP extends superfecta_base {
 		$this->DebugEcho( "Searching {$dn} ... ");
 
 		// perform LDAP search - only return CN to conserve bandwidth
-		if($rs = @ldap_search($ad, $dn,	"(|(telephoneNumber=*{$thenumber})(mobile=*{$thenumber})(homeTelephoneNumber=*{$thenumber}))", $this->isDebug(DEBUG_ALL) ? array('*') : $fieldlist))
+		if($rs = @ldap_search($ad, $dn,	"(|(telephoneNumber=*{$thenumber})(mobile=*{$thenumber})(homeTelephoneNumber=*{$thenumber}))", $this->isDebug(DEBUG_ALL) ? array('*') : array_values($fieldlist)))
 		{
 			if($info = ldap_get_entries($ad, $rs))
 			{	
@@ -139,13 +174,28 @@ class LDAP extends superfecta_base {
 				if($info["count"] > 0)
 				{
 					$this->DebugDump($info[0], DEBUG_ALL);
+					
+					// Default to cn if any field is missing
+					$cn = $info[0]['cn'][0];
 					$name="";
+
+					if(array_search('cn', $fieldlist)){unset($fieldlist[array_search('cn', $fieldlist)]);}
 
 					// #50 - loop and add comma if required. 
 					foreach($fieldlist as $field)
 					{
-						$name .= $info[0][$field][0];
-						$name .= (strpos(" ".$fields[$run_param['LDAP_Format']], "{$field}," ,1) ? ", " : " " );
+						if(array_key_exists($field, $info[0]))
+						{						
+							$name .= $info[0][$field][0];
+							$name .= (strpos(" ".$fields[$run_param['LDAP_Format']], "{$field}," ,1) ? ", " : " " );
+							$name .= (strpos(" ".$fields[$run_param['LDAP_Format']], "{$field} -" ,1) ? "- " : " " );
+						}
+						else
+						{
+							// Default to cn if any field is missing
+							$name = $cn;
+							break;
+						}
 					}
 				}
 			}
