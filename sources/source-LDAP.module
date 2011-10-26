@@ -17,7 +17,7 @@ class LDAP extends superfecta_base {
 		$source_param['LDAP_User']['type'] = 'text';
 		$source_param['LDAP_Password']['desc'] = 'Password used to connect to the LDAP server';
 		$source_param['LDAP_Password']['type'] = 'password';
-		$source_param['LDAP_Server']['desc'] = 'Authentication Username to connect to the LDAP server';
+		$source_param['LDAP_Server']['desc'] = 'LDAP service provider to connect to';
 		$source_param['LDAP_Server']['type'] = 'select';
 		$source_param['LDAP_Server']['option'][LDAP_OPENLDAP] = 'Open LDAP';
 		$source_param['LDAP_Server']['option'][LDAP_OPENDIRECTORY] = 'Apple Open Directory';
@@ -25,11 +25,11 @@ class LDAP extends superfecta_base {
 		$source_param['LDAP_Unit']['desc'] = 'Organizational Unit to search.<br><br>Leave blank to search all OU.';
 		$source_param['LDAP_Unit']['type'] = 'text';
 		$source_param['LDAP_Format']['desc'] = "Specify the format required.<br><br>Valid values are<br><pre>
-		1 - Common Name
-		2 - LastName, FirstName
-		3 - FirstName LastName
-		4 - Organization - Lastname (cn if Organization blank)
-		5 - AppleCompany - Lastname (cn if Company blank)</pre>";
+1 - Common Name (cn)
+2 - LastName, FirstName
+3 - FirstName LastName
+4 - Organization - Lastname (cn if Organization blank)
+5 - AppleCompany - Lastname (cn if Company blank)</pre>";
 		$source_param['LDAP_Format']['type'] = 'select';
 		$source_param['LDAP_Format']['option'][1] = '(cn) e.g. Joe Bloggs';
 		$source_param['LDAP_Format']['option'][2] = '(sn, givenname) e.g. Bloggs, Joe';
@@ -179,7 +179,11 @@ class LDAP extends superfecta_base {
 					$cn = $info[0]['cn'][0];
 					$name="";
 
-					if(array_search('cn', $fieldlist)){unset($fieldlist[array_search('cn', $fieldlist)]);}
+					// Remove cn from list as not required.					
+					if(array_search('cn', $fieldlist)){
+						unset($fieldlist[array_search('cn', $fieldlist)]);
+						$fieldlist=array_values($fieldlist);
+					}
 
 					// #50 - loop and add comma if required. 
 					foreach($fieldlist as $field)
