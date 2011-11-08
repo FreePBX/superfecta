@@ -3,7 +3,7 @@
 //If a valid match is found, it will give $caller_id a value
 //available variables for use are: $thenumber
 //retreive website contents using get_url_contents($url);
-//version: November 7, 2011
+//version date: November 8, 2011
 
 //configuration / display parameters
 //The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
@@ -15,13 +15,13 @@ if($usage_mode == 'get caller id')
 {
 	$value = "";
 	$number_error = false;
-	$validnpaCAN = false;
+	$validnpa = false;
 
 	if($debug)
 	{
 		print "Searching http://www.paginasamarillas.com.do ... ";
 	}
-	
+
 	//check for the correct 10 digit phone number.
 	if (strlen($thenumber) != 10)
 	{
@@ -29,12 +29,35 @@ if($usage_mode == 'get caller id')
 
 	}
 
+	// check for Dominican area code
+	if(!$number_error)
+	{
+		$npa = substr($thenumber,0,3);
+		$nxx = substr($thenumber,3,3);
+                $station = substr($thenumber,6,4);
+
+		// List of all valid Dominican NPAs
+		$npalist = array(
+			"809", "829", "849"
+			);
+
+		if(in_array($npa, $npalist))
+		{
+			$validnpa = true;
+		}
+	}
+
+	if(!$validnpa)
+	{
+		$number_error = true;
+	}
+
 
 	if($number_error)
 	{
 		if($debug)
 		{
-			print "Skipping - Source requires 10 digit number: ".$thenumber."<br>\n";
+			print "Skipping - Not a 10 digit Dominican number: ".$thenumber."<br>\n";
 		}
 	}
 	else
