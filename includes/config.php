@@ -2,10 +2,10 @@
 define("LOCAL_PATH", str_replace("includes","",dirname(__FILE__)));
 if(file_exists("/etc/freepbx.conf")) {
 	//This is FreePBX 2.9+
-	require("/etc/freepbx.conf");
+	require_once("/etc/freepbx.conf");
 } elseif(file_exists("/etc/asterisk/freepbx.conf")) {
 	//This is FreePBX 2.9+
-	require("/etc/asterisk/freepbx.conf");
+	require_once("/etc/asterisk/freepbx.conf");
 } else {
 	//This is > FreePBX 2.8	
 	$functions_location = str_replace("modules/superfecta/includes", "", dirname(__FILE__))."functions.inc.php";

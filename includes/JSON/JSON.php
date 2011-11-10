@@ -56,6 +56,8 @@
  * @link        http://pear.php.net/pepr/pepr-proposal-show.php?id=198
  */
 
+if(!function_exists('json_decode')) {
+
 /**
  * Marker constant for Services_JSON::decode(), used to flag stack state
  */
@@ -90,6 +92,79 @@ define('SERVICES_JSON_LOOSE_TYPE', 16);
  * Behavior switch for Services_JSON::decode()
  */
 define('SERVICES_JSON_SUPPRESS_ERRORS', 32);
+
+/**
+ *
+ */
+define('JSON_PRETTY_PRINT', 100);
+
+	//Pretty Print json function
+	function indent($json) {
+
+	    $result      = '';
+	    $pos         = 0;
+	    $strLen      = strlen($json);
+	    $indentStr   = '  ';
+	    $newLine     = "\n";
+	    $prevChar    = '';
+	    $outOfQuotes = true;
+
+	    for ($i=0; $i<=$strLen; $i++) {
+
+	        // Grab the next character in the string.
+	        $char = substr($json, $i, 1);
+
+	        // Are we inside a quoted string?
+	        if ($char == '"' && $prevChar != '\\') {
+	            $outOfQuotes = !$outOfQuotes;
+
+	        // If this character is the end of an element, 
+	        // output a new line and indent the next line.
+	        } else if(($char == '}' || $char == ']') && $outOfQuotes) {
+	            $result .= $newLine;
+	            $pos --;
+	            for ($j=0; $j<$pos; $j++) {
+	                $result .= $indentStr;
+	            }
+	        }
+
+	        // Add the character to the result string.
+	        $result .= $char;
+
+	        // If the last character was the beginning of an element, 
+	        // output a new line and indent the next line.
+	        if (($char == ',' || $char == '{' || $char == '[') && $outOfQuotes) {
+	            $result .= $newLine;
+	            if ($char == '{' || $char == '[') {
+	                $pos ++;
+	            }
+
+	            for ($j = 0; $j < $pos; $j++) {
+	                $result .= $indentStr;
+	            }
+	        }
+
+	        $prevChar = $char;
+	    }
+
+	    return $result;
+	}
+
+	function json_decode($input,$array=FALSE) {
+		$type = $array ? SERVICES_JSON_LOOSE_TYPE : '';
+		$json = new Services_JSON($type);
+		return($json->decode($input));
+	}
+	
+	function json_encode($input,$opts) {
+		$json = new Services_JSON();
+		if($opts == JSON_PRETTY_PRINT) {
+			return(indent($json->encode($input)));
+		} else {
+			return($json->encode($input));
+		}
+	}
+}
 
 /**
  * Converts to and from JSON format.
@@ -802,5 +877,3 @@ if (class_exists('PEAR_Error')) {
     }
 
 }
-    
-?>
