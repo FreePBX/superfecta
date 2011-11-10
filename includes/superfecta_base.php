@@ -24,7 +24,7 @@ class superfecta_base {
 	protected $src_array = array();
 	protected $multifecta_id = false;
 	protected $multifecta_parent_id = false;
-	protected $curl_timeout = '1.5';
+	protected $curl_timeout = '3.5';
 	protected $spam_count = 0;
 		
 	function isCLI() { return $this->cli; }
@@ -439,6 +439,7 @@ class superfecta_base {
 		{
 			case "US" :
 			case "CA" :
+			case "DO" :
 			{
 				//check for the correct 11 digits in US/CAN phone numbers in international format.
 				// country code + number
@@ -482,6 +483,8 @@ class superfecta_base {
 
 				$validnpaUS = false;
 				$validnpaCAN = false;
+				$validnpaDO = false;
+
 				$TFnpa = false;
 
 				$npa = substr($thenumber,0,3);
@@ -532,10 +535,7 @@ class superfecta_base {
 						"800", "866", "877", "888"
 					);
 		
-					if(in_array($npa, $npalistUS))
-					{
-						$validnpaUS = true;
-					}
+					$validnpaUS = in_array($npa, $npalistUS);
 				}
 						
 				if($country=='CA' && !$number_error)
@@ -548,13 +548,16 @@ class superfecta_base {
 						"800", "866", "877", "888"
 					  );
 		
-					if(in_array($npa, $npalistCAN))
-					{
-						$validnpaCAN = true;
-					}
+					$validnpaCAN = in_array($npa, $npalistCAN);
 				}
 						
-				if(!$TFnpa && ((!$validnpaUS) && (!$validnpaCAN)))
+				if($country=='DO' && !$number_error)
+				{
+					// Check for valid DO NPA
+					$validnpaDO = in_array($npa, array( "809", "829", "849" ));
+				}
+				
+				if(!$TFnpa && ((!$validnpaUS) && (!$validnpaCAN) && (!$validnpaDO)))
 				{
 					return false;
 				}
@@ -563,7 +566,7 @@ class superfecta_base {
 				if(isset($rPart1)) { $rPart1 = $npa; }
 				if(isset($rPart2)) { $rPart2 = $nxx; }
 				if(isset($rPart3)) { $rPart3 = $station; }
-			} // end US/CA
+			} // end US/CA/DO
 			break;
 			
 			case "UK" :
@@ -695,10 +698,7 @@ class superfecta_base {
 							"02893", "02894", "02897", "02900"
 						);
 					
-						if(in_array($prefix2, $STD))
-						{
-							$validSTD = true;
-						}
+						$validSTD = in_array($prefix2, $STD);
 					}
 					else
 					{	
@@ -718,10 +718,7 @@ class superfecta_base {
 							"04088"
 						);
 			
-						if(in_array($prefix2, $NGN))
-						{
-							$validNGN = true;
-						}
+						$validNGN = in_array($prefix2, $NGN);
 					}
 
 					if((!$validSTD) && (!$validNGN))
@@ -934,6 +931,7 @@ class superfecta_base {
 			
 			default:
 				$this->DebugPrint("Unknown Country Code ${country} passed to IsValidNumber: ${country}");
+				$number_error = true;
 				break;
 		} // end Country switch
 				

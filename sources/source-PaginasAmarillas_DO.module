@@ -1,0 +1,40 @@
+<?php
+class PaginasAmarillas_DO extends superfecta_base {
+
+	function settings() {
+		//configuration / display parameters
+		//The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
+		$source_desc = "http://paginasamarillas.com.do - 	Business listings for the Dominican Republic";
+		$settings['desc'] = $source_desc;
+		$settings['version_requirement'] = "3.0";
+		return($settings);
+	}
+	
+	function get_caller_id($thenumber,$run_param=array()) {
+
+		$caller_id = null;		
+
+		if(!$this->IsValidNumber('DO', $this->thenumber))
+		{
+			$this->DebugPrint("Skipping Source - Not a valid 10 digit Dominican number: {$this->thenumber}");
+		}
+		else
+		{
+			$this->DebugPrint("Searching PaginasAmarillas for number: {$this->thenumber}");
+			
+			// We'll be searching paginasamarillas.com.do
+			$url="http://www.paginasamarillas.com.do/Searchpg.aspx?SearchType=neg&telefono={$this->thenumber}&searchAction=adv&ciudad=ALL";
+
+			// Grab the first result from google maps that matches our phone number
+			$pattern = array(
+				"/<div class=\"anunciantesover2\" id=\"div.*\" title=\"(.+)\">/",
+                "/\" title=\"url:(.+)\" rel=\"nofollow/" );
+			
+			if($this->SearchURL($url, $pattern, $match)){
+				$caller_id = $this->ExtractMatch($match);
+			}
+		}
+
+		return $caller_id;		
+	}
+}
