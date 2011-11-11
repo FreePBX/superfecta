@@ -17,7 +17,7 @@ class BulkCNAM extends superfecta_base {
 	
 	function get_caller_id($thenumber,$run_param=array()) {
 		
-		$caller_id="";
+		$caller_id=null;
 		
 		if(!$this->IsValidNumber( array('US','CA') ,$thenumber))
 		{

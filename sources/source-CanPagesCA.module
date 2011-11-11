@@ -9,7 +9,7 @@ class CanPagesCA extends superfecta_base {
 	}
 	
 	function get_caller_id($thenumber,$run_param=array()) {
-		$caller_id="";
+		$caller_id=null;
 		$npa=""; $nxx=""; $station="";
 		
 		if(!$this->IsValidNumber('CA',$thenumber, $npa, $nxx, $station))

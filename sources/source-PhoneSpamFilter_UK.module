@@ -24,7 +24,7 @@ class PhoneSpamFilter_UK extends superfecta_base {
 		//This debug variable allows simple copy and past of most sources.
 		$debug = $this->debug;
 
-		$caller_id = "";		
+		$caller_id = null;		
 
 		if(!$this->IsValidNumber('UK', $thenumber))
 		{

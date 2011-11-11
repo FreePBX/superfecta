@@ -30,7 +30,7 @@ class Number_Guru extends superfecta_base {
 		$debug = $this->debug;
 		
 		//Paste old source '$usage_mode == 'get caller id' here:
-		$caller_id="";
+		$caller_id=null;
 		
 		if(!$this->IsValidNumber( array('US','CA') ,$thenumber))
 		{

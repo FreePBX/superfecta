@@ -19,6 +19,7 @@ class Who_Called extends superfecta_base {
 	function get_caller_id($thenumber,$run_param=array()) {
 		//This debug variable allows simple copy and past of most sources.
 		$debug = $this->debug;
+		$caller_id=null;
 		
 		//Paste old source '$usage_mode == 'get caller id' here:
 

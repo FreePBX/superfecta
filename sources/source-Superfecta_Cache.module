@@ -47,7 +47,7 @@ class Superfecta_Cache extends superfecta_base {
 	
 	function get_caller_id($thenumber,$run_param=array()) 
 	{
-			$caller_id = "";
+			$caller_id = null;
 
 			$rule_match = $this->match_pattern_all(isset($run_param['CID_Exclusion_Rules'])?$run_param['CID_Exclusion_Rules']:'' , $thenumber);
 

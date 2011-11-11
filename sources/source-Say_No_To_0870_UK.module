@@ -12,7 +12,7 @@ class Say_No_To_0870_UK extends superfecta_base {
 	
 	function get_caller_id($thenumber,$run_param=array()) {
 
-		$caller_id = "";		
+		$caller_id = null;		
 
 		if(!$this->IsValidNumber('UK', $thenumber))
 		{

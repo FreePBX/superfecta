@@ -13,7 +13,7 @@ class Telco_Data extends superfecta_base {
 
     function get_caller_id($thenumber, $run_param=array()) {
 
-        $caller_id = "";
+        $caller_id = null;
 
 
         $this->DebugPrint("Searching Telco Data ... : {$thenumber}");

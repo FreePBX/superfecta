@@ -11,7 +11,7 @@ class UKPhoneInfo_UK extends superfecta_base {
 	}
 	
 	function get_caller_id($thenumber,$run_param=array()) {
-		$caller_id = ""; $name="";		
+		$caller_id = null; $name="";		
 
 		// Validate number
 		if(!$this->IsValidNumber('UK', $thenumber))

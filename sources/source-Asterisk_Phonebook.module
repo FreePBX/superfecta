@@ -12,11 +12,11 @@ class Asterisk_Phonebook extends superfecta_base {
 	
 	function get_caller_id($thenumber,$run_param=array()) 
 	{
-		$caller_id = "";		
+		$caller_id = null;		
 
 		$this->DebugPrint( "Searching Asterisk Phonebook ... ");
 		
-		$name = $this->astman->database_get('cidname',$thenumber);
+		$name = strip_tags($this->astman->database_get('cidname',$thenumber));
 				
 		// If we found a match, return it
 		if(strlen($name) > 1)

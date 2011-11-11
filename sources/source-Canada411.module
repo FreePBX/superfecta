@@ -10,7 +10,7 @@ class Canada411 extends superfecta_base {
 	}
 	
 	function get_caller_id($thenumber,$run_param=array()) {
-		$caller_id="";
+		$caller_id=null;
 		
 		if(!$this->IsValidNumber('CA',$thenumber))
 		{
