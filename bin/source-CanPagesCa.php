@@ -1,9 +1,9 @@
 <?php
 //this file is designed to be used as an include that is part of a loop.
-//If a valid match is found, it should give $caller_id a value
+//If a valid match is found, it will give $caller_id a value
 //available variables for use are: $thenumber
 //retreive website contents using get_url_contents($url);
-// This data sourcescript provided by Francois Allard (francois.allard@mageminds.com)  5/11/09
+//Revised November 23, 2011
 
 //configuration / display parameters
 //The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
@@ -102,16 +102,10 @@ if($usage_mode == 'get caller id')
 		$url="http://www.canpages.ca/rl/index.jsp?fi=Search&lang=0&val=$thenumber";
 		$value = get_url_contents($url);
 
-                // Strip newlines and crs from URL so regexp works
-                $value = preg_replace('/[\n\r\t]*/i', '', $value);
-
-
 		// Patterns to search for
-		$regexp = array
-                (
-			"/class=\"header_listing\">(.+)<\/a>.+<span class=\"phone\">\($npa\) $nxx-$station<\/span>/", // working residential match
- 			"/style=\"font-size: 13px\">(.+)<\/h3>/", // works for single business return not working for mult business
-
+		$regexp = array(
+			"/class=\"header_listing\">(.+)<\/a>/", // Residential match
+			"/style=\"font-size: 13px\">(.+)<\/a>/", // Business match
 		);
 
 		// By default, there is no match
@@ -129,7 +123,23 @@ if($usage_mode == 'get caller id')
 		// If we found a match, return it
 		if(strlen($name) > 1)
 		{
-			$caller_id = $name;
+			if($pattern == "/style=\"font-size: 13px\">(.+)<\/a>/")
+			{
+				$caller_id = $name;
+			}
+			else // we are testing the residential result further
+			{
+				$pattern = "/res\/".$thenumber."\/(.+)\//";
+				preg_match($pattern, $value, $match);
+				if(isset($match[1]))
+				{
+					$caller_id = $name;
+				}
+				else if($debug)
+				{
+					print "not found<br>\n";
+				}
+			}
 		}
 		else if($debug)
 		{
@@ -137,4 +147,3 @@ if($usage_mode == 'get caller id')
 		}
 	}
 }
-?>
