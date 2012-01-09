@@ -41,9 +41,8 @@ if(php_sapi_name() == 'cli' && empty($_SERVER['REMOTE_ADDR'])) {
 //Die on Scheme unknown
 if((trim($scheme_name_request) == '') OR ($scheme_name_request == 'base_ALL_ALL')) {
 	if((!$cli) OR ($scheme_name_request == 'base_ALL_ALL')) {
-		$sql = 'SELECT `source` FROM `superfectaconfig` WHERE `field` = CONVERT(_utf8 \'sources\' USING latin1) COLLATE latin1_swedish_ci';
-		$data = $db->getAll($sql, array(), DB_FETCHMODE_ASSOC);
-		$i=0;
+                $sql = 'SELECT source, value FROM superfectaconfig WHERE field =  \'order\' ORDER BY  `superfectaconfig`.`value` ASC';
+                $data = $db->getAll($sql, array(), DB_FETCHMODE_ASSOC);
 		foreach($data as $list) {
 			$scheme_name_array[$i] = $list['source'];
 			$i++;
@@ -58,8 +57,6 @@ if((trim($scheme_name_request) == '') OR ($scheme_name_request == 'base_ALL_ALL'
 if(empty($thenumber_orig)) {
     die('No number defined!');
 }
-
-print_r($scheme_name_request);
 
 foreach($scheme_name_array as $list) {
 	$scheme_name = $list;
