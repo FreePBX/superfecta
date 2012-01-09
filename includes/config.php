@@ -2,9 +2,11 @@
 define("LOCAL_PATH", str_replace("includes","",dirname(__FILE__)));
 if(file_exists("/etc/freepbx.conf")) {
 	//This is FreePBX 2.9+
+        $bootstrap_settings['freepbx_auth'] = false;
 	require_once("/etc/freepbx.conf");
 } elseif(file_exists("/etc/asterisk/freepbx.conf")) {
 	//This is FreePBX 2.9+
+        $bootstrap_settings['freepbx_auth'] = false;
 	require_once("/etc/asterisk/freepbx.conf");
 } else {
 	//This is > FreePBX 2.8	
