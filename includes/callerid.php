@@ -55,6 +55,10 @@ if((trim($scheme_name_request) == '') OR ($scheme_name_request == 'base_ALL_ALL'
 	$scheme_name_array[0] = $scheme_name_request;
 }
 
+if(empty($thenumber_orig)) {
+    die('No number defined!');
+}
+
 foreach($scheme_name_array as $list) {
 	$scheme_name = $list;
 
