@@ -589,6 +589,10 @@ function Ht_debug(thenumber,testdid,checkall,debuglevel)
 	{
 		poststr = poststr + "&scheme=<?php print $scheme ?>";
 	}
+        else
+        {
+                poststr = poststr + "&scheme=base_ALL_ALL";
+        }
 
 	if(!isWorking)
 	{

@@ -59,6 +59,8 @@ if(empty($thenumber_orig)) {
     die('No number defined!');
 }
 
+print_r($scheme_name_request);
+
 foreach($scheme_name_array as $list) {
 	$scheme_name = $list;
 
