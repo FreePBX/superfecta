@@ -1,20 +1,22 @@
 <?php
+
 //this file is designed to be used as an include that is part of a loop.
 //If a valid match is found, it should give $caller_id a value
 //available variables for use are: $thenumber
 //retreive website contents using get_url_contents($url);
 
 class Superfecta_Cache extends superfecta_base {
-	function settings() {
-		//configuration / display parameters
-		//The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
-		$source_desc = "Searches the built in Superfecta Cache for caller ID information. This is a very fast source of information.<br>This source is 
+
+    function settings() {
+        //configuration / display parameters
+        //The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
+        $source_desc = "Searches the built in Superfecta Cache for caller ID information. This is a very fast source of information.<br>This source is 
 		generally faster than the Asterisk Phonebook, and more efficient with larger caches.<br><br>Module version 2.2.4 or higher, for CID Rules.";
-		$source_param = array();
-		$source_param['Cache_Timeout']['desc'] = 'Specify the number of days that a cached value should stay in the database.';
-		$source_param['Cache_Timeout']['type'] = 'number';
-		$source_param['Cache_Timeout']['default'] = 120;
-		$source_param['CID_Exclusion_Rules']['desc'] = '
+        $source_param = array();
+        $source_param['Cache_Timeout']['desc'] = 'Specify the number of days that a cached value should stay in the database.';
+        $source_param['Cache_Timeout']['type'] = 'number';
+        $source_param['Cache_Timeout']['default'] = 120;
+        $source_param['CID_Exclusion_Rules']['desc'] = '
 			Incoming calls with CID matching the patterns specified here will not be cached. If this is 
 			left blank, all CIDs will be cached. <br />
 			<br /><b>Rules:</b><br /> 
@@ -35,71 +37,66 @@ class Superfecta_Cache extends superfecta_base {
 			You can also use both + and |, for example: 01+0|1ZXXXXXXXXX would match 
 			"016065551234" and dial it as "0116065551234" Note that the order does not matter, eg. 
 			0|01+1ZXXXXXXXXX does the same thing.';
-		$source_param['CID_Exclusion_Rules']['type'] = 'textarea';
-		$source_param['CID_Exclusion_Rules']['default'] = '';
-		
-		$settings['desc'] = $source_desc;
-		$settings['param'] = array();
-		$settings['source_param'] = $source_param;
-		$settings['version_requirement'] = "3.0";
-		return($settings);
-	}
-	
-	function get_caller_id($thenumber,$run_param=array()) 
-	{
-			$caller_id = null;
+        $source_param['CID_Exclusion_Rules']['type'] = 'textarea';
+        $source_param['CID_Exclusion_Rules']['default'] = '';
 
-			$rule_match = $this->match_pattern_all(isset($run_param['CID_Exclusion_Rules'])?$run_param['CID_Exclusion_Rules']:'' , $thenumber);
+        $settings['desc'] = $source_desc;
+        $settings['param'] = array();
+        $settings['source_param'] = $source_param;
+        $settings['version_requirement'] = "3.0";
+        return($settings);
+    }
 
-			if((!$rule_match['status']) || (!$rule_match['number']))
-			{
-				$this->DebugPrint("Searching Superfecta Cache ... ");
+    function get_caller_id($thenumber, $run_param=array()) {
+        $caller_id = null;
 
-				//clear old cache
-				$sql = "DELETE FROM superfectacache WHERE dateentered < DATE_SUB(NOW(),INTERVAL ".(isset($run_param['Cache_Timeout'])?$run_param['Cache_Timeout']:$source_param['Cache_Timeout']['default'])." DAY)";
-				$this->db->query($sql);
+        $rule_match = $this->match_pattern_all(isset($run_param['CID_Exclusion_Rules']) ? $run_param['CID_Exclusion_Rules'] : '', $thenumber);
 
-				//query cache
-				$sql = "SELECT callerid FROM superfectacache WHERE number = '$thenumber'";
-				$sres = $this->db->getOne($sql);
-				if (DB::IsError($sres))
-				{
-					die_freepbx( "Error: " . $sres->getMessage() .  "<br>");
-				}
+        if ((!$rule_match['status']) || (!$rule_match['number'])) {
+            $this->DebugPrint("Searching Superfecta Cache ... ");
 
-				//check to see if there is a valid return and that it's not numeric
-				if(($sres != '') && !is_numeric($sres))
-				{
-					$caller_id = $sres;
-					$this->set_CacheFound(TRUE);
-				}
-				else
-				{
-					$this->DebugPrint( "not found" );
-				}
-			}else{
-				$this->DebugPrint("Matched cache exclusion rule: '{$rule_match['pattern']}' with: '{$rule_match['number']}'");
-				$this->DebugPrint("Skipping cache lookup.");
-			}
-			return($caller_id);	
-	}
-	
-	function post_processing($cache_found,$winning_source,$first_caller_id,$run_param,$thenumber) 
-	{
-			$rule_match = $this->match_pattern_all(isset($run_param['CID_Exclusion_Rules'])?$run_param['CID_Exclusion_Rules']:'' , $thenumber);
-			if((!$rule_match['status']) || (!$rule_match['number'])){
-				if(!$cache_found && ($first_caller_id != ''))
-				{
-					$sql = "REPLACE INTO superfectacache (number,callerid,dateentered)
+            //clear old cache
+            $sql = "DELETE FROM superfectacache WHERE dateentered < DATE_SUB(NOW(),INTERVAL " . (isset($run_param['Cache_Timeout']) ? $run_param['Cache_Timeout'] : $source_param['Cache_Timeout']['default']) . " DAY)";
+            $this->db->query($sql);
+
+            //query cache
+            $sql = "SELECT callerid FROM superfectacache WHERE number = '$thenumber'";
+            $sres = $this->db->getOne($sql);
+            if (DB::IsError($sres)) {
+                die_freepbx("Error: " . $sres->getMessage() . "<br>");
+            }
+
+            //check to see if there is a valid return and that it's not numeric
+            if (($sres != '') && !is_numeric($sres)) {
+                $caller_id = $sres;
+                $this->set_CacheFound(TRUE);
+            } else {
+                $this->DebugPrint("not found");
+            }
+        } else {
+            $this->DebugPrint("Matched cache exclusion rule: '{$rule_match['pattern']}' with: '{$rule_match['number']}'");
+            $this->DebugPrint("Skipping cache lookup.");
+        }
+        return($caller_id);
+    }
+
+    function post_processing($cache_found, $winning_source, $first_caller_id, $run_param, $thenumber) { 
+        //People might not have anything in Exclusion Rules, account for this
+        $run_param['CID_Exclusion_Rules'] = isset($run_param['CID_Exclusion_Rules']) ? $run_param['CID_Exclusion_Rules'] : '';
+        $rule_match = $this->match_pattern_all(!empty($run_param['CID_Exclusion_Rules']) ? $run_param['CID_Exclusion_Rules'] : '', $thenumber);
+        
+        if ((!$rule_match['status']) || (!$rule_match['number'])) {
+            if (!$cache_found && ($first_caller_id != '')) {
+                $sql = "REPLACE INTO superfectacache (number,callerid,dateentered)
 									VALUES($thenumber,'$first_caller_id',NOW())";
-									
-					$this->db->query($sql);					
-					$this->DebugPrint("Caller ID data added to Superfecta_Cache.");
-				}
-			}else{
-				$this->DebugPrint ("Matched cache exclusion rule: '{$rule_match['pattern']}' with: '{$rule_match['number']}'");
-				$this->DebugPrint ("Skipping cache storage.");
-			}
-	}
+
+                $this->db->query($sql);
+                $this->DebugPrint("Caller ID data added to Superfecta_Cache.");
+            }
+        } else {
+            $this->DebugPrint("Matched cache exclusion rule: '{$rule_match['pattern']}' with: '{$rule_match['number']}'");
+            $this->DebugPrint("Skipping cache storage.");
+        }
+    }
+
 }
-?>
