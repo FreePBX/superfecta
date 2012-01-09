@@ -50,7 +50,9 @@ class Superfecta_Cache extends superfecta_base {
     function get_caller_id($thenumber, $run_param=array()) {
         $caller_id = null;
 
-        $rule_match = $this->match_pattern_all(isset($run_param['CID_Exclusion_Rules']) ? $run_param['CID_Exclusion_Rules'] : '', $thenumber);
+        //People might not have anything in Exclusion Rules, account for this
+        $run_param['CID_Exclusion_Rules'] = isset($run_param['CID_Exclusion_Rules']) ? $run_param['CID_Exclusion_Rules'] : '';
+        $rule_match = $this->match_pattern_all(!empty($run_param['CID_Exclusion_Rules']) ? $run_param['CID_Exclusion_Rules'] : '', $thenumber);
 
         if ((!$rule_match['status']) || (!$rule_match['number'])) {
             $this->DebugPrint("Searching Superfecta Cache ... ");
@@ -84,7 +86,7 @@ class Superfecta_Cache extends superfecta_base {
         //People might not have anything in Exclusion Rules, account for this
         $run_param['CID_Exclusion_Rules'] = isset($run_param['CID_Exclusion_Rules']) ? $run_param['CID_Exclusion_Rules'] : '';
         $rule_match = $this->match_pattern_all(!empty($run_param['CID_Exclusion_Rules']) ? $run_param['CID_Exclusion_Rules'] : '', $thenumber);
-        
+                
         if ((!$rule_match['status']) || (!$rule_match['number'])) {
             if (!$cache_found && ($first_caller_id != '')) {
                 $sql = "REPLACE INTO superfectacache (number,callerid,dateentered)

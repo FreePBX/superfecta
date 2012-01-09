@@ -337,7 +337,7 @@ class superfecta_multi extends superfecta_base {
 			// Run the source
 			$sql = "SELECT field,value FROM superfectaconfig WHERE source = '".$this->scheme_name."_".$source_name."'";
 			$run_param = $this->db->getAssoc($sql);
-			
+                        
 			$source_file = $this->path_location."/source-".$source_name.".module";
 			if(file_exists($source_file)) {
 				require_once($source_file);
@@ -345,11 +345,11 @@ class superfecta_multi extends superfecta_base {
 				$source_class->set_DB( $this->db );
 				$source_class->setDebug($this->isDebug());
 				if(method_exists($source_class, 'post_processing')) {
-					$caller_id = $source_class->post_processing($this->isCacheFound(),NULL,$caller_id,$run_param,$this->thenumber_orig);
+					$source_class->post_processing($this->isCacheFound(),NULL,$caller_id,$run_param,$this->thenumber_orig);
 				} else {
 					print "Method 'post_processing' doesn't exist<br\>\n"; 
 				}
-			}
+			}                        
 		}
 	}
 	
