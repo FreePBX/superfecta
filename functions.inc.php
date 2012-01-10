@@ -11,6 +11,7 @@ function setConfig()
 	$Curl_Timeout = mysql_real_escape_string($_POST['Curl_Timeout']);
 	$http_password = mysql_real_escape_string(utf8_decode($_POST['http_password']));
 	$http_username = mysql_real_escape_string(utf8_decode($_POST['http_username']));
+        $cacheresults = mysql_real_escape_string($_POST['cache']);
 	$SPAM_Text = mysql_real_escape_string($_POST['SPAM_Text']);
 	$SPAM_Text_Substitute = (isset($_POST['SPAM_Text_Substitute'])) ? mysql_real_escape_string($_POST['SPAM_Text_Substitute']) : 'N';
 	$error = false;
@@ -80,13 +81,13 @@ function setConfig()
 
 
 	//check the previous username and password from the cidlookup table
-	$sql = "SELECT http_username, http_password FROM cidlookup WHERE description = 'Caller ID Superfecta' LIMIT 1";
+	$sql = "SELECT http_username, http_password, cache FROM cidlookup WHERE description = 'Caller ID Superfecta' LIMIT 1";
 	$results= sql($sql, "getAll");
 
 	//update the HTTP Auth username and password if needed
-	if (($results[0][0] != $http_username) or ($results[0][1] != $http_password))
+	if (($results[0][0] != $http_username) or ($results[0][1] != $http_password) or ($results[0][2] != $cacheresults))
 	{
-	$sql = "UPDATE cidlookup SET http_username = '$http_username', http_password = '$http_password' WHERE description = 'Caller ID Superfecta' LIMIT 1";
+	$sql = "UPDATE cidlookup SET http_username = '$http_username', http_password = '$http_password', cache = '$cacheresults' WHERE description = 'Caller ID Superfecta' LIMIT 1";
 	sql($sql);
 	//$fcc->update();
 	needreload();
@@ -111,10 +112,11 @@ function getConfig($scheme)
 	}
 
 	//get the username and password from the cidlookup table
-	$sql = "SELECT http_username, http_password FROM cidlookup WHERE description = 'Caller ID Superfecta' LIMIT 1";
+	$sql = "SELECT http_username, http_password, cache FROM cidlookup WHERE description = 'Caller ID Superfecta' LIMIT 1";
 	$results= sql($sql, "getAll");
 	$return['http_username'] = $results[0][0];
 	$return['http_password'] = $results[0][1];
+        $return['cache'] = $results[0][2];
 
 	return $return;
 }
