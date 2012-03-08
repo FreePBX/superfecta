@@ -256,6 +256,12 @@ if($scheme != "")
 							<td><a href="javascript:return(false);" class="info">Password:<span>The HTTP Authentication password (you probably used it to get to this page.)</span></a></td>
 							<td><input type="password" name="http_password" size="23" maxlength="20" value="'.utf8_encode($conf['http_password']).'"></td>
 						</tr>
+
+						<tr>
+							<td><a href="javascript:return(false);" class="info">Cache results to Asterisk Address Book:<span>This option should be disabled for proper Superfecta operation</span></a></td>
+							<td><input type="text" name="cache" size="23" maxlength="20" value="'.utf8_encode($conf['cache']).'"></td>
+						</tr>
+
 						<tr>
 							<td><a href="javascript:return(false);" class="info">Lookup Timeout<span>Specify a timeout in seconds for each source. If the source fails to return a result within the alloted time, the script will move on.</span></a></td>
 							<td><input type="text" name="Curl_Timeout" size="4" maxlength="5" value="'.$conf['Curl_Timeout'].'"></td>
@@ -312,6 +318,13 @@ action="javascript:Ht_debug(document.forms.debug_form.thenumber.value,'.$did_tes
 				//also focus on the password form element.
 				print 'document.forms.Superfecta.http_password.focus();';
 				print 'alert("The form has a value entered for the username (In the General Options section), but the password is blank. You should probably fill in the password portion of this form to ensure proper operation of Caller ID Superfecta.");';
+			}
+                        else if(($conf['http_username'] != '') && ($conf['cache'] == '1'))
+                        {
+				//javascript alert the user that they have a caller ID cache results enabled
+				//also focus on the password form element.
+		//		print 'document.forms.Superfecta.http_password.focus();';
+				print 'alert("The form has cache results enabled which is not recommended for superfecta operation.");';
 			}
 		}
 
