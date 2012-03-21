@@ -6,6 +6,7 @@
 /* Revision History */
 // v0.1.0: Initial Release Version by myitguy
 // v0.1.1: Minor bug fix by bushbomb
+// v0.1.2: More bug fixes id'd by bushbomb
 
 //configuration / display parameters
 //The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
