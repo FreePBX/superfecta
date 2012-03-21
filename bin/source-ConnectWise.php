@@ -99,7 +99,7 @@ EOT;
         preg_match_all($pattern, $value, $matches);
         if (count($matches[0])>1) {
             $wresult_caller_name = $matches[0][1];
-            print $wresult_caller_name;
+//            print $wresult_caller_name;
         }
         else if($debug)
         {
@@ -186,7 +186,7 @@ EOT;
             preg_match($pattern, $value, $match_FirstName);
             if (count($match_LastName)>0 && count($match_FirstName)>0) {
                 $wresult_caller_name = $match_FirstName[1]." ".$match_LastName[1];
-                print $wresult_caller_name;
+//                print $wresult_caller_name;
             }
             else if($debug)
             {
@@ -203,7 +203,7 @@ EOT;
 
     if(strlen($wresult_caller_name) > 0)
     {
-        $caller_id = $wresult_caller_name;
+        $caller_id = strip_tags($wresult_caller_name);
     }
     else if($debug)
     {
