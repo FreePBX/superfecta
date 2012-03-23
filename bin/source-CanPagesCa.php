@@ -1,9 +1,9 @@
 <?php
 //this file is designed to be used as an include that is part of a loop.
-//If a valid match is found, it should give $caller_id a value
+//If a valid match is found, it will give $caller_id a value
 //available variables for use are: $thenumber
 //retreive website contents using get_url_contents($url);
-// This data sourcescript provided by Francois Allard (francois.allard@mageminds.com)  5/11/09
+//Revised November 23, 2011
 
 //configuration / display parameters
 //The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
@@ -48,14 +48,14 @@ if($usage_mode == 'get caller id')
 			if (substr($thenumber,0,4) == '0111')
 			{
 				$thenumber = substr($thenumber,4);
-			}			
+			}
 			else
 			{
 				$number_error = true;
 			}
 		}
 
-	}	
+	}
 	// number
 	if(strlen($thenumber) < 10)
 	{
@@ -67,10 +67,12 @@ if($usage_mode == 'get caller id')
 	{
 		$thenumber = (substr($thenumber,0,1) == 1) ? substr($thenumber,1) : $thenumber;
 		$npa = substr($thenumber,0,3);
+		$nxx = substr($thenumber,3,3);
+                $station = substr($thenumber,6,4);
 		
 		// Check for valid CAN NPA
 		$npalistCAN = array(
-			"204", "226", "249", "250", "289", "306", "343", "365", "403", "416", "418", "438", 
+			"204", "226", "249", "250", "289", "306", "343", "365", "403", "416", "418", "438",
 			"450", "506", "514", "519", "579", "581", "587", "604", "613", "647",
 			"705", "709", "778", "780", "807", "819", "867", "873", "902", "905",
 			"800", "866", "877", "888"
@@ -99,7 +101,7 @@ if($usage_mode == 'get caller id')
 		// Set the url we're searching for
 		$url="http://www.canpages.ca/rl/index.jsp?fi=Search&lang=0&val=$thenumber";
 		$value = get_url_contents($url);
-		
+
 		// Patterns to search for
 		$regexp = array(
 			"/class=\"header_listing\">(.+)<\/a>/", // Residential match
@@ -121,7 +123,23 @@ if($usage_mode == 'get caller id')
 		// If we found a match, return it
 		if(strlen($name) > 1)
 		{
-			$caller_id = $name;
+			if($pattern == "/style=\"font-size: 13px\">(.+)<\/a>/")
+			{
+				$caller_id = $name;
+			}
+			else // we are testing the residential result further
+			{
+				$pattern = "/res\/".$thenumber."\/(.+)\//";
+				preg_match($pattern, $value, $match);
+				if(isset($match[1]))
+				{
+					$caller_id = $name;
+				}
+				else if($debug)
+				{
+					print "not found<br>\n";
+				}
+			}
 		}
 		else if($debug)
 		{
@@ -129,4 +147,3 @@ if($usage_mode == 'get caller id')
 		}
 	}
 }
-?>

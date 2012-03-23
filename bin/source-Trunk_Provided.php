@@ -12,7 +12,9 @@ $source_param['Ignore_Keywords']['desc'] = 'If the trunk provided caller id incl
 Seperate keywords with commas.';
 $source_param['Ignore_Keywords']['type'] = 'textarea';
 $source_param['Ignore_Keywords']['default'] = 'unknown, toll free, unlisted, (N/A)';
-
+$source_param['Discard_Numeric']['desc'] = 'Enable this setting to discard trunk provided CNAM that is all digits.';
+$source_param['Discard_Numeric']['type'] = 'checkbox';
+$source_param['Discard_Numeric']['default'] = 'on';
 
 //run this if the script is running in the "get caller id" usage mode.
 if($usage_mode == 'get caller id')
@@ -61,6 +63,7 @@ if($usage_mode == 'get caller id')
 		}
 	}
 
+	//  Check to see if the CNAM is the same as the CID and discard
 	if ($provided_caller_id == $thenumber_orig)
 	{
 	$provided_caller_id='';
@@ -70,6 +73,15 @@ if($usage_mode == 'get caller id')
 		}
 	}
 
+	//  Check to see if the CNAM is all numeric and discard if user enables
+	if (($run_param['Discard_Numeric'] == 'on') && (is_numeric($provided_caller_id)))
+	{
+		$provided_caller_id='';
+		if($debug)
+		{
+		print "CID is all numeric - discarded<br>\n";
+		}
+        }
 	if($debug && ($provided_caller_id == ''))
 	{
 		print "not found<br>\n";
@@ -95,4 +107,3 @@ if($usage_mode == 'get caller id')
 		}
 	}
 }
-?>
