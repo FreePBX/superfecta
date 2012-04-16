@@ -62,7 +62,9 @@ if($usage_mode == 'get caller id')
 
     if(!$number_error)
     {
-        $thenumber = (substr($thenumber,0,1) == 1) ? substr($thenumber,1) : $thenumber;
+        $thenumber = (substr($thenumber,0,1) == 1) ? substr($thenumber,1) : $thenumber
+        //Below is the URL format you'll need if you have a pay-for account with API key. If so, just replace the REPLACE_ME parts with the appropriate info and then comment out the other $url line right below it.
+		//$url = "https://api.opencnam.com/v1/phone/" . $thenumber . "?format=text&username=REPLACE_ME&api_key=REPLACE_ME"; 
         $url = "https://api.opencnam.com/v1/phone/" . $thenumber . "?format=text";
         $sname =  get_url_contents($url);
 
