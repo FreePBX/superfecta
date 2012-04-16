@@ -1,6 +1,6 @@
 <?php
 //this file is designed to be used as an include that is part of a loop.
-//If a valid match is found, it should give $caller_id a value
+//If a valid match is found, it will give $caller_id a value
 //available variables for use are: $thenumber
 //retreive website contents using get_url_contents($url);
 
@@ -8,6 +8,12 @@
 //The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
 $source_desc = "http://www.opencnam.com      This data source returns CNAM data listed at OpenCNAM.";
 $source_param = array();
+$source_param['Username']['desc'] = "Enter OpenCNAM user account name.  If you don't have an account leave this blank to use free service.";
+$source_param['Username']['type'] = 'text';
+$source_param['Username']['default'] = null;
+$source_param['API']['desc'] = "Enter OpenCNAM user account API.  If you don't have an account leave this blank to use free service.";
+$source_param['API']['type'] = 'text';
+$source_param['API']['default'] = null;
 
 
 //run this if the script is running in the "get caller id" usage mode.
@@ -54,23 +60,29 @@ if($usage_mode == 'get caller id')
 
     }
 
-    // number
     if(strlen($thenumber) < 10)
     {
         $number_error = true;
     }
 
+    $thenumber = (substr($thenumber,0,1) == 1) ? substr($thenumber,1) : $thenumber;
+
     if(!$number_error)
     {
-        $thenumber = (substr($thenumber,0,1) == 1) ? substr($thenumber,1) : $thenumber
-        //Below is the URL format you'll need if you have a pay-for account with API key. If so, just replace the REPLACE_ME parts with the appropriate info and then comment out the other $url line right below it.
-		//$url = "https://api.opencnam.com/v1/phone/" . $thenumber . "?format=text&username=REPLACE_ME&api_key=REPLACE_ME"; 
-        $url = "https://api.opencnam.com/v1/phone/" . $thenumber . "?format=text";
+    	if ($run_param['Username'] == null or $run_param['API'] == null)  //use free url
+        {
+		$url = "https://api.opencnam.com/v1/phone/" . $thenumber . "?format=text";
+        }
+	else  //use premium url
+        {
+		$url = "https://api.opencnam.com/v1/phone/" . $thenumber . "?format=text&username=".$run_param['Username']."&api_key=".$run_param['API'];
+        }
+
         $sname =  get_url_contents($url);
 
         if (strlen($sname) > 1)
         {
-            $caller_id = strip_tags($sname);
+            $caller_id = trim(strip_tags($sname));
         }
         else if($debug)
         {
