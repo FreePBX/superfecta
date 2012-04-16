@@ -3,7 +3,7 @@
 //If a valid match is found, it will give $caller_id a value
 //available variables for use are: $thenumber
 //retreive website contents using get_url_contents($url);
-//April 16,2021 by Ward Mundy
+//April 16,2012 by Ward Mundy
 
 
 //configuration / display parameters
