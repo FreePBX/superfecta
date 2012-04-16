@@ -15,7 +15,7 @@ $source_desc = "http://411.info - These listings include business and residentia
 if($usage_mode == 'get caller id')
 {
 	$value = "";
-        $name = ""
+        $name = "";
 	$number_error = false;
 
 	if($debug)
