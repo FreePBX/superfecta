@@ -19,6 +19,7 @@ $superfecta = new superfecta_base;
 $scheme = (isset($_REQUEST['scheme'])) ? $_REQUEST['scheme'] : '';
 $module_info = $superfecta->xml2array("modules/superfecta/module.xml");
 
+
 if(count($_POST))
 {
 	superfecta_setConfig();
@@ -267,10 +268,12 @@ if($scheme != "")
 
 print '</select></p>
 		<p>Select which data source(s) to use for your lookups, and the order in which you want them used:</p>
-		<form method="POST" action="javascript:Ht_Generate_List(\'\',\''.$scheme.'\');" name="CIDSources">
-			<div id="CIDSourcesList"></div>
+			<div id="CIDSourcesList">';
+        
+        include('sources_new.php');
+        
+print '</div>
 			<br><br>
-		</form>
 		<table border="0">
 			<tr>
 				<td valign="top">
@@ -495,90 +498,6 @@ function Ht_Response()
 	}
 }
 
-function Ht_Generate_List(first_run,scheme)
-{
-	first_run = first_run || "";
-	scheme = scheme || "";
-        /*
-        if(cat == 'NULL') {
-            var cat =new Array();
-            var i = 0;
-            $(".cats option:selected").each(function () {
-                cat[i] = $(this).text();
-                i ++; 
-            });
-        } else {
-            cat = array2json(cat);
-        }
-	var poststr = "first_run=" + first_run + "&scheme=" + scheme + "&cats=" + cat;
-        */
-       	var poststr = "first_run=" + first_run + "&scheme=" + scheme;
-
-	if(document.forms.CIDSources.src_list)
-	{
-		var this_form = document.forms.CIDSources;
-		var elem = this_form.elements;
-		for(var i = 0; i < elem.length; i++)
-		{
-			if(elem[i].type == 'checkbox')
-			{
-				if(elem[i].checked == true)
-				{
-					poststr = poststr + "&" + elem[i].name + "=on";
-				}
-				else
-				{
-					poststr = poststr + "&" + elem[i].name + "=off";
-				}
-			}
-			else if(elem[i].type != 'radio')
-			{
-				poststr = poststr + "&" + elem[i].name + "=" + elem[i].value;
-			}
-		}
-
-		var CIDList = this_form.src_list.value.split(',');
-		var array_count = 0;
-		while (array_count < CIDList.length)
-		{
-			var CIDsource = CIDList[array_count];
-			array_count+=1;
-
-			if(CIDsource != '')
-			{
-				var this_value = 0;
-				eval('if(document.forms.CIDSources.' + CIDsource + ') { this_value = this_form.' + CIDsource + '; }');
-				if(this_value != 0)
-				{
-					for(var i=0; i < this_value.length; i++)
-					{
-						if(this_value[i].checked)
-						{
-							this_value = this_value[i].value;
-						}
-					}
-				}
-				poststr = poststr + "&" + CIDsource + "=" + this_value;
-			}
-		}
-	}
-
-	if(!isWorking)
-	{
-		isWorking = true;
-		divname = 'CIDSourcesList';
-		http.open("POST", "modules/superfecta/sources.php", true);
-		http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-		http.onreadystatechange = Ht_Response;
-		http.send(poststr);
-	}
-	else
-	{
-		setTimeout("Ht_Generate_List('" + first_run + "')",100);
-	}
-	toggleInterceptor();
-}
-
 function Ht_debug(thenumber,testdid,checkall,debuglevel)
 {
 	thenumber = thenumber || "";
@@ -648,11 +567,5 @@ function decision(message, url)
 	if(confirm(message)) location.href = url;
 }
 
-<?php
-if(($scheme != "") && ($scheme != "new"))
-{
-	print 'Ht_Generate_List(1,"'.$scheme.'","ALL");';
-}
-print '
 //-->
-</script>';
+</script>

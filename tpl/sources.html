@@ -1,0 +1,104 @@
+<script type="text/javascript" src="{$web_path}"></script>
+<script language="javascript">
+    function change(source, type) {
+        if(type == 'enable') {
+            var row = $("#"+source).html();
+            var frow = '';
+            var found = false;
+            $.ajaxSetup({ cache: false });
+            $.getJSON("config.php?quietmode=1&handler=file&module=superfecta&file=ajax.html.php&type=add&scheme={$scheme}&source="+source, function(json) {
+                if(json.success) {
+                    $("#sources :checked").each(function(){
+                        if(($(this).val() == 'disabled') && (!found) ) {
+                            frow = $(this).attr('id').replace("_disabled","");
+                            found = true;
+                        }
+                    });
+                    $('#'+source).remove();
+                    $('#'+frow).before('<tr id="'+source+'" class="enabled">' + row + '<tr>');
+                    $('input[name="'+source+'"]').val(['enabled']);
+                } else {
+                    $('input[name="'+source+'"]').val(['disabled']);
+                    $('#message').html('Error');
+                }
+            });
+        } else if(type == 'disable') {
+            var row = $("#"+source).html();
+            $.ajaxSetup({ cache: false });
+            $.getJSON("config.php?quietmode=1&handler=file&module=superfecta&file=ajax.html.php&type=remove&scheme={$scheme}&source="+source, function(json) {
+                if(json.success) {
+                    $('#'+source).remove();
+                    $('#sources tr:last').after('<tr id="'+source+'" class="disabled">' + row + '<tr>');
+                    $('input[name="'+source+'"]').val(['enabled']);
+                } else {
+                     $('input[name="'+source+'"]').val(['enabled']);
+                    $('#message').html('Error');
+                }
+            });
+        }
+    }
+    
+    function options(source) {
+        $('#options').fadeOut('slow', function() {
+            $.ajaxSetup({ cache: false });
+            $.getJSON("config.php?quietmode=1&handler=file&module=superfecta&file=ajax.html.php&type=options&scheme={$scheme}&source="+source, function(json) {
+                if(json.success && json.show) {
+                    $('#options').fadeIn('slow').html(json.data);
+                    $('#form_options_'+source).ajaxForm(function() { 
+                        alert("Saved!"); 
+                    }); 
+                }
+            });
+        });
+    }
+    
+    function move(source,action) {
+        $.ajaxSetup({ cache: false });
+        $.getJSON("config.php?quietmode=1&handler=file&module=superfecta&file=ajax.html.php&type=move&a="+action+"&scheme={$scheme}&source="+source, function(json) {
+            if(json.success) {
+                $('#'+source).remove();
+                //$('#'+frow).before('<tr id="'+source+'" class="enabled">' + row + '<tr>');
+            }
+        });
+    }
+</script>
+<input type="hidden" name="src_up" value="">
+<input type="hidden" name="src_down" value="">
+<input type="hidden" name="selected_source" value="">
+<input type="hidden" name="update_file" value="">
+<input type="hidden" name="delete_file" value="">
+<input type="hidden" name="revert_file" value="">
+<span id="message" style="color:red;font-weight:bolder">{$update_site_message}</span></br>
+<font size=2><input type="checkbox" name="check_updates" value="yes" {$check_updates_check}">&nbsp;Check for Data Source File updates online.<br></font>
+
+<table>
+    <tr>
+        <td>
+            <table border="0" id="sources" cellspacing="0" cellpadding="2">
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td><strong>Data Source Name</strong></td>
+                    <td align="center"><strong>Disabled</strong></td>
+                    <td align="center"><strong>Enabled</strong></td>
+                </tr>
+                {loop="sources"}
+                <tr id="{$value.source_name}" class="{$value.status}">
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>{if condition="$value.showdown"}<a href="#" onclick="move('{$value.source_name}', 'down')"><img src="http://192.168.1.5/admin/images/scrolldown.gif"></a>{/if}</td>
+                    <td>{if condition="$value.showup"}<a href="#" onclick="move('{$value.source_name}', 'up')"><img src="http://192.168.1.5/admin/images/scrollup.gif"></a>{/if}</td>
+                    <td><a onclick="options('{$value.source_name}')">{$value.pretty_source_name}</a></td>
+                    <td align="center"><input type="radio" id="{$value.source_name}_disabled" name="{$value.source_name}" value="disabled" onclick="change('{$value.source_name}', 'disable')" {if condition="$value.enabled === FALSE"}checked{/if}/></td>
+                    <td align="center"><input type="radio" id="{$value.source_name}_enabled" name="{$value.source_name}" value="enabled" onclick="change('{$value.source_name}','enable')" {if condition="$value.enabled === TRUE"}checked{/if}/></td>
+                </tr>
+                {/loop}
+            </table>
+        </td>
+        <td valign="top">
+            <div id="options" style="background: #C0C0C0"></div>
+        </td>
+    </tr>
+</table>
