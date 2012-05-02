@@ -4,7 +4,7 @@ class Say_No_To_0870_UK extends superfecta_base {
 	function settings() {
 		//configuration / display parameters
 		//The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
-		$source_desc = "http://http://www.saynoto0870.com - 	These listings include Non-Geographical Alternative Business Telephone Numbers for the UK.<br><br>";
+		$source_desc = "http://www.saynoto0870.com - 	These listings include Non-Geographical Alternative Business Telephone Numbers for the UK.<br><br>";
 		$settings['desc'] = $source_desc;
 		$settings['version_requirement'] = "3.0";
 		return($settings);

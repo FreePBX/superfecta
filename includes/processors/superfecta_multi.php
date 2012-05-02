@@ -289,7 +289,8 @@ class superfecta_multi extends superfecta_base {
 				}
 				if(($this->first_caller_id == '') && ($caller_id != ''))
 				{
-					$this->DebugEcho( "<br/>Returned Result was: ".$caller_id);
+					$this->DebugPrint( "<br/>Returned Result was: ".$caller_id);
+					$this->DebugPrint("Execution time: ".number_format(($this->mctime_float()-$start_time),4)." seconds.");
 				}
 				$end_time_whole = $this->mctime_float();
 				
