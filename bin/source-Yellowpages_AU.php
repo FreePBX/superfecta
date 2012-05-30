@@ -56,11 +56,6 @@ if($usage_mode == 'get caller id')
 		//$url = "http://www.google.com/search?q=%22".$num1."+".$num2."+".$num3."%22+site:www.yellowpages.com.au";
 		$value = get_url_contents($url);
 
-$myFile = "/var/www/html/admin/modules/superfecta/bin/superfecta.txt";
-$fh = fopen($myFile, 'w') or die("can't open file");
-fwrite($fh, $value);
-fclose($fh);
-
 		// First, check if we can just pull the name directly from google without having to pull the slow yellopages.com.au page
 //		$pattern = "/<a href=\"http:\/\/www\.yellowpages\.com\.au\/(?!find|search)[^\"]{1,100}\"[^>]{1,100}>([^-<]{1,100}).{1,100}<div class=\"s\">[^:<]{1,200}<em>".$num1.".{0,1} ".$num2." ".$num3."/i";   //working as of Dec 2010
 		$pattern ="/<a href=\"\/url\?q=http:\/\/www\.yellowpages\.com\.au\/.+\">(.{2,30})[ ]-[ ].+Phone number .<b>".$num1.".[ ]".$num2."[ ]".$num3."/";    //working as of May 30, 2012
