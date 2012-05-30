@@ -33,6 +33,7 @@ if($usage_mode == 'get caller id')
 		$num3 = substr($thenumber,7,3);
 		$fullnum = $num1." ".$num2." ".$num3;
 	}else{
+//  this section is catching valid numbers of the form 1300 xxx xxx, and perhaps other formats as well
 		$number_error = true;
 	}
 	
@@ -55,8 +56,16 @@ if($usage_mode == 'get caller id')
 		//$url = "http://www.google.com/search?q=%22".$num1."+".$num2."+".$num3."%22+site:www.yellowpages.com.au";
 		$value = get_url_contents($url);
 
+$myFile = "/var/www/html/admin/modules/superfecta/bin/superfecta.txt";
+$fh = fopen($myFile, 'w') or die("can't open file");
+fwrite($fh, $value);
+fclose($fh);
+
 		// First, check if we can just pull the name directly from google without having to pull the slow yellopages.com.au page
-		$pattern = "/<a href=\"http:\/\/www\.yellowpages\.com\.au\/(?!find|search)[^\"]{1,100}\"[^>]{1,100}>([^-<]{1,100}).{1,100}<div class=\"s\">[^:<]{1,200}<em>".$num1.".{0,1} ".$num2." ".$num3."/i";
+//		$pattern = "/<a href=\"http:\/\/www\.yellowpages\.com\.au\/(?!find|search)[^\"]{1,100}\"[^>]{1,100}>([^-<]{1,100}).{1,100}<div class=\"s\">[^:<]{1,200}<em>".$num1.".{0,1} ".$num2." ".$num3."/i";   //working as of Dec 2010
+		$pattern ="/<a href=\"\/url\?q=http:\/\/www\.yellowpages\.com\.au\/.+\">(.{2,30})[ ]-[ ].+Phone number .<b>".$num1.".[ ]".$num2."[ ]".$num3."/";    //working as of May 30, 2012
+
+
 		if(preg_match($pattern, $value, $match)){
 			// Found a usable name in googles search results, use it
 			$name = trim(strip_tags($match[1]));
@@ -110,4 +119,3 @@ if($usage_mode == 'get caller id')
 		}
 	}
 }
-?>
