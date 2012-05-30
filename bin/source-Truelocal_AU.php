@@ -52,9 +52,10 @@ if($usage_mode == 'get caller id')
 		$url = "http://www.google.com/search?num=10&hl=en&lr=&safe=off&as_qdr=all&q=%22".$num1."+".$num2."+".$num3."%22+site%3Awww.truelocal.com.au%2Fbusiness&btnG=Search";
 		$value = get_url_contents($url);
 
-		// Check if we can just pull the name directly from google's index
+		// Check if we can pull the name from google's index results
 //		$pattern = "/<a href=\"http:\/\/www\.truelocal\.com\.au\/business\/[^>]{1,100}>([^,-<]{1,100})/i";  //working as of Dec. 2010
-		$pattern = "/www\.truelocal\.com\.au\/business\/(.{3,40})\/.*$num1\+$num2\+$num3/";   //working as of May 28, 2012 for landlines but returns names of all lower case and hypens in place of spaces.
+//		$pattern = "/www\.truelocal\.com\.au\/business\/(.{3,40})\/.*$num1\+$num2\+$num3/";   //working as of May 28, 2012 for landlines but returns names of all lower case and hypens in place of spaces.
+		$pattern = "/www\.truelocal\.com\.au\/business\/.+?\">(.+?),[ ].+?\/.*$num1\+$num2\+$num3/";  //working as of May 30, 2012
 		if(preg_match($pattern, $value, $match)){
 			// Found a usable name in googles search results, use it
 			$name = trim(strip_tags($match[1]));
