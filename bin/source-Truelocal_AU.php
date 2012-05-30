@@ -1,8 +1,9 @@
 <?php
 //this file is designed to be used as an include that is part of a loop.
-//If a valid match is found, it should give $caller_id a value
+//If a valid match is found, it will give $caller_id a value
 //available variables for use are: $thenumber
 //retreive website contents using get_url_contents($url);
+//  Last updated May 29, 2012 by lcg
 
 //configuration / display parameters
 //The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
@@ -52,7 +53,8 @@ if($usage_mode == 'get caller id')
 		$value = get_url_contents($url);
 
 		// Check if we can just pull the name directly from google's index
-		$pattern = "/<a href=\"http:\/\/www\.truelocal\.com\.au\/business\/[^>]{1,100}>([^,-<]{1,100})/i";
+//		$pattern = "/<a href=\"http:\/\/www\.truelocal\.com\.au\/business\/[^>]{1,100}>([^,-<]{1,100})/i";  //working as of Dec. 2010
+		$pattern = "/www\.truelocal\.com\.au\/business\/(.{3,40})\/.*$num1\+$num2\+$num3/";   //working as of May 28, 2012 for landlines but returns names of all lower case and hypens in place of spaces.
 		if(preg_match($pattern, $value, $match)){
 			// Found a usable name in googles search results, use it
 			$name = trim(strip_tags($match[1]));
@@ -69,4 +71,3 @@ if($usage_mode == 'get caller id')
 		}
 	}
 }
-?>
