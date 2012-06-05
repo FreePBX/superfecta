@@ -1,12 +1,13 @@
 <?php
 //this file is designed to be used as an include that is part of a loop.
-//If a valid match is found, it should give $caller_id a value
+//If a valid match is found, it will give $caller_id a value
 //available variables for use are: $thenumber
 //retreive website contents using get_url_contents($url);
+//  June 5, 2012
 
 //configuration / display parameters
 //The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
-$source_desc = "http://yellowpages.addresses.com - This will return only business listings, it will not return residential listings.<br><br>This data source requires Superfecta Module version 2.2.1 or higher.";
+$source_desc = "http://yellowpages.com - This will return US business and residential listings.<br><br>This data source requires Superfecta Module version 2.2.1 or higher.";
 
 
 //run this if the script is running in the "get caller id" usage mode.
@@ -15,13 +16,12 @@ if($usage_mode == 'get caller id')
 	$number_error = false;
 	$TFnpa = false;
 	$validnpaUS = false;
-	$validnpaCAN = false;
 
 	if($debug)
 	{
-		print "Searching Addresses.com Yellow Pages ... ";
+		print "Searching yellowpages.com ... ";
 	}
-	
+
 	//check for the correct 11 digits in US/CAN phone numbers in international format.
 	// country code + number
 	if (strlen($thenumber) == 11)
@@ -48,26 +48,26 @@ if($usage_mode == 'get caller id')
 			if (substr($thenumber,0,4) == '0111')
 			{
 				$thenumber = substr($thenumber,4);
-			}			
+			}
 			else
 			{
 				$number_error = true;
 			}
 		}
 
-	}	
+	}
 	// number
       if(strlen($thenumber) < 10)
 	{
 		$number_error = true;
 
 	}
-	
+
 	if(!$number_error)
 	{
 		$thenumber = (substr($thenumber,0,1) == 1) ? substr($thenumber,1) : $thenumber;
 		$npa = substr($thenumber,0,3);
-		
+
 		// Check for valid US NPA
 		$npalistUS = array(
 			"201", "202", "203", "205", "206", "207", "208", "209", "210", "212",
@@ -103,65 +103,63 @@ if($usage_mode == 'get caller id')
 			"973", "978", "979", "980", "985", "989",
 			"800", "866", "877", "888"
 		);
-		
-		$validnpaUS = false;
+
 		if(in_array($npa, $npalistUS))
 		{
 			$validnpaUS = true;
 		}
-		
-		// Check for valid CAN NPA
-		$npalistCAN = array(
-			"204", "226", "249", "250", "289", "306", "343", "365", "403", "416", "418", "438", "450",
-			"506", "514", "519", "581", "587", "579", "604", "613", "647", "705", "709",
-			"778", "780", "807", "819", "867", "873", "902", "905",
-			"800", "866", "877", "888"
-		  );
-		
-		$validnpaCAN = false;
-		if(in_array($npa, $npalistCAN))
-		{
-			$validnpaCAN = true;
-		}
+
 	}
-	
-	if(!$validnpaUS && !$validnpaCAN)
+
+	if(!$validnpaUS)
 	{
 		$number_error = true;
 	}
-	
+
 	if($number_error)
 	{
 		if($debug)
 		{
-			print "Skipping Source - Non US/CAN number: ".$thenumber."<br>\n";
+			print "Skipping Source - Non US number: ".$thenumber."<br>\n";
 		}
 	}
 	else
 	{
-		$url="http://yellowpages.addresses.com/yellow-pages/phone:$thenumber/listings.html";
+		// check for a business listing
+		$url="http://yellowpages.addresses.com/yellow-pages/phone:$thenumber/listings.html";   //working Jun 5, 2012
 		$value = get_url_contents($url);
-		
+
 		$start= strpos($value, "listing_name");
-		
+
 		if($start > 1)
-		{
+		{	// working as of June 2012
 			$value = substr($value,$start);
 			$start= strpos($value, ">");
 			$value = substr($value,$start+1);
 			$end= strpos($value, "</a>");
 			$name = substr($value,0,$end);
-			$name = str_replace( chr(13), "", $name ); 
-			$name = str_replace( chr(10), "", $name ); 
-			$name = str_replace( "<div>", "", $name ); 
-			$name = str_replace( "</a>", "", $name ); 
-			$name = trim(str_replace( "&nbsp;", "", $name )); 
-			$caller_id = $name ;
+			$name = str_replace( chr(13), "", $name );
+			$name = str_replace( chr(10), "", $name );
+			$name = str_replace( "<div>", "", $name );
+			$name = str_replace( "</a>", "", $name );
+			$name = trim(str_replace( "&nbsp;", "", $name ));
+			$caller_id = urldecode(trim(strip_tags($name))) ;
 		}
-		else if($debug)
+
+		//check for a residential listing
+		$url = "http://www.yellowpages.com/reversephonelookup?fap_terms[phone]=+$thenumber";  //working for single returned result June 5, 2012, does not work if url returns multiple results for same number
+		$value = get_url_contents($url);
+
+		$pattern = "/<h1 class=\"heading-greybox\">(.+?)<\/h1>/i";   // working Jun 5, 2012
+		if(preg_match($pattern, $value, $match))
+		{
+			// Found a usable name
+			$caller_id = urldecode(trim(strip_tags($match[1])));
+		}
+
+		if ($debug && !$caller_id)
 		{
 			print "not found<br>\n";
 		}
 	}
 }
-?>
