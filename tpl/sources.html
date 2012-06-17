@@ -83,6 +83,22 @@
             });
         }
         
+        function options(id) {
+            var parent_id = $('#' + id).parent().parent().attr("id");
+            console.log(id);
+            $('#options').fadeOut('slow', function() {
+                $.ajaxSetup({ cache: false });
+                $.getJSON("config.php?quietmode=1&handler=file&module=superfecta&file=ajax.html.php&type=options&scheme={$scheme}&source="+parent_id, function(json) {
+                    if(json.success && json.show) {
+                        $('#options').fadeIn('slow').html(json.data);
+                        $('#form_options_'+parent_id).ajaxForm(function() { 
+                            alert("Saved!"); 
+                        }); 
+                    }
+                });
+            });
+        }
+        
     </script>
     <script language="javascript">
         /**
@@ -177,7 +193,7 @@
                         <td>&nbsp;</td>
                         <td><img id="{$value.source_name}_movedown" onclick="movedown_source(this.id);" src="images/scrolldown.gif" {if condition="$value.showdown === FALSE"}hidden{/if}/></td>
                         <td><img id="{$value.source_name}_moveup" onclick="moveup_source(this.id);" src="images/scrollup.gif" {if condition="$value.showup === FALSE"}hidden{/if}/></td>
-                        <td><a onclick="options('{$value.source_name}')">{$value.pretty_source_name}</a></td>
+                        <td><a id="{$value.source_name}_options" onclick="options(this.id)">{$value.pretty_source_name}</a></td>
                         <td align="center"><input type="radio" id="{$value.source_name}_disabled" name="{$value.source_name}" value="disabled" onclick="disable_source(this.id)" {if condition="$value.enabled === FALSE"}checked{/if}/></td>
                         <td align="center"><input type="radio" id="{$value.source_name}_enabled" name="{$value.source_name}" value="enabled" onclick="enable_source(this.id)" {if condition="$value.enabled === TRUE"}checked{/if}/></td>
                     </tr>

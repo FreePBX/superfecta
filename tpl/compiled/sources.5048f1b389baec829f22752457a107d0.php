@@ -83,6 +83,22 @@
             });
         }
         
+        function options(id) {
+            var parent_id = $('#' + id).parent().parent().attr("id");
+            console.log(id);
+            $('#options').fadeOut('slow', function() {
+                $.ajaxSetup({ cache: false });
+                $.getJSON("config.php?quietmode=1&handler=file&module=superfecta&file=ajax.html.php&type=options&scheme=<?php echo $scheme;?>&source="+parent_id, function(json) {
+                    if(json.success && json.show) {
+                        $('#options').fadeIn('slow').html(json.data);
+                        $('#form_options_'+parent_id).ajaxForm(function() { 
+                            alert("Saved!"); 
+                        }); 
+                    }
+                });
+            });
+        }
+        
     </script>
     <script language="javascript">
         /**
@@ -178,7 +194,7 @@
                         <td>&nbsp;</td>
                         <td><img id="<?php echo $value1["source_name"];?>_movedown" onclick="movedown_source(this.id);" src="images/scrolldown.gif" <?php if( $value1["showdown"] === FALSE ){ ?>hidden<?php } ?>/></td>
                         <td><img id="<?php echo $value1["source_name"];?>_moveup" onclick="moveup_source(this.id);" src="images/scrollup.gif" <?php if( $value1["showup"] === FALSE ){ ?>hidden<?php } ?>/></td>
-                        <td><a onclick="options('<?php echo $value1["source_name"];?>')"><?php echo $value1["pretty_source_name"];?></a></td>
+                        <td><a id="<?php echo $value1["source_name"];?>_options" onclick="options(this.id)"><?php echo $value1["pretty_source_name"];?></a></td>
                         <td align="center"><input type="radio" id="<?php echo $value1["source_name"];?>_disabled" name="<?php echo $value1["source_name"];?>" value="disabled" onclick="disable_source(this.id)" <?php if( $value1["enabled"] === FALSE ){ ?>checked<?php } ?>/></td>
                         <td align="center"><input type="radio" id="<?php echo $value1["source_name"];?>_enabled" name="<?php echo $value1["source_name"];?>" value="enabled" onclick="enable_source(this.id)" <?php if( $value1["enabled"] === TRUE ){ ?>checked<?php } ?>/></td>
                     </tr>
