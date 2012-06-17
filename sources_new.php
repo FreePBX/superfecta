@@ -65,6 +65,7 @@ foreach (glob(ROOT_PATH . "sources/source-*.module") as $filename) {
         }
         $tpl_sources[$j]['showup'] = FALSE;
         $tpl_sources[$j]['showdown'] = FALSE;
+        $tpl_sources[$j]['showupdate'] = FALSE;
         $tpl_sources[$j]['filename'] = $filename;
         $tpl_sources[$j]['pretty_source_name'] = str_replace("_"," ", $this_source_name);
         $tpl_sources[$j]['source_name'] = $this_source_name;
