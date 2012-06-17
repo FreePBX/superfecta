@@ -32,11 +32,16 @@
             $('#sources tr').each(function(index) {
                 var id = $(this).attr("id");
                 if(($(this).attr("id") != 'title_row') && $('#'+id+'_enabled').is(':checked')) {
-                    
                     if(index == 1) {
                         $('#' + id + '_moveup').hide();
-                        $('#' + id + '_movedown').show();
-                        source_json = source_json + '"'+ id +'",';
+                        var nextid = $(this).next().attr('id');
+                        if($('#'+nextid+'_enabled').is(':checked')) {
+                            source_json = source_json + '"'+ id +'",'
+                            $('#' + id + '_movedown').show();
+                        } else {
+                            source_json = source_json + '"'+ id +'"'
+                            $('#' + id + '_movedown').hide();
+                        }
                     } else {
                         var nextid = $(this).next().attr('id');
                         if($('#'+nextid+'_enabled').is(':checked')) {
@@ -51,8 +56,14 @@
                 }
             });
             source_json = source_json + "]";
-            console.log(source_json);
-            //Send Scheme now (over ajax)
+            $.ajaxSetup({ cache: false });
+            $.getJSON("config.php?quietmode=1&handler=file&module=superfecta&file=ajax.html.php&type=update_sources&scheme={$scheme}", 
+            {
+                data: source_json
+            },
+            function(json) {
+
+            });
         }
         
         function disable_source(id) {
@@ -77,7 +88,8 @@
             $('#sources tr').each(function(index) {
                 var eid = $(this).attr("id");
                 if(($(this).attr("id") != 'title_row') && !$('#'+eid+'_enabled').is(':checked') && parent_id != eid) {
-                    alert('this isnt working yet');
+                    $('#' + parent_id).insertBefore($(this));
+                    source_order();
                     return false;
                 }
             });
@@ -85,7 +97,6 @@
         
         function options(id) {
             var parent_id = $('#' + id).parent().parent().attr("id");
-            console.log(id);
             $('#options').fadeOut('slow', function() {
                 $.ajaxSetup({ cache: false });
                 $.getJSON("config.php?quietmode=1&handler=file&module=superfecta&file=ajax.html.php&type=options&scheme={$scheme}&source="+parent_id, function(json) {
@@ -100,78 +111,13 @@
         }
         
     </script>
-    <script language="javascript">
-        /**
-        function change(source, type) {
-            if(type == 'enable') {
-                var row = $("#"+source).html();
-                var frow = '';
-                var found = false;
-                $.ajaxSetup({ cache: false });
-                $.getJSON("config.php?quietmode=1&handler=file&module=superfecta&file=ajax.html.php&type=add&scheme={$scheme}&source="+source, function(json) {
-                    if(json.success) {
-                        $("#sources :checked").each(function(){
-                            if(($(this).val() == 'disabled') && (!found) ) {
-                                frow = $(this).attr('id').replace("_disabled","");
-                                found = true;
-                            }
-                        });
-                        $('#'+source).remove();
-                        $('#'+frow).before('<tr id="'+source+'" class="enabled">' + row + '<tr>');
-                        $('input[name="'+source+'"]').val(['enabled']);
-                    } else {
-                        $('input[name="'+source+'"]').val(['disabled']);
-                        $('#message').html('Error');
-                    }
-                });
-            } else if(type == 'disable') {
-                var row = $("#"+source).html();
-                $.ajaxSetup({ cache: false });
-                $.getJSON("config.php?quietmode=1&handler=file&module=superfecta&file=ajax.html.php&type=remove&scheme={$scheme}&source="+source, function(json) {
-                    if(json.success) {
-                        $('#'+source).remove();
-                        $('#sources tr:last').after('<tr id="'+source+'" class="disabled">' + row + '<tr>');
-                        $('input[name="'+source+'"]').val(['enabled']);
-                    } else {
-                        $('input[name="'+source+'"]').val(['enabled']);
-                        $('#message').html('Error');
-                    }
-                });
-            }
-        }
-    
-        function options(source) {
-            $('#options').fadeOut('slow', function() {
-                $.ajaxSetup({ cache: false });
-                $.getJSON("config.php?quietmode=1&handler=file&module=superfecta&file=ajax.html.php&type=options&scheme={$scheme}&source="+source, function(json) {
-                    if(json.success && json.show) {
-                        $('#options').fadeIn('slow').html(json.data);
-                        $('#form_options_'+source).ajaxForm(function() { 
-                            alert("Saved!"); 
-                        }); 
-                    }
-                });
-            });
-        }
-    
-        function move(source,action) {
-            $.ajaxSetup({ cache: false });
-            $.getJSON("config.php?quietmode=1&handler=file&module=superfecta&file=ajax.html.php&type=move&a="+action+"&scheme={$scheme}&source="+source, function(json) {
-                if(json.success) {
-                    $('#'+source).remove();
-                    //$('#'+frow).before('<tr id="'+source+'" class="enabled">' + row + '<tr>');
-                }
-            });
-        }
-        **/
-    </script>
     <input type="hidden" name="src_up" value="">
     <input type="hidden" name="src_down" value="">
     <input type="hidden" name="selected_source" value="">
     <input type="hidden" name="update_file" value="">
     <input type="hidden" name="delete_file" value="">
     <input type="hidden" name="revert_file" value="">
-    <span id="message" style="color:red;font-weight:bolder">{$update_site_message}</span></br>
+    <span id="message" class="superfecta_message">{$update_site_message}</span></br>
     <font size=2><input type="checkbox" name="check_updates" value="yes" {$check_updates_check}">&nbsp;Check for Data Source File updates online.<br></font>
 
     <table>
@@ -437,7 +383,7 @@
         var poststr = "debug=" + debuglevel + "&thenumber=" + thenumber + "&testdid=" + testdid;
         if(!checkall)
         {
-            poststr = poststr + "&scheme=<?php print $scheme ?>";
+            poststr = poststr + "&scheme={$scheme}";
         }
         else
         {
@@ -448,7 +394,7 @@
         {
             isWorking = true;
             divname = 'debug';
-            document.getElementById(divname).innerHTML = "<img src='modules/superfecta/loading.gif' style='margin: 20px auto 20px 150px;'>";
+            document.getElementById(divname).innerHTML = "<img src='assets/superfecta/images/loading.gif' style='margin: 20px auto 20px 150px;'>";
             http.open("POST", "modules/superfecta/includes/callerid.php", true);
             http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
             http.setRequestHeader("Content-length", poststr.length);

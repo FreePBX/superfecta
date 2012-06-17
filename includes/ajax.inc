@@ -1,7 +1,7 @@
 <?php
-require("superfecta_base.php");
+require_once("superfecta_base.php");
 $superfecta = new superfecta_base;
-include('JSON/JSON.php');
+require_once('JSON/JSON.php');
 
 
 $root_dir = dirname(dirname(__FILE__));
@@ -9,38 +9,38 @@ $root_dir = dirname(dirname(__FILE__));
 $out = array("success" => false);
 
 switch($_REQUEST['type']) {
-    case "add":
-        $sql = "SELECT value FROM superfectaconfig WHERE source = '".$_REQUEST['scheme']."' AND field = 'sources'";
-        
-        $sources = sql($sql, "getOne");
-        
-        $sources = $sources . "," . $_REQUEST['source'];
-        
-        $sql = "UPDATE superfectaconfig SET value = '".$sources."' WHERE source = '".$_REQUEST['scheme']."' AND field = 'sources'";
-        sql($sql);
-        
+    case "update_sources":
+        $sources_list = json_decode($_REQUEST['data']);
+        $sources_commaed = implode(",", $sources_list);
+        $sql = "REPLACE INTO superfectaconfig (value, source, field) VALUES('".mysql_real_escape_string($sources_commaed)."', '".mysql_real_escape_string($_REQUEST['scheme'])."', 'sources')";
+        sql($sql);   
         $out = array("success" => true);
         break;
-    case "remove":
-        $sql = "SELECT value FROM superfectaconfig WHERE source = '".$_REQUEST['scheme']."' AND field = 'sources'";
-        
-        $sources = sql($sql, "getOne");
-        
-        $sources = explode(",",$sources);
-        
-        $new = array();
-        foreach($sources as $data) {
-            if ($data != $_REQUEST['source']) {
-                $new[] = $data;
-            }
+    case "update_schemes":
+        $scheme_list = json_decode($_REQUEST['data']);
+        $order = 1;
+        foreach($scheme_list as $data) {
+            $sql = "REPLACE INTO superfectaconfig (value, source, field) VALUES('".mysql_real_escape_string($order)."', '".mysql_real_escape_string($data)."', 'order')";
+            sql($sql);
+            $order++;
         }
-        $sources = implode(",", $new);
-        
-        $sql = "UPDATE superfectaconfig SET value = '".$sources."' WHERE source = '".$_REQUEST['scheme']."' AND field = 'sources'";
+        $out = array("success" => true);
+        break;
+    case "delete_scheme":
+        $sql = "DELETE FROM superfectaconfig WHERE source = '".  mysql_real_escape_string($_REQUEST['scheme'])."'";
         sql($sql);
         
-        $out = array("success" => true);
+        //We now have to reorder the array. Well, we don't -have- to. But it's prettier
+        $sql = "SELECT * FROM superfectaconfig WHERE field LIKE 'order' ORDER BY value ASC";
+        $scheme_list = sql($sql, 'getAll', DB_FETCHMODE_ASSOC);
+        $order = 1;
+        foreach($scheme_list as $data) {
+            $sql = "REPLACE INTO superfectaconfig (value, source, field) VALUES('".mysql_real_escape_string($order)."', '".mysql_real_escape_string($data['source'])."', 'order')";
+            sql($sql);
+            $order++;
+        }
         
+        $out = array("success" => true);
         break;
     case "options":
         $show = FALSE;
@@ -62,24 +62,39 @@ switch($_REQUEST['type']) {
         
         $title = str_replace('_', ' ', $_REQUEST['source']);
         $form_html = '<h3>'.$title.'</h3><form id="form_options_'.$_REQUEST['source'].'" action="config.php?quietmode=1&handler=file&module=superfecta&file=ajax.html.php&type=save_options&scheme='.$_REQUEST['scheme'].'&source='.$_REQUEST['source'].'" method="post">';
-                        
+        $form_html .= '<table>';
         foreach($params['source_param'] as $key => $data) {
+            $form_html .= '<tr>';
             $show = TRUE;
+            $default = isset($data['default']) ? $data['default'] : '';
             switch($data['type']) {
                 case "text":
-                    $value = isset($n_settings[$key]) ? $n_settings[$key] : '';
-                    $form_html .= '<label>'.str_replace("_", " ", $key).'<input type="text" name="'.$key.'" value="'.$value.'" /></label></br>';
+                    $value = isset($n_settings[$key]) ? $n_settings[$key] : $default;
+                    $form_html .= '<td>'.str_replace("_", " ", $key).'</td><td><input type="text" name="'.$key.'" value="'.$value.'" /></td>';
                     break;
                 case "password":
-                    $value = isset($n_settings[$key]) ? $n_settings[$key] : '';
-                    $form_html .= '<label>'.str_replace("_", " ", $key).'<input type="password" name="'.$key.'" value="'.$value.'" /></label></br>';
+                    $value = isset($n_settings[$key]) ? $n_settings[$key] : $default;
+                    $form_html .= '<td>'.str_replace("_", " ", $key).'</td><td><input type="password" name="'.$key.'" value="'.$value.'" /></td>';
                     break;
                 case "checkbox":
-                    $checked = isset($n_settings[$key]) && ($n_settings[$key] == 'on') ? 'checked' : ''; 
-                    $form_html .= '<label>'.str_replace("_", " ", $key).'<input type="checkbox" name="'.$key.'" value="on" '.$checked.'/></label></br>';
+                    $checked = isset($n_settings[$key]) && ($n_settings[$key] == 'on') ? 'checked' : $default; 
+                    $form_html .= '<td>'.str_replace("_", " ", $key).'</td><td><input type="checkbox" name="'.$key.'" value="on" '.$checked.'/></td>';
+                    break;
+                case "textarea":
+                    $value = isset($n_settings[$key]) ? $n_settings[$key] : $default;
+                    $form_html .= '<td>'.str_replace("_", " ", $key).'</td><td><textarea name="'.$key.'">'.$value.'</textarea></td>';
+                    break;
+                case "number":
+                    $value = isset($n_settings[$key]) ? $n_settings[$key] : $default;
+                    $form_html .= '<td>'.str_replace("_", " ", $key).'</td><td><input type="number" name="'.$key.'" value="'.$value.'" /></td>';
+                    break;
+                default:
+                    $form_html .= '<td colspan="2"><span class="superfecta_message">WARN: Unrecognized option \''.$data['type'].'\'</span></td>';
                     break;
             }
+            $form_html .= '</tr>';
         }
+        $form_html .= '</table>';
         $form_html .= '<input type="submit" value="Submit" /></form>';
 
         $out = array("success" => true, "show" => $show, "data" => $form_html);
@@ -104,43 +119,6 @@ switch($_REQUEST['type']) {
                 sql($sql);
             }
         }
-        break;
-    case "move":
-        $sql = "SELECT value FROM superfectaconfig WHERE source = '".$_REQUEST['scheme']."' AND field = 'sources'";
-        
-        $sources = sql($sql, "getOne");
-                
-        $sources = explode(",",$sources);
-                
-        $p = 0;
-        foreach ($sources as $key => $data) {
-            $p = $p + 10;
-            switch ($_REQUEST['a']) {
-                case "up":
-                    if ($data == $_REQUEST['source']) {
-                        $sources_o[$p - 15] = $_REQUEST['source'];
-                    } else {
-                        $sources_o[$p] = $data;
-                    }
-                    break;
-                case "down":
-                    if ($data == $_REQUEST['source']) {
-                        $sources_o[$p + 15] = $_REQUEST['source'];
-                    } else {
-                        $sources_o[$p] = $data;
-                    }
-                    break;
-            }
-        }
-
-        ksort($sources_o);
-        
-        $sources_o = implode(",",$sources_o);
-        
-        $sql = "UPDATE superfectaconfig SET value = '".$sources_o."' WHERE source = '".$_REQUEST['scheme']."' AND field = 'sources'";
-        sql($sql);
-        
-        $out = array("success" => true);
         break;
 }
 

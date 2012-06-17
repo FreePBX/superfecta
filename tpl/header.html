@@ -22,7 +22,11 @@
             $('#' + parent_id).fadeOut('slow', function() {
                 $('#' + parent_id).remove();
             });
-            //Send ajax stream here
+            $.ajaxSetup({ cache: false });
+            $.getJSON("config.php?quietmode=1&handler=file&module=superfecta&file=ajax.html.php&type=delete_scheme&scheme="+parent_id, 
+            function(json) {
+
+            });
         }
     }
     
@@ -38,7 +42,7 @@
         })
     }
     
-    //Move schemem down
+    //Move Scheme down
     function movedown_scheme(id) {
         //This is suprisingly the BEST movement jquery method I have found! EVER
         var li = $('#' + id).parents("li:first");
@@ -58,10 +62,14 @@
         $('#schemeorder_list li').each(function(index) {
             if($(this).attr("id") != 'add_new') {
                 var id = $(this).attr("id");
-                if(index == 1) {
+                if(index == 1 && total > 1) {
                     $('#' + id + '_moveup').hide();
                     $('#' + id + '_movedown').show();
                     scheme_json = scheme_json + '"'+ id +'",'
+                } else if(index == 1 && total == 1) {
+                    $('#' + id + '_moveup').hide();
+                    $('#' + id + '_movedown').show();
+                    scheme_json = scheme_json + '"'+ id +'"'
                 } else if(index + 1 == total) {
                     $('#' + id + '_moveup').show();
                     $('#' + id + '_movedown').hide();
@@ -74,15 +82,24 @@
             }
         });
         scheme_json = scheme_json + "]";
-        console.log(scheme_json);
-        //Send Scheme now (over ajax)
+        $.ajaxSetup({ cache: false });
+        $.getJSON("config.php?quietmode=1&handler=file&module=superfecta&file=ajax.html.php&type=update_schemes&scheme={$scheme}", 
+        {
+            data: scheme_json
+        },
+        function(json) {
 
+        });
     }
 </script>
 <style type="text/css">
     .superfecta_schemes {
         float: left; 
         margin: 4px 1px 0px 1px;
+    }
+    .superfecta_message {
+        color:red;
+        font-weight:bolder;
     }
 </style>
 <div class="rnav" style="width:250px;">
