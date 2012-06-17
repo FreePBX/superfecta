@@ -76,12 +76,6 @@
         //Send Scheme now (over ajax)
 
     }
-    $(document).ready(function() {
-        {loop="schemes"}
-            {if condition="$value.showdown === FALSE"}$('#{$value.source}_movedown').hide();{/if}
-            {if condition="$value.showup === FALSE"}$('#{$value.source}_moveup').hide();{/if}
-        {/loop}
-    });
 </script>
 <style type="text/css">
     .superfecta_schemes {
@@ -94,8 +88,8 @@
         <li id="add_new"><a href="config.php?display=superfecta&scheme=new">Add Caller ID Scheme</a></li>
         {loop="schemes"}<li id="{$value.source}">
             <img id="{$value.source}_power" onclick="power_scheme(this.id);" class="superfecta_schemes button" src="assets/superfecta/images/on.gif" alt="On/Off" title="Turn this scheme on and off" />
-            <img id="{$value.source}_movedown" class="superfecta_schemes button" onclick="movedown_scheme(this.id);" src="images/scrolldown.gif" alt="Down Arrow" title="Move Down List" />
-            <img id="{$value.source}_moveup" class="superfecta_schemes button" onclick="moveup_scheme(this.id);" src="images/scrollup.gif" alt="Up Arrow" title="Move Up List" />
+            <img id="{$value.source}_movedown" class="superfecta_schemes button" onclick="movedown_scheme(this.id);" src="images/scrolldown.gif" alt="Down Arrow" title="Move Down List" {if condition="$value.showdown === FALSE"}hidden{/if}/>
+            <img id="{$value.source}_moveup" class="superfecta_schemes button" onclick="moveup_scheme(this.id);" src="images/scrollup.gif" alt="Up Arrow" title="Move Up List" {if condition="$value.showup === FALSE"}hidden{/if}/>
             <img id="{$value.source}_dupilcate" class="superfecta_schemes button" src="assets/superfecta/images/copy.gif" alt="Duplicate Scheme" title="Duplicate Scheme" />
             <img id="{$value.source}_delete" class="superfecta_schemes button" onclick="delete_scheme(this.id);" src="assets/superfecta/images/delete.gif" alt="Delete Button" title="Delete Scheme" />
             <a onclick="window.location.href='config.php?display=superfecta&amp;scheme={$value.source}';">{$value.name}</a>

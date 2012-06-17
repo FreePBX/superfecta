@@ -3,6 +3,73 @@
 <div id="CIDSourcesList">
     <script type="text/javascript" src="<?php echo $web_path;?>"></script>
     <script language="javascript">
+        function moveup_source(id) {
+            //This is suprisingly the BEST movement jquery method I have found! EVER
+            var li = $('#' + id).parents("li:first");
+            var parent_id = $('#' + id).parent().attr("id");
+            $('#' + parent_id).fadeOut('slow', function() {
+                li.insertBefore(li.prev());
+                $('#' + parent_id).fadeIn('slow');
+                scheme_order();
+            })
+        }
+        /**
+        //Move Scheme up
+        function moveup_scheme(id) {
+            //This is suprisingly the BEST movement jquery method I have found! EVER
+            var li = $('#' + id).parents("li:first");
+            var parent_id = $('#' + id).parent().attr("id");
+            $('#' + parent_id).fadeOut('slow', function() {
+                li.insertBefore(li.prev());
+                $('#' + parent_id).fadeIn('slow');
+                scheme_order();
+            })
+        }
+        
+        //Move schemem down
+        function movedown_scheme(id) {
+            //This is suprisingly the BEST movement jquery method I have found! EVER
+            var li = $('#' + id).parents("li:first");
+            var parent_id = $('#' + id).parent().attr("id"); 
+            $('#' + parent_id).fadeOut('slow', function() {
+                li.insertAfter(li.next()); 
+                $('#' + parent_id).fadeIn('slow');
+                scheme_order();
+            })
+        }
+        
+        //Fix graphics display and send content
+        function scheme_order() {
+            //Get order here and then re-do all of the gfx to make sense again to the gui
+            var total = $('#schemeorder_list li').size();
+            var scheme_json="[";
+            $('#schemeorder_list li').each(function(index) {
+                if($(this).attr("id") != 'add_new') {
+                    var id = $(this).attr("id");
+                    if(index == 1) {
+                        $('#' + id + '_moveup').hide();
+                        $('#' + id + '_movedown').show();
+                        scheme_json = scheme_json + '"'+ id +'",'
+                    } else if(index + 1 == total) {
+                        $('#' + id + '_moveup').show();
+                        $('#' + id + '_movedown').hide();
+                        scheme_json = scheme_json + '"'+ id +'"'
+                    } else {
+                        $('#' + id + '_moveup').show();
+                        $('#' + id + '_movedown').show(); 
+                        scheme_json = scheme_json + '"'+ id +'",'
+                    }
+                }
+            });
+            scheme_json = scheme_json + "]";
+            console.log(scheme_json);
+            //Send Scheme now (over ajax)
+            
+        }
+        **/
+    </script>
+    <script language="javascript">
+        /**
         function change(source, type) {
             if(type == 'enable') {
                 var row = $("#"+source).html();
@@ -64,6 +131,7 @@
                 }
             });
         }
+        **/
     </script>
     <input type="hidden" name="src_up" value="">
     <input type="hidden" name="src_down" value="">
@@ -92,8 +160,8 @@
                     <tr id="<?php echo $value1["source_name"];?>" class="<?php echo $value1["status"];?>">
                         <td>&nbsp;</td>
                         <td>&nbsp;</td>
-                        <td><?php if( $value1["showdown"] === TRUE ){ ?><a href="#" onclick="move('<?php echo $value1["source_name"];?>', 'down')"><img src="images/scrolldown.gif"></a><?php } ?></td>
-                        <td><?php if( $value1["showup"] === TRUE ){ ?><a href="#" onclick="move('<?php echo $value1["source_name"];?>', 'up')"><img src="images/scrollup.gif"></a><?php } ?></td>
+                        <td><img id="<?php echo $value1["source_name"];?>_movedown" src="images/scrolldown.gif" <?php if( $value1["showdown"] === FALSE ){ ?>hidden<?php } ?>/></td>
+                        <td><img id="<?php echo $value1["source_name"];?>_moveup" src="images/scrollup.gif" <?php if( $value1["showup"] === FALSE ){ ?>hidden<?php } ?>/></td>
                         <td><a onclick="options('<?php echo $value1["source_name"];?>')"><?php echo $value1["pretty_source_name"];?></a></td>
                         <td align="center"><input type="radio" id="<?php echo $value1["source_name"];?>_disabled" name="<?php echo $value1["source_name"];?>" value="disabled" onclick="change('<?php echo $value1["source_name"];?>', 'disable')" <?php if( $value1["enabled"] === FALSE ){ ?>checked<?php } ?>/></td>
                         <td align="center"><input type="radio" id="<?php echo $value1["source_name"];?>_enabled" name="<?php echo $value1["source_name"];?>" value="enabled" onclick="change('<?php echo $value1["source_name"];?>','enable')" <?php if( $value1["enabled"] === TRUE ){ ?>checked<?php } ?>/></td>
