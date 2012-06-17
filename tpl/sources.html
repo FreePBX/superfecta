@@ -5,68 +5,84 @@
     <script language="javascript">
         function moveup_source(id) {
             //This is suprisingly the BEST movement jquery method I have found! EVER
-            var li = $('#' + id).parents("li:first");
-            var parent_id = $('#' + id).parent().attr("id");
+            var parent_id = $('#' + id).parent().parent().attr("id");
+            var row = $('#' + id).parents("tr:first");
             $('#' + parent_id).fadeOut('slow', function() {
-                li.insertBefore(li.prev());
+                row.insertBefore(row.prev());
                 $('#' + parent_id).fadeIn('slow');
-                scheme_order();
+                source_order();
             })
         }
-        /**
-        //Move Scheme up
-        function moveup_scheme(id) {
+        function movedown_source(id) {
             //This is suprisingly the BEST movement jquery method I have found! EVER
-            var li = $('#' + id).parents("li:first");
-            var parent_id = $('#' + id).parent().attr("id");
+            var parent_id = $('#' + id).parent().parent().attr("id");
+            var row = $('#' + id).parents("tr:first");
             $('#' + parent_id).fadeOut('slow', function() {
-                li.insertBefore(li.prev());
+                row.insertAfter(row.next());
                 $('#' + parent_id).fadeIn('slow');
-                scheme_order();
-            })
-        }
-        
-        //Move schemem down
-        function movedown_scheme(id) {
-            //This is suprisingly the BEST movement jquery method I have found! EVER
-            var li = $('#' + id).parents("li:first");
-            var parent_id = $('#' + id).parent().attr("id"); 
-            $('#' + parent_id).fadeOut('slow', function() {
-                li.insertAfter(li.next()); 
-                $('#' + parent_id).fadeIn('slow');
-                scheme_order();
+                source_order();
             })
         }
         
         //Fix graphics display and send content
-        function scheme_order() {
+        function source_order() {
             //Get order here and then re-do all of the gfx to make sense again to the gui
-            var total = $('#schemeorder_list li').size();
-            var scheme_json="[";
-            $('#schemeorder_list li').each(function(index) {
-                if($(this).attr("id") != 'add_new') {
-                    var id = $(this).attr("id");
+            var total = $('#sources tr').size();
+            var source_json="[";
+            $('#sources tr').each(function(index) {
+                var id = $(this).attr("id");
+                if(($(this).attr("id") != 'title_row') && $('#'+id+'_enabled').is(':checked')) {
+                    
                     if(index == 1) {
                         $('#' + id + '_moveup').hide();
                         $('#' + id + '_movedown').show();
-                        scheme_json = scheme_json + '"'+ id +'",'
-                    } else if(index + 1 == total) {
-                        $('#' + id + '_moveup').show();
-                        $('#' + id + '_movedown').hide();
-                        scheme_json = scheme_json + '"'+ id +'"'
+                        source_json = source_json + '"'+ id +'",';
                     } else {
+                        var nextid = $(this).next().attr('id');
+                        if($('#'+nextid+'_enabled').is(':checked')) {
+                            $('#' + id + '_movedown').show();
+                            source_json = source_json + '"'+ id +'",'
+                        } else {
+                            $('#' + id + '_movedown').hide();
+                            source_json = source_json + '"'+ id +'"'
+                        }
                         $('#' + id + '_moveup').show();
-                        $('#' + id + '_movedown').show(); 
-                        scheme_json = scheme_json + '"'+ id +'",'
                     }
                 }
             });
-            scheme_json = scheme_json + "]";
-            console.log(scheme_json);
+            source_json = source_json + "]";
+            console.log(source_json);
             //Send Scheme now (over ajax)
+        }
+        
+        function disable_source(id) {
+            var parent_id = $('#' + id).parent().parent().attr("id");
+            $('#' + parent_id + '_moveup').fadeOut('slow');
+            $('#' + parent_id + '_movedown').fadeOut('slow');
+            $('#sources tr').each(function(index) {
+                var eid = $(this).attr("id");
+                if(($(this).attr("id") != 'title_row') && !$('#'+eid+'_enabled').is(':checked') && parent_id != eid) {
+                    $('#' + parent_id).insertBefore($(this));
+                    source_order();
+                    return false;
+                }
+            });
             
         }
-        **/
+        
+        function enable_source(id) {
+            var parent_id = $('#' + id).parent().parent().attr("id");
+            $('#' + parent_id + '_moveup').fadeIn('slow');
+            $('#' + parent_id + '_movedown').fadeIn('slow');
+            $('#sources tr').each(function(index) {
+                var eid = $(this).attr("id");
+                if(($(this).attr("id") != 'title_row') && !$('#'+eid+'_enabled').is(':checked') && parent_id != eid) {
+                    alert('this isnt working yet');
+                    return false;
+                }
+            });
+        }
+        
     </script>
     <script language="javascript">
         /**
@@ -146,7 +162,7 @@
         <tr>
             <td>
                 <table border="0" id="sources" cellspacing="0" cellpadding="2">
-                    <tr>
+                    <tr id="title_row">
                         <td>&nbsp;</td>
                         <td>&nbsp;</td>
                         <td>&nbsp;</td>
@@ -159,11 +175,11 @@
                     <tr id="{$value.source_name}" class="{$value.status}">
                         <td>&nbsp;</td>
                         <td>&nbsp;</td>
-                        <td><img id="{$value.source_name}_movedown" src="images/scrolldown.gif" {if condition="$value.showdown === FALSE"}hidden{/if}/></td>
-                        <td><img id="{$value.source_name}_moveup" src="images/scrollup.gif" {if condition="$value.showup === FALSE"}hidden{/if}/></td>
+                        <td><img id="{$value.source_name}_movedown" onclick="movedown_source(this.id);" src="images/scrolldown.gif" {if condition="$value.showdown === FALSE"}hidden{/if}/></td>
+                        <td><img id="{$value.source_name}_moveup" onclick="moveup_source(this.id);" src="images/scrollup.gif" {if condition="$value.showup === FALSE"}hidden{/if}/></td>
                         <td><a onclick="options('{$value.source_name}')">{$value.pretty_source_name}</a></td>
-                        <td align="center"><input type="radio" id="{$value.source_name}_disabled" name="{$value.source_name}" value="disabled" onclick="change('{$value.source_name}', 'disable')" {if condition="$value.enabled === FALSE"}checked{/if}/></td>
-                        <td align="center"><input type="radio" id="{$value.source_name}_enabled" name="{$value.source_name}" value="enabled" onclick="change('{$value.source_name}','enable')" {if condition="$value.enabled === TRUE"}checked{/if}/></td>
+                        <td align="center"><input type="radio" id="{$value.source_name}_disabled" name="{$value.source_name}" value="disabled" onclick="disable_source(this.id)" {if condition="$value.enabled === FALSE"}checked{/if}/></td>
+                        <td align="center"><input type="radio" id="{$value.source_name}_enabled" name="{$value.source_name}" value="enabled" onclick="enable_source(this.id)" {if condition="$value.enabled === TRUE"}checked{/if}/></td>
                     </tr>
                     {/loop}
                 </table>
