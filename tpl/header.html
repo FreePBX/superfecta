@@ -29,17 +29,23 @@
         //This is suprisingly the BEST movement jquery method I have found! EVER
         var li = $('#' + id).parents("li:first");
         var parent_id = $('#' + id).parent().attr("id");
-        li.insertBefore(li.prev());
-        scheme_order();
+        $('#' + parent_id).fadeOut('slow', function() {
+            li.insertBefore(li.prev());
+            $('#' + parent_id).fadeIn('slow');
+            scheme_order();
+        })
     }
     
     //Move schemem down
     function movedown_scheme(id) {
         //This is suprisingly the BEST movement jquery method I have found! EVER
         var li = $('#' + id).parents("li:first");
-        var parent_id = $('#' + id).parent().attr("id");       
-        li.insertAfter(li.next());        
-        scheme_order()
+        var parent_id = $('#' + id).parent().attr("id"); 
+        $('#' + parent_id).fadeOut('slow', function() {
+            li.insertAfter(li.next()); 
+            $('#' + parent_id).fadeIn('slow');
+            scheme_order();
+        })
     }
     
     //Fix graphics display and send content
@@ -50,7 +56,6 @@
         $('#schemeorder_list li').each(function(index) {
             if($(this).attr("id") != 'add_new') {
                 var id = $(this).attr("id");
-                
                 if(index == 1) {
                     $('#' + id + '_moveup').hide();
                     $('#' + id + '_movedown').show();
@@ -98,5 +103,5 @@
     </ul>
 </div>
 <h1><font face="Arial">Caller ID Superfecta</font></h1>
-<hr>
+<hr width="20%" align="left">
 <p>CallerID Superfecta for FreePBX is a utility program which adds incoming CallerID name lookups to your Asterisk system using multiple data sources.<br><br> </p>

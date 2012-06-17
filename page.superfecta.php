@@ -155,22 +155,14 @@ $sql = "SELECT source, value FROM superfectaconfig WHERE source LIKE 'base_%' AN
 $results = sql($sql, "getAll", DB_FETCHMODE_ASSOC);
 
 $i = 1;
+$total = count($results);
 foreach ($results as $data) {
     $scheme_list[$i] = $data;
     $scheme_list[$i]['name'] = substr($data['source'], 5);
-    $scheme_list[$i]['showdown'] = TRUE;
-    $scheme_list[$i]['showup'] = FALSE;
+    $scheme_list[$i]['showdown'] = $i == $total ? FALSE : TRUE;
+    $scheme_list[$i]['showup'] = $i == 1 ? FALSE : TRUE;
     $scheme_list[$i]['showdelete'] = TRUE;
     $i++;
-}
-
-$scheme_list[$i-1]['showdown'] = FALSE;
-$scheme_list[$i-1]['showup'] = TRUE;
-
-if($i == 2) {
-    $scheme_list[1]['showdown'] = FALSE;
-    $scheme_list[1]['showup'] = FALSE;
-    $scheme_list[1]['showdelete'] = FALSE;
 }
 
 $supertpl->assign('schemes', $scheme_list);
