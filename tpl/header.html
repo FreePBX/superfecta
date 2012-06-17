@@ -1,0 +1,20 @@
+<div class="rnav" style="width:250px;">
+    <ul>
+        <li><a href="config.php?display=superfecta&scheme=new">Add Caller ID Scheme</a></li>
+        {loop="schemes"}
+        <li>
+            <img style="float: left; margin: 4px 1px 0px 1px;" class="button" onmouseover="this.style.cursor='pointer';" onclick="window.location.href='config.php?display=superfecta&amp;schemeonoff={$value.source}'" src="assets/superfecta/images/on_off.gif" alt="On/Off" title="Turn this scheme on and off">
+            {if condition="$value.showdown === TRUE"}<img style="float: left; margin: 4px 1px 0px 1px;" class="button" onmouseover="this.style.cursor='pointer';" onclick="window.location.href='config.php?display=superfecta&amp;schemedown={$value.source}'" src="images/scrolldown.gif" alt="Down Arrow" title="Move Down List">{/if}
+            {if condition="$value.showup === TRUE"}<div style="width: 11px; float: left; height: 5px;"></div>
+            <img style="float: left; margin: 4px 1px 0px 1px;" class="button" onmouseover="this.style.cursor='pointer';" onclick="window.location.href='config.php?display=superfecta&amp;schemeup={$value.source}'" src="images/scrollup.gif" alt="Up Arrow" title="Move Up List">{/if}
+            <div style="width: 11px; float: left; height: 5px;"></div>
+            <img style="float: left; margin: 4px 1px 0px 1px;" class="button" onmouseover="this.style.cursor='pointer';" onclick="window.location.href='config.php?display=superfecta&amp;schemecopy={$value.source}'" src="assets/superfecta/images/copy.gif" alt="Duplicate Scheme" title="Duplicate Scheme">
+            {if condition="$value.showdelete === TRUE"}<img style="float: left; margin: 4px 1px 0px 1px;" class="button" onmouseover="this.style.cursor='pointer';" onclick="decision('Are you sure you want to delete this Scheme?','config.php?display=superfecta&amp;schemedelete={$value.source}');" src="assets/superfecta/images/delete.gif" alt="Delete Button" title="Delete Scheme">{/if}
+            <a href="config.php?display=superfecta&amp;scheme={$value.source}" style="float: left;">{$value.name}</a>
+        </li>                   
+        {/loop}
+    </ul>
+</div>
+<h1><font face="Arial">Caller ID Superfecta</font></h1>
+<hr>
+<p>CallerID Superfecta for FreePBX is a utility program which adds incoming CallerID name lookups to your Asterisk system using multiple data sources.<br><br> </p>

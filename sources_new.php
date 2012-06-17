@@ -3,14 +3,6 @@
 define("UPDATE_SERVER", "https://raw.github.com/tm1000/Caller-ID-Superfecta/v3.x/sources/");
 define("ROOT_PATH", dirname(__FILE__).'/');
 
-require_once(ROOT_PATH.'includes/rain.tpl.class.php');
-
-raintpl::configure("base_url", ROOT_PATH.'/tpl/images/' );
-raintpl::configure("tpl_dir", ROOT_PATH . 'tpl/' );
-raintpl::configure("cache_dir", ROOT_PATH . 'tpl/compiled/' );
-
-$supertpl = new RainTPL;
-
 //fix in the future
 $version = preg_replace('/(alpha|beta)/i', '.0.', $module_info['module']['version']);
 
