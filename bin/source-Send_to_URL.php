@@ -17,7 +17,7 @@ if($usage_mode == 'post processing')
 {
 	if (($run_param['URL_address'] !='') && ($first_caller_id != ''))
 	{
-		$url=$run_param['URL_address'].'?thenumber='.$thenumber.'&CLID='.$first_caller_id;
+		$url=$run_param['URL_address'].'?thenumber='.$thenumber.'&CLID='.urlencode($first_caller_id);
 		if($debug)
 		{
 			print 'Send to URL: '.$url.'<br><br>';
