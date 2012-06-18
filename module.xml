@@ -1,7 +1,7 @@
 <module>
 	<rawname>superfecta</rawname>
 	<name>CID Superfecta</name>
-	<version>3.0.1alpha1</version>
+	<version>3.0.1alpha2</version>
 	<type>setup</type>
 	<category>Inbound Call Control</category>
 	<publisher>projects.colsolgrp.net</publisher> 

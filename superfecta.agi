@@ -1,6 +1,6 @@
 #!/usr/bin/php -q
 <?php
-
+        $base_dir = dirname(__FILE__);
 	require('/var/lib/asterisk/agi-bin/phpagi.php');
 	$agi = new AGI();
         $agi->answer();
@@ -10,7 +10,12 @@
 	} else {
 		$scheme = 'base_Default';
 	}
-	$sn = explode("_",$scheme,2);
+        if($scheme == 'ALL|ALL') {
+           $sn[1] = 'ALL';
+        } else {
+           $sn = explode("_",$scheme,2); 
+        }
+	
 	$did = $agi->request['agi_extension'];
 	$thenumber = $agi->request['agi_callerid'];
 	chdir(dirname(__FILE__) . '/bin');
@@ -22,3 +27,4 @@
                 $agi->goto_dest($parts[0],$parts[1],$parts[2]);
             }
 	}
+        file_put_contents($base_dir.'/log', '/usr/bin/php ' . dirname(__FILE__) . '/includes/callerid.php -s '.$sn[1].' -n ' . $thenumber . ' -i '.$did);
