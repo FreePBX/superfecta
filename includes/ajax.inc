@@ -3,7 +3,6 @@ require_once("superfecta_base.php");
 $superfecta = new superfecta_base;
 require_once('JSON/JSON.php');
 
-
 $root_dir = dirname(dirname(__FILE__));
 
 $out = array("success" => false);
@@ -20,6 +19,7 @@ switch($_REQUEST['type']) {
         $scheme_list = json_decode($_REQUEST['data']);
         $order = 1;
         foreach($scheme_list as $data) {
+            $data = preg_replace('/^scheme_/i', '', $data);
             $sql = "REPLACE INTO superfectaconfig (value, source, field) VALUES('".mysql_real_escape_string($order)."', '".mysql_real_escape_string($data)."', 'order')";
             sql($sql);
             $order++;
@@ -27,7 +27,8 @@ switch($_REQUEST['type']) {
         $out = array("success" => true);
         break;
     case "delete_scheme":
-        $sql = "DELETE FROM superfectaconfig WHERE source = '".  mysql_real_escape_string($_REQUEST['scheme'])."'";
+        $data = preg_replace('/^scheme_/i', '', $_REQUEST['scheme']);
+        $sql = "DELETE FROM superfectaconfig WHERE source = '".  mysql_real_escape_string($data)."'";
         sql($sql);
         
         //We now have to reorder the array. Well, we don't -have- to. But it's prettier

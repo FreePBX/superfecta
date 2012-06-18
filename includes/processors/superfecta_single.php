@@ -4,18 +4,23 @@ class superfecta_single extends superfecta_base {
 
     public static $name = 'Single';
     public static $description = 'Runs all sources in specified order, like old superfecta';
-    
-    function __construct($db, $amp_conf, $astman, $debug, $thenumber_orig, $scheme_name, $scheme_param) {
-        $this->setDebug($debug);
-        $sn = explode("_", $scheme_name);
+    public $type = 'SINGLE';
+
+    function __construct($options) {
+        $this->setDebug($options['debug']);
+        $sn = explode("_", $options['scheme_name']);
         $this->scheme_name = $sn[1];
-        $this->scheme = $scheme_name;
-        $this->db = $db;
-        $this->amp_conf = $amp_conf;
-        $this->astman = $astman;
-        $this->thenumber_orig = $thenumber_orig;
-        $this->scheme_param = $scheme_param;
-        $this->path_location = str_replace("includes/processors", "sources", dirname(__FILE__));
+        $this->scheme = $options['scheme_name'];
+        $this->db = $options['db'];
+        $this->amp_conf = $options['amp_conf'];
+        $this->astman = $options['astman'];
+        $this->thenumber_orig = $options['original_number'];
+        $this->scheme_param = $options['scheme_parameters'];
+        $this->path_location = $options['path_location'];
+    }
+
+    function is_master() {
+        return(TRUE);
     }
 
     function get_results() {

@@ -4,7 +4,8 @@ class superfecta_multi extends superfecta_base {
 
     public static $name = 'Multi';
     public static $description = 'Multifecta, runs all sources at the same time';
-    
+    public $type = 'SINGLE';
+
     function __construct($multifecta_id, $db, $amp_conf, $astman, $debug, $thenumber_orig, $scheme_name, $scheme_param, $source) {
         //Check if we are a multifecta child, if so, get our variables from our child record
         $this->multifecta_id = $multifecta_id;
@@ -18,7 +19,7 @@ class superfecta_multi extends superfecta_base {
         $this->thenumber_orig = $thenumber_orig;
         $this->scheme_param = $scheme_param;
         $this->source = $source;
-        $this->path_location = str_replace("includes/processors", "sources", dirname(__FILE__));
+        $this->path_location = $options['path_location'];
         if ($multifecta_id) {
             $this->multi_type = 'CHILD';
         } else {
@@ -47,10 +48,18 @@ class superfecta_multi extends superfecta_base {
         }
     }
 
+    function is_master() {
+        if ($this->multi_type == 'PARENT') {
+            return(TRUE);
+        } elseif ($this->multi_type == 'CHILD') {
+            return(FALSE);
+        }
+    }
+
     function get_results() {
         if ($this->multi_type == 'PARENT') {
             return($this->run_parent());
-        } elseif ($this->multi_type = 'CHILD') {
+        } elseif ($this->multi_type == 'CHILD') {
             $this->run_child();
         }
     }

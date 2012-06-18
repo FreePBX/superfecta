@@ -1,8 +1,26 @@
 <p>Add, Remove, Enable, Disable, Sort and Configure data sources as appropriate for your situation.</p>
 <p>Select which data source(s) to use for your lookups, and the order in which you want them used:</p>
 <div id="CIDSourcesList">
-    <script type="text/javascript" src="{$web_path}"></script>
     <script language="javascript">
+        $(document).ready(function() {
+            $("#update_check").change(function() {
+                if ($(this).is (':checked'))    {
+                    $('#sources tr').each(function(index) {
+                        var id = $(this).attr("id");
+                        if(id != 'title_row') {
+                            $('#' + id + '_update').show();
+                        }
+                    });
+                } else {
+                    $('#sources tr').each(function(index) {
+                        var id = $(this).attr("id");
+                        if(id != 'title_row') {
+                            $('#' + id + '_update').hide();
+                        }
+                    });
+                }
+            });
+        });
         function moveup_source(id) {
             //This is suprisingly the BEST movement jquery method I have found! EVER
             var parent_id = $('#' + id).parent().parent().attr("id");
@@ -109,7 +127,6 @@
                 });
             });
         }
-        
     </script>
     <input type="hidden" name="src_up" value="">
     <input type="hidden" name="src_down" value="">
@@ -118,7 +135,7 @@
     <input type="hidden" name="delete_file" value="">
     <input type="hidden" name="revert_file" value="">
     <span id="message" class="superfecta_message">{$update_site_message}</span></br>
-    <font size=2><input type="checkbox" name="check_updates" value="yes" {$check_updates_check}">&nbsp;Check for Data Source File updates online.<br></font>
+    <font size=2><input id="update_check" name="update_check" type="checkbox">&nbsp;Check for Data Source File updates online.<br></font>
 
     <table>
         <tr>
@@ -387,7 +404,7 @@
         }
         else
         {
-            poststr = poststr + "&scheme=base_ALL_ALL";
+            poststr = poststr + "&scheme=ALL";
         }
 
         if(!isWorking)
