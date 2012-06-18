@@ -1,4 +1,10 @@
 <?php
+
+$sql = 'SELECT value FROM `admin` WHERE `variable` LIKE CONVERT(_utf8 \'version\' USING latin1) COLLATE latin1_swedish_ci';
+preg_match('/^(\d*)\.(\d*)/', $db->getOne($sql), $versions);
+
+$amp_version['minor'] = $versions[2];
+
 print 'Installing Caller ID Superfecta<br>';
 
 // Set execute permissions for AGI script
@@ -322,4 +328,52 @@ $schemes = $db->getAll($sql,array(),DB_FETCHMODE_ASSOC);
 if(!in_array('scheme',$schemes[0])) {
 	$sql = 'ALTER TABLE `superfecta_to_incoming` ADD `scheme` VARCHAR(50) NOT NULL;';
 	$db->query($sql);
+}
+
+$local_path = dirname(__FILE__) . '/';
+
+if($amp_version['minor'] < 9) {
+    //Do symlinks ourself because retrieve_conf is OLD
+
+    //images
+    $dir = $amp_conf['AMPWEBROOT'].'/admin/assets/superfecta/images';
+    if(!file_exists($dir)) {
+        mkdir($dir, 0777, TRUE);
+    }
+    foreach (glob($local_path."assets/images/*.*") as $filename) {
+        if(file_exists($dir.'/'.basename($filename))) {
+            unlink($dir.'/'.basename($filename));
+            symlink($filename, $dir.'/'.basename($filename));
+        } else {
+            symlink($filename, $dir.'/'.basename($filename));
+        }
+    }
+
+    //javascripts
+    $dir = $amp_conf['AMPWEBROOT'].'/admin/superfecta/endpointman/js';
+    if(!file_exists($dir)) {
+        mkdir($dir, 0777, TRUE);
+    }
+    foreach (glob($local_path."assets/js/*.*") as $filename) {
+        if(file_exists($dir.'/'.basename($filename))) {
+            unlink($dir.'/'.basename($filename));
+            symlink($filename, $dir.'/'.basename($filename));
+        } else {
+            symlink($filename, $dir.'/'.basename($filename));
+        }
+    }
+
+    //theme (css/stylesheets)
+    $dir = $amp_conf['AMPWEBROOT'].'/admin/superfecta/endpointman/theme';
+    if(!file_exists($dir)) {
+        mkdir($dir, 0777, TRUE);
+    }
+    foreach (glob($local_path."assets/theme/*.*") as $filename) {
+        if(file_exists($dir.'/'.basename($filename))) {
+            unlink($dir.'/'.basename($filename));
+            symlink($filename, $dir.'/'.basename($filename));
+        } else {
+            symlink($filename, $dir.'/'.basename($filename));
+        }
+    }
 }
