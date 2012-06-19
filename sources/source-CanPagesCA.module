@@ -23,15 +23,15 @@ class CanPagesCA extends superfecta_base {
 	 		// By default, there is no match
 			$name = "";
 	
-			$url="http://www.canpages.ca/rl/index.jsp?fi=Search&lang=0&val={$thenumber}";
+			$url="http://www.canpages.ca/list.jsp?na=".$npa."-".$nxx."-".$station."&ct=b2n+1x6";   //working June 19, 2012
 	
-			$pattern = '/class=\"header_listing\">(.*)<\/a>.+<span class=\"phone\">\('.$npa.'\).*'.$nxx.'-'.$station.'/i';
+			$pattern = '/name : \"(.*?)\",/i';   //working June 19, 2012
 
                         
 			// Patterns to search for
 			$regexp = array(
-				$pattern, 								// Residential match
-				"/style=\"font-size: 13px\">(.+)<\/a>/" // Business match
+				$pattern, 
+				
 			);
 	
 			if($this->SearchURL($url, $regexp, $match,NULL,TRUE)) {
