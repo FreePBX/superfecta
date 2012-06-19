@@ -25,12 +25,12 @@ class Can411 extends superfecta_base {
 	
 			$url="http://411.ca/search/?q=$thenumber&st=reverse";    //working June 19, 2012
 	
-			$pattern = '/itemprop=\"name\">(.+?)<\/a>/i';
+			$pattern = '/itemprop=\"name\">(.+?)<\/a>/i';			// working Jun 19, 2012
 
                         
 			// Patterns to search for
 			$regexp = array(
-				$pattern, 								// Residential match working Jun 19, 2012
+				$pattern, 								
 				
 			);
 	
