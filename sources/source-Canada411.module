@@ -29,8 +29,10 @@ class Canada411 extends superfecta_base {
 	
 			// Patterns to search for
 			$regexp = array(
-				"/<span class=\"ypgWebNumberColumn ypgWebNumberColumnName\"><a href=\".*\">(.*)<\/a>/",		//business results
-				"/<div class=\"ypgBackfillListing\">\n(.*)<br>/",          									//residential results
+				"/<span class=\"ypgWebNumberColumn ypgWebNumberColumnName\"><a href=\".*\">(.*)<\/a>/",		//business results July 16, 2011
+				"/<div class=\"ypgBackfillListing\">\n(.*)<br>/",          									//residential results July 16, 2011
+				"/<span class=\"listingTitle\">(.+?)<\/span>/",												//business results Jun 19, 2012
+				"/<div class=\"ypgBackfillListing\">\n(.+?)<br\/>/",											//res results Jun 19, 2012
 			);
 	
 			// Look through each pattern to see if we find a match -- take the first match
