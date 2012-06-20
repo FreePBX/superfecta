@@ -1,12 +1,13 @@
 <?php
 //this file is designed to be used as an include that is part of a loop.
-//If a valid match is found, it should give $caller_id a value
+//If a valid match is found, it will give $caller_id a value
 //available variables for use are: $thenumber
 //retreive website contents using get_url_contents($url);
+//last edited June 19, 2012 by lgaetz
 
 //configuration / display parameters
 //The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
-$source_desc = "http://www.whitepages.ca - These listings will return both residential and business Canadian listings as well as (at least some) American business and residential listings.<br><br>This data source requires Superfecta Module version 2.2.1 or higher.";
+$source_desc = "http://www.whitepages.ca - This site will return residential Canadian listings as well as (at least some) American  listings.<br><br>This data source requires Superfecta Module version 2.2.1 or higher.";
 
 
 //run this if the script is running in the "get caller id" usage mode.
@@ -67,6 +68,8 @@ if($usage_mode == 'get caller id')
 	{
 		$thenumber = (substr($thenumber,0,1) == 1) ? substr($thenumber,1) : $thenumber;
 		$npa = substr($thenumber,0,3);
+		$cid1 = substr($thenumber,3,3);
+		$cid2 = substr($thenumber,6,4);
 
 		// Check for Toll-Free numbers
 		$TFnpa = false;
@@ -144,7 +147,7 @@ if($usage_mode == 'get caller id')
 	}
 	else
 	{
-		$url="http://www.whitepages.ca/search/ReversePhone?full_phone=$thenumber";
+		$url="http://www.whitepages.ca/phone/1-".$npa."-".$cid1."-".$cid2;    //working Jun 19, 2012
 		$value = get_url_contents($url);
 		$name="";		
 
@@ -157,7 +160,7 @@ if($usage_mode == 'get caller id')
 		}
 		else
 		{
-			$pattern = "/<span class=\"name\"><a href=\".*\">(.*)<\/a><\/span>/";
+			$pattern = "/<span class=\"name\"><a href=\".*\">(.*)<\/a><\/span>/";         //working Jun 19, 2012 for single and multiple residential results
 			preg_match($pattern, $value, $match);
 			if(isset($match[1]) && strlen($match[1])){
 				$name = trim(strip_tags($match[1]));
