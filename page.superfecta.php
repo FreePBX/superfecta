@@ -46,60 +46,6 @@ if (count($_POST)) {
 
 $goto = NULL;
 
-$schemeup = (isset($_REQUEST['schemeup'])) ? $_REQUEST['schemeup'] : '';
-$schemedown = (isset($_REQUEST['schemedown'])) ? $_REQUEST['schemedown'] : '';
-$schemedelete = (isset($_REQUEST['schemedelete'])) ? $_REQUEST['schemedelete'] : '';
-$schemecopy = (isset($_REQUEST['schemecopy'])) ? $_REQUEST['schemecopy'] : '';
-$schemeonoff = (isset($_REQUEST['schemeonoff'])) ? $_REQUEST['schemeonoff'] : '';
-
-//change the order of the list if requested.
-if ($schemeup != "") {
-    $sql = "SELECT ABS(value) FROM superfectaconfig WHERE source = '$schemeup' AND field = 'order'";
-    $results = sql($sql, "getAll");
-    //update positive numbers
-    $sql = "UPDATE superfectaconfig SET value = " . $results[0][0] . " WHERE field = 'order' AND value = " . ($results[0][0] - 1);
-    sql($sql);
-    $sql = "UPDATE superfectaconfig SET value = (value - 1) WHERE field = 'order' AND value > 0 AND source = '$schemeup'";
-    sql($sql);
-    //update negative numbers
-    $sql = "UPDATE superfectaconfig SET value = -" . $results[0][0] . " WHERE field = 'order' AND value = -" . ($results[0][0] - 1);
-    sql($sql);
-    $sql = "UPDATE superfectaconfig SET value = (value + 1) WHERE field = 'order' AND value < 0 AND source = '$schemeup'";
-    sql($sql);
-}
-if ($schemedown != "") {
-    $sql = "SELECT ABS(value) FROM superfectaconfig WHERE source = '$schemedown' AND field = 'order'";
-    $results = sql($sql, "getAll");
-    //update positive numbers
-    $sql = "UPDATE superfectaconfig SET value = " . $results[0][0] . " WHERE field = 'order' AND value = " . ($results[0][0] + 1);
-    sql($sql);
-    $sql = "UPDATE superfectaconfig SET value = (value + 1) WHERE field = 'order' AND value > 0 AND source = '$schemedown'";
-    sql($sql);
-    //update negative numbers
-    $sql = "UPDATE superfectaconfig SET value = -" . $results[0][0] . " WHERE field = 'order' AND value = -" . ($results[0][0] + 1);
-    sql($sql);
-    $sql = "UPDATE superfectaconfig SET value = (value - 1) WHERE field = 'order' AND value < 0 AND source = '$schemedown'";
-    sql($sql);
-}
-
-//delete scheme if requested.
-if ($schemedelete != "") {
-    $sql = "SELECT ABS(value) FROM superfectaconfig WHERE source = '$schemedelete' AND field = 'order'";
-    $results = sql($sql, "getAll");
-    $sql = "UPDATE superfectaconfig SET value = (value - 1) WHERE field = 'order' AND value > " . $results[0][0];
-    sql($sql);
-    $sql = "UPDATE superfectaconfig SET value = (value + 1) WHERE field = 'order' AND value < -" . $results[0][0];
-    sql($sql);
-    $sql = "DELETE FROM superfectaconfig WHERE source = '$schemedelete'";
-    sql($sql);
-}
-
-//turn scheme on or off.
-if ($schemeonoff != "") {
-    $sql = "UPDATE superfectaconfig SET value = (value * -1) WHERE field = 'order' AND source = '$schemeonoff'";
-    sql($sql);
-}
-
 //create a copy of a scheme if requested
 if ($schemecopy != "") {
     //determine the highest order amount.
@@ -265,7 +211,7 @@ if ($scheme != "") {
     }
     $supertpl->assign('scheme_name', substr($scheme, 5));
     $supertpl->assign('did', isset($conf['DID']) ? $conf['DID'] : '' );
-    $supertpl->assign('cid_ruls', isset($conf['CID_rules']) ? $conf['CID_rules'] : '');
+    $supertpl->assign('cid_rules', isset($conf['CID_rules']) ? $conf['CID_rules'] : '');
     $supertpl->assign('curl_timeout', isset($conf['Curl_Timeout']) ? $conf['Curl_Timeout'] : '5');
     $supertpl->assign('processors_list', $processors_list);
     $supertpl->assign('multifecta_timeout', isset($conf['multifecta_timeout']) ? $conf['multifecta_timeout'] : '1.5');
