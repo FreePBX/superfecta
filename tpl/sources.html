@@ -3,6 +3,9 @@
 <div id="CIDSourcesList">
     <script language="javascript">
         $(document).ready(function() {
+            $('#Superfecta').ajaxForm(function() { 
+                alert("Saved!"); 
+            });
             $("#update_check").change(function() {
                 if ($(this).is (':checked'))    {
                     $('#sources tr').each(function(index) {
@@ -174,7 +177,7 @@
 <table border="0">
     <tr>
         <td valign="top">
-            <form method="POST" action="" name="Superfecta">
+            <form method="POST" action="config.php?quietmode=1&handler=file&module=superfecta&file=ajax.html.php&type=update_scheme" name="Superfecta" id="Superfecta">
                 <input type="hidden" name="scheme_name_orig" value="{$scheme_name}">
                 <table border="0" id="table1" cellspacing="1">
                     <tr>

@@ -89,7 +89,6 @@
             }
         });
         scheme_json = scheme_json + "]";
-        console.log(scheme_json);
         $.ajaxSetup({ cache: false });
         $.getJSON("config.php?quietmode=1&handler=file&module=superfecta&file=ajax.html.php&type=update_schemes&scheme={$scheme}", 
         {

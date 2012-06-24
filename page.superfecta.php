@@ -34,16 +34,6 @@ $supertpl = new RainTPL;
 $scheme = (isset($_REQUEST['scheme'])) ? $_REQUEST['scheme'] : '';
 $module_info = $superfecta->xml2array("modules/superfecta/module.xml");
 
-
-if (count($_POST)) {
-    superfecta_setConfig();
-    $scheme = ($_POST['scheme_name'] == $_POST['scheme_name_orig']) ? $_POST['scheme_name_orig'] : $_POST['scheme_name'];
-    $scheme = "base_" . $scheme;
-
-    //Now save the $destination into the database
-    //Return the $destination in the superfecta.agi script and use it such as this: $agi->exec_goto($destination) EG: $agi->exec_goto(context,extension,priority)
-}
-
 $goto = NULL;
 
 //create a copy of a scheme if requested
