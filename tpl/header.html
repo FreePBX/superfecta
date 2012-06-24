@@ -96,6 +96,7 @@
     .superfecta_schemes {
         float: left; 
         margin: 4px 1px 0px 1px;
+        cursor:pointer;
     }
     .superfecta_message {
         color:red;
@@ -111,7 +112,7 @@
             <img id="scheme_{$value.source}_moveup" class="superfecta_schemes button" onclick="moveup_scheme(this.id);" src="images/scrollup.gif" alt="Up Arrow" title="Move Up List" {if condition="$value.showup === FALSE"}hidden{/if}/>
             <img id="scheme_{$value.source}_dupilcate" class="superfecta_schemes button" src="assets/superfecta/images/copy.gif" alt="Duplicate Scheme" title="Duplicate Scheme" />
             <img id="scheme_{$value.source}_delete" class="superfecta_schemes button" onclick="delete_scheme(this.id);" src="assets/superfecta/images/delete.gif" alt="Delete Button" title="Delete Scheme" />
-            <a onclick="window.location.href='config.php?display=superfecta&amp;scheme={$value.source}';">{$value.name}</a>
+            <a onclick="window.location.href='config.php?display=superfecta&amp;scheme={$value.source}';" style="cursor:pointer;">{$value.name}</a>
         </li>{/loop}
     </ul>
 </div>
