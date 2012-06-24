@@ -43,6 +43,11 @@ switch($_REQUEST['type']) {
         
         $out = array("success" => true);
         break;
+    case "power_scheme":
+        $data = preg_replace('/^scheme_/i', '', $_REQUEST['scheme']);
+        $sql = "UPDATE superfectaconfig SET value = (value * -1) WHERE field = 'order' AND source = '".  mysql_real_escape_string($data)."'";
+        sql($sql);
+        break;
     case "options":
         $show = FALSE;
         $scheme = str_replace("base_", "", $_REQUEST['scheme']);

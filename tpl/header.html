@@ -7,9 +7,17 @@
         if (state == 'assets/superfecta/images/on.gif') {
             $('#' + id).attr('src','assets/superfecta/images/off.gif');
             state = 'ON';
+            $.getJSON("config.php?quietmode=1&handler=file&module=superfecta&file=ajax.html.php&type=power_scheme&scheme="+parent_id, 
+            function(json) {
+
+            });
         } else {
             $('#' + id).attr('src','assets/superfecta/images/on.gif');
             state = 'OFF';
+            $.getJSON("config.php?quietmode=1&handler=file&module=superfecta&file=ajax.html.php&type=power_scheme&scheme="+parent_id, 
+            function(json) {
+
+            });
         }
         //send state over ajax stream now!
     }
@@ -107,7 +115,7 @@
     <ul id="schemeorder_list" >
         <li id="add_new"><a href="config.php?display=superfecta&scheme=new">Add Caller ID Scheme</a></li>
         {loop="schemes"}<li id="scheme_{$value.source}">
-            <img id="scheme_{$value.source}_power" onclick="power_scheme(this.id);" class="superfecta_schemes button" src="assets/superfecta/images/on.gif" alt="On/Off" title="Turn this scheme on and off" />
+            <img id="scheme_{$value.source}_power" onclick="power_scheme(this.id);" class="superfecta_schemes button" src="assets/superfecta/images/{if condition="$value.powered === TRUE"}on{else}off{/if}.gif" alt="On/Off" title="Turn this scheme on and off" />
             <img id="scheme_{$value.source}_movedown" class="superfecta_schemes button" onclick="movedown_scheme(this.id);" src="images/scrolldown.gif" alt="Down Arrow" title="Move Down List" {if condition="$value.showdown === FALSE"}hidden{/if}/>
             <img id="scheme_{$value.source}_moveup" class="superfecta_schemes button" onclick="moveup_scheme(this.id);" src="images/scrollup.gif" alt="Up Arrow" title="Move Up List" {if condition="$value.showup === FALSE"}hidden{/if}/>
             <img id="scheme_{$value.source}_dupilcate" class="superfecta_schemes button" src="assets/superfecta/images/copy.gif" alt="Duplicate Scheme" title="Duplicate Scheme" />

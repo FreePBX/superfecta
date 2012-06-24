@@ -108,6 +108,9 @@ foreach ($results as $data) {
     $scheme_list[$i]['showdown'] = $i == $total ? FALSE : TRUE;
     $scheme_list[$i]['showup'] = $i == 1 ? FALSE : TRUE;
     $scheme_list[$i]['showdelete'] = TRUE;
+    $sql = "SELECT value FROM superfectaconfig WHERE source = '".$data['source']."' AND field = 'order'";
+    $power = sql($sql, "getOne");
+    $scheme_list[$i]['powered'] = $power < 0 ? FALSE : TRUE;
     $i++;
 }
 
