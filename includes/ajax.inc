@@ -29,7 +29,7 @@ switch($_REQUEST['type']) {
     case "update_scheme":
         $enable_interceptor = mysql_real_escape_string(utf8_decode($_POST['enable_interceptor']));
         $enable_interceptor = (isset($enable_interceptor) && $enable_interceptor == 'Y') ? TRUE : FALSE;
-	$scheme_name = mysql_real_escape_string($_POST['scheme_name']);
+	$scheme_name = mysql_real_escape_string(preg_replace('/\s/i', '_', preg_replace('/\+/i', '_', trim($_POST['scheme_name']))));
 	$scheme_name_orig = mysql_real_escape_string($_POST['scheme_name_orig']);
 	$DID = mysql_real_escape_string($_POST['DID']);
 	$CID_rules = mysql_real_escape_string($_POST['CID_rules']);
