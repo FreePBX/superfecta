@@ -3,6 +3,9 @@
 <div id="CIDSourcesList">
     <script language="javascript">
         $(document).ready(function() {
+            $('#superfecta_options').ajaxForm(function() { 
+                alert("Saved!"); 
+            });
             $("#update_check").change(function() {
                 if ($(this).is (':checked'))    {
                     $('#sources tr').each(function(index) {
@@ -21,6 +24,20 @@
                 }
             });
         });
+        
+        function superfecta_debug_go() {
+            var debuglevel = $('#debug_level').val();
+            var thenumber = $('#thenumber').val();
+            var scheme = '{$scheme}';
+            if($('#allscheme').is (':checked')) {
+                scheme = 'ALL';
+            }
+            $('#superfecta_debug_display').html('<div id="debug" style="background-color: #E0E0E0; width:70%; margin-left:auto;margin-right:auto;"><img src="assets/superfecta/images/loading.gif" /></div>');
+            $.get('config.php?quietmode=1&handler=file&module=superfecta&file=callerid.html.php&scheme='+scheme+'&thenumber='+thenumber+'&debug='+debuglevel, function(data) {
+                $('#superfecta_debug_display').html('<div id="debug" style="background-color: #E0E0E0; width:100%">'+data+'</div>');
+            });
+        }
+        
         function moveup_source(id) {
             //This is suprisingly the BEST movement jquery method I have found! EVER
             var parent_id = $('#' + id).parent().parent().attr("id");
@@ -156,7 +173,7 @@
                         <td>&nbsp;</td>
                         <td><img id="{$value.source_name}_movedown" onclick="movedown_source(this.id);" src="images/scrolldown.gif" {if condition="$value.showdown === FALSE"}hidden{/if}/></td>
                         <td><img id="{$value.source_name}_moveup" onclick="moveup_source(this.id);" src="images/scrollup.gif" {if condition="$value.showup === FALSE"}hidden{/if}/></td>
-                        <td><a id="{$value.source_name}_options" onclick="options(this.id)">{$value.pretty_source_name}</a><img id="{$value.source_name}_update" onclick="movedown_update(this.id);" src="assets/superfecta/images/update.png" {if condition="$value.showupdate === FALSE"}hidden{/if}/></td>
+                        <td><a id="{$value.source_name}_options" onclick="options(this.id)" style="cursor:pointer;">{$value.pretty_source_name}</a><img id="{$value.source_name}_update" onclick="movedown_update(this.id);" src="assets/superfecta/images/update.png" {if condition="$value.showupdate === FALSE"}hidden{/if}/></td>
                         <td align="center"><input type="radio" id="{$value.source_name}_disabled" name="{$value.source_name}" value="disabled" onclick="disable_source(this.id)" {if condition="$value.enabled === FALSE"}checked{/if}/></td>
                         <td align="center"><input type="radio" id="{$value.source_name}_enabled" name="{$value.source_name}" value="enabled" onclick="enable_source(this.id)" {if condition="$value.enabled === TRUE"}checked{/if}/></td>
                     </tr>
@@ -174,7 +191,7 @@
 <table border="0">
     <tr>
         <td valign="top">
-            <form method="POST" action="" name="Superfecta">
+            <form method="POST" action="config.php?quietmode=1&handler=file&module=superfecta&file=ajax.html.php&type=update_scheme" name="superfecta_options" id="superfecta_options">
                 <input type="hidden" name="scheme_name_orig" value="{$scheme_name}">
                 <table border="0" id="table1" cellspacing="1">
                     <tr>
@@ -280,151 +297,25 @@
             </form>
         </td>				
         <td valign="top">
-            <form name="debug_form" action="javascript:Ht_debug(document.forms.debug_form.thenumber.value,{$did_test_script}document.forms.debug_form.Allscheme.checked,document.forms.debug_form.debug.value);">
+            <form name="superfecta_debug"  action="">
                 <p>Test a phone number against the selected sources.<br>
                     {$did_test_html}
-                    <a href="javascript:return(false);" class="info">Phone Number:<span>Phone number to test this scheme against.</span></a> <input type="text" size="15" maxlength="20" name="thenumber"> <input type="submit" value="Debug"><br>
-                    <font size=2><input type="checkbox" name="Allscheme" value="All">
-                    <a href="javascript:return(false);" class="info">Test all CID schemes<span>When enabled, the debug function will test the number entered against all of the configured CID schemes.<br>When disabled, debug only checks up to the first scheme that provides positive results.</span></a> <br/>Debug Level:<select name="debug" id="debug_level"><option value="0">NONE</option><option value="1" selected>INFO</option><option value="2">WARN</option><option value="3">ALL</option></select></font></p>
+                    <a href="javascript:return(false);" class="info">Phone Number:<span>Phone number to test this scheme against.</span></a> <input type="text" id="thenumber" size="15" maxlength="20" name="thenumber"><input type="button" value="Debug" onclick="superfecta_debug_go();"><br>
+                    <font size=2><input type="checkbox" name="allscheme" id="allscheme" value="All">
+                    <a href="javascript:return(false);" class="info">Test all CID schemes<span>When enabled, the debug function will test the number entered against all of the configured CID schemes.<br>When disabled, debug only checks up to the first scheme that provides positive results.</span></a> <br/>
+                    Debug Level:<select name="debug" id="debug_level"><option value="0">NONE</option><option value="1" selected>INFO</option><option value="2">WARN</option><option value="3">ALL</option></select></font></p>
             </form>
-            <div id="debug" style="background-color: #E0E0E0; width:100%"></div>
+            <div id="superfecta_debug_display" style="background-color: #E0E0E0; width:100%"></div>
         </td>
     </tr>
 </table>
 <script language="javascript">
-    <!--
-    var isWorking = false;
-    var divname = '';
-    var http = getHTTPObject();
+    //$.get('ajax/test.html', function(data) {
+  //$('.result').html(data);
+  //alert('Load was performed.');
+//});
 
-    $(".cats").change(function () {
-        var str =new Array();
-        var i = 0;
-        $(".cats option:selected").each(function () {
-            str[i] = $(this).text();
-            i ++; 
-        });
-        Ht_Generate_List('','<?php echo $scheme;?>',str);
-    })
-    .change();
     
-    function array2json(arr) {
-        var parts = [];
-        var is_list = (Object.prototype.toString.apply(arr) === '[object Array]');
-
-        for(var key in arr) {
-            var value = arr[key];
-            if(typeof value == "object") { //Custom handling for arrays
-                if(is_list) parts.push(array2json(value)); /* :RECURSION: */
-                else parts[key] = array2json(value); /* :RECURSION: */
-            } else {
-                var str = "";
-                if(!is_list) str = '"' + key + '":';
-
-                //Custom handling for multiple data types
-                if(typeof value == "number") str += value; //Numbers
-                else if(value === false) str += 'false'; //The booleans
-                else if(value === true) str += 'true';
-                else str += '"' + value + '"'; //All other things
-                // :TODO: Is there any more datatype we should be in the lookout for? (Functions?)
-
-                parts.push(str);
-            }
-        }
-        var json = parts.join(",");
-    
-        if(is_list) return '[' + json + ']';//Return numerical JSON
-        return '{' + json + '}';//Return associative JSON
-    }
-
-    function is_null(input){
-        return input==null;
-    }
-
-    function getHTTPObject()
-    {
-        var xmlhttp;
-        //do not take out this section of code that appears to be commented out...if you do the guns stop working.
-        /*@cc_on
-        @if (@_jscript_version >= 5)
-        try
-        {
-                xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
-        }
-        catch (e)
-        {
-                try
-                {
-                        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-                }
-                catch (E)
-                {
-                        xmlhttp = false;
-                }
-        }
-        @else
-        {
-                xmlhttp = false;
-        }
-        @end @*/
-
-        if(!xmlhttp && typeof XMLHttpRequest != 'undefined')
-        {
-            try
-            {
-                xmlhttp = new XMLHttpRequest();
-            }
-            catch (e)
-            {
-                xmlhttp = false;
-            }
-        }
-        return xmlhttp;
-    }
-
-    function Ht_Response()
-    {
-        if (http.readyState == 4)
-        {
-            document.getElementById(divname).innerHTML = http.responseText;
-            isWorking = false;
-            reset_infoboxes();
-        }
-    }
-
-    function Ht_debug(thenumber,testdid,checkall,debuglevel)
-    {
-        thenumber = thenumber || "";
-        testdid = testdid || "";
-        checkall = checkall || false;
-        var poststr = "debug=" + debuglevel + "&thenumber=" + thenumber + "&testdid=" + testdid;
-        if(!checkall)
-        {
-            poststr = poststr + "&scheme={$scheme}";
-        }
-        else
-        {
-            poststr = poststr + "&scheme=ALL";
-        }
-
-        if(!isWorking)
-        {
-            isWorking = true;
-            divname = 'debug';
-            document.getElementById(divname).innerHTML = "<img src='assets/superfecta/images/loading.gif' style='margin: 20px auto 20px 150px;'>";
-            http.open("POST", "modules/superfecta/includes/callerid.php", true);
-            http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            http.setRequestHeader("Content-length", poststr.length);
-            http.setRequestHeader("Connection", "close");
-            http.onreadystatechange = Ht_Response;
-            http.send(poststr);
-        }
-        else
-        {
-            setTimeout("Ht_debug('" + thenumber + "','" + testdid + "'," + checkall + ")",100);
-        }
-    }
-
     function reset_infoboxes(){
         body_loaded();
         // test for a function that seems to only be in freepbx 2.8+
@@ -455,11 +346,4 @@
             row.style.display = 'none';
         }
     }
-
-    function decision(message, url)
-    {
-        if(confirm(message)) location.href = url;
-    }
-
-    //-->
 </script>

@@ -33,25 +33,30 @@ class Who_Called extends superfecta_base {
 			
 			$url = "http://whocalled.us/do?action=getWho&name=".$run_param['Username']."&pass=".$run_param['Password']."&phoneNumber=$thenumber";
 			$value = $this->get_url_contents($url);
-
-			$st_success = strstr($value, "success");
-			$st_cid = strstr($value, "who");
-			$success = substr($st_success,8,1);
-			$cid = substr($st_cid,4);
-			if($success=='1')
+                        
+                        $variables = preg_split('/\&/i',$value);
+                        $dataout = array();
+                        foreach($variables as $data) {
+                            $subvars = preg_split('/=/i',$data);
+                            $dataout[$subvars[0]] = $subvars[1];
+                        }
+                        
+                        $variables = $dataout;
+                        
+			if($variables['success']=='1')
 			{
-				if($cid != '')
+				if(!empty($variables['who']))
 			  	{
-					$caller_id = $cid;
+					$caller_id = $variables['who'];
 				}
 			  	else
 				{
-					$this->DebugPrint( "not found");
+					$this->DebugPrint("not found");
 				}
 			}
 			else
 			{
-				$this->DebugPrint( "Error in Lookup.");
+				$this->DebugPrint("Error Returned: " . $variables['errorMsg']);
 			}
 		}
 		return($caller_id);

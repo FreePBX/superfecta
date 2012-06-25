@@ -34,71 +34,7 @@ $supertpl = new RainTPL;
 $scheme = (isset($_REQUEST['scheme'])) ? $_REQUEST['scheme'] : '';
 $module_info = $superfecta->xml2array("modules/superfecta/module.xml");
 
-
-if (count($_POST)) {
-    superfecta_setConfig();
-    $scheme = ($_POST['scheme_name'] == $_POST['scheme_name_orig']) ? $_POST['scheme_name_orig'] : $_POST['scheme_name'];
-    $scheme = "base_" . $scheme;
-
-    //Now save the $destination into the database
-    //Return the $destination in the superfecta.agi script and use it such as this: $agi->exec_goto($destination) EG: $agi->exec_goto(context,extension,priority)
-}
-
 $goto = NULL;
-
-$schemeup = (isset($_REQUEST['schemeup'])) ? $_REQUEST['schemeup'] : '';
-$schemedown = (isset($_REQUEST['schemedown'])) ? $_REQUEST['schemedown'] : '';
-$schemedelete = (isset($_REQUEST['schemedelete'])) ? $_REQUEST['schemedelete'] : '';
-$schemecopy = (isset($_REQUEST['schemecopy'])) ? $_REQUEST['schemecopy'] : '';
-$schemeonoff = (isset($_REQUEST['schemeonoff'])) ? $_REQUEST['schemeonoff'] : '';
-
-//change the order of the list if requested.
-if ($schemeup != "") {
-    $sql = "SELECT ABS(value) FROM superfectaconfig WHERE source = '$schemeup' AND field = 'order'";
-    $results = sql($sql, "getAll");
-    //update positive numbers
-    $sql = "UPDATE superfectaconfig SET value = " . $results[0][0] . " WHERE field = 'order' AND value = " . ($results[0][0] - 1);
-    sql($sql);
-    $sql = "UPDATE superfectaconfig SET value = (value - 1) WHERE field = 'order' AND value > 0 AND source = '$schemeup'";
-    sql($sql);
-    //update negative numbers
-    $sql = "UPDATE superfectaconfig SET value = -" . $results[0][0] . " WHERE field = 'order' AND value = -" . ($results[0][0] - 1);
-    sql($sql);
-    $sql = "UPDATE superfectaconfig SET value = (value + 1) WHERE field = 'order' AND value < 0 AND source = '$schemeup'";
-    sql($sql);
-}
-if ($schemedown != "") {
-    $sql = "SELECT ABS(value) FROM superfectaconfig WHERE source = '$schemedown' AND field = 'order'";
-    $results = sql($sql, "getAll");
-    //update positive numbers
-    $sql = "UPDATE superfectaconfig SET value = " . $results[0][0] . " WHERE field = 'order' AND value = " . ($results[0][0] + 1);
-    sql($sql);
-    $sql = "UPDATE superfectaconfig SET value = (value + 1) WHERE field = 'order' AND value > 0 AND source = '$schemedown'";
-    sql($sql);
-    //update negative numbers
-    $sql = "UPDATE superfectaconfig SET value = -" . $results[0][0] . " WHERE field = 'order' AND value = -" . ($results[0][0] + 1);
-    sql($sql);
-    $sql = "UPDATE superfectaconfig SET value = (value - 1) WHERE field = 'order' AND value < 0 AND source = '$schemedown'";
-    sql($sql);
-}
-
-//delete scheme if requested.
-if ($schemedelete != "") {
-    $sql = "SELECT ABS(value) FROM superfectaconfig WHERE source = '$schemedelete' AND field = 'order'";
-    $results = sql($sql, "getAll");
-    $sql = "UPDATE superfectaconfig SET value = (value - 1) WHERE field = 'order' AND value > " . $results[0][0];
-    sql($sql);
-    $sql = "UPDATE superfectaconfig SET value = (value + 1) WHERE field = 'order' AND value < -" . $results[0][0];
-    sql($sql);
-    $sql = "DELETE FROM superfectaconfig WHERE source = '$schemedelete'";
-    sql($sql);
-}
-
-//turn scheme on or off.
-if ($schemeonoff != "") {
-    $sql = "UPDATE superfectaconfig SET value = (value * -1) WHERE field = 'order' AND source = '$schemeonoff'";
-    sql($sql);
-}
 
 //create a copy of a scheme if requested
 if ($schemecopy != "") {
@@ -162,6 +98,9 @@ foreach ($results as $data) {
     $scheme_list[$i]['showdown'] = $i == $total ? FALSE : TRUE;
     $scheme_list[$i]['showup'] = $i == 1 ? FALSE : TRUE;
     $scheme_list[$i]['showdelete'] = TRUE;
+    $sql = "SELECT value FROM superfectaconfig WHERE source = '".$data['source']."' AND field = 'order'";
+    $power = sql($sql, "getOne");
+    $scheme_list[$i]['powered'] = $power < 0 ? FALSE : TRUE;
     $i++;
 }
 
@@ -265,7 +204,7 @@ if ($scheme != "") {
     }
     $supertpl->assign('scheme_name', substr($scheme, 5));
     $supertpl->assign('did', isset($conf['DID']) ? $conf['DID'] : '' );
-    $supertpl->assign('cid_ruls', isset($conf['CID_rules']) ? $conf['CID_rules'] : '');
+    $supertpl->assign('cid_rules', isset($conf['CID_rules']) ? $conf['CID_rules'] : '');
     $supertpl->assign('curl_timeout', isset($conf['Curl_Timeout']) ? $conf['Curl_Timeout'] : '5');
     $supertpl->assign('processors_list', $processors_list);
     $supertpl->assign('multifecta_timeout', isset($conf['multifecta_timeout']) ? $conf['multifecta_timeout'] : '1.5');
