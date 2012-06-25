@@ -1,8 +1,8 @@
 <?php
-class CanPagesCA extends superfecta_base {
+class Can411 extends superfecta_base {
 	function settings() {
 		
-		$settings['desc'] = "http://www.canpages.ca - 	These listings include business and residential data for Canada.";
+		$settings['desc'] = "http://www.411.ca - These listings include business and residential data for Canada.";
 		$settings['version_requirement'] = "3.0";
 
 		return($settings);
@@ -18,19 +18,19 @@ class CanPagesCA extends superfecta_base {
 		}
 		else
 		{				
-			$this->DebugPrint( "Searching www.canpages.ca - ({$npa}) {$nxx}-{$station}...");
+			$this->DebugPrint( "Searching www.411.ca - ({$npa}) {$nxx}-{$station}...");
 
 	 		// By default, there is no match
 			$name = "";
 	
-			$url="http://www.canpages.ca/list.jsp?na=".$npa."-".$nxx."-".$station."&ct=b2n+1x6";   //working June 19, 2012
+			$url="http://411.ca/search/?q=$thenumber&st=reverse";    //working June 19, 2012
 	
-			$pattern = '/name : \"(.*?)\",/i';   //working June 19, 2012
+			$pattern = '/itemprop=\"name\">(.+?)<\/a>/i';			// working Jun 19, 2012
 
                         
 			// Patterns to search for
 			$regexp = array(
-				$pattern, 
+				$pattern, 								
 				
 			);
 	
