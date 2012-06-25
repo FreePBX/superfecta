@@ -169,6 +169,7 @@ class superfecta_base {
             } else {
                 echo strip_tags($message);
             }
+            $this->flush_buffers();
         }
     }
 
@@ -179,6 +180,7 @@ class superfecta_base {
             } else {
                 echo strip_tags($message) . "\n";
             }
+            $this->flush_buffers();
         }
     }
 
@@ -1310,6 +1312,13 @@ class superfecta_base {
             $value = str_replace("\x{$hex}", chr(hexdec($hex)), $value);
         }
         return $value;
+    }
+    
+    function flush_buffers() {
+        ob_end_flush();
+        //ob_flush();
+        flush();
+        ob_start();
     }
 
 }

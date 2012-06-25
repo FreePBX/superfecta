@@ -8,6 +8,10 @@ $root_dir = dirname(dirname(__FILE__));
 $out = array("success" => false);
 
 switch($_REQUEST['type']) {
+    case "display_debug":
+        echo "ok";
+        die();
+        break;
     case "update_sources":
         $sources_list = json_decode($_REQUEST['data']);
         $sources_commaed = implode(",", $sources_list);

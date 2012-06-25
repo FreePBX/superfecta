@@ -15,7 +15,6 @@
   01-04-2010  	Version 2.3.0  Updates for running multiple sources at the same time (Multifecta)
  * * */
 require_once(dirname(__FILE__) . "/config.php");
-
 //Determine CLI or HTTP
 if (php_sapi_name() == 'cli' && empty($_SERVER['REMOTE_ADDR'])) {
     $cli = true;
@@ -216,7 +215,7 @@ foreach ($scheme_name_array as $list) {
                     }
                 } else {
                     //We are still web-bing it up, just don't want any crap to be shown. so lets only show the scheme
-                    $this->outn($scheme_name . ": " . $spam_text . " " . $superfecta->get_Prefix() . $callerid);
+                    $superfecta->outn($scheme_name . ": " . $spam_text . " " . $superfecta->get_Prefix() . $callerid);
                 }
             } else {
                 if (!empty($spam_dest)) {
