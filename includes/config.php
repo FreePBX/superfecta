@@ -1,6 +1,7 @@
 <?php
 define("LOCAL_PATH", str_replace("includes","",dirname(__FILE__)));
 global $amp_conf;
+
 if(!isset($amp_conf) OR empty($amp_conf)) {
     if(file_exists("/etc/freepbx.conf")) {
             //This is FreePBX 2.9+
