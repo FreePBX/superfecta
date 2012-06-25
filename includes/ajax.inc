@@ -8,6 +8,10 @@ $root_dir = dirname(dirname(__FILE__));
 $out = array("success" => false);
 
 switch($_REQUEST['type']) {
+    case "display_debug":
+        echo "ok";
+        die();
+        break;
     case "update_sources":
         $sources_list = json_decode($_REQUEST['data']);
         $sources_commaed = implode(",", $sources_list);
@@ -26,6 +30,107 @@ switch($_REQUEST['type']) {
         }
         $out = array("success" => true);
         break;
+    case "update_scheme":
+        $enable_interceptor = mysql_real_escape_string(utf8_decode($_POST['enable_interceptor']));
+        $enable_interceptor = (isset($enable_interceptor) && $enable_interceptor == 'Y') ? TRUE : FALSE;
+	$scheme_name = mysql_real_escape_string(preg_replace('/\s/i', '_', preg_replace('/\+/i', '_', trim($_POST['scheme_name']))));
+	$scheme_name_orig = mysql_real_escape_string($_POST['scheme_name_orig']);
+	$DID = mysql_real_escape_string($_POST['DID']);
+	$CID_rules = mysql_real_escape_string($_POST['CID_rules']);
+	$Prefix_URL = mysql_real_escape_string($_POST['Prefix_URL']);
+	$Curl_Timeout = mysql_real_escape_string($_POST['Curl_Timeout']);
+	$http_password = mysql_real_escape_string(utf8_decode($_POST['http_password']));
+	$http_username = mysql_real_escape_string(utf8_decode($_POST['http_username']));
+	$SPAM_Text = mysql_real_escape_string($_POST['SPAM_Text']);
+	$SPAM_Text_Substitute = (isset($_POST['SPAM_Text_Substitute'])) ? mysql_real_escape_string($_POST['SPAM_Text_Substitute']) : 'N';
+	$processor =  mysql_real_escape_string(utf8_decode($_POST['processor']));
+	$multifecta_timeout =  mysql_real_escape_string(utf8_decode($_POST['multifecta_timeout']));
+	$SPAM_threshold = mysql_real_escape_string($_POST['SPAM_threshold']);
+	$error = false;
+
+        $type = mysql_real_escape_string($_POST['goto0']);
+	$destination = mysql_real_escape_string($_POST[$type.'0']);
+
+	//see if the scheme name has changed, and make sure that there isn't already one named the new name.
+	if($scheme_name == "")
+	{
+		$error = true;
+		print '<p><strong>Scheme names cannot be blank.</strong></p>';
+	}
+
+	if(($scheme_name != $scheme_name_orig) && !$error)
+	{
+		$sql = "SELECT * FROM superfectaconfig WHERE source='base_".$scheme_name."'";
+		$results = sql($sql, "getAll");
+
+		if(!empty($results))
+		{
+			$error = true;
+			print '<p><strong>You cannot rename a scheme the same thing as an existing scheme.</strong></p>';
+		}
+		else
+		{
+			$sql = "UPDATE superfectaconfig SET source = 'base_".$scheme_name."' WHERE source = 'base_".$scheme_name_orig."'";
+			sql($sql);
+			
+			$sql = "UPDATE superfecta_to_incoming SET scheme = 'base_".$scheme_name."' WHERE scheme = 'base_".$scheme_name_orig."'";
+			sql($sql);
+		}
+	}
+
+	if(!$error)
+	{
+		//update database
+                if($enable_interceptor) {
+                	$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('base_".$scheme_name."','spam_interceptor','Y')";
+                } else {
+                	$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('base_".$scheme_name."','spam_interceptor','N')";
+                }
+                sql($sql);
+            	$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('base_".$scheme_name."','spam_destination','$destination')";
+		sql($sql);
+		$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('base_".$scheme_name."','Prefix_URL','$Prefix_URL')";
+		sql($sql);
+		$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('base_".$scheme_name."','Curl_Timeout','$Curl_Timeout')";
+		sql($sql);
+		$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('base_".$scheme_name."','processor','$processor')";
+		sql($sql);
+		$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('base_".$scheme_name."','multifecta_timeout','$multifecta_timeout')";
+		sql($sql);
+		$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('base_".$scheme_name."','SPAM_Text','$SPAM_Text')";
+		sql($sql);
+		$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('base_".$scheme_name."','SPAM_Text_Substitute','$SPAM_Text_Substitute')";
+		sql($sql);
+		$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('base_".$scheme_name."','DID','$DID')";
+		sql($sql);
+		$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('base_".$scheme_name."','CID_rules','$CID_rules')";
+		sql($sql);
+		$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('base_".$scheme_name."','SPAM_threshold','$SPAM_threshold')";
+		sql($sql);
+		print '<p><strong>CID Scheme Updated</strong></p>';
+	}
+
+	//add ordering information to database if this scheme doesn't have it
+	$highest_order = 0;
+	$already_has_order = false;
+	$sql = "SELECT source,ABS(value) FROM superfectaconfig WHERE field = 'order' ORDER BY ABS(value)";
+	$results = sql($sql, "getAll");
+	foreach($results as $val)
+	{
+		if($val[0] == "base_".$scheme_name)
+		{
+			$already_has_order = true;
+			break;
+		}
+		$highest_order = $val[1];
+	}
+
+	if(!$already_has_order)
+	{
+		$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('base_".$scheme_name."','order',".($highest_order+1).")";
+		sql($sql);
+	}
+        break;
     case "delete_scheme":
         $data = preg_replace('/^scheme_/i', '', $_REQUEST['scheme']);
         $sql = "DELETE FROM superfectaconfig WHERE source = '".  mysql_real_escape_string($data)."'";
@@ -42,6 +147,11 @@ switch($_REQUEST['type']) {
         }
         
         $out = array("success" => true);
+        break;
+    case "power_scheme":
+        $data = preg_replace('/^scheme_/i', '', $_REQUEST['scheme']);
+        $sql = "UPDATE superfectaconfig SET value = (value * -1) WHERE field = 'order' AND source = '".  mysql_real_escape_string($data)."'";
+        sql($sql);
         break;
     case "options":
         $show = FALSE;

@@ -4,27 +4,24 @@ class superfecta_multi extends superfecta_base {
 
     public static $name = 'Multi';
     public static $description = 'Multifecta, runs all sources at the same time';
-    public $type = 'SINGLE';
+    public $type = 'MULTI';
 
-    function __construct($multifecta_id, $db, $amp_conf, $astman, $debug, $thenumber_orig, $scheme_name, $scheme_param, $source) {
-        //Check if we are a multifecta child, if so, get our variables from our child record
-        $this->multifecta_id = $multifecta_id;
-        $this->setDebug($debug);
-        $sn = explode("_", $scheme_name);
+    function __construct($options) {
+        $this->setDebug($options['debug']);
+        $sn = explode("_", $options['scheme_name']);
         $this->scheme_name = $sn[1];
-        $this->scheme = $scheme_name;
-        $this->db = $db;
-        $this->amp_conf = $amp_conf;
-        $this->astman = $astman;
-        $this->thenumber_orig = $thenumber_orig;
-        $this->scheme_param = $scheme_param;
-        $this->source = $source;
+        $this->scheme = $options['scheme_name'];
+        $this->db = $options['db'];
+        $this->amp_conf = $options['amp_conf'];
+        $this->astman = $options['astman'];
+        $this->thenumber_orig = $options['original_number'];
+        $this->scheme_param = $options['scheme_parameters'];
         $this->path_location = $options['path_location'];
-        if ($multifecta_id) {
-            $this->multi_type = 'CHILD';
-        } else {
-            $this->multi_type = 'PARENT';
-        }
+        $this->multifecta_id = $options['multifecta_id'];
+        $this->source = $options['source'];
+        //Check if we are a multifecta child, if so, get our variables from our child record
+        $this->multi_type = $this->multifecta_id ? 'CHILD' : 'PARENT';
+        
         if ($this->multi_type == "CHILD") {
             $query = "SELECT mf.superfecta_mf_id, mf.scheme, mf.cidnum, mf.extension, mf.debug, mfc.source
 					FROM superfecta_mf mf, superfecta_mf_child mfc
