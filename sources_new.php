@@ -72,6 +72,8 @@ foreach (glob(ROOT_PATH . "sources/source-*.module") as $filename) {
         $tpl_sources[$j]['settings'] = $settings;
         $tpl_sources[$j]['enabled'] = in_array($this_source_name, $enabled_sources) ? TRUE : FALSE;
         $tpl_sources[$j]['status'] = in_array($this_source_name, $enabled_sources) ? 'enabled' : 'disabled';
+        $tpl_sources[$j]['description'] = isset($settings['desc']) ? $settings['desc'] : 'N/A';
+        $tpl_sources[$j]['show_link'] = isset($settings['source_param']) ? TRUE : FALSE;
 
         //Simplify please
         if(in_array($this_source_name, $enabled_sources)) {
@@ -84,17 +86,6 @@ foreach (glob(ROOT_PATH . "sources/source-*.module") as $filename) {
             }
         }
 
-        $src_files[$this_source_name]['desc'] = isset($settings['desc']) ? $settings['desc'] : 'N/A';
-        $source_param = isset($settings['source_param']) ? $settings['source_param'] : array();
-        $src_files[$this_source_name]['param'] = isset($settings['source_param']) ? $settings['source_param'] : array();
-
-        //update the database if this source was the last displayed form.
-        if ($source_param_form == $this_source_name) {
-            foreach ($source_param as $key => $val) {
-                $sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('" . substr($scheme, 5) . '_' . $this_source_name . "','$key','" . mysql_real_escape_string(utf8_decode($_REQUEST[$key])) . "')";
-                $db->query($sql);
-            }
-        }
         $i++;
     }
 }

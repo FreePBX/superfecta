@@ -22,7 +22,7 @@ class Addresses extends superfecta_base {
 		}
 		else
 		{
-			$this->DebugPrint( "Searching Addresses White Pages with (${npa})${nxx}-${station} ... ");
+			$this->DebugPrint( "Searching Addresses.com with (${npa})${nxx}-${station} ... ");
 
 			$url="http://phonenumbers.addresses.com/results.php?ReportType=33&qfilter[pro]=on&qi=0&qk=10&qnpa=$npa&qp=".$nxx.$station;
 			// Grab the first result that matches our phone number
