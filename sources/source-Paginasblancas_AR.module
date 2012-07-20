@@ -1,35 +1,31 @@
 <?php
+
 class Paginasblancas_AR extends superfecta_base {
 
-	function settings() {
-		//configuration / display parameters
-		//The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
-		$source_desc = "Searches Argentina http://www.paginasblancas.com.ar/ <br>CID must include area code with the leading 0.";
-		$settings['desc'] = $source_desc;
-		$settings['version_requirement'] = "3.0";
-		return($settings);
-	}
-	
-	function get_caller_id($thenumber,$run_param=array()) {
+    public static $description = "Searches Argentina http://www.paginasblancas.com.ar/ <br>CID must include area code with the leading 0.";
+    public static $version_requirement = "3.0";
 
-		$caller_id = null; $areacode=""; $number2=""; $number3="";		
+    function get_caller_id($thenumber, $run_param=array()) {
 
-		if(!$this->IsValidNumber('AR', $this->thenumber, $areacode, $number2, $number3))
-		{
-			$this->DebugPrint("Skipping Source - Non Argentina number: {$this->thenumber}");
-		}
-		else
-		{
-			$this->DebugPrint("Searching www.paginasblancas.com.ar for number: {$this->thenumber}");
-			
-			$url="http://www.paginasblancas.com.ar/busqueda-telefono/argentina/{$areacode}-{$number2}-{$number3}";
+        $caller_id = null;
+        $areacode = "";
+        $number2 = "";
+        $number3 = "";
 
-			$pattern="/<H2 class=\"alta\">(.*)<\/H2>/";
-			
-			if($this->SearchURL($url, $pattern, $match)){
-				$caller_id = $this->ExtractMatch($match);
-			}
-		}
-		return($caller_id);
-	}
+        if (!$this->IsValidNumber('AR', $this->thenumber, $areacode, $number2, $number3)) {
+            $this->DebugPrint("Skipping Source - Non Argentina number: {$this->thenumber}");
+        } else {
+            $this->DebugPrint("Searching www.paginasblancas.com.ar for number: {$this->thenumber}");
+
+            $url = "http://www.paginasblancas.com.ar/busqueda-telefono/argentina/{$areacode}-{$number2}-{$number3}";
+
+            $pattern = "/<H2 class=\"alta\">(.*)<\/H2>/";
+
+            if ($this->SearchURL($url, $pattern, $match)) {
+                $caller_id = $this->ExtractMatch($match);
+            }
+        }
+        return($caller_id);
+    }
+
 }

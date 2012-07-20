@@ -2,14 +2,8 @@
 
 class Telco_Data extends superfecta_base {
 
-    function settings() {
-        //configuration / display parameters
-        //The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
-        $source_desc = "http://www.telcodata.com - These listings are generally only return the geographic location of the caller, not a name.";
-        $settings['desc'] = $source_desc;
-        $settings['version_requirement'] = "3.0";
-        return($settings);
-    }
+    public static $description = "http://www.telcodata.com - These listings are generally only return the geographic location of the caller, not a name.";
+    public static $version_requirement = "3.0";
 
     function get_caller_id($thenumber, $run_param=array()) {
 

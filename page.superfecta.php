@@ -167,14 +167,6 @@ if ($scheme != "") {
         );
     }
 
-    //TODO: What is this?
-    if (isset($conf['DID']) && (strlen(trim($conf['DID'])))) {
-        $did_test_html = '<a href="javascript:return(false);" class="info">DID Number:<span>DID number to test this scheme against</span></a> <input type="text" size="15" maxlength="20" name="testdid"><br>';
-        $did_test_script = 'document.forms.debug_form.testdid.value,';
-    } else {
-        $did_test_html = '';
-        $did_test_script = "'',";
-    }
     //get a list of the files that are on this local server
     $groups_list = array();
 
@@ -214,8 +206,6 @@ if ($scheme != "") {
     $supertpl->assign('spam_int', !empty($conf['spam_interceptor']) && ($conf['spam_interceptor'] == 'Y') ? TRUE : FALSE);
     $supertpl->assign('spam_threshold', $conf['SPAM_threshold']);
     $supertpl->assign('interceptor_select', drawselects($goto, 0, FALSE, FALSE));
-    $supertpl->assign('did_test_script', $did_test_script);
-    $supertpl->assign('did_test_html', $did_test_html);
     include('sources_new.php');
 }
 $supertpl->assign('module_vers', $module_info['module']['version']);

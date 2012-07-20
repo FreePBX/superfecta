@@ -1,62 +1,53 @@
 <?php
+
 //Created July 16,2011 by lgaetz
 class Canada411 extends superfecta_base {
-	function settings() {
-		
-		$settings['desc'] = "http://www.canada411.ca - These listings include business and residential data for Canada.";
-		$settings['version_requirement'] = "3.0";
 
-		return($settings);
-	}
-	
-	function get_caller_id($thenumber,$run_param=array()) {
-		$caller_id=null;
-		
-		if(!$this->IsValidNumber('CA',$thenumber))
-		{
-			$this->DebugPrint( "Skipping Source - Non Canadian number: ".$thenumber);
-		}
-		else
-		{				
-			$this->DebugPrint( "Searching www.canada411.ca ... ");
+    public static $description = "http://www.canada411.ca - These listings include business and residential data for Canada.";
+    public static $version_requirement = "3.0";
 
-	 		// By default, there is no match
-			$name = "";
-	
-			// Set the url we're searching for valid as of July 16, 2011
-			$url="http://canada411.yellowpages.ca/search/re/1/$thenumber";
-			$value = $this->get_url_contents($url);
-	
-			// Patterns to search for
-			$regexp = array(
-				"/<span class=\"ypgWebNumberColumn ypgWebNumberColumnName\"><a href=\".*\">(.*)<\/a>/",		//business results July 16, 2011
-				"/<div class=\"ypgBackfillListing\">\n(.*)<br>/",          									//residential results July 16, 2011
-				"/<span class=\"listingTitle\">(.+?)<\/span>/",												//business results Jun 19, 2012
-				"/<div class=\"ypgBackfillListing\">\n(.+?)<br\/>/",											//res results Jun 19, 2012
-			);
-	
-			// Look through each pattern to see if we find a match -- take the first match
-	        foreach ($regexp as $pattern){
-				preg_match($pattern, $value, $match);
-				if(isset($match[1]) && (strlen(trim(strip_tags($match[1]))))){
-					$name = trim(strip_tags($match[1]));
-					if($name<>"UNAVAILABLE"){
-						break;
-					}
-				}
-			}
-					
-			// If we found a match, return it
-			if(strlen($name) > 1 && $name<>"UNAVAILABLE")
-			{
-				$caller_id = $name;
-			}
-			else
-			{
-				$this->DebugPrint( "not found");
-			}
-		}
-		return($caller_id);
-	}
-	
+    function get_caller_id($thenumber, $run_param=array()) {
+        $caller_id = null;
+
+        if (!$this->IsValidNumber('CA', $thenumber)) {
+            $this->DebugPrint("Skipping Source - Non Canadian number: " . $thenumber);
+        } else {
+            $this->DebugPrint("Searching www.canada411.ca ... ");
+
+            // By default, there is no match
+            $name = "";
+
+            // Set the url we're searching for valid as of July 16, 2011
+            $url = "http://canada411.yellowpages.ca/search/re/1/$thenumber";
+            $value = $this->get_url_contents($url);
+
+            // Patterns to search for
+            $regexp = array(
+                "/<span class=\"ypgWebNumberColumn ypgWebNumberColumnName\"><a href=\".*\">(.*)<\/a>/", //business results July 16, 2011
+                "/<div class=\"ypgBackfillListing\">\n(.*)<br>/", //residential results July 16, 2011
+                "/<span class=\"listingTitle\">(.+?)<\/span>/", //business results Jun 19, 2012
+                "/<div class=\"ypgBackfillListing\">\n(.+?)<br\/>/", //res results Jun 19, 2012
+            );
+
+            // Look through each pattern to see if we find a match -- take the first match
+            foreach ($regexp as $pattern) {
+                preg_match($pattern, $value, $match);
+                if (isset($match[1]) && (strlen(trim(strip_tags($match[1]))))) {
+                    $name = trim(strip_tags($match[1]));
+                    if ($name <> "UNAVAILABLE") {
+                        break;
+                    }
+                }
+            }
+
+            // If we found a match, return it
+            if (strlen($name) > 1 && $name <> "UNAVAILABLE") {
+                $caller_id = $name;
+            } else {
+                $this->DebugPrint("not found");
+            }
+        }
+        return($caller_id);
+    }
+
 }

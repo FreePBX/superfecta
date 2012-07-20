@@ -1,85 +1,68 @@
 <?php
+
 class Trunk_Provided extends superfecta_base {
-	function settings() {
 
-		$settings['desc'] = "Locates the Caller ID Name provided by the trunk, and then decides based on a list of key words if the provided name should be used.";
-		
-		$source_param = array();
-		$source_param['Ignore_Keywords']['desc'] = 'If the trunk provided caller id includes any of the keywords listed  here, the trunk provided value will be ignored and other sources will be used to find the value.<br> Seperate keywords with commas.';
-		$source_param['Ignore_Keywords']['type'] = 'textarea';
-		$source_param['Ignore_Keywords']['default'] = 'unknown, toll free, unlisted, (N/A)';
-		
-		$settings['param'] = array();
-		$settings['source_param'] = $source_param;
-		$settings['version_requirement'] = "3.0";
+    public static $description = "Locates the Caller ID Name provided by the trunk, and then decides based on a list of key words if the provided name should be used.";
+    public static $version_requirement = "3.0";
+    public static $source_param = array(
+        'Ignore_Keywords' => array(
+            'description' => 'If the trunk provided caller id includes any of the keywords listed  here, the trunk provided value will be ignored and other sources will be used to find the value.<br> Seperate keywords with commas.',
+            'type' => 'textarea',
+            'default' => 'unknown, toll free, unlisted, (N/A)'
+        )
+    );
 
-		return($settings);
-	}
-	
-	function get_caller_id($thenumber,$run_param=array()) {
-		$this->DebugPrint("Looking for Trunk Provided Caller ID ... ");
-		$key_words = array();
-		$temp_array = explode(',',(isset($run_param['Ignore_Keywords'])?$run_param['Ignore_Keywords']:$source_param['Ignore_Keywords']['default']));
-		foreach($temp_array as $val)
-		{
-			$key_words[] = trim($val);
-		}
-		$provided_caller_id = '';
+    function get_caller_id($thenumber, $run_param=array()) {
+        $this->DebugPrint("Looking for Trunk Provided Caller ID ... ");
+        $key_words = array();
+        $temp_array = explode(',', (isset($run_param['Ignore_Keywords']) ? $run_param['Ignore_Keywords'] : Trunk_Provided::$source_param['Ignore_Keywords']['default']));
+        foreach ($temp_array as $val) {
+            $key_words[] = trim($val);
+        }
+        $provided_caller_id = '';
 
-		//get the caller id name already set for this call using the PHP Asterisk Manager
-		//first get a list of the active channels and return the first one that has a caller id value set.
-		$value = $this->astman->command('core show channels concise');
-		$chan_array = preg_split("/\n/",$value['data']);
-		foreach($chan_array as $val)
-		{
-			$this_chan_array = explode("!",$val);
-			if(isset($this_chan_array[7]))
-			{
-	            if ($this->thenumber_orig == $this_chan_array[7])
-				{
-					$value = $this->astman->command('core show channel '.$this_chan_array[0]);
-					$this_array = preg_split("/\n/",$value['data']);
-					foreach($this_array as $val2)
-					{
-						if(strpos($val2,'Caller ID Name: ') !== false)
-						{
-							$provided_caller_id = trim(str_replace('Caller ID Name: ','',$val2));
-							break;
-						}
-					}
+        //get the caller id name already set for this call using the PHP Asterisk Manager
+        //first get a list of the active channels and return the first one that has a caller id value set.
+        $value = $this->astman->command('core show channels concise');
+        $chan_array = preg_split("/\n/", $value['data']);
+        foreach ($chan_array as $val) {
+            $this_chan_array = explode("!", $val);
+            if (isset($this_chan_array[7])) {
+                if ($this->thenumber_orig == $this_chan_array[7]) {
+                    $value = $this->astman->command('core show channel ' . $this_chan_array[0]);
+                    $this_array = preg_split("/\n/", $value['data']);
+                    foreach ($this_array as $val2) {
+                        if (strpos($val2, 'Caller ID Name: ') !== false) {
+                            $provided_caller_id = trim(str_replace('Caller ID Name: ', '', $val2));
+                            break;
+                        }
+                    }
 
-					//break out if the value is set.
-					if($provided_caller_id != '')
-					{
-						break;
-					}
-				}
-			}
-		}
+                    //break out if the value is set.
+                    if ($provided_caller_id != '') {
+                        break;
+                    }
+                }
+            }
+        }
 
-		if ($provided_caller_id == $thenumber_orig)
-		{
-			$provided_caller_id='';
-			$this->DebugPrint("CID name is the same as CID number");
-		}
+        if ($provided_caller_id == $this->thenumber_orig) {
+            $provided_caller_id = '';
+            $this->DebugPrint("CID name is the same as CID number");
+        }
 
-		if($provided_caller_id == '')
-		{
-			$this->DebugPrint("not found");
-		}
-		else if($provided_caller_id != '')
-		{
-			$this->DebugPrint("found value of $provided_caller_id ... ");
-			$test_string = str_ireplace($key_words,'',$provided_caller_id);
-			if($test_string == $provided_caller_id)
-			{
-					$this->DebugPrint("determined good.");
-					return($provided_caller_id);
-			}
-			else
-			{
-				$this->DebugPrint(" contains flagged key words, returning nothing");
-			}
-		}
-	}
+        if ($provided_caller_id == '') {
+            $this->DebugPrint("not found");
+        } else if ($provided_caller_id != '') {
+            $this->DebugPrint("found value of $provided_caller_id ... ");
+            $test_string = str_ireplace($key_words, '', $provided_caller_id);
+            if ($test_string == $provided_caller_id) {
+                $this->DebugPrint("determined good.");
+                return($provided_caller_id);
+            } else {
+                $this->DebugPrint(" contains flagged key words, returning nothing");
+            }
+        }
+    }
+
 }
