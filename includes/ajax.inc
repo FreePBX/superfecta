@@ -199,6 +199,15 @@ switch($_REQUEST['type']) {
                     $value = isset($n_settings[$key]) ? $n_settings[$key] : $default;
                     $form_html .= '<td>'.str_replace("_", " ", $key).'</td><td><input type="number" name="'.$key.'" value="'.$value.'" /></td>';
                     break;
+                case "select":
+                    $value = isset($n_settings[$key]) ? $n_settings[$key] : $default;
+                    $form_html .= '<td>'.str_replace("_", " ", $key).'</td><td><select name="'.$key.'">';
+                    foreach($data['option'] as $options_k => $options_l) {
+                        $selected = ($value == $options_k) ? 'selected' : '';
+                        $form_html .= "<option value=".$options_k." ".$selected.">".$options_l."</option>";
+                    }
+                    $form_html .= "</select></td>";
+                    break;
                 default:
                     $form_html .= '<td colspan="2"><span class="superfecta_message">WARN: Unrecognized option \''.$data['type'].'\'</span></td>';
                     break;
@@ -216,12 +225,12 @@ switch($_REQUEST['type']) {
         $path = dirname(dirname(__FILE__));
         require_once($path.'/sources/source-'.$_REQUEST['source'].'.module');
         $module = new $_REQUEST['source'];
-        $params = $module->settings();
+        $params = $module::$source_param;
         
         $scheme = str_replace("base_", "", $_REQUEST['scheme']);
         $source = $_REQUEST['source'];
                
-        foreach($params['source_param'] as $key => $data) {
+        foreach($params as $key => $data) {
             if(isset($_REQUEST[$key])) {
                 $sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES ('".$scheme . "_" . $source."', '".$key."', '".$_REQUEST[$key]."')";
                 sql($sql);
