@@ -269,6 +269,9 @@ class superfecta_base {
             $ret = '';
         }
         curl_close($crl);
+        if($this->isDebug(DEBUG_ALL)) {
+            echo "Orignal Raw Returned Data: </br><textarea>".$ret."</textarea></br>";
+        }
         return $ret;
     }
 
