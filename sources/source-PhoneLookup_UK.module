@@ -1,59 +1,44 @@
 <?php
+
 class PhoneLookup_UK extends superfecta_base {
 
-	function settings() {
-		//configuration / display parameters
-		//The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
-		$source_desc = "http://www.ukphonelookup.co.uk - A datasource devoted to identifying telemarketers. These listings are provided by other users of this service.";
-		$settings['desc'] = $source_desc;
-		$settings['version_requirement'] = "3.0";
+    public static $description = "http://www.ukphonelookup.co.uk - A datasource devoted to identifying telemarketers. These listings are provided by other users of this service.";
+    public static $version_requirement = "3.0";
+    public static $source_param = array(
+        'SPAM_Threshold' => array(
+            'description' => 'Specify the # of listings required to mark a call as spam.',
+            'type' => 'number',
+            'default' => 10
+        )
+    );
 
-		$source_param = array();
-		$source_param['SPAM_Threshold']['desc'] = 'Specify the # of listings required to mark a call as spam.';
-		$source_param['SPAM_Threshold']['type'] = 'number';
-		$source_param['SPAM_Threshold']['default'] = 10;
+    function get_caller_id($thenumber, $run_param=array()) {
 
-		$settings['param'] = array();
-		$settings['source_param'] = $source_param;
+        $caller_id = null;
 
-		return($settings);
-	}
-	
-	function get_caller_id($thenumber,$run_param=array()) {
+        if (!$this->IsValidNumber('UK', $thenumber)) {
+            $this->DebugPrint("Skipping Source - Non UK number: {$thenumber}");
+        } else {
+            $this->DebugPrint("Searching Phone Lookup UK for number: {$thenumber}");
 
-		$caller_id = null;		
+            $url = "http://www.ukphonelookup.co.uk/{$thenumber}-phone-number-check";
+            $value = $this->get_url_contents($url);
 
-		if(!$this->IsValidNumber('UK', $thenumber))
-		{
-			$this->DebugPrint("Skipping Source - Non UK number: {$thenumber}");
-		}
-		else
-		{
-			$this->DebugPrint("Searching Phone Lookup UK for number: {$thenumber}");
-			
-			$url = "http://www.ukphonelookup.co.uk/{$thenumber}-phone-number-check";
-			$value = $this->get_url_contents($url);
-			
-			if(is_numeric($value))
-			{
-				$this->DebugPrint(" value of {$value} returned ... ");
+            if (is_numeric($value)) {
+                $this->DebugPrint(" value of {$value} returned ... ");
 
-				$score = $value;
-				if($score > $run_param['SPAM_Threshold'])
-				{
-					$this->DebugPrint(" determined to be SPAM");
-					$this->spam = true;
-				}
-				else
-				{
-					$this->DebugPrint("Not a SPAM caller");
-				}
-			}
-			else
-			{
-				$this->DebugPrint("not found");
-			}
-		}
-		return($caller_id);
-	}
+                $score = $value;
+                if ($score > $run_param['SPAM_Threshold']) {
+                    $this->DebugPrint(" determined to be SPAM");
+                    $this->spam = true;
+                } else {
+                    $this->DebugPrint("Not a SPAM caller");
+                }
+            } else {
+                $this->DebugPrint("not found");
+            }
+        }
+        return($caller_id);
+    }
+
 }

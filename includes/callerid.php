@@ -42,9 +42,13 @@ if (php_sapi_name() == 'cli' && empty($_SERVER['REMOTE_ADDR'])) {
         $scheme_name_request = '';
     }
     $debug = isset($_REQUEST['debug']) ? $_REQUEST['debug'] : 0;
-    $thenumber_orig = (isset($_REQUEST['thenumber'])) ? trim($_REQUEST['thenumber']) : '';
-    $DID = (isset($_REQUEST['DID'])) ? trim($_REQUEST['DID']) : '';
+    $thenumber_orig = (isset($_REQUEST['thenumber'])) ? $_REQUEST['thenumber'] : '';
+    $DID = (isset($_REQUEST['thedid'])) ? $_REQUEST['thedid'] : '';
 }
+
+//Remove all invalid characters from number!
+$thenumber_orig = preg_replace('/\D/i', '', $thenumber_orig);
+$DID = preg_replace('/\D/i', '', $DID);
 
 //Die on Scheme unknown
 if ((trim($scheme_name_request) == '') OR ($scheme_name_request == 'ALL')) {

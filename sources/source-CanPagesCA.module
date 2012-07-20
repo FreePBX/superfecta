@@ -1,44 +1,37 @@
 <?php
+
 class CanPagesCA extends superfecta_base {
-	function settings() {
-		
-		$settings['desc'] = "http://www.canpages.ca - 	These listings include business and residential data for Canada.";
-		$settings['version_requirement'] = "3.0";
 
-		return($settings);
-	}
-	
-	function get_caller_id($thenumber,$run_param=array()) {
-		$caller_id=null;
-		$npa=""; $nxx=""; $station="";
-		
-		if(!$this->IsValidNumber('CA',$thenumber, $npa, $nxx, $station))
-		{
-			$this->DebugPrint( "Skipping Source - Non Canadian number: ".$thenumber);
-		}
-		else
-		{				
-			$this->DebugPrint( "Searching www.canpages.ca - ({$npa}) {$nxx}-{$station}...");
+    public static $description = "http://www.canpages.ca - 	These listings include business and residential data for Canada.";
+    public static $version_requirement = "3.0";
 
-	 		// By default, there is no match
-			$name = "";
-	
-			$url="http://www.canpages.ca/list.jsp?na=".$npa."-".$nxx."-".$station."&ct=b2n+1x6";   //working June 19, 2012
-	
-			$pattern = '/name : \"(.*?)\",/i';   //working June 19, 2012
+    function get_caller_id($thenumber, $run_param=array()) {
+        $caller_id = null;
+        $npa = "";
+        $nxx = "";
+        $station = "";
 
-                        
-			// Patterns to search for
-			$regexp = array(
-				$pattern, 
-				
-			);
-	
-			if($this->SearchURL($url, $regexp, $match,NULL,TRUE)) {
-				$caller_id = $this->ExtractMatch($match);
-			}
-		}
-		return($caller_id);
-	}
-	
+        if (!$this->IsValidNumber('CA', $thenumber, $npa, $nxx, $station)) {
+            $this->DebugPrint("Skipping Source - Non Canadian number: " . $thenumber);
+        } else {
+            $this->DebugPrint("Searching www.canpages.ca - ({$npa}) {$nxx}-{$station}...");
+
+            // By default, there is no match
+            $name = "";
+
+            $url = "http://www.canpages.ca/list.jsp?na=" . $npa . "-" . $nxx . "-" . $station . "&ct=b2n+1x6";   //working June 19, 2012
+
+            $pattern = '/name : \"(.*?)\",/i';   //working June 19, 2012
+            // Patterns to search for
+            $regexp = array(
+                $pattern,
+            );
+
+            if ($this->SearchURL($url, $regexp, $match, NULL, TRUE)) {
+                $caller_id = $this->ExtractMatch($match);
+            }
+        }
+        return($caller_id);
+    }
+
 }

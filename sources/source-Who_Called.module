@@ -1,92 +1,82 @@
 <?php
-class Who_Called extends superfecta_base {
-	function settings() {
-		$source_param['Username']['desc'] = 'Your user account Login on the whocalled.us web site.';
-		$source_param['Username']['type'] = 'text';
-		$source_param['Password']['desc'] = 'Your user account Password on the whocalled.us web site.';
-		$source_param['Password']['type'] = 'password';
-		$source_param['Return_to_Who_Called']['desc'] = 'If a valid caller id name is found, provide it back to Who Called for their database.';
-		$source_param['Return_to_Who_Called']['type'] = 'checkbox';
-		
-		$settings['desc'] = "http://whocalled.us - These listings are provided by other users of the whocalled service. This service requires authentication - which you configure by clicking on this datasource. <br>This data source requires Superfecta Module version 2.2.1 or higher.";
-		$settings['param'] = array();
-		$settings['source_param'] = $source_param;
-                $settings['groups'] = 'US,CA';
-		$settings['version_requirement'] = "3.0";
-		return($settings);
-	}
-	
-	function get_caller_id($thenumber,$run_param=array()) {
-		//This debug variable allows simple copy and past of most sources.
-		$debug = $this->debug;
-		$caller_id=null;
-		
-		//Paste old source '$usage_mode == 'get caller id' here:
 
-		if( (!$this->IsValidNumber('US',$thenumber)) && (!$this->IsValidNumber('CA',$thenumber)) )
-		{
-			$this->DebugPrint( "Skipping Source - Not a valid US/CAN number: ".$thenumber);
-		}
-		else
-		{
-			$this->DebugPrint( "Searching Who Called ... ");
-			
-			$url = "http://whocalled.us/do?action=getWho&name=".$run_param['Username']."&pass=".$run_param['Password']."&phoneNumber=$thenumber";
-			$value = $this->get_url_contents($url);
-                        
-                        $variables = preg_split('/\&/i',$value);
-                        $dataout = array();
-                        foreach($variables as $data) {
-                            $subvars = preg_split('/=/i',$data);
-                            $dataout[$subvars[0]] = $subvars[1];
-                        }
-                        
-                        $variables = $dataout;
-                        
-			if($variables['success']=='1')
-			{
-				if(!empty($variables['who']))
-			  	{
-					$caller_id = $variables['who'];
-				}
-			  	else
-				{
-					$this->DebugPrint("not found");
-				}
-			}
-			else
-			{
-				$this->DebugPrint("Error Returned: " . $variables['errorMsg']);
-			}
-		}
-		return($caller_id);
-	}
-	
-	function post_processing($cache_found,$winning_source,$first_caller_id,$run_param,$thenumber) {
-		//This debug variable allows simple copy and past of most sources.
-		$debug = $this->debug;
-		//return the value back to Who Called if the user has enabled it and the result didn't come from cache. This will truncate the string to 15 characters
-		if(!$cache_found && ($winning_source != 'Who_Called') && ($first_caller_id != '') && ($run_param['Return_to_Who_Called'] == 'on'))
-		{
-			$this->DebugPrint( "Reporting value back to Who Called ... ");
-			
-			$url = "http://whocalled.us/do?action=report&name=".$run_param['Username']."&pass=".$run_param['Password']."&phoneNumber=$thenumber&date=".date('Y-m-d')."&callerID=".urlencode(substr($first_caller_id,0,15));
-			$value = get_url_contents($url);
-			if($debug)
-			{
-				$st_success = strstr($value, "success");
-				$st_error = strstr($value, "errorMsg");
-				$success = substr($st_success,8,1);
-				$error = substr($st_error,9);
-				if($success=='1')
-				{
-					print "Success.<br>\n<br>\n";
-				}
-				else
-				{
-					print "Failed with error message: ".$error.".<br>\n<br>\n";
-				}
-			}
-		}
-	}
+class Who_Called extends superfecta_base {
+
+    public static $description = "http://whocalled.us - These listings are provided by other users of the whocalled service. This service requires authentication - which you configure by clicking on this datasource. <br>This data source requires Superfecta Module version 2.2.1 or higher.";
+    public static $version_requirement = "3.0";
+    public static $source_param = array(
+        'Username' => array(
+            'description' => 'Your user account Login on the whocalled.us web site.',
+            'type' => 'text'
+        ),
+        'Password' => array(
+            'description' => 'Your user account Password on the whocalled.us web site.',
+            'type' => 'password'
+        ),
+        'Return_to_Who_Called' => array(
+            'description' => 'If a valid caller id name is found, provide it back to Who Called for their database.',
+            'type' => 'checkbox'
+        )
+    );
+
+    function get_caller_id($thenumber, $run_param=array()) {
+        //This debug variable allows simple copy and past of most sources.
+        $debug = $this->debug;
+        $caller_id = null;
+
+        //Paste old source '$usage_mode == 'get caller id' here:
+
+        if ((!$this->IsValidNumber('US', $thenumber)) && (!$this->IsValidNumber('CA', $thenumber))) {
+            $this->DebugPrint("Skipping Source - Not a valid US/CAN number: " . $thenumber);
+        } else {
+            $this->DebugPrint("Searching Who Called ... ");
+
+            $url = "http://whocalled.us/do?action=getWho&name=" . $run_param['Username'] . "&pass=" . $run_param['Password'] . "&phoneNumber=$thenumber";
+            $value = $this->get_url_contents($url);
+
+            $variables = preg_split('/\&/i', $value);
+            $dataout = array();
+            foreach ($variables as $data) {
+                $subvars = preg_split('/=/i', $data);
+                $dataout[$subvars[0]] = $subvars[1];
+            }
+
+            $variables = $dataout;
+
+            if ($variables['success'] == '1') {
+                if (!empty($variables['who'])) {
+                    $caller_id = $variables['who'];
+                } else {
+                    $this->DebugPrint("not found");
+                }
+            } else {
+                $this->DebugPrint("Error Returned: " . $variables['errorMsg']);
+            }
+        }
+        return($caller_id);
+    }
+
+    function post_processing($cache_found, $winning_source, $first_caller_id, $run_param, $thenumber) {
+        //This debug variable allows simple copy and past of most sources.
+        $debug = $this->debug;
+        //return the value back to Who Called if the user has enabled it and the result didn't come from cache. This will truncate the string to 15 characters
+        if (!$cache_found && ($winning_source != 'Who_Called') && ($first_caller_id != '') && ($run_param['Return_to_Who_Called'] == 'on')) {
+            $this->DebugPrint("Reporting value back to Who Called ... ");
+
+            $url = "http://whocalled.us/do?action=report&name=" . $run_param['Username'] . "&pass=" . $run_param['Password'] . "&phoneNumber=$thenumber&date=" . date('Y-m-d') . "&callerID=" . urlencode(substr($first_caller_id, 0, 15));
+            $value = get_url_contents($url);
+            if ($debug) {
+                $st_success = strstr($value, "success");
+                $st_error = strstr($value, "errorMsg");
+                $success = substr($st_success, 8, 1);
+                $error = substr($st_error, 9);
+                if ($success == '1') {
+                    print "Success.<br>\n<br>\n";
+                } else {
+                    print "Failed with error message: " . $error . ".<br>\n<br>\n";
+                }
+            }
+        }
+    }
+
 }

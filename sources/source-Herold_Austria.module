@@ -1,56 +1,29 @@
 <?php
+
 //Created July 16,2011 by lgaetz
 class Herold_Austria extends superfecta_base {
-	function settings() {
-		
-		$settings['desc'] = "http://www.herold.at/ - These listings include data for Austria.";
-		$settings['version_requirement'] = "3.0";
 
-		return($settings);
-	}
-	
-	function get_caller_id($thenumber,$run_param=array()) {
-		$caller_id=null;
-		
-		
-						
-			$this->DebugPrint( "Searching http://www.herold.at/ ... ");
+    public static $description = "http://www.herold.at/ - These listings include data for Austria.";
+    public static $version_requirement = "3.0";
 
-	 		// By default, there is no match
-			$name = "";
-	
-			// Set the url we're searching for valid as of July 16, 2011
-			$url="http://www.herold.at/en/gelbe-seiten/telefon_".$thenumber."/";
-print $url;
-			
-//			$value = $this->get_url_contents($url);
-			$value = file_get_contents($url);
+    function get_caller_id($thenumber, $run_param=array()) {
+        $this->DebugPrint("Searching http://www.herold.at/ ... ");
 
-$myFile = "/var/www/html/admin/modules/superfecta/sources/superfecta.txt";
-$fh = fopen($myFile, 'w') or die("can't open file");
-fwrite($fh, $value);
-fclose($fh);
-			
 
-	
-			// Patterns to search for
-			$regexp = array(
-				"/class=\"bold \">(.*?)<\/a>/",		//June 29, 2012  gives false hits
-//				class="bold ">TAXI 31300 VermittlungsgmbH</a>
-			);
-	
-			// Look through each pattern to see if we find a match -- take the first match
-	        foreach ($regexp as $pattern){
-				preg_match($pattern, $value, $match);
-				if(isset($match[1]) && (strlen(trim(strip_tags($match[1]))))){
-					$caller_id = trim(strip_tags($match[1]));
-						break;
-					}
-				}
-			
-					
-		
-		return($caller_id);
-	}
-	
+        // Set the url we're searching for valid as of July 16, 2011
+        $url = "http://www.herold.at/en/gelbe-seiten/telefon_" . $thenumber . "/";
+       
+
+        // Patterns to search for
+        $regexp = array(
+            "/class=\"bold \">(.*?)<\/a>/", //June 29, 2012  gives false hits, class="bold ">TAXI 31300 VermittlungsgmbH</a>
+        );
+        
+        if ($this->SearchURL($url, $regexp, $match)) {
+                $caller_id = $this->ExtractMatch($match);
+        }
+
+        return($caller_id);
+    }
+
 }
