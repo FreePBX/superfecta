@@ -7,17 +7,16 @@
 
 class Superfecta_Cache extends superfecta_base {
 
-    function settings() {
-        //configuration / display parameters
-        //The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
-        $source_desc = "Searches the built in Superfecta Cache for caller ID information. This is a very fast source of information.<br>This source is 
-		generally faster than the Asterisk Phonebook, and more efficient with larger caches.<br><br>Module version 2.2.4 or higher, for CID Rules.";
-        $source_param = array();
-        $source_param['Cache_Timeout']['desc'] = 'Specify the number of days that a cached value should stay in the database.';
-        $source_param['Cache_Timeout']['type'] = 'number';
-        $source_param['Cache_Timeout']['default'] = 120;
-        $source_param['CID_Exclusion_Rules']['desc'] = '
-			Incoming calls with CID matching the patterns specified here will not be cached. If this is 
+    public static $description = "Searches the built in Superfecta Cache for caller ID information. This is a very fast source of information.<br>This source is generally faster than the Asterisk Phonebook, and more efficient with larger caches.<br><br>Module version 2.2.4 or higher, for CID Rules.";
+    public static $version_requirement = "3.0";
+    public static $source_param = array(
+        'Cache_Timeout' => array(
+            'description' => 'Specify the number of days that a cached value should stay in the database.',
+            'type' => 'number',
+            'default' => 120
+        ),
+        'CID_Exclusion_Rules' => array(
+            'description' => 'Incoming calls with CID matching the patterns specified here will not be cached. If this is 
 			left blank, all CIDs will be cached. <br />
 			<br /><b>Rules:</b><br /> 
 			<strong>X</strong>&nbsp;&nbsp;&nbsp; matches any digit from 0-9<br /> 
@@ -36,16 +35,10 @@ class Superfecta_Cache extends superfecta_base {
 
 			You can also use both + and |, for example: 01+0|1ZXXXXXXXXX would match 
 			"016065551234" and dial it as "0116065551234" Note that the order does not matter, eg. 
-			0|01+1ZXXXXXXXXX does the same thing.';
-        $source_param['CID_Exclusion_Rules']['type'] = 'textarea';
-        $source_param['CID_Exclusion_Rules']['default'] = '';
-
-        $settings['desc'] = $source_desc;
-        $settings['param'] = array();
-        $settings['source_param'] = $source_param;
-        $settings['version_requirement'] = "3.0";
-        return($settings);
-    }
+			0|01+1ZXXXXXXXXX does the same thing.',
+            'type' => 'textarea'
+        )
+    );
 
     function get_caller_id($thenumber, $run_param=array()) {
         $caller_id = null;
@@ -82,11 +75,11 @@ class Superfecta_Cache extends superfecta_base {
         return($caller_id);
     }
 
-    function post_processing($cache_found, $winning_source, $first_caller_id, $run_param, $thenumber) { 
+    function post_processing($cache_found, $winning_source, $first_caller_id, $run_param, $thenumber) {
         //People might not have anything in Exclusion Rules, account for this
         $run_param['CID_Exclusion_Rules'] = isset($run_param['CID_Exclusion_Rules']) ? $run_param['CID_Exclusion_Rules'] : '';
         $rule_match = $this->match_pattern_all(!empty($run_param['CID_Exclusion_Rules']) ? $run_param['CID_Exclusion_Rules'] : '', $thenumber);
-                
+
         if ((!$rule_match['status']) || (!$rule_match['number'])) {
             if (!$cache_found && ($first_caller_id != '')) {
                 $sql = "REPLACE INTO superfectacache (number,callerid,dateentered)

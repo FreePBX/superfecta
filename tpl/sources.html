@@ -23,17 +23,47 @@
                     });
                 }
             });
+            //Show/Hide DID Test Box
+            if($("#DID").val().length > 0) {
+                $("#didbox").show();
+            } else {
+                $("#didbox").hide();
+            }
+            
+            //Show/Hide DID Test Box on DID value change greater than 0
+            $("#DID").change(function(){
+                if($(this).val().length > 0) {
+                    $("#didbox").fadeIn('slow');
+                } else {
+                    $("#didbox").fadeOut('slow');
+                }
+            })
+            $('#thenumber').keypress(function(e) {
+                if(e.which == 13) {
+                    jQuery(this).blur();
+                    jQuery('#submit').focus();
+                    superfecta_debug_go();
+                }
+            });
+            $('#thedid').keypress(function(e) {
+                if(e.which == 13) {
+                    jQuery(this).blur();
+                    jQuery('#submit').focus();
+                    superfecta_debug_go();
+                }
+            });
         });
         
         function superfecta_debug_go() {
             var debuglevel = $('#debug_level').val();
             var thenumber = $('#thenumber').val();
+            var thedid = $('#thedid').val();
             var scheme = '{$scheme}';
             if($('#allscheme').is (':checked')) {
                 scheme = 'ALL';
             }
             $('#superfecta_debug_display').html('<div id="debug" style="background-color: #E0E0E0; width:70%; margin-left:auto;margin-right:auto;"><img src="assets/superfecta/images/loading.gif" /></div>');
-            $.get('config.php?quietmode=1&handler=file&module=superfecta&file=callerid.html.php&scheme='+scheme+'&thenumber='+thenumber+'&debug='+debuglevel, function(data) {
+            $.get('config.php?quietmode=1&handler=file&module=superfecta&file=callerid.html.php&scheme='+scheme+'&thenumber='+thenumber+'&debug='+debuglevel+'&thedid='+thedid, function(data) {
                 $('#superfecta_debug_display').html('<div id="debug" style="background-color: #E0E0E0; width:100%">'+data+'</div>');
             });
         }
@@ -206,7 +236,7 @@
                     <tr>
                         <td valign="top"><a href="javascript:return(false);" class="info">DID Rules<span>Define the expected DID Number if your trunk passes DID on incoming calls. <br><br>Leave this blank to match calls with any or no DID info.<br><br>This rule trys both absolute and pattern matching (eg "_2[345]X", to match a range of numbers). (The "_" underscore is optional.)</span></a>:</td>
                         <td>
-                            <textarea tabindex="1" cols="20" rows="5" name="DID">{$did}</textarea>
+                            <textarea id="DID" tabindex="1" cols="20" rows="5" name="DID">{$did}</textarea>
                         </td>
                     </tr>
                     <tr>
@@ -297,9 +327,9 @@
             </form>
         </td>				
         <td valign="top">
-            <form name="superfecta_debug"  action="">
-                <p>Test a phone number against the selected sources.<br>
-                    {$did_test_html}
+            <form name="superfecta_debug" onsubmit="return false">
+                <p><u>Test a phone number against the selected sources.</u><br>
+                    <span id="didbox"><a href="javascript:return(false);" class="info">DID Number:<span>The DID to test this scheme against.</span></a> <input type="text" id="thedid" size="15" maxlength="20" name="thedid"><br></span>
                     <a href="javascript:return(false);" class="info">Phone Number:<span>Phone number to test this scheme against.</span></a> <input type="text" id="thenumber" size="15" maxlength="20" name="thenumber"><input type="button" value="Debug" onclick="superfecta_debug_go();"><br>
                     <font size=2><input type="checkbox" name="allscheme" id="allscheme" value="All">
                     <a href="javascript:return(false);" class="info">Test all CID schemes<span>When enabled, the debug function will test the number entered against all of the configured CID schemes.<br>When disabled, debug only checks up to the first scheme that provides positive results.</span></a> <br/>
@@ -311,9 +341,9 @@
 </table>
 <script language="javascript">
     //$.get('ajax/test.html', function(data) {
-  //$('.result').html(data);
-  //alert('Load was performed.');
-//});
+    //$('.result').html(data);
+    //alert('Load was performed.');
+    //});
 
     
     function reset_infoboxes(){

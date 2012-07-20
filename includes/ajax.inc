@@ -169,12 +169,12 @@ switch($_REQUEST['type']) {
         $path = dirname(dirname(__FILE__));
         require_once($path.'/sources/source-'.$_REQUEST['source'].'.module');
         $module = new $_REQUEST['source'];
-        $params = $module->settings();
+        $params = $module::$source_param;
         
         $title = str_replace('_', ' ', $_REQUEST['source']);
         $form_html = '<h3>'.$title.'</h3><form id="form_options_'.$_REQUEST['source'].'" action="config.php?quietmode=1&handler=file&module=superfecta&file=ajax.html.php&type=save_options&scheme='.$_REQUEST['scheme'].'&source='.$_REQUEST['source'].'" method="post">';
         $form_html .= '<table>';
-        foreach($params['source_param'] as $key => $data) {
+        foreach($params as $key => $data) {
             $form_html .= '<tr>';
             $show = TRUE;
             $default = isset($data['default']) ? $data['default'] : '';

@@ -1,61 +1,45 @@
 <?php
+
 class PhoneSpamFilter extends superfecta_base {
 
-	function settings() {
-		//configuration / display parameters
-		//The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
-		$source_desc = "http://www.phonespamfilter.com - A datasource devoted to identifying telemarketers. These listings are provided by other users of this service.";
+    public static $description = "http://www.phonespamfilter.com - A datasource devoted to identifying telemarketers. These listings are provided by other users of this service.";
+    public static $version_requirement = "3.0";
+    public static $source_param = array(
+        'SPAM_Threshold' => array(
+            'description' => 'Specify the # of listings required to mark a call as spam.',
+            'type' => 'number',
+            'default' => 10
+        )
+    );
 
-		$settings['desc'] = $source_desc;
-		$settings['version_requirement'] = "3.0";
+    function get_caller_id($thenumber, $run_param=array()) {
 
-		$source_param = array();
-		$source_param['SPAM_Threshold']['desc'] = 'Specify the # of listings required to mark a call as spam.';
-		$source_param['SPAM_Threshold']['type'] = 'number';
-		$source_param['SPAM_Threshold']['default'] = 10;
+        $caller_id = null;
 
-		$settings['param'] = array();
-		$settings['source_param'] = $source_param;
+        if (!$this->IsValidNumber("US,CA", $thenumber)) {
+            $this->DebugPrint("Skipping Source - Non US/CAN number: {$thenumber}");
+        } else {
+            $this->DebugPrint("Searching PhoneSpamFilter ... ");
 
-		return($settings);
-	}
-	
-	function get_caller_id($thenumber,$run_param=array()) {
+            $url = "http://www.phonespamfilter.com/check.php?phone=$thenumber";
+            $value = $this->get_url_contents($url);
 
-		$caller_id = null;		
+            if (is_numeric($value)) {
+                $this->DebugPrint(' value of ' . $value . ' returned ... ');
 
-		if(!$this->IsValidNumber("US,CA", $thenumber))
-		{
-			$this->DebugPrint( "Skipping Source - Non US/CAN number: {$thenumber}" );
-		}
-		else
-		{
-			$this->DebugPrint( "Searching PhoneSpamFilter ... " );
-			
-			$url = "http://www.phonespamfilter.com/check.php?phone=$thenumber";
-			$value = $this->get_url_contents($url);
-			
-			if(is_numeric($value))
-			{
-				$this->DebugPrint( ' value of '.$value.' returned ... ' );
+                $score = $value;
+                if ($score > $run_param['SPAM_Threshold']) {
+                    $this->spam = true;
+                    $this->DebugPrint(" determined to be SPAM");
+                } else {
+                    $this->DebugPrint("Not a SPAM caller");
+                }
+            } else {
+                $this->DebugPrint("not found");
+            }
+        }
 
-				$score = $value;
-				if($score > $run_param['SPAM_Threshold'])
-				{
-					$this->spam = true;
-					$this->DebugPrint( " determined to be SPAM" );
-				}
-				else
-				{
-					$this->DebugPrint( "Not a SPAM caller" );
-				}
-			}
-			else
-			{
-				$this->DebugPrint( "not found" );
-			}
-		}
-			
-		return($caller_id);
-	}
+        return($caller_id);
+    }
+
 }
