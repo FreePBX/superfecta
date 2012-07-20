@@ -21,7 +21,7 @@ class Google_Maps_UK extends superfecta_base {
             $pattern = "/title:\'{$this->thenumber}.*sxti:\'(.*)\'/U";
 
             if ($this->SearchURL($url, $pattern, $match)) {
-                $caller_id = $this->ExtractMatch($match);
+                $caller_id = $this->ExtractMatch($t);
             }
         }
 

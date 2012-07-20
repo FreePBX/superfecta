@@ -40,6 +40,7 @@ class LDAP extends superfecta_base {
 3 - FirstName LastName
 4 - Organization - Lastname (cn if Organization blank)
 5 - AppleCompany - Lastname (cn if Company blank)</pre>',
+            'type' => 'select',
             'option' => array(
                 1 => '(cn) e.g. Joe Bloggs',
                 2 => '(sn, givenname) e.g. Bloggs, Joe',
