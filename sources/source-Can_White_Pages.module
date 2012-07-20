@@ -21,7 +21,7 @@ class Can_White_Pages extends superfecta_base {
 
             $url = "http://www.whitepages.ca/phone/1-" . $npa . "-" . $nxx . "-" . $station;    //working June 19, 2012
 
-            $pattern = '/<span class=\"name\"><a href=\".*\">(.*)<\/a><\/span>/i';  // Residential match working Jun 19, 2012
+            $pattern = '/<span class=\"name\"><a href=\".*\">(.*?)<\/a><\/span>/i';  // Residential match working Jun 19, 2012
             // Patterns to search for
             $regexp = array(
                 $pattern,
