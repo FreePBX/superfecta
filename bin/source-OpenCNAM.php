@@ -3,7 +3,7 @@
 //If a valid match is found, it will give $caller_id a value
 //available variables for use are: $thenumber
 //retreive website contents using get_url_contents($url);
-// revised July 27, 2012
+//Last edited Aug. 14, 2012 by lgaetz
 
 //configuration / display parameters
 //The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
@@ -72,7 +72,7 @@ if($usage_mode == 'get caller id')
     {
     	if ($run_param['Username'] == null or $run_param['API'] == null)  //use free url
         {
-			$url = "https://api.opencnam.com/v1/phone/" . $thenumber . "?format=text";
+			$url = "https://api.opencnam.com/v1/phone/" . $thenumber . "?format=pbx";
         }
 		else  //use premium url
         {
@@ -80,18 +80,6 @@ if($usage_mode == 'get caller id')
         }
 
         $sname =  get_url_contents($url);
-
-	// check for returned CNAM of "Currently running a lookup for phone..."
-	$pattern = "/Currently running a lookup for phone.*/";
-	preg_match($pattern, $sname, $result);
-	if ($result[0])
-	{
-		$sname = "";
-		if($debug)
-		{
-			print "Lookup pending, no useful data<br>\n";
-		}
-	}
 
         if (strlen($sname) > 1)
         {
