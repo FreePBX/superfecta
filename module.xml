@@ -33,8 +33,8 @@
 	<menuitems>
 		<superfecta>CID Superfecta</superfecta>
 	</menuitems>
-	<info>https://github.com/tm1000/Caller-ID-Superfecta</info>
-	<location>https://github.com/tm1000/Caller-ID-Superfecta</location>
+	<info>https://github.com/POSSA/Caller-ID-Superfecta</info>
+	<location>https://github.com/POSSA/Caller-ID-Superfecta</location>
 	<depends>
 		<module>core</module>
 		<module>cidlookup gt2.4</module>
