@@ -258,7 +258,7 @@ if($scheme != "")
 						</tr>
 
 						<tr>
-							<td><a href="javascript:return(false);" class="info">Cache results to Asterisk Address Book:<span>This option should be disabled for proper Superfecta operation</span></a></td>
+							<td><a href="javascript:return(false);" class="info">Cache results to Asterisk Address Book:<span>This option should be disabled for proper Superfecta operation. Enter the digit 0 to disable.</span></a></td>
 							<td><input type="text" name="cache" size="23" maxlength="20" value="'.utf8_encode($conf['cache']).'"></td>
 						</tr>
 
