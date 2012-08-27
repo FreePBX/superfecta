@@ -260,7 +260,7 @@ if($scheme != "")
 						<tr>
 							<td><a href="javascript:return(false);" class="info">Cache results to Asterisk Address Book<span>This option should be disabled for proper superfecta operation</span></a></td>
 							<td>
-								<input type="checkbox" name="cache_to_ab" value="Y"' . ( ( (isset($conf['cache'])) && ($conf['cache'] == 1) ) ? 'checked' : '' ) . '>
+								<input type="checkbox" name="cache" value="1"' . ( ( (isset($conf['cache'])) && ($conf['cache'] == 1) ) ? 'checked' : '' ) . '>
 							</td>
 						</tr>
 						
