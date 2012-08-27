@@ -258,10 +258,12 @@ if($scheme != "")
 						</tr>
 
 						<tr>
-							<td><a href="javascript:return(false);" class="info">Cache results to Asterisk Address Book:<span>This option should be disabled for proper Superfecta operation</span></a></td>
-							<td><input type="text" name="cache" size="23" maxlength="20" value="'.utf8_encode($conf['cache']).'"></td>
+							<td><a href="javascript:return(false);" class="info">Cache results to Asterisk Address Book<span>This option should be disabled for proper superfecta operation</span></a></td>
+							<td>
+								<input type="checkbox" name="cache" value="1"' . ( ( (isset($conf['cache'])) && ($conf['cache'] == 1) ) ? 'checked' : '' ) . '>
+							</td>
 						</tr>
-
+						
 						<tr>
 							<td><a href="javascript:return(false);" class="info">Lookup Timeout<span>Specify a timeout in seconds for each source. If the source fails to return a result within the alloted time, the script will move on.</span></a></td>
 							<td><input type="text" name="Curl_Timeout" size="4" maxlength="5" value="'.$conf['Curl_Timeout'].'"></td>

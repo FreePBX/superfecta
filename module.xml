@@ -3,8 +3,8 @@
 	<name>CID Superfecta</name>
 	<version>2.2.6</version>
 	<type>setup</type>
-	<category>Inbound Call Control</category>
-	<publisher>github.com/tm1000/Caller-ID-Superfecta</publisher> 
+	<category>Other</category>
+	<publisher>POSSA</publisher> 
 	<license>GPLv2+</license>
 	<description>
 	       Provides simultaneous use of, and complete control over multiple caller id data sources.

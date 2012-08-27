@@ -1,9 +1,9 @@
 <?php
 //this file is designed to be used as an include that is part of a loop.
-//If a valid match is found, it should give $caller_id a value
+//If a valid match is found, it will give $caller_id a value
 //available variables for use are: $thenumber
 //retreive website contents using get_url_contents($url);
-//Created July 16,2011 by lgaetz
+//last edited June 19, 2012 by lgaetz
 
 //configuration / display parameters
 //The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
@@ -97,14 +97,17 @@ if($usage_mode == 'get caller id')
 	}
 	else
 	{
-		// Set the url we're searching for valid as of July 16, 2011
+		// Set the url we're searching for valid as of June 19, 2012
                 $url="http://canada411.yellowpages.ca/search/re/1/$thenumber";
+				      
 		$value = get_url_contents($url);
 
 		// Patterns to search for
 		$regexp = array(
-			"/<span class=\"ypgWebNumberColumn ypgWebNumberColumnName\"><a href=\".*\">(.*)<\/a>/",        //business results
-                        "/<div class=\"ypgBackfillListing\">\n(.*)<br>/",          //residential results
+			
+			"/<div class=\"ypgBackfillListing\">\n(.*)<br\/>/",												//residential results June 19, 2012
+			"/<span class=\"listingTitle\">(.+?)<\/span>/",													//business results June 19, 2012
+			
 		);
 
  		// By default, there is no match
