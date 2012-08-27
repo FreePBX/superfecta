@@ -19,7 +19,7 @@ NOTE: Effective with module version 2.2.4, Fonicatec PABX and Foncordiax will no
 The Module’s wiki Page is here.
 
 Asterisk Version Compatibility
-This module has been tested and found to work correctly with Asterisk versions 1.4 - 1.8.
+This module has been tested and found to work correctly with Asterisk versions 1.4 - 10.
 
 FreePBX Version Compatibility
-This module has been tested and found to work correctly with FreePBX v 2.5.x - 2.9.x.
+This module has been tested and found to work correctly with FreePBX v 2.5.x - 2.10.x.
