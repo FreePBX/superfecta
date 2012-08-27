@@ -273,7 +273,7 @@ else
 	if($row = $res->fetchRow(DB_FETCHMODE_ASSOC)){
 		$row['http_path'] = '/admin/modules/superfecta/bin/callerid.php';
 		$row['sourcetype'] = 'http';
-		$row['cache'] = '0';
+		unset ($row['cache']);
 		$row['http_query'] = 'thenumber=[NUMBER]';
 		$row['description'] = 'Caller ID Superfecta';
 		$row['http_host'] = 'localhost';

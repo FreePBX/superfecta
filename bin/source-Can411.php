@@ -1,9 +1,9 @@
 <?php
 //this file is designed to be used as an include that is part of a loop.
-//If a valid match is found, it should give $caller_id a value
+//If a valid match is found, it will give $caller_id a value
 //available variables for use are: $thenumber
 //retreive website contents using get_url_contents($url);
-//last edited July 16,2011 by lgaetz
+//last edited June 19, 2012 by lgaetz
 
 
 //configuration / display parameters
@@ -98,13 +98,13 @@ if($usage_mode == 'get caller id')
 	}
 	else
 	{
-		// Set the url we're searching for valid as of July 16, 2011
-		$url="http://www.411.ca/reverse/search/?render=mpAjax&st=reverse&q=$thenumber";
+		// Set the url we're searching for valid as of June 19, 2012
+		$url="http://411.ca/search/?q=".$thenumber."&st=reverse";
 		$value = get_url_contents($url);
 
 		// Patterns to search for
 		$regexp = array(
-			"/<div class=\"business_name\"><a href=\".*\">(.*)<\/a>/",
+			"/itemprop=\"name\">(.+?)<\/a>/",			//working june 19, 2012
 
 		);
 
