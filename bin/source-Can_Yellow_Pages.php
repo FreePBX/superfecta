@@ -3,24 +3,29 @@
 //If a valid match is found, it will give $caller_id a value
 //available variables for use are: $thenumber
 //retreive website contents using get_url_contents($url);
-//last edited June 19, 2012 by lgaetz
+//Last edit Aug 17, 2012 by gking
+
+//Dev Notes:
+//Not sure but I think data returned is idential to www.canada411.ca
+//Site returns residential names but no pattern defined to look for them yet
+
 
 //configuration / display parameters
 //The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
-$source_desc = "http://www.whitepages.ca - This site will return residential Canadian listings as well as (at least some) American  listings.<br><br>This data source requires Superfecta Module version 2.2.1 or higher.";
+$source_desc = "http://www.yellowpages.ca - These listings will return both residential and business Canadian listings as well as (at least some) American business and residential listings.<br><br>This data source requires Superfecta Module version 2.2.1 or higher.";
 
 
 //run this if the script is running in the "get caller id" usage mode.
 if($usage_mode == 'get caller id')
 {
 	$number_error = false;
-        $TFnpa = false;
-        $validnpaCAN = false;
-        $validnpaUS = false;
+	$TFnpa = false;
+	$validnpaCAN = false;
+	$validnpaUS = false;
 
 	if($debug)
 	{
-		print "Searching http://www.whitepages.ca ... ";
+		print "Searching http://www.yellowpages.ca ... ";
 	}
 
 	//check for the correct 11 digits in US/CAN phone numbers in international format.
@@ -57,7 +62,7 @@ if($usage_mode == 'get caller id')
 		}
 
 	}
-	// number
+	
       if(strlen($thenumber) != 10)
 	{
 		$number_error = true;
@@ -68,8 +73,6 @@ if($usage_mode == 'get caller id')
 	{
 		$thenumber = (substr($thenumber,0,1) == 1) ? substr($thenumber,1) : $thenumber;
 		$npa = substr($thenumber,0,3);
-		$cid1 = substr($thenumber,3,3);
-		$cid2 = substr($thenumber,6,4);
 
 		// Check for Toll-Free numbers
 		$TFnpa = false;
@@ -147,11 +150,12 @@ if($usage_mode == 'get caller id')
 	}
 	else
 	{
-		$url="http://www.whitepages.ca/phone/1-".$npa."-".$cid1."-".$cid2;    //working Jun 19, 2012
+
+		$url="http://www.yellowpages.ca/search/re/1/$thenumber";
 		$value = get_url_contents($url);
 		$name="";		
 
-		$notfound = strpos($value, "PHONE_USER_ERROR");
+		$notfound = strpos($value, "ypgSearchErrorMessage");
 		$notfound = ($notfound < 1) ? strpos($value, "PHONE_NO_RESULTS") : $notfound;
 
 		if($notfound)
@@ -160,8 +164,9 @@ if($usage_mode == 'get caller id')
 		}
 		else
 		{
-			$pattern = "/<span class=\"name\"><a href=\".*\">(.*)<\/a><\/span>/";         //working Jun 19, 2012 for single and multiple residential results
-			preg_match($pattern, $value, $match);
+			// need another pattern here to check for a residential name
+			$pattern = "/<span class=\"listingTitle\">(.*)<\/span><\/a><\/h3>/";    // business name only
+                        preg_match($pattern, $value, $match);
 			if(isset($match[1]) && strlen($match[1])){
 				$name = trim(strip_tags($match[1]));
 			}

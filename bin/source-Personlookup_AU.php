@@ -1,8 +1,9 @@
 <?php
 //this file is designed to be used as an include that is part of a loop.
-//If a valid match is found, it should give $caller_id a value
+//If a valid match is found, it will give $caller_id a value
 //available variables for use are: $thenumber
 //retreive website contents using get_url_contents($url);
+//last update: May 28, 2012
 
 //configuration / display parameters
 //The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
@@ -19,7 +20,8 @@ if($usage_mode == 'get caller id')
 		print "Searching personlookup.com.au ... ";
 	}
 	
-	// Validate number
+	// Validate number - breaking the $thenumber into $num1, $num2 and $numb3 is no longer requiried for this site
+	// but keeping the code here in case it needed in the future
 	if($match = match_pattern("0[2356789]XXXXXXXX",$thenumber)){
 		// Land line
 		$num1 = substr($thenumber,0,2);
@@ -48,15 +50,19 @@ if($usage_mode == 'get caller id')
 	else
 	{
 		// Search personlookup.com.au
-		$url = "http://personlookup.com.au/browse.aspx?type=search&supplied=number&value=".urlencode($fullnum)."&state=all";
+//		$url = "http://personlookup.com.au/browse.aspx?type=search&supplied=number&value=".urlencode($fullnum)."&state=all";  	// good as of Dec 2010
+		$url = "http://personlookup.com.au/people?utf8=%E2%9C%93&name=&page=1&number=".$thenumber."&state=";				// good as of May 2012
 		$value = get_url_contents($url);
 
 		$name = "";
 
-		$pattern = "/<div class=\"col\">(.+)<\/div>[^<]+<div class=\"col\">[^<]+<\/div>[^<]+<div class=\"col\">.*".$num1.".* ".$num2." ".$num3."<\/div>/";
-		preg_match($pattern, $value, $match);
-		if(isset($match[1])){
-			$name = trim(strip_tags($match[1]));
+		//  Define the regex patten to search for
+//		$pattern = "/<div class=\"col\">(.+)<\/div>[^<]+<div class=\"col\">[^<]+<\/div>[^<]+<div class=\"col\">.*".$num1.".* ".$num2." ".$num3."<\/div>/";   //good as of Dec 2010
+		$pattern = "/<div class=\"col\">(.+)<\/div>/";    //working May 28, 2012  picks up several matches, ignores the first 3 and uses 4th
+
+		preg_match_all($pattern, $value, $match);
+		if(isset($match[0][3])){
+			$name = trim(strip_tags($match[0][3]));
 		}
 
 		// If we found a match, return it
@@ -70,4 +76,3 @@ if($usage_mode == 'get caller id')
 		}
 	}
 }
-?>

@@ -3,11 +3,11 @@
 //If a valid match is found, it will give $caller_id a value
 //available variables for use are: $thenumber
 //retreive website contents using get_url_contents($url);
-//Revised November 23, 2011
+//Revised June 19, 2012
 
 //configuration / display parameters
 //The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
-$source_desc = "http://www.canpages.ca - 	These listings include business and residential data for Canada.<br><br>This data source requires Superfecta Module version 2.2.1 or higher.";
+$source_desc = "http://www.canpages.ca - 	These listings include business data for Canada.<br><br>This data source requires Superfecta Module version 2.2.1 or higher.";
 
 
 //run this if the script is running in the "get caller id" usage mode.
@@ -99,13 +99,13 @@ if($usage_mode == 'get caller id')
 	else
 	{
 		// Set the url we're searching for
-		$url="http://www.canpages.ca/rl/index.jsp?fi=Search&lang=0&val=$thenumber";
+		$url="http://www.canpages.ca/list.jsp?na=".$npa."-".$nxx."-".$station."&ct=b2n+1x6";  //working June 19,2012
 		$value = get_url_contents($url);
 
 		// Patterns to search for
 		$regexp = array(
-			"/class=\"header_listing\">(.+)<\/a>/", // Residential match
-			"/style=\"font-size: 13px\">(.+)<\/a>/", // Business match
+			"/name : \"(.*?)\",/i", // Business match working June 19, 2011
+			
 		);
 
 		// By default, there is no match
@@ -123,23 +123,7 @@ if($usage_mode == 'get caller id')
 		// If we found a match, return it
 		if(strlen($name) > 1)
 		{
-			if($pattern == "/style=\"font-size: 13px\">(.+)<\/a>/")
-			{
-				$caller_id = $name;
-			}
-			else // we are testing the residential result further
-			{
-				$pattern = "/res\/".$thenumber."\/(.+)\//";
-				preg_match($pattern, $value, $match);
-				if(isset($match[1]))
-				{
-					$caller_id = $name;
-				}
-				else if($debug)
-				{
-					print "not found<br>\n";
-				}
-			}
+				$caller_id = $name;			
 		}
 		else if($debug)
 		{

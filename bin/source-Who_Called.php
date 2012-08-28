@@ -14,8 +14,8 @@ $source_param['Password']['desc'] = 'Your user account Password on the whocalled
 $source_param['Password']['type'] = 'password';
 $source_param['Get_Caller_ID_Name']['desc'] = 'Use whocalled.us for caller id name lookup.';
 $source_param['Get_Caller_ID_Name']['type'] = 'checkbox';
-$source_param['Report_Back']['desc'] = 'If a the caller has been flagged as SPAM by the successful CID scheme, provide it back to Who Called for their database. All submissions back to this source are considered SPAMers.';
-$source_param['Report_Back']['type'] = 'checkbox';
+// $source_param['Report_Back']['desc'] = 'If a the caller has been flagged as SPAM by the successful CID scheme, provide it back to Who Called for their database. All submissions back to this source are considered SPAMers.';
+// $source_param['Report_Back']['type'] = 'checkbox';
 $source_param['Get_SPAM_Score']['desc'] = 'Use whocalled.us for spam scoring.';
 $source_param['Get_SPAM_Score']['type'] = 'checkbox';
 $source_param['SPAM_Threshold']['desc'] = 'Specify the listings required to mark a call as spam.';
@@ -222,6 +222,8 @@ else
 }
 if($usage_mode == 'post processing')
 {
+/***** Disabling Report back 
+
 //	return the value back to Who Called if the user has enabled it and the result didn't come from cache. This will truncate the string to 15 characters
 
 //		if($debug)
@@ -261,5 +263,7 @@ if($usage_mode == 'post processing')
 			}
 		}
 	}
+**** end of report back *****/	
+	
 }
 ?> 

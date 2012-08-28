@@ -1,8 +1,9 @@
 <?php
 //this file is designed to be used as an include that is part of a loop.
-//If a valid match is found, it should give $caller_id a value
+//If a valid match is found, it will give $caller_id a value
 //available variables for use are: $thenumber
 //retreive website contents using get_url_contents($url);
+// last update: Aug 28, 2012
 
 //configuration / display parameters
 //The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
@@ -247,7 +248,7 @@ if($usage_mode == 'get caller id')
 			case "DK":
 			case "AU":
 			case "DE" :
-				preg_match_all('/<span class="fn org">(.*)<\/span><\/a>/U', $sresult, $sname);
+				preg_match_all('/<span class="fn">(.*)<\/span><\/a>/U', $sresult, $sname);
 				break;
 	
 			default :
@@ -278,4 +279,3 @@ if($usage_mode == 'get caller id')
 		print "country source not found<br>\n";
 	}
 }
-?>

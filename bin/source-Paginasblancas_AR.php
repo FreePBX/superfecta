@@ -1,11 +1,14 @@
 <?php
 //this file is designed to be used as an include that is part of a loop.
-//If a valid match is found, it should give $caller_id a value
+//If a valid match is found, it will give $caller_id a value
 //available variables for use are: $thenumber
 //retreive website contents using get_url_contents($url);
+
+// Last updated May 24, 2012
+
 //configuration / display parameters
 //The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
-$source_desc = "Searches Argentina http://www.paginasblancas.com.ar/ <br>CID must include area code with the leading 0.<br><br>This data source requires Superfecta Module version 2.2.4 or higher.";
+$source_desc = "Searches Argentina http://www.paginasblancas.com.ar/<br><br>This data source requires Superfecta Module version 2.2.4 or higher.";
 
 //run this if the script is running in the "get caller id" usage mode.
 if($usage_mode == 'get caller id')
@@ -13,16 +16,14 @@ if($usage_mode == 'get caller id')
 	//  Initialize variables for use in this lookup source code
 	$number_error = false;
 	$name = "";
-
-	// strip non-digits, probably not necessary
-	$thenumber = preg_replace("/\D/","",$thenumber);
+        $notfound = false;
 
 	if($debug)
 	{
 		print "Searching http://www.paginasblancas.com.ar/ ... ";
 	}
 
-	//  All Argentina area codes must be listed in this arrary - taken from http://www.cnc.gov.ar/infotecnica/numeracion/indicativosinter.asp on December 17, 2010
+	//  Full list of Argentina area codes - taken from http://www.cnc.gov.ar/infotecnica/numeracion/indicativosinter.asp on December 17, 2010
 	$npalist = array(
 		"011","0220","02202","0221","02221","02223","02224","02225","02226","02227","02229",
 		"0223","02241","02242","02243","02244","02245","02246","02252","02254","02255","02257",
@@ -52,74 +53,49 @@ if($usage_mode == 'get caller id')
 		"03496","03497","03857","03858","03861","03844","03845","03846","0385","03854","03855",
 		"03856","03841","03843","02964","02901","0381","03862","03863","03865","03867","03869",
 		"03894","03891","03892",	);
-	
+
+/*  NPA Check disabled May 24, 2012 because NPA list is out of date
 	// Check for supported npa
 	$validnpa = cisf_find_area($npalist, $thenumber);
-	
 	if($validnpa===false)
 	{
 		$number_error = true;
 	}
-	else
-	{
-		//  Website requires phone number in URL to be split in specific fashion which is what the following lines are for
-		$areacode = $validnpa['area_code'];
-		$subscriber = $validnpa['number'];
+NPA Check disabled May 24, 2012 because NPA list is out of date */
 
-		// Separate remaining digits into 2-4 or 3-4 or 4-4
-		if (strlen($subscriber) == 6)
+	if (!$number_error)
 		{
-			$number2 = substr ($subscriber,0,2);
-			$number3 = substr ($subscriber,2,4);
-		}
-		else if (strlen($subscriber) == 7)
-		{
-			$number2 = substr ($subscriber,0,3);
-			$number3 = substr ($subscriber,3,4);
-		}
-		else if (strlen($subscriber) == 8)
-		{
-			$number2 = substr ($subscriber,0,4);
-			$number3 = substr ($subscriber,4,4);
-		}
-		else
-		{
-			$number_error = "true";
-		}
-		
-
-		if (!$number_error)
-		{
-			$url="http://www.paginasblancas.com.ar/busqueda-telefono/argentina/".$areacode."-".$number2."-".$number3;
+			$url="http://www.paginasblancas.com.ar/Telefono/".$thenumber;
 			$value = get_url_contents($url);
 			$notfound = strpos($value, "Su búsqueda no produjo ningún resultado");
 			$notfound = ($notfound < 1) ? strpos($value, "Su búsqueda no produjo ningún resultado") : $notfound;
-		
+
 			if($notfound)
 			{
 				$name = "";
 			}
-			else if ((strpos($value, '<TITLE>PaginasAmarillas.com.ar - Telefonos</TITLE>')) > 0)
+			else
 			{
-				$begin = strpos($value, ">", strpos($value, '<H2 class="alta">')) + 1;
+				$begin = strpos($value, ">", strpos($value, 'advertise-name')) + 1;
 				$end = strpos($value, "<", $begin);
 				$name = trim(substr($value, $begin, $end-$begin));
+
 			}
-		
+
 		}
 
 
 		if(strlen($name) > 1)
 		{
 			$caller_id = trim(strip_tags($name));
-			
+
 		}
 		else if($debug)
 		{
 			print "not found<br>\n";
 		}
-			
-	}
+
+
 
 	if(($number_error) and ($debug))
 	{
@@ -127,4 +103,3 @@ if($usage_mode == 'get caller id')
 	}
 
 }
-?>
