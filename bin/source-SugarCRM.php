@@ -72,7 +72,7 @@ if($usage_mode == 'get caller id')
 	}
 	
 	// search also users, if no result from accounts
-	if($run_param['Search_Users'] == "on" && strlen($wresult_caller_name) == 0)
+	if($run_param['Search_Users'] == "on" && strlen($wresult_caller_name) == '')
 	{
 		$wquery_string = "SELECT * FROM users WHERE deleted = '0' AND (RIGHT(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(users.phone_work,' ',''),'+',''),'-',''),'(',''),')','')," . $run_param['Filter_Length'] . ") LIKE '" . $wquery_input . "' OR RIGHT(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(users.phone_mobile,' ',''),'+',''),'-',''),'(',''),')','')," . $run_param['Filter_Length'] . ") LIKE '". $wquery_input ."'  OR RIGHT(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(users.phone_home,' ',''),'+',''),'-',''),'(',''),')','')," . $run_param['Filter_Length'] . ") LIKE '". $wquery_input ."' OR RIGHT(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(users.phone_other,' ',''),'+',''),'-',''),'(',''),')','')," . $run_param['Filter_Length'] . ") LIKE '" . $wquery_input . "' OR RIGHT(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(users.phone_fax,' ',''),'+',''),'-',''),'(',''),')','')," . $run_param['Filter_Length'] . ") LIKE '" . $wquery_input . "') LIMIT 1";
 		$wquery_result = mysql_query($wquery_string) or die("SugarCRM users query failed" . mysql_error());
@@ -84,7 +84,7 @@ if($usage_mode == 'get caller id')
 	} 
 	
 	// search also contacts, if no results from previous searches
-	if($run_param['Search_Contacts'] == "on" && strlen($wresult_caller_name) == 0)
+	if($run_param['Search_Contacts'] == "on" && strlen($wresult_caller_name) == '')
 	{
 		$wquery_string = "SELECT * FROM contacts WHERE deleted = '0' AND (RIGHT(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(contacts.phone_work,' ',''),'+',''),'-',''),'(',''),')','')," . $run_param['Filter_Length'] . ") LIKE '" . $wquery_input . "' OR RIGHT(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(contacts.phone_mobile,' ',''),'+',''),'-',''),'(',''),')','')," . $run_param['Filter_Length'] . ") LIKE '". $wquery_input ."'  OR RIGHT(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(contacts.phone_home,' ',''),'+',''),'-',''),'(',''),')','')," . $run_param['Filter_Length'] . ") LIKE '" . $wquery_input . "' OR RIGHT(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(contacts.phone_other,' ',''),'+',''),'-',''),'(',''),')','')," . $run_param['Filter_Length'] . ") LIKE '" . $wquery_input . "' OR RIGHT(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(contacts.phone_fax,' ',''),'+',''),'-',''),'(',''),')','')," . $run_param['Filter_Length'] . ") LIKE '" . $wquery_input . "') LIMIT 1";
 		$wquery_result = mysql_query($wquery_string) or die("SugarCRM contacts query failed" . mysql_error());
@@ -96,7 +96,7 @@ if($usage_mode == 'get caller id')
 	}
 
 	// search also leads if no results from previous searches
-	if($run_param['Search_Leads'] == "on" && strlen($wresult_caller_name) == 0)
+	if($run_param['Search_Leads'] == "on" && strlen($wresult_caller_name) == '')
 	{
 		$wquery_string = "SELECT * FROM leads WHERE deleted = '0' AND (RIGHT(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(leads.phone_work,' ',''),'+',''),'-',''),'(',''),')','')," . $run_param['Filter_Length'] . ") LIKE '" . $wquery_input . "' OR RIGHT(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(leads.phone_mobile,' ',''),'+',''),'-',''),'(',''),')','')," . $run_param['Filter_Length'] . ") LIKE '". $wquery_input ."'  OR RIGHT(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(leads.phone_home,' ',''),'+',''),'-',''),'(',''),')','')," . $run_param['Filter_Length'] . ") LIKE '" . $wquery_input . "' OR RIGHT(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(leads.phone_other,' ',''),'+',''),'-',''),'(',''),')','')," . $run_param['Filter_Length'] . ") LIKE '" . $wquery_input . "' OR RIGHT(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(leads.phone_fax,' ',''),'+',''),'-',''),'(',''),')','')," . $run_param['Filter_Length'] . ") LIKE '" . $wquery_input . "') LIMIT 1";
 		$wquery_result = mysql_query($wquery_string) or die("SugarCRM contacts query failed" . mysql_error());
