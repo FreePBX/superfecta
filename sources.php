@@ -8,7 +8,7 @@
 #############################################################################
 
 require("config.php");
-define("UPDATE_SERVER", "https://raw.github.com/POSSA/Caller-ID-Superfecta/master/bin/");
+define("UPDATE_SERVER", "https://raw.github.com/POSSA/Caller-ID-Superfecta/v2.2.5.x/bin/");
 
 $selected_source = (isset($_REQUEST['selected_source'])) ? $_REQUEST['selected_source'] : '';
 $src_up = '';
@@ -562,7 +562,7 @@ function html2text($badStr)
 	$goodStr = preg_replace( "/<(h|div|p)[^>]*>/i", "\n\n", $goodStr );
 	$goodStr = preg_replace( "/<sup[^>]*>/i", '^', $goodStr );
 	$goodStr = preg_replace( "/<(ul|ol|br|dl|dt|table|caption|\/textarea|tr[^>]*>\s*<(td|th))[^>]*>/i", "\n", $goodStr );
-	$goodStr = preg_replace( "/<li[^>]*>/i", "\n· ", $goodStr );
+	$goodStr = preg_replace( "/<li[^>]*>/i", "\nï¿½ ", $goodStr );
 	$goodStr = preg_replace( "/<dd[^>]*>/i", "\n\t", $goodStr );
 	$goodStr = preg_replace( "/<(th|td)[^>]*>/i", "\t", $goodStr );
 	$goodStr = preg_replace( "/<a[^>]* href=(\"((?!\"|#|javascript:)[^\"#]*)(\"|#)|'((?!'|#|javascript:)[^'#]*)('|#)|((?!'|\"|>|#|javascript:)[^#\"'> ]*))[^>]*>/i", "[LINK: $2$4$6] ", $goodStr );
