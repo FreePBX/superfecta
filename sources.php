@@ -8,7 +8,7 @@
 #############################################################################
 
 require("config.php");
-define("UPDATE_SERVER", "https://raw.github.com/tm1000/Caller-ID-Superfecta/v2.2.5.x/bin/");
+define("UPDATE_SERVER", "https://raw.github.com/POSSA/Caller-ID-Superfecta/master/bin/");
 
 $selected_source = (isset($_REQUEST['selected_source'])) ? $_REQUEST['selected_source'] : '';
 $src_up = '';
