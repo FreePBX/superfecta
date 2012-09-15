@@ -1,8 +1,9 @@
 <?php
 //this file is designed to be used as an include that is part of a loop.
-//If a valid match is found, it should give $caller_id a value
+//If a valid match is found, it will give $caller_id a value
 //available variables for use are: $thenumber
 //retreive website contents using get_url_contents($url);
+//last edited Sept 15, 2012 by lgaetz 
 
 //configuration / display parameters
 //The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
@@ -15,10 +16,11 @@ if($usage_mode == 'get caller id')
 	$validnpaCAN = false;
 	$TFnpa = false;
 	$validnpaUS = false;
+	$name = "";
 
 	if($debug)
 	{
-		print "Searching White Pages ... ";
+		print "Searching www.whitepages.com ... ";
 	}
 	
 	//check for the correct 11 digits in US/CAN phone numbers in international format.
@@ -142,17 +144,42 @@ if($usage_mode == 'get caller id')
 	}
 	else
 	{
-		$name = "";
-		$url="http://www.whitepages.com/business/reverse_phone?phone_number=${thenumber}";
+
+		// at this point $thenumber is always 10 digits.  It needs to be broken up for url
+		$npa = substr($thenumber,0,3);
+		$exch = substr($thenumber,3,3);
+		$lcl = substr($thenumber,6,4);
+		
+		$url="http://www.whitepages.com/phone/1-$npa-$exch-$lcl";    //working for residential sept 15, 2012
 		$value = get_url_contents($url);
-		$pattern = <<<EOD
+		
+		// at this point $value can be either a list of valid residential results or a 
+		// if it is a business number a redirect to another url
+		$pattern = "/<html><body>You are being <a href=\"(.*?)\">redirected<\/a>.<\/body><\/html>/";  //pattern for business redirect working Sept 15,2012
+		preg_match($pattern, $value, $match);
+		
+		// check for redirect url, and if present load that and search for the business pattern
+		if(isset($match[1]) && strlen($match[1])){
+			$url = $match[1];
+			$value = get_url_contents($url);
+			$pattern = <<<EOD
 /<div class=\"bs_result(?: mapped_result \" id=\"result_1|)?\">\s*<table class=\"result_container.*\"><tr>\s*<td class=\"result_content_container\">\s*<table>\s*<tr>\s*<td class=\"tagline_container\">\s*<p class=\"result_name\">\s*<a.*\">(.*)<\/a>/
 EOD;
-		preg_match($pattern, $value, $match);
-		if(isset($match[1]) && strlen($match[1])){
-			$name = trim(strip_tags($match[1]));
+			preg_match($pattern, $value, $match);
+			if(isset($match[1]) && strlen($match[1])){
+				$name = trim(strip_tags($match[1]));
+			}
+			
 		}
-		
+		else {
+			// if no redirect url then we know it is a list of res results, search with residential pattern
+			$pattern = "/\/name\/(.*?)\//";            //res pattern, working Sept 15, 2012  returns a name with spaces converted to hyphens
+			preg_match($pattern, $value, $match);
+			if(isset($match[1]) && strlen($match[1])){
+				$name = trim(strip_tags($match[1]));
+				$name = str_replace("-"," ",$name);   //replace hyphens with spaces
+			}
+		}
 		if(strlen($name) > 1)
 		{
 			$caller_id = $name;
@@ -163,4 +190,4 @@ EOD;
 		}
 	}
 }
-?>
+
