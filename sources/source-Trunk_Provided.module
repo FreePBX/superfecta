@@ -21,32 +21,12 @@ class Trunk_Provided extends superfecta_base {
         }
         $provided_caller_id = '';
 
-        //get the caller id name already set for this call using the PHP Asterisk Manager
-        //first get a list of the active channels and return the first one that has a caller id value set.
-        $value = $this->astman->command('core show channels concise');
-        $chan_array = preg_split("/\n/", $value['data']);
-        foreach ($chan_array as $val) {
-            $this_chan_array = explode("!", $val);
-            if (isset($this_chan_array[7])) {
-                if ($this->thenumber_orig == $this_chan_array[7]) {
-                    $value = $this->astman->command('core show channel ' . $this_chan_array[0]);
-                    $this_array = preg_split("/\n/", $value['data']);
-                    foreach ($this_array as $val2) {
-                        if (strpos($val2, 'Caller ID Name: ') !== false) {
-                            $provided_caller_id = trim(str_replace('Caller ID Name: ', '', $val2));
-                            break;
-                        }
-                    }
+require('/var/lib/asterisk/agi-bin/phpagi.php');
+$agi = new AGI();
+	$provided_caller_id = $agi->request['agi_calleridname'];
+	$thenumber_orig = $agi->request['agi_callerid'];
 
-                    //break out if the value is set.
-                    if ($provided_caller_id != '') {
-                        break;
-                    }
-                }
-            }
-        }
-
-        if ($provided_caller_id == $this->thenumber_orig) {
+        if ($provided_caller_id == $thenumber_orig) {
             $provided_caller_id = '';
             $this->DebugPrint("CID name is the same as CID number");
         }
