@@ -2,9 +2,9 @@
 
 class Who_Called extends superfecta_base {
 
-    public static $description = "http://whocalled.us - These listings are provided by other users of the whocalled service. This service requires authentication - which you configure by clicking on this datasource. <br>This data source requires Superfecta Module version 2.2.1 or higher.";
-    public static $version_requirement = "3.0";
-    public static $source_param = array(
+    public $description = "http://whocalled.us - These listings are provided by other users of the whocalled service. This service requires authentication - which you configure by clicking on this datasource. <br>This data source requires Superfecta Module version 2.2.1 or higher.";
+    public $version_requirement = "3.0";
+    public $source_param = array(
         'Username' => array(
             'description' => 'Your user account Login on the whocalled.us web site.',
             'type' => 'text'

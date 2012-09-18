@@ -2,8 +2,8 @@
 
 class Say_No_To_0870_UK extends superfecta_base {
 
-    public static $description = "http://www.saynoto0870.com - 	These listings include Non-Geographical Alternative Business Telephone Numbers for the UK.<br><br>";
-    public static $version_requirement = "3.0";
+    public $description = "http://www.saynoto0870.com - 	These listings include Non-Geographical Alternative Business Telephone Numbers for the UK.<br><br>";
+    public $version_requirement = "3.0";
 
     function get_caller_id($thenumber, $run_param=array()) {
 

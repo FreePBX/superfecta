@@ -2,9 +2,9 @@
 
 class PhoneLookup_UK extends superfecta_base {
 
-    public static $description = "http://www.ukphonelookup.co.uk - A datasource devoted to identifying telemarketers. These listings are provided by other users of this service.";
-    public static $version_requirement = "3.0";
-    public static $source_param = array(
+    public $description = "http://www.ukphonelookup.co.uk - A datasource devoted to identifying telemarketers. These listings are provided by other users of this service.";
+    public $version_requirement = "3.0";
+    public $source_param = array(
         'SPAM_Threshold' => array(
             'description' => 'Specify the # of listings required to mark a call as spam.',
             'type' => 'number',

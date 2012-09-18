@@ -2,9 +2,9 @@
 
 class Send_to_Dreambox extends superfecta_base {
 
-    public static $description = "This source will send the number and the Caller ID to a dreambox.<br>Enter the URL to the destination dreambox in the format `http://url:port`.<br>This datasource should be one of the last data sources on your list, as it does not provide any data of its own, and can only send what information has been collected before it is run.";
-    public static $version_requirement = "3.0";
-    public static $source_param = array(
+    public $description = "This source will send the number and the Caller ID to a dreambox.<br>Enter the URL to the destination dreambox in the format `http://url:port`.<br>This datasource should be one of the last data sources on your list, as it does not provide any data of its own, and can only send what information has been collected before it is run.";
+    public $version_requirement = "3.0";
+    public $source_param = array(
         'URL_address' => array(
             'description' => 'Specify the URL:Port to the dreambox installation. (Example: http://script.somewhere.com:80)',
             'type' => 'text',

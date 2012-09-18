@@ -2,8 +2,8 @@
 
 class PaginasAmarillas_DO extends superfecta_base {
 
-    public static $description = "http://paginasamarillas.com.do - Business listings for the Dominican Republic";
-    public static $version_requirement = "3.0";
+    public $description = "http://paginasamarillas.com.do - Business listings for the Dominican Republic";
+    public $version_requirement = "3.0";
 
     function get_caller_id($thenumber, $run_param=array()) {
 

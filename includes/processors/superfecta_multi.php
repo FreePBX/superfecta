@@ -2,8 +2,8 @@
 
 class superfecta_multi extends superfecta_base {
 
-    public static $name = 'Multi';
-    public static $description = 'Multifecta, runs all sources at the same time';
+    public $name = 'Multi';
+    public $description = 'Multifecta, runs all sources at the same time';
     public $type = 'MULTI';
 
     function __construct($options) {

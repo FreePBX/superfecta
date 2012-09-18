@@ -2,9 +2,9 @@
 
 class Send_to_Soundbridge extends superfecta_base {
 
-    public static $description = "This source will send the number and the Caller ID to a Roku Soundbridge.<br>This data source requires Superfecta Module version 3.0 or higher.";
-    public static $version_requirement = "3.0";
-    public static $source_param = array(
+    public $description = "This source will send the number and the Caller ID to a Roku Soundbridge.<br>This data source requires Superfecta Module version 3.0 or higher.";
+    public $version_requirement = "3.0";
+    public $source_param = array(
         'Server_address' => array(
             'description' => 'Specify the Soundbridge IP address.',
             'type' => 'text',

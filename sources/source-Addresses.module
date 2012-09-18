@@ -2,8 +2,8 @@
 
 class Addresses extends superfecta_base {
 
-    public static $description = "http://phonenumbers.addresses.com - This will return only residential listings, business listings will not be returned.";
-    public static $version_requirement = "3.0";
+    public $description = "http://phonenumbers.addresses.com - This will return only residential listings, business listings will not be returned.";
+    public $version_requirement = "3.0";
 
     function get_caller_id($thenumber, $run_param=array()) {
         $caller_id = null;

@@ -159,12 +159,14 @@ if ($scheme != "") {
         $name = explode("_", basename($filename));
         require_once($filename);
         $class_name = basename($filename, '.php');
+        $class_class = new $class_name(); //PHP < 5.3
         $processors_list[] = array(
-            "name" => strtoupper($class_name::$name),
-            "description" => $class_name::$description,
+            "name" => strtoupper($class_class->name),
+            "description" => $class_class->description,
             "filename" => basename($filename),
             "selected" => ($conf['processor'] == basename($filename)) ? TRUE : FALSE,
         );
+        unset($class_class);
     }
 
     //get a list of the files that are on this local server
