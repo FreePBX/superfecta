@@ -2,8 +2,8 @@
 
 class Paginasblancas_AR extends superfecta_base {
 
-    public static $description = "Searches Argentina http://www.paginasblancas.com.ar/ <br>CID must include area code with the leading 0.";
-    public static $version_requirement = "3.0";
+    public $description = "Searches Argentina http://www.paginasblancas.com.ar/ <br>CID must include area code with the leading 0.";
+    public $version_requirement = "3.0";
 
     function get_caller_id($thenumber, $run_param=array()) {
 

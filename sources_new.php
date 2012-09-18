@@ -25,7 +25,9 @@ foreach (glob(ROOT_PATH . "sources/source-*.module") as $filename) {
         preg_match('/source-(.*)\.module/i', $filename, $matches);
         $this_source_name = $matches[1];
 
-        if ($major_version >= $this_source_name::$version_requirement) {
+        $this_source_class = new $this_source_name();
+        
+        if ($major_version >= $this_source_class->version_requirement) {
 
             $j = !in_array($this_source_name, $enabled_sources) ? ($j = $i + 200) : ($j = $i);
             if (in_array($this_source_name, $enabled_sources)) {
@@ -33,6 +35,7 @@ foreach (glob(ROOT_PATH . "sources/source-*.module") as $filename) {
             } else {
                 $j = $i + 200;
             }
+            
             $tpl_sources[$j]['showup'] = FALSE;
             $tpl_sources[$j]['showdown'] = FALSE;
             $tpl_sources[$j]['showupdate'] = FALSE;
@@ -40,9 +43,9 @@ foreach (glob(ROOT_PATH . "sources/source-*.module") as $filename) {
             $tpl_sources[$j]['source_name'] = $this_source_name;
             $tpl_sources[$j]['enabled'] = in_array($this_source_name, $enabled_sources) ? TRUE : FALSE;
             $tpl_sources[$j]['status'] = in_array($this_source_name, $enabled_sources) ? 'enabled' : 'disabled';
-            $tpl_sources[$j]['description'] = isset($this_source_name::$description) ? preg_replace('/(<a>|<\/a>)/i', '', $this_source_name::$description) : 'N/A';
-            $tpl_sources[$j]['show_link'] = isset($this_source_name::$source_param) ? TRUE : FALSE;
-
+            $tpl_sources[$j]['description'] = isset($this_source_class->description) ? preg_replace('/(<a>|<\/a>)/i', '', $this_source_class->description) : 'N/A';
+            $tpl_sources[$j]['show_link'] = isset($this_source_class->source_param) ? TRUE : FALSE;
+            
             //Simplify please
             if (in_array($this_source_name, $enabled_sources)) {
                 if ($enabled_sources[0] != $this_source_name) {
@@ -53,9 +56,9 @@ foreach (glob(ROOT_PATH . "sources/source-*.module") as $filename) {
                     $tpl_sources[$j]['showdown'] = TRUE;
                 }
             }
-
             $i++;
         }
+        unset($this_source_class);
     }
 }
 

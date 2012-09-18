@@ -2,8 +2,8 @@
 
 class Yellow_Pages extends superfecta_base {
 
-    public static $description = "http://yellowpages.addresses.com - This will return only business listings, it will not return residential listings.";
-    public static $version_requirement = "3.0";
+    public $description = "http://yellowpages.addresses.com - This will return only business listings, it will not return residential listings.";
+    public $version_requirement = "3.0";
 
     function get_caller_id($thenumber, $run_param=array()) {
         $caller_id = null;

@@ -2,9 +2,9 @@
 
 class Infobel extends superfecta_base {
 
-    public static $description = "http://www.infobel.com - This source includes business and residential data for Belgium, France, Luxembourg, Denmark, Austria, and Germany";
-    public static $version_requirement = "3.0";
-    public static $source_param = array(
+    public $description = "http://www.infobel.com - This source includes business and residential data for Belgium, France, Luxembourg, Denmark, Austria, and Germany";
+    public $version_requirement = "3.0";
+    public $source_param = array(
         'Default_Country' => array(
             'description' => 'Default Country to search if the number is not presented in the international format',
             'type' => 'text',
