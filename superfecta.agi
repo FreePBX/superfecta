@@ -3,7 +3,8 @@
         $base_dir = dirname(__FILE__);
 	require('/var/lib/asterisk/agi-bin/phpagi.php');
 	$agi = new AGI();
-        $agi->answer();
+        $agi->verbose("CID Superfecta is Answering the Channel");
+        $agi->answer(); //Is this needed? I forget. I think this helps to 'pause' the channel until we get valid information
 	$scheme_return = $agi->get_variable("CIDSFSCHEME");
 	if(($scheme_return['result']) && (trim($scheme_return['data']) != '')) {
 		$scheme = $scheme_return['data'];
@@ -15,15 +16,25 @@
         } else {
            $sn = explode("_",$scheme,2); 
         }
+        
+        $agi->verbose("CID Superfecta: Scheme is ".$sn[1]);
 	
 	$did = $agi->request['agi_extension'];
+        $agi->verbose("CID Superfecta: The DID passed from Asterisk is: ".$did);
 	$thenumber = $agi->request['agi_callerid'];
+        $agi->verbose("CID Superfecta: The number passed from Asterisk is: ".$thenumber);
 	chdir(dirname(__FILE__) . '/sources');
+        
+        $agi->verbose("CID Superfecta: Executing Scheme");
 	if($result = trim(shell_exec('/usr/bin/php ' . dirname(__FILE__) . '/includes/callerid.php -s '.$sn[1].' -n ' . $thenumber . ' -i '.$did))){
             $data = unserialize($result);
+            $agi->verbose("CID Superfecta: CID Determined to be: '".$data['cid']."'");
+            $agi->verbose("CID Superfecta: Attempting to set lookupcid");
             $agi->set_variable("lookupcid", $data['cid']);
             if(!empty($data['destination'])) {
+                $agi->verbose("CID Superfecta: Call destination detected!");
                 $parts = explode(",",$data['destination']);
+                $agi->verbose("CID Superfecta: Sending call to ". $data['destination']);
                 $agi->goto_dest($parts[0],$parts[1],$parts[2]);
             }
 	}
