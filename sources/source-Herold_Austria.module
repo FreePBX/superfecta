@@ -3,8 +3,8 @@
 //Created July 16,2011 by lgaetz
 class Herold_Austria extends superfecta_base {
 
-    public static $description = "http://www.herold.at/ - These listings include data for Austria.";
-    public static $version_requirement = "3.0";
+    public $description = "http://www.herold.at/ - These listings include data for Austria.";
+    public $version_requirement = "3.0";
 
     function get_caller_id($thenumber, $run_param=array()) {
         $this->DebugPrint("Searching http://www.herold.at/ ... ");

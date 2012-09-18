@@ -2,8 +2,8 @@
 
 class White_Pages extends superfecta_base {
 
-    public static $description = "http://www.whitepages.com - These listings will return both residential and business listings. Some Canada data available.";
-    public static $version_requirement = "3.0";
+    public $description = "http://www.whitepages.com - These listings will return both residential and business listings. Some Canada data available.";
+    public $version_requirement = "3.0";
 
     function get_caller_id($thenumber, $run_param=array()) {
         $caller_id = null;

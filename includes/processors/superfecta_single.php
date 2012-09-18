@@ -2,8 +2,8 @@
 
 class superfecta_single extends superfecta_base {
 
-    public static $name = 'Single';
-    public static $description = 'Runs all sources in specified order, like old superfecta';
+    public $name = 'Single';
+    public $description = 'Runs all sources in specified order, like old superfecta';
     public $type = 'SINGLE';
 
     function __construct($options) {

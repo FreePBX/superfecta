@@ -2,8 +2,8 @@
 
 class Truelocal_AU extends superfecta_base {
 
-    public static $description = "http://truelocal.com.au - These listings include business data for AU.";
-    public static $version_requirement = "3.0";
+    public $description = "http://truelocal.com.au - These listings include business data for AU.";
+    public $version_requirement = "3.0";
 
     function settings() {
         //configuration / display parameters

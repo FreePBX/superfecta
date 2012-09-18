@@ -26,9 +26,9 @@
 
 class VoIPCNAM extends superfecta_base {
 
-    public static $description = "http://www.voipcnam.com - This module provides lookups from the VoIPCNAM.com lookup service.";
-    public static $version_requirement = "3.0";
-    public static $source_param = array(
+    public $description = "http://www.voipcnam.com - This module provides lookups from the VoIPCNAM.com lookup service.";
+    public $version_requirement = "3.0";
+    public $source_param = array(
         'API_Key' => array(
             'description' => 'API Key REQUIRED. Get it from voipcnam.com.',
             'type' => 'text'

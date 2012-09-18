@@ -2,8 +2,8 @@
 
 class FreeCNAM extends superfecta_base {
 
-    public static $description = "http://www.freecnam.org This data source returns CNAM data listed at FreeCNAM.";
-    public static $version_requirement = "3.0";
+    public $description = "http://www.freecnam.org This data source returns CNAM data listed at FreeCNAM.";
+    public $version_requirement = "3.0";
 
     function get_caller_id($thenumber, $run_param=array()) {
 

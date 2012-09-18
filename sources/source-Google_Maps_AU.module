@@ -2,8 +2,8 @@
 
 class Google_Maps_AU extends superfecta_base {
 
-    public static $description = "http://maps.google.com.au - These listings include business data for Australia.<br><br>This data source requires Superfecta Module version 3.0 or higher.";
-    public static $version_requirement = "3.0";
+    public $description = "http://maps.google.com.au - These listings include business data for Australia.<br><br>This data source requires Superfecta Module version 3.0 or higher.";
+    public $version_requirement = "3.0";
 
     function get_caller_id($thenumber, $run_param=array()) {
 

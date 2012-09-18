@@ -2,8 +2,8 @@
 
 class CanPagesCA extends superfecta_base {
 
-    public static $description = "http://www.canpages.ca - 	These listings include business and residential data for Canada.";
-    public static $version_requirement = "3.0";
+    public $description = "http://www.canpages.ca - 	These listings include business and residential data for Canada.";
+    public $version_requirement = "3.0";
 
     function get_caller_id($thenumber, $run_param=array()) {
         $caller_id = null;

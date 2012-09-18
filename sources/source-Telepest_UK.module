@@ -2,9 +2,9 @@
 
 class Telepest_UK extends superfecta_base {
 
-    public static $description = "http://www.telepest.co.uk - A datasource devoted to identifying telemarketers. All information on this site is submitted by users. The operators of Telepest make no claims whatsoever regarding its accuracy or reliability.";
-    public static $version_requirement = "3.0";
-    public static $source_param = array(
+    public $description = "http://www.telepest.co.uk - A datasource devoted to identifying telemarketers. All information on this site is submitted by users. The operators of Telepest make no claims whatsoever regarding its accuracy or reliability.";
+    public $version_requirement = "3.0";
+    public $source_param = array(
         'Get_Caller_ID_Name' => array(
             'description' => 'Use Telepest.co.uk for caller id name lookup.',
             'type' => 'checkbox',
