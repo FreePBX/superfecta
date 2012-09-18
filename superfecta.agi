@@ -18,7 +18,7 @@
 	
 	$did = $agi->request['agi_extension'];
 	$thenumber = $agi->request['agi_callerid'];
-	chdir(dirname(__FILE__) . '/bin');
+	chdir(dirname(__FILE__) . '/sources');
 	if($result = trim(shell_exec('/usr/bin/php ' . dirname(__FILE__) . '/includes/callerid.php -s '.$sn[1].' -n ' . $thenumber . ' -i '.$did))){
             $data = unserialize($result);
             $agi->set_variable("lookupcid", $data['cid']);
