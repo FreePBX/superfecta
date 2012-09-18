@@ -3,9 +3,10 @@
 <div id="CIDSourcesList">
     <script language="javascript">
         $(document).ready(function() {
-            $('#superfecta_options').ajaxForm(function() { 
+            $('#superfecta_options').submit(function() { 
+                $(this).ajaxSubmit(); 
                 alert("Saved!");
-                return false; //This is for FreePBX <= 2.8
+                return false; 
             });
             $("#update_check").change(function() {
                 if ($(this).is (':checked'))    {
@@ -168,10 +169,11 @@
                 $.getJSON("config.php?quietmode=1&handler=file&module=superfecta&file=ajax.html.php&type=options&scheme={$scheme}&source="+parent_id, function(json) {
                     if(json.success && json.show) {
                         $('#options').fadeIn('slow').html(json.data);
-                        $('#form_options_'+parent_id).ajaxForm(function() { 
+                        $('#form_options_'+parent_id).submit(function() { 
+                            $(this).ajaxSubmit(); 
                             alert("Saved!");
-                            return false; //This is for FreePBX <= 2.8
-                        }); 
+                            return false; 
+                        });
                     }
                 });
             });
