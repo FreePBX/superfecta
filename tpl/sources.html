@@ -3,8 +3,10 @@
 <div id="CIDSourcesList">
     <script language="javascript">
         $(document).ready(function() {
-            $('#superfecta_options').ajaxForm(function() { 
-                alert("Saved!"); 
+            $('#superfecta_options').submit(function() { 
+                $(this).ajaxSubmit(); 
+                alert("Saved!");
+                return false; 
             });
             $("#update_check").change(function() {
                 if ($(this).is (':checked'))    {
@@ -63,6 +65,7 @@
                 scheme = 'ALL';
             }
             $('#superfecta_debug_display').html('<div id="debug" style="background-color: #E0E0E0; width:70%; margin-left:auto;margin-right:auto;"><img src="assets/superfecta/images/loading.gif" /></div>');
+            $.ajaxSetup({ cache: false });
             $.get('config.php?quietmode=1&handler=file&module=superfecta&file=callerid.html.php&scheme='+scheme+'&thenumber='+thenumber+'&debug='+debuglevel+'&thedid='+thedid, function(data) {
                 $('#superfecta_debug_display').html('<div id="debug" style="background-color: #E0E0E0; width:100%">'+data+'</div>');
             });
@@ -167,9 +170,11 @@
                 $.getJSON("config.php?quietmode=1&handler=file&module=superfecta&file=ajax.html.php&type=options&scheme={$scheme}&source="+parent_id, function(json) {
                     if(json.success && json.show) {
                         $('#options').fadeIn('slow').html(json.data);
-                        $('#form_options_'+parent_id).ajaxForm(function() { 
-                            alert("Saved!"); 
-                        }); 
+                        $('#form_options_'+parent_id).submit(function() { 
+                            $(this).ajaxSubmit(); 
+                            alert("Saved!");
+                            return false; 
+                        });
                     }
                 });
             });
