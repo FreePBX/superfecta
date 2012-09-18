@@ -4,7 +4,8 @@
     <script language="javascript">
         $(document).ready(function() {
             $('#superfecta_options').ajaxForm(function() { 
-                alert("Saved!"); 
+                alert("Saved!");
+                return false; //This is for FreePBX <= 2.8
             });
             $("#update_check").change(function() {
                 if ($(this).is (':checked'))    {
@@ -168,7 +169,8 @@
                     if(json.success && json.show) {
                         $('#options').fadeIn('slow').html(json.data);
                         $('#form_options_'+parent_id).ajaxForm(function() { 
-                            alert("Saved!"); 
+                            alert("Saved!");
+                            return false; //This is for FreePBX <= 2.8
                         }); 
                     }
                 });
