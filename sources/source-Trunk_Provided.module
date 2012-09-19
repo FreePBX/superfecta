@@ -1,5 +1,5 @@
 <?php
-
+// last edited Sept 18, 2012 by lgaetz
 class Trunk_Provided extends superfecta_base {
 
     public $description = "Locates the Caller ID Name provided by the trunk, and then decides based on a list of key words if the provided name should be used.";
@@ -21,8 +21,10 @@ class Trunk_Provided extends superfecta_base {
         }
         $provided_caller_id = '';
 
-require('/var/lib/asterisk/agi-bin/phpagi.php');
-$agi = new AGI();
+	// connect to phpagi 
+	require('/var/lib/asterisk/agi-bin/phpagi.php');
+	$agi = new AGI();
+	// the following two lines cause debug to hang 30 sec timeout for each request
 	$provided_caller_id = $agi->request['agi_calleridname'];
 	$thenumber_orig = $agi->request['agi_callerid'];
 
