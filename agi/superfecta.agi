@@ -1,0 +1,58 @@
+#!/usr/bin/php -q
+<?php
+$base_dir = dirname(dirname(__FILE__));
+require_once($base_dir . '/agi/phpagi.php');
+$agi = new AGI();
+$agi->verbose("CID Superfecta is Answering the Channel");
+$agi->answer(); //Is this needed? I forget. I think this helps to 'pause' the channel until we get valid information
+$scheme_return = $agi->get_variable("CIDSFSCHEME");
+
+if (($scheme_return['result']) && (trim(base64_decode($scheme_return['data'])) != '')) {
+    $scheme = base64_decode($scheme_return['data']);
+} else {
+    $scheme = 'base_Default';
+}
+
+if ($scheme == 'ALL|ALL') {
+    $sn[1] = 'ALL';
+} else {
+    $sn = explode("_", $scheme, 2);
+}
+
+//Remove leading +1-9 on numbers.
+$agi->request['agi_callerid'] = trim(preg_replace('/^\+[1-9]/', '', $agi->request['agi_callerid']));
+$agi->request['agi_calleridname'] = trim(preg_replace('/^\+[1-9]/', '', $agi->request['agi_calleridname']));
+
+
+$agi->verbose("CID Superfecta: Scheme is " . $sn[1]);
+
+$agi->verbose("CID Superfecta: The DID passed from Asterisk is: " . $agi->request['agi_extension']);
+$agi->verbose("CID Superfecta: The number passed from Asterisk is: " . $agi->request['agi_callerid']);
+$agi->verbose("CID Superfecta: The CID name passed from Asterisk is: " . $agi->request['agi_calleridname']);
+
+$trunk_info = base64_encode(serialize($agi->request));
+
+chdir($base_dir . '/sources'); //I don't think this is needed
+
+if (!preg_match('/\D/i', $agi->request['agi_callerid'])) {
+    $agi->verbose("CID Superfecta: Executing Scheme..");
+    //Uncomment below when debugging.
+    //$agi->verbose('CID Superfecta: EXEC SCRIPT: /usr/bin/php ' . $base_dir . '/includes/callerid.php -s ' . $sn[1] . ' -t ' . $trunk_info);
+    $result = trim(shell_exec('/usr/bin/php ' . $base_dir . '/includes/callerid.php -s ' . $sn[1] . ' -t ' . $trunk_info));
+    if ($result) {
+        $data = unserialize($result);
+        $agi->verbose("CID Superfecta: CID Determined to be: '" . trim($data['cid']) . "'");
+        $agi->verbose("CID Superfecta: Attempting to set lookupcid");
+        $agi->set_variable("lookupcid", trim($data['cid']));
+        $tmp = $agi->get_variable("lookupcid");
+        ($tmp['data'] == trim($data['cid'])) ? $agi->verbose("CID Superfecta: Success!") : $agi->verbose("CID Superfecta: Failure!");
+        if (!empty($data['destination'])) {
+            $agi->verbose("CID Superfecta: Call destination detected!");
+            $parts = explode(",", $data['destination']);
+            $agi->verbose("CID Superfecta: Sending call to " . $data['destination']);
+            $agi->goto_dest($parts[0], $parts[1], $parts[2]);
+        }
+    }
+} else {
+    $agi->verbose("CID Superfecta: Not a valid number");
+}

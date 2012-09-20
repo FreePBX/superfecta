@@ -19,15 +19,10 @@ class Trunk_Provided extends superfecta_base {
         foreach ($temp_array as $val) {
             $key_words[] = trim($val);
         }
-        $provided_caller_id = '';
 
-	// connect to phpagi 
-	require('/var/lib/asterisk/agi-bin/phpagi.php');
-	$agi = new AGI();
-	// the following two lines cause debug to hang 30 sec timeout for each request
-	$provided_caller_id = $agi->request['agi_calleridname'];
-	$thenumber_orig = $agi->request['agi_callerid'];
-
+	$provided_caller_id = $this->trunk_info['agi_calleridname'];
+	$thenumber_orig = $this->trunk_info['agi_callerid'];
+        
         if ($provided_caller_id == $thenumber_orig) {
             $provided_caller_id = '';
             $this->DebugPrint("CID name is the same as CID number");
