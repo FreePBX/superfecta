@@ -14,14 +14,14 @@ class superfecta_multi extends superfecta_base {
         $this->db = $options['db'];
         $this->amp_conf = $options['amp_conf'];
         $this->astman = $options['astman'];
-        $this->thenumber_orig = $options['original_number'];
         $this->scheme_param = $options['scheme_parameters'];
         $this->path_location = $options['path_location'];
         $this->multifecta_id = $options['multifecta_id'];
         $this->source = $options['source'];
+        $this->trunk_info = $options['trunk_info'];
         //Check if we are a multifecta child, if so, get our variables from our child record
         $this->multi_type = $this->multifecta_id ? 'CHILD' : 'PARENT';
-        
+
         if ($this->multi_type == "CHILD") {
             $query = "SELECT mf.superfecta_mf_id, mf.scheme, mf.cidnum, mf.extension, mf.debug, mfc.source
 					FROM superfecta_mf mf, superfecta_mf_child mfc
@@ -35,7 +35,7 @@ class superfecta_multi extends superfecta_base {
             if ($row = $res->fetchRow(DB_FETCHMODE_ASSOC)) {
 
                 $this->scheme = $row['scheme'];
-                $this->thenumber_orig = $row['cidnum'];
+                $this->trunk_info['agi_callerid'] = $row['cidnum'];
                 $this->DID = $row['extension'];
                 $this->multifecta_parent_id = $row['superfecta_mf_id'];
                 $this->single_source = $row['source'];
@@ -85,7 +85,7 @@ class superfecta_multi extends superfecta_base {
 			) VALUES (
 				" . $this->db->quoteSmart($multifecta_start_time) . ",
 				" . $this->db->quoteSmart($this->scheme) . ",
-				" . $this->db->quoteSmart($this->thenumber_orig) . ",
+				" . $this->db->quoteSmart($this->trunk_info['agi_callerid']) . ",
 				" . $this->db->quoteSmart('NULL') . ",
 				" . $this->db->quoteSmart('PREFIX') . ",
 				" . $this->db->quoteSmart(($this->isDebug()) ? '1' : '0') . "
@@ -125,11 +125,12 @@ class superfecta_multi extends superfecta_base {
                 $this->DebugDie("Unable to create child record: " . $res2->getMessage());
             }
             if ($superfecta_mf_child_id = (($this->amp_conf["AMPDBENGINE"] == "sqlite3") ? sqlite_last_insert_rowid($this->db->connection) : mysql_insert_id($this->db->connection))) {
+                $trunk_info = base64_encode(serialize($this->trunk_info));
                 if ($this->isDebug()) {
                     $this->DebugPrint("Spawning child " . $superfecta_mf_child_id . ":" . $data);
-                    exec('/usr/bin/php /var/www/html/admin/modules/superfecta/includes/callerid.php -s ' . $this->scheme_name . ' -n ' . $this->thenumber_orig . ' -d ' . $this->getDebug() . ' -m ' . $superfecta_mf_child_id . ' -r ' . $data . ' > log-' . $superfecta_mf_child_id . '.log 2>&1 &');
+                    exec('/usr/bin/php /var/www/html/admin/modules/superfecta/includes/callerid.php -s ' . $this->scheme_name . ' -d ' . $this->getDebug() . ' -m ' . $superfecta_mf_child_id . ' -t ' . $trunk_info . ' -r ' . $data . ' > log-' . $superfecta_mf_child_id . '.log 2>&1 &');
                 } else {
-                    exec('/usr/bin/php /var/www/html/admin/modules/superfecta/includes/callerid.php -s ' . $this->scheme_name . ' -n ' . $this->thenumber_orig . ' -m ' . $superfecta_mf_child_id . ' -r ' . $data . ' > /dev/null 2>&1 &');
+                    exec('/usr/bin/php /var/www/html/admin/modules/superfecta/includes/callerid.php -s ' . $this->scheme_name . ' -m ' . $superfecta_mf_child_id . ' -t ' . $trunk_info . ' -r ' . $data . ' > /dev/null 2>&1 &');
                 }
             }
             $multifecta_count++;
@@ -284,11 +285,10 @@ class superfecta_multi extends superfecta_base {
             $source_class->set_AmpConf($this->amp_conf);
             $source_class->set_DB($this->db);
             $source_class->set_AsteriskManager($this->astman);
-            $source_class->thenumber_orig = $this->thenumber_orig;
-            $source_class->set_thenumber($this->thenumber);
+            $source_class->set_TrunkInfo($this->trunk_info);
 
             if (method_exists($source_class, 'get_caller_id')) {
-                $caller_id = $source_class->get_caller_id($this->thenumber, $run_param);
+                $caller_id = $source_class->get_caller_id($this->trunk_info['agi_callerid'], $run_param);
                 $this->setSpam($source_class->isSpam());
                 $cache_found = $source_class->isCacheFound();
                 unset($source_class);
@@ -304,26 +304,20 @@ class superfecta_multi extends superfecta_base {
                 $end_time_whole = $this->mctime_float();
 
                 $multifecta_child_cname_time = $this->mctime_float();
-                $query = "UPDATE superfecta_mf_child
-						SET timestamp_cnam = " . $this->db->quoteSmart($multifecta_child_cname_time);
+                $query = "UPDATE superfecta_mf_child SET timestamp_cnam = " . $this->db->quoteSmart($multifecta_child_cname_time);
                 if ($caller_id) {
-                    $query .= ",
-							cnam = " . $this->db->quoteSmart(trim($this->caller_id_array[$this->multifecta_id]));
+                    $query .= ", cnam = " . $this->db->quoteSmart(trim($this->caller_id_array[$this->multifecta_id]));
                 }
                 if ($this->spam_text) {
-                    $query .= ",
-							spam_text = " . $this->db->quoteSmart($this->spam_text);
+                    $query .= ", spam_text = " . $this->db->quoteSmart($this->spam_text);
                 }
                 if ($this->isSpam()) {
-                    $query .= ",
-							spam = " . $this->db->quoteSmart($this->spam);
+                    $query .= ", spam = " . $this->db->quoteSmart($this->spam);
                 }
                 if ($cache_found) {
-                    $query .= ",
-							cached = 1";
+                    $query .= ", cached = 1";
                 }
-                $query .= ", timestamp_end = " . $end_time_whole . "
-					  	WHERE superfecta_mf_child_id = " . $this->db->quoteSmart($this->multifecta_id) . "
+                $query .= ", timestamp_end = " . $end_time_whole . " WHERE superfecta_mf_child_id = " . $this->db->quoteSmart($this->multifecta_id) . "
 						";
                 $res = $this->db->query($query);
                 if (DB::IsError($res)) {
@@ -354,7 +348,7 @@ class superfecta_multi extends superfecta_base {
                 $source_class->set_DB($this->db);
                 $source_class->setDebug($this->isDebug());
                 if (method_exists($source_class, 'post_processing')) {
-                    $source_class->post_processing($this->isCacheFound(), NULL, $caller_id, $run_param, $this->thenumber_orig);
+                    $source_class->post_processing($this->isCacheFound(), NULL, $caller_id, $run_param, $this->trunk_info['agi_callerid']);
                 } else {
                     print "Method 'post_processing' doesn't exist<br\>\n";
                 }

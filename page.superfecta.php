@@ -208,7 +208,7 @@ if ($scheme != "") {
     $supertpl->assign('spam_int', !empty($conf['spam_interceptor']) && ($conf['spam_interceptor'] == 'Y') ? TRUE : FALSE);
     $supertpl->assign('spam_threshold', $conf['SPAM_threshold']);
     $supertpl->assign('interceptor_select', drawselects($goto, 0, FALSE, FALSE));
-    include('sources_new.php');
+    include('sources.php');
 }
 $supertpl->assign('module_vers', $module_info['module']['version']);
 $supertpl->draw('footer');

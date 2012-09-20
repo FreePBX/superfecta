@@ -112,9 +112,9 @@ function superfecta_hookGet_config($engine) {
                         $exten = (empty($exten) ? "s" : $exten);
                         $exten = $exten . (empty($cidnum) ? "" : "/" . $cidnum); //if a CID num is defined, add it
 
-                        $ext->splice($context, $exten, 1, new ext_setvar('CIDSFSCHEME', $scheme));
+                        $ext->splice($context, $exten, 1, new ext_setvar('CIDSFSCHEME', base64_encode($scheme)));
                         $ext->splice($context, $exten, 2, new ext_setvar('CALLERID(name)', '${lookupcid}'));
-                        $ext->splice($context, $exten, 2, new ext_agi(dirname(__FILE__) . '/superfecta.agi'));
+                        $ext->splice($context, $exten, 2, new ext_agi(dirname(__FILE__) . '/agi/superfecta.agi'));
                     }
                 }
             }
