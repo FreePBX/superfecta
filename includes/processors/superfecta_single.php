@@ -14,9 +14,9 @@ class superfecta_single extends superfecta_base {
         $this->db = $options['db'];
         $this->amp_conf = $options['amp_conf'];
         $this->astman = $options['astman'];
-        $this->thenumber_orig = $options['original_number'];
         $this->scheme_param = $options['scheme_parameters'];
         $this->path_location = $options['path_location'];
+        $this->trunk_info = $options['trunk_info'];      
     }
 
     function is_master() {
@@ -42,10 +42,10 @@ class superfecta_single extends superfecta_base {
                 $source_class->set_AmpConf($this->amp_conf);
                 $source_class->set_DB($this->db);
                 $source_class->set_AsteriskManager($this->astman);
-                $source_class->set_thenumber($this->thenumber);
+                $source_class->set_TrunkInfo($this->trunk_info);
 
                 if (method_exists($source_class, 'get_caller_id')) {
-                    $caller_id = $source_class->get_caller_id($this->thenumber, $run_param);
+                    $caller_id = $source_class->get_caller_id($this->trunk_info['agi_callerid'], $run_param);
                     $this->set_CacheFound($source_class->isCacheFound());
                     $this->setSpam($source_class->isSpam());
                     if ($source_class->isSpam()) {
@@ -98,7 +98,7 @@ class superfecta_single extends superfecta_base {
                 $source_class->set_DB($this->db);
                 $source_class->setDebug($this->getDebug());
                 if (method_exists($source_class, 'post_processing')) {
-                    $caller_id = $source_class->post_processing($this->isCacheFound(), NULL, $this->first_caller_id, $run_param, $this->thenumber_orig);
+                    $caller_id = $source_class->post_processing($this->isCacheFound(), NULL, $this->first_caller_id, $run_param, $this->trunk_info['agi_callerid']);
                 } else {
                     print "Method 'post_processing' doesn't exist<br\>\n";
                 }

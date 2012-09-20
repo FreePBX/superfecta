@@ -10,7 +10,7 @@ class superfecta_base {
     protected $DID = '';
     protected $spam = false;
     protected $debug = 0; // Default to OFF
-    protected $thenumber;
+    protected $trunk_info = array();
     protected $db; //The database
     protected $astman; //Asterisk Manager Object
     protected $amp_conf; //Amp Conf array
@@ -53,8 +53,8 @@ class superfecta_base {
         return $this->cache_found;
     }
 
-    function get_thenumber() {
-        return $this->thenumber;
+    function get_TrunkInfo() {
+        return $this->trunk_info;
     }
 
     function get_CurlTimeout() {
@@ -105,8 +105,8 @@ class superfecta_base {
         $this->debug = ((intval($nLevel) > 0) ? intval($nLevel) : 0);
     }
 
-    function set_thenumber($sValue) {
-        $this->thenumber = $sValue;
+    function set_TrunkInfo($sValue) {
+        $this->trunk_info = $sValue;
     }
 
     function set_CurlTimeout($sValue) {
@@ -941,7 +941,7 @@ class superfecta_base {
         } // end Country switch
         // Set the corrected number		
         if (!$number_error) {
-            $this->thenumber = $thenumber;
+            $this->trunk_info['agi_extension'] = $thenumber;
         }
 
         return ($number_error ? false : true);
