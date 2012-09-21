@@ -62,23 +62,22 @@ class Send_to_Growl extends superfecta_base {
     }
 
     function post_processing($cache_found, $winning_source, $first_caller_id, $run_param, $thenumber) {
-        if (($run_param['Server_address'] != '') && ($first_caller_id != '')) {
+        if (($run_param['Server_address'] != '') && ($first_caller_id != '')) {            
             $growl = new Growl($run_param['Server_address'], (isset($run_param['Server_password']) ? $run_param['Server_password'] : ''));
 
-            // Adding and registering your notifications with Growl only needs to be done once per computer. 
-            // Growl will remember your app after this.
-            $growl->addNotification('CallerID Superfecta');
-            //$growl->addNotification('Another Notification');
-            $growl->register();
+            $connection = array('address' => $run_param['Server_address'], 'password' => (isset($run_param['Server_password']) ? $run_param['Server_password'] : ''));
+            $growl = new Growl();
 
-            $text = "{$thenumber}\n" . strftime((isset($run_param['Date_format']) ? $run_param['Date_format'] : '%x at %R'));
+            $growl->addNotification('CallerID Superfecta');
+            $growl->register($connection);
+
+            $text = "{$first_caller_id}\n{$thenumber}\n" . strftime((isset($run_param['Date_format']) ? $run_param['Date_format'] : '%x at %R'));
+
             // Send a notification
-            $growl->notify('Incoming Call', $first_caller_id, $text);
+            $growl->notify($connection, 'CallerID Superfecta', 'Incoming Call', $text);
 
             $this->DebugPrint("Send to Growl: \"{$first_caller_id} {$text}\"<br><br>");
         }
-
         return($thenumber);
     }
-
 }
