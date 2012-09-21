@@ -20,8 +20,8 @@ class Trunk_Provided extends superfecta_base {
             $key_words[] = trim($val);
         }
 
-	$provided_caller_id = $this->trunk_info['agi_calleridname'];
-	$thenumber_orig = $this->trunk_info['agi_callerid'];
+	$provided_caller_id = $this->trunk_info['calleridname'];
+	$thenumber_orig = $this->trunk_info['callerid'];
         
         if ($provided_caller_id == $thenumber_orig) {
             $provided_caller_id = '';

@@ -163,24 +163,30 @@ class superfecta_base {
     }
 
     function out($message) {
-        if($this->isDebug()) {
+        if ($this->isDebug()) {
             if (!$this->cli) {
                 echo $message;
             } else {
                 echo strip_tags($message);
             }
             $this->flush_buffers();
+        } else {
+            $final_data['message'] = strip_tags($message);
+            echo base64_encode(serialize($final_data)).',';
         }
     }
 
     function outn($message) {
-        if($this->isDebug()) {
+        if ($this->isDebug()) {
             if (!$this->cli) {
                 echo "{$message}<br/>";
             } else {
                 echo strip_tags($message) . "\n";
             }
             $this->flush_buffers();
+        } else {
+            $final_data['message'] = strip_tags($message);
+            echo base64_encode(serialize($final_data)).',';
         }
     }
 
@@ -941,7 +947,7 @@ class superfecta_base {
         } // end Country switch
         // Set the corrected number		
         if (!$number_error) {
-            $this->trunk_info['agi_extension'] = $thenumber;
+            $this->trunk_info['callerid'] = $thenumber;
         }
 
         return ($number_error ? false : true);

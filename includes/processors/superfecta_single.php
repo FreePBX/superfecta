@@ -45,7 +45,7 @@ class superfecta_single extends superfecta_base {
                 $source_class->set_TrunkInfo($this->trunk_info);
 
                 if (method_exists($source_class, 'get_caller_id')) {
-                    $caller_id = $source_class->get_caller_id($this->trunk_info['agi_callerid'], $run_param);
+                    $caller_id = $source_class->get_caller_id($this->trunk_info['callerid'], $run_param);
                     $this->set_CacheFound($source_class->isCacheFound());
                     $this->setSpam($source_class->isSpam());
                     if ($source_class->isSpam()) {
@@ -98,7 +98,7 @@ class superfecta_single extends superfecta_base {
                 $source_class->set_DB($this->db);
                 $source_class->setDebug($this->getDebug());
                 if (method_exists($source_class, 'post_processing')) {
-                    $caller_id = $source_class->post_processing($this->isCacheFound(), NULL, $this->first_caller_id, $run_param, $this->trunk_info['agi_callerid']);
+                    $caller_id = $source_class->post_processing($this->isCacheFound(), NULL, $this->first_caller_id, $run_param, $this->trunk_info['callerid']);
                 } else {
                     print "Method 'post_processing' doesn't exist<br\>\n";
                 }

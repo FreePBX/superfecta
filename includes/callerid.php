@@ -1,39 +1,39 @@
 <?php
 
-/* * *
-  TODO:  Move all DB, FreeBPX and Asterisk specific operations into functions
-
-  Original script by Nerd Vittles. (Google for Caller Id Trifecta)
-  03/12/2009	Put into module format by Tony Shiffer & Jerry Swordsteel
-  commented out fixed variables.  Added db code to get values from db.
-  03/30/2009  	New SugarCRM by jpeterman is now included.
-  04/08/2009  	Removed dependancy on default id/pw for db connection. now parses amportal.conf
-  05-08-2009	Version 2.0.0  Major update - Tickets: Tickets: #7, #10, #15, #17, #36, and #19.(projects.colsolgrp.net)(jjacobs)
-  08-18-2009	Version 2.2.0  CID Schemes and online update for data sources (projects.colsolgrp.net)(jjacobs)
-  10-26-2009  	Version 2.2.2  http://projects.colsolgrp.net/versions/show/55 (projects.colsolgrp.net) (patrick_elx)
-  01-03-2010  	Version 2.3.0  Updates to remove need for Caller ID Lookup module
-  01-04-2010  	Version 2.3.0  Updates for running multiple sources at the same time (Multifecta)
- * * */
+/**
+ * @author Tony Shiffer, Jerry Swordsteel, jjacobs, patrick_elx
+ * @version 3
+ */
 require_once(dirname(__FILE__) . "/config.php");
 //Determine CLI or HTTP
 if (php_sapi_name() == 'cli' && empty($_SERVER['REMOTE_ADDR'])) {
     $cli = true;
-    $shortopts = "";
-    $shortopts .= "d:s:m:r:t:";  // Required value
+    $shortopts = "d:s:m:r:t:";
     $options = getopt($shortopts);
     if (isset($options)) {
         $scheme_name_request = ($options['s'] == 'ALL') ? 'ALL' : "base_" . $options['s'];
         $debug = isset($options['d']) ? $options['d'] : 0;
-        
+
         //AGI Trunk values
-        $trunk_info = isset($options['t']) ? unserialize(base64_decode($options['t'])) : array();
-        $DID = $trunk_info['agi_extension'];
-        $thenumber_orig = $trunk_info['agi_callerid'];
-        
+        $trunk_info_temp = isset($options['t']) ? unserialize(base64_decode($options['t'])) : array();
+        if (!isset($options['m'])) {
+            $trunk_info = array(
+                'channel' => $trunk_info_temp['agi_channel'],
+                'language' => $trunk_info_temp['agi_language'],
+                'type' => $trunk_info_temp['agi_type'],
+                'uniqueid' => $trunk_info_temp['agi_uniqueid'],
+                'callerid' => $trunk_info_temp['agi_callerid'],
+                'calleridname' => $trunk_info_temp['agi_calleridname'],
+                'did' => $trunk_info_temp['agi_extension'],
+                'context' => $trunk_info_temp['agi_context']
+            );
+        } else {
+            $trunk_info = isset($options['t']) ? unserialize(base64_decode($options['t'])) : array();
+        }
+
         //Multifecta only 
         $multifecta_id = isset($options['m']) ? $options['m'] : false;
         $source = isset($options['r']) ? $options['r'] : false;
-        
     }
 } else {
     $cli = false;
@@ -50,32 +50,21 @@ if (php_sapi_name() == 'cli' && empty($_SERVER['REMOTE_ADDR'])) {
     $debug = isset($_REQUEST['debug']) ? $_REQUEST['debug'] : 0;
 
     $trunk_info = array(
-        'agi_request' => __FILE__,
-        'agi_channel' => 'NA',
-        'agi_language' => 'NA',
-        'agi_type' => 'NA',
-        'agi_uniqueid' => rand(),
-        'agi_version' => '0',
-        'agi_callerid' => (isset($_REQUEST['thenumber'])) ? $_REQUEST['thenumber'] : '',
-        'agi_calleridname' => 'unknown',
-        'agi_callingpres' => 0,
-        'agi_callingani2' => 0,
-        'agi_callington' => 0,
-        'agi_callingtns' => 0,
-        'agi_dnid' => 'unknown',
-        'agi_rdnis' => 'unknown',
-        'agi_context' => 'from-superfecta',
-        'agi_extension' => (isset($_REQUEST['thedid'])) ? $_REQUEST['thedid'] : '',
-        'agi_priority' => 0,
-        'agi_enhanced' => 0,
-        'agi_accountcode' => '',
-        'agi_threadid' => ''
+        'channel' => 'NA',
+        'language' => 'NA',
+        'type' => 'NA',
+        'uniqueid' => rand(),
+        'callerid' => (isset($_REQUEST['thenumber'])) ? $_REQUEST['thenumber'] : '',
+        'calleridname' => 'unknown',
+        'did' => (isset($_REQUEST['thedid'])) ? $_REQUEST['thedid'] : '',
+        'context' => 'from-superfecta'
     );
 }
 
+
 //Remove all invalid characters from number!
-$trunk_info['agi_callerid'] = preg_replace('/\D/i', '', $trunk_info['agi_callerid']);
-$trunk_info['agi_extension'] = preg_replace('/\D/i', '', $trunk_info['agi_extension']);
+$trunk_info['callerid'] = preg_replace('/\D/i', '', $trunk_info['callerid']);
+$trunk_info['did'] = preg_replace('/\D/i', '', $trunk_info['did']);
 
 //Die on Scheme unknown
 if ((trim($scheme_name_request) == '') OR ($scheme_name_request == 'ALL')) {
@@ -93,8 +82,8 @@ if ((trim($scheme_name_request) == '') OR ($scheme_name_request == 'ALL')) {
     $scheme_name_array[0] = $scheme_name_request;
 }
 
-if (empty($trunk_info['agi_callerid']) && !is_int($trunk_info['agi_callerid'])) {
-    if(!$cli) {
+if (empty($trunk_info['callerid']) && !is_int($trunk_info['callerid'])) {
+    if (!$cli) {
         die('Invalid Number');
     }
 }
@@ -120,17 +109,17 @@ foreach ($scheme_name_array as $list) {
     $scheme_param = $param[$scheme_name];
 
     require_once(dirname(__FILE__) . '/superfecta_base.php');
-    
+
     $options = array(
-                'db' => $db,
-                'amp_conf' => $amp_conf,
-                'astman' => $astman,
-                'debug' => $debug,
-                'scheme_name' => $scheme_name,
-                'scheme_parameters' => $scheme_param,
-                'path_location' => dirname(dirname(__FILE__)) . '/sources',
-		'trunk_info' => $trunk_info
-            );
+        'db' => $db,
+        'amp_conf' => $amp_conf,
+        'astman' => $astman,
+        'debug' => $debug,
+        'scheme_name' => $scheme_name,
+        'scheme_parameters' => $scheme_param,
+        'path_location' => dirname(dirname(__FILE__)) . '/sources',
+        'trunk_info' => $trunk_info
+    );
     switch ($scheme_param['processor']) {
         case 'superfecta_multi.php':
             require_once(dirname(__FILE__) . '/processors/superfecta_multi.php');
@@ -145,7 +134,7 @@ foreach ($scheme_name_array as $list) {
             break;
     }
     $superfecta->setCLI($cli);
-    $superfecta->setDID($trunk_info['agi_extension']);
+    $superfecta->setDID($trunk_info['did']);
 
     //We only want to run all of this if it's a parent-multifecta or the original code (single-fecta), No need to run this for every child
     if (($superfecta->isDebug()) && ($superfecta->is_master())) {
@@ -157,7 +146,7 @@ foreach ($scheme_name_array as $list) {
         }
         ini_set('display_errors', '1');
         $superfecta->outn("<strong>Debug is on and set at level " . $superfecta->getDebug() . "</strong>");
-        $superfecta->outn("<strong>The Original Number: </strong>" . $trunk_info['agi_callerid']);
+        $superfecta->outn("<strong>The Original Number: </strong>" . $trunk_info['callerid']);
         $superfecta->outn("<strong>The Scheme: </strong>" . $superfecta->scheme_name);
         $superfecta->outn("<strong>Scheme Type: </strong>" . $superfecta->type . "FECTA");
         $superfecta->outn("<strong>SPAM Destination: </strong>" . $scheme_param['spam_destination']);
@@ -170,8 +159,8 @@ foreach ($scheme_name_array as $list) {
         $superfecta->outn("<strong>Trunk Variables:</strong><pre>" . print_r($trunk_info, TRUE) . "</pre>");
     }
     //Strip +1 or +2 or etc....
-    $trunk_info['agi_callerid'] = preg_replace('/^\+[1-9]/', '', $trunk_info['agi_callerid']);
-    
+    $trunk_info['callerid'] = preg_replace('/^\+[1-9]/', '', $trunk_info['callerid']);
+
     $superfecta->set_TrunkInfo($trunk_info);
     $superfecta->set_CurlTimeout($scheme_param['Curl_Timeout']);
 
@@ -180,21 +169,21 @@ foreach ($scheme_name_array as $list) {
     //We only want to run all of this if it's a parent-multifecta or the original code (single-fecta), No need to run this for every child
     if ($superfecta->is_master()) {
         // Determine if this is the correct DID, if this scheme is limited to a DID.
-        $rule_match = $superfecta->match_pattern_all((isset($scheme_param['DID'])) ? $scheme_param['DID'] : '', $trunk_info['agi_extension']);
+        $rule_match = $superfecta->match_pattern_all((isset($scheme_param['DID'])) ? $scheme_param['DID'] : '', $trunk_info['did']);
         if ($rule_match['number']) {
-                $superfecta->outn("Matched DID Rule: '" . $rule_match['pattern'] . "' with '" . $rule_match['number'] . "'");
+            $superfecta->outn("Matched DID Rule: '" . $rule_match['pattern'] . "' with '" . $rule_match['number'] . "'");
         } elseif ($rule_match['status']) {
-                $superfecta->outn("No matching DID rules.");
+            $superfecta->outn("No matching DID rules.");
             $run_this_scheme = false;
         }
 
         // Determine if the CID matches any patterns defined for this scheme
-        $rule_match = $superfecta->match_pattern_all((isset($scheme_param['CID_rules'])) ? $scheme_param['CID_rules'] : '', $trunk_info['agi_callerid']);
+        $rule_match = $superfecta->match_pattern_all((isset($scheme_param['CID_rules'])) ? $scheme_param['CID_rules'] : '', $trunk_info['callerid']);
         if ($rule_match['number'] && $run_this_scheme) {
-                $superfecta->outn("Matched CID Rule: '" . $rule_match['pattern'] . "' with '" . $rule_match['number'] . "'");
+            $superfecta->outn("Matched CID Rule: '" . $rule_match['pattern'] . "' with '" . $rule_match['number'] . "'");
             $superfecta->set_thenumber($rule_match['number']);
         } elseif ($rule_match['status'] && $run_this_scheme) {
-                $superfecta->outn("No matching CID rules.");
+            $superfecta->outn("No matching CID rules.");
             $run_this_scheme = false;
         }
 
@@ -202,20 +191,20 @@ foreach ($scheme_name_array as $list) {
         ///Clean these up, set NULL values instead of blanks then don't check for ''
         $superfecta->set_Prefix('');
         if ((isset($scheme_param['Prefix_URL'])) && (trim($scheme_param['Prefix_URL']) != '')) {
-                $start_time = $superfecta->mctime_float();
+            $start_time = $superfecta->mctime_float();
 
-            $superfecta->set_Prefix($superfecta->get_url_contents(str_replace("[thenumber]", $trunk_info['agi_callerid'], $scheme_param['Prefix_URL'])));
+            $superfecta->set_Prefix($superfecta->get_url_contents(str_replace("[thenumber]", $trunk_info['callerid'], $scheme_param['Prefix_URL'])));
 
-                $superfecta->outn("Prefix Url defined ...");
-                if ($superfecta->prefix != '') {
-                    $superfecta->outn("returned: " . $superfecta->get_Prefix());
-                } else {
-                    $superfecta->outn("result was empty");
-                }
-                $superfecta->outn("result <img src='images/scrollup.gif'> took " . number_format((mctime_float() - $start_time), 4) . " seconds.");
+            $superfecta->outn("Prefix Url defined ...");
+            if ($superfecta->prefix != '') {
+                $superfecta->outn("returned: " . $superfecta->get_Prefix());
+            } else {
+                $superfecta->outn("result was empty");
+            }
+            $superfecta->outn("result <img src='images/scrollup.gif'> took " . number_format((mctime_float() - $start_time), 4) . " seconds.");
         }
 
-        
+
         if ($run_this_scheme) {
             if (!$cli) {
                 $callerid = $superfecta->web_debug();
@@ -246,7 +235,8 @@ foreach ($scheme_name_array as $list) {
                     if ($callerid != '') {
                         $final_data['cid'] = $spam_text . " " . $superfecta->get_Prefix() . $callerid;
                         $final_data['destination'] = $spam_dest;
-                        echo serialize($final_data);
+                        $final_data['success'] = TRUE;
+                        echo base64_encode(serialize($final_data));
                         //This takes us out of the loop so that we don't get multiple returned results like: AndrewNAGY,ANDREWAndrewWIRELESS CALLER
                         break;
                     }
