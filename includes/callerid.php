@@ -61,7 +61,6 @@ if (php_sapi_name() == 'cli' && empty($_SERVER['REMOTE_ADDR'])) {
     );
 }
 
-
 //Remove all invalid characters from number!
 $trunk_info['callerid'] = preg_replace('/\D/i', '', $trunk_info['callerid']);
 $trunk_info['did'] = preg_replace('/\D/i', '', $trunk_info['did']);
@@ -160,8 +159,7 @@ foreach ($scheme_name_array as $list) {
     }
     //Strip +1 or +2 or etc....
     $trunk_info['callerid'] = preg_replace('/^\+[1-9]/', '', $trunk_info['callerid']);
-
-    $superfecta->set_TrunkInfo($trunk_info);
+    
     $superfecta->set_CurlTimeout($scheme_param['Curl_Timeout']);
 
     $run_this_scheme = true;
@@ -181,7 +179,7 @@ foreach ($scheme_name_array as $list) {
         $rule_match = $superfecta->match_pattern_all((isset($scheme_param['CID_rules'])) ? $scheme_param['CID_rules'] : '', $trunk_info['callerid']);
         if ($rule_match['number'] && $run_this_scheme) {
             $superfecta->outn("Matched CID Rule: '" . $rule_match['pattern'] . "' with '" . $rule_match['number'] . "'");
-            $superfecta->set_thenumber($rule_match['number']);
+            $trunk_info['callerid'] = $rule_match['number'];
         } elseif ($rule_match['status'] && $run_this_scheme) {
             $superfecta->outn("No matching CID rules.");
             $run_this_scheme = false;
@@ -204,7 +202,7 @@ foreach ($scheme_name_array as $list) {
             $superfecta->outn("result <img src='images/scrollup.gif'> took " . number_format((mctime_float() - $start_time), 4) . " seconds.");
         }
 
-
+        $superfecta->set_TrunkInfo($trunk_info);
         if ($run_this_scheme) {
             if (!$cli) {
                 $callerid = $superfecta->web_debug();
@@ -212,24 +210,29 @@ foreach ($scheme_name_array as $list) {
                 $callerid = $superfecta->get_results();
             }
 
-            if ($callerid != '') {
+            if (!empty($callerid)) {
                 //$first_caller_id = _utf8_decode($first_caller_id);
-                $callerid = strip_tags($callerid);
-                $callerid = trim($callerid);
+                $callerid = trim(strip_tags($callerid));
                 if ($superfecta->isCharSetIA5()) {
                     $callerid = $superfecta->stripAccents($callerid);
                 }
+                //Why?
                 $callerid = preg_replace("/[\";']/", "", $callerid);
                 //limit caller id to the first 60 char
                 $callerid = substr($callerid, 0, 60);
             }
 
+            //Send the result to the post processors for each module
             $superfecta->send_results($callerid);
 
+            //Set Spam text
             $spam_text = ($superfecta->isSpam()) ? $scheme_param['SPAM_Text'] : '';
 
+            //Set Spam Destination
             $spam_dest = (!empty($scheme_param['spam_interceptor']) && ($scheme_param['spam_interceptor'] == 'Y')) ? $scheme_param['spam_destination'] : '';
             $spam_dest = ($superfecta->get_SpamCount() >= $scheme_param['SPAM_threshold']) ? $spam_dest : '';
+            
+            //Send out final data
             if (!$superfecta->isDebug()) {
                 if ($cli) {
                     if ($callerid != '') {
