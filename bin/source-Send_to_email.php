@@ -5,7 +5,7 @@
 
 //configuration / display parameters
 //The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
-$source_desc = "This source will send the number and the Caller ID to any 10-digit SMS phone number using an already-installed Google Voice accout.<br>The message will be sent as a Call notification<br>This datasource should be one of the last data sources on your list.<br>This data source requires Superfecta Module version 2.2.3 or higher.";
+$source_desc = "This source will send the CID and CNAM in the subject to the user supplied email address.";
 $source_param = array();
 
 $source_param['email']['desc'] = 'Specify email address';
