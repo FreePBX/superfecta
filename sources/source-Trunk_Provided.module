@@ -22,7 +22,7 @@ class Trunk_Provided extends superfecta_base {
 
 	$provided_caller_id = $this->trunk_info['calleridname'];
 	$thenumber_orig = $this->trunk_info['callerid'];
-        
+	        
         if ($provided_caller_id == $thenumber_orig) {
             $provided_caller_id = '';
             $this->DebugPrint("CID name is the same as CID number");

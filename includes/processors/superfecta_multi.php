@@ -226,10 +226,10 @@ class superfecta_multi extends superfecta_base {
             $list = & $this->db->getAll($sql, array(), DB_FETCHMODE_ASSOC);
             usleep(50000);
             foreach ($list as $data) {
-                echo "<b>Debug From Child-" . $data['superfecta_mf_child_id'] . "-" . $data['source'] . ":</b><br/>";
-                echo "<pre>";
-                echo file_get_contents("log-" . $data['superfecta_mf_child_id'] . ".log");
-                echo "</pre>";
+                $this->DebugPrint("<b>Debug From Child-" . $data['superfecta_mf_child_id'] . "-" . $data['source'] . ":</b><br/>");
+                $this->DebugEcho("<pre>");
+                $this->DebugEcho(file_get_contents("log-" . $data['superfecta_mf_child_id'] . ".log"));
+                $this->DebugEcho("</pre>");
                 unlink("log-" . $data['superfecta_mf_child_id'] . ".log");
             }
         }

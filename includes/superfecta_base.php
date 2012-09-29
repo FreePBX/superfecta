@@ -28,6 +28,7 @@ class superfecta_base {
     protected $multifecta_parent_id = false;
     protected $curl_timeout = '3.5';
     protected $spam_count = 0;
+    public $debug_log = array(); //Send all log information here
 
     function isCLI() {
         return $this->cli;
@@ -275,9 +276,7 @@ class superfecta_base {
             $ret = '';
         }
         curl_close($crl);
-        if($this->isDebug(DEBUG_ALL)) {
-            echo "Orignal Raw Returned Data: </br><textarea>".$ret."</textarea></br>";
-        }
+        $this->DebugPrint("Orignal Raw Returned Data: </br><textarea>".$ret."</textarea></br>",DEBUG_ALL);
         return $ret;
     }
 
@@ -1199,12 +1198,14 @@ class superfecta_base {
         if ($this->isDebug($level)) {
             $this->out($string);
         }
+        $this->debug_log[] = "[". time()."][".$level."] ".strip_tags($string);
     }
 
     function DebugPrint($string, $level=DEBUG_INFO) {
         if ($this->isDebug($level)) {
             $this->outn($string);
         }
+        $this->debug_log[] = "[". time()."][".$level."] ".strip_tags($string);
     }
 
     function DebugDump($v, $level=DEBUG_ALL) {
@@ -1341,7 +1342,10 @@ class superfecta_base {
     }
     
     function flush_buffers() {
-        ob_end_flush();
+        $array = ob_get_status();
+        if(!empty($array)) {
+            ob_end_flush();
+        }
         //ob_flush();
         flush();
         ob_start();
