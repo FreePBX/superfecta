@@ -8,10 +8,30 @@ require_once(dirname(__FILE__) . "/config.php");
 //Determine CLI or HTTP
 if (php_sapi_name() == 'cli' && empty($_SERVER['REMOTE_ADDR'])) {
     $cli = true;
+    /**
+     * CLI Options:
+     * d = Debug
+     * s = Scheme
+     * m = multifecta ID
+     * r = Source (For Multifecta)
+     * t = trunk info (from agi)
+     * 
+     * Trunk Info:
+     * channel = Channel Call came in from
+     * language = language of channel
+     * type = SIP/IAX/DAHDI/ZAP
+     * uniqueid = Asterisk Unique Value
+     * callerid = CID From Asterisk
+     * calleridname = CNAME From Asterisk
+     * did = DID of Channel
+     * context = context of channel
+     */
     $shortopts = "d:s:m:r:t:";
     $options = getopt($shortopts);
     if (isset($options)) {
+        //Add the "base_" to anything but ALL
         $scheme_name_request = ($options['s'] == 'ALL') ? 'ALL' : "base_" . $options['s'];
+        //Debug goes to 0 if not set
         $debug = isset($options['d']) ? $options['d'] : 0;
 
         //AGI Trunk values
@@ -30,7 +50,7 @@ if (php_sapi_name() == 'cli' && empty($_SERVER['REMOTE_ADDR'])) {
         } else {
             $trunk_info = isset($options['t']) ? unserialize(base64_decode($options['t'])) : array();
         }
-
+        
         //Multifecta only 
         $multifecta_id = isset($options['m']) ? $options['m'] : false;
         $source = isset($options['r']) ? $options['r'] : false;
@@ -61,7 +81,7 @@ if (php_sapi_name() == 'cli' && empty($_SERVER['REMOTE_ADDR'])) {
     );
 }
 
-//Remove all invalid characters from number!
+//Remove all invalid characters from number! (\D = Anything other than a digit)
 $trunk_info['callerid'] = preg_replace('/\D/i', '', $trunk_info['callerid']);
 $trunk_info['did'] = preg_replace('/\D/i', '', $trunk_info['did']);
 
@@ -84,6 +104,10 @@ if ((trim($scheme_name_request) == '') OR ($scheme_name_request == 'ALL')) {
 if (empty($trunk_info['callerid']) && !is_int($trunk_info['callerid'])) {
     if (!$cli) {
         die('Invalid Number');
+    } else {
+        echo base64_encode(serialize(array(
+            'message' => 'Invalid Number'
+        )));
     }
 }
 
@@ -122,8 +146,8 @@ foreach ($scheme_name_array as $list) {
     switch ($scheme_param['processor']) {
         case 'superfecta_multi.php':
             require_once(dirname(__FILE__) . '/processors/superfecta_multi.php');
-            $options['multifecta_id'] = $multifecta_id;
-            $options['source'] = $source;
+            $options['multifecta_id'] = isset($multifecta_id) ? $multifecta_id : null;
+            $options['source'] = isset($source) ? $source : null;
             $superfecta = NEW superfecta_multi($options);
             break;
         case 'superfecta_single.php':
@@ -156,7 +180,11 @@ foreach ($scheme_name_array as $list) {
         $superfecta->outn("<strong>Debugging Enabled, will not stop after first result.</strong>");
         $superfecta->outn("<strong>Scheme Variables:</strong><pre>" . print_r($superfecta->scheme_param, TRUE) . "</pre>");
         $superfecta->outn("<strong>Trunk Variables:</strong><pre>" . print_r($trunk_info, TRUE) . "</pre>");
+        $superfecta->debug_log[] = "[". time()."][0] Trunk Values:".print_r($trunk_info, TRUE);
+    } elseif ($superfecta->is_master()) {
+        $superfecta->debug_log[] = "[". time()."][0] Trunk Values:".print_r($trunk_info, TRUE);
     }
+    
     //Strip +1 or +2 or etc....
     $trunk_info['callerid'] = preg_replace('/^\+[1-9]/', '', $trunk_info['callerid']);
     
@@ -240,6 +268,9 @@ foreach ($scheme_name_array as $list) {
                         $final_data['destination'] = $spam_dest;
                         $final_data['success'] = TRUE;
                         echo base64_encode(serialize($final_data));
+                        if(!empty($superfecta->debug_log)) {
+                            file_put_contents(dirname(dirname(__FILE__))."/logs/debug-log-".time(), implode("\n", $superfecta->debug_log));
+                        }
                         //This takes us out of the loop so that we don't get multiple returned results like: AndrewNAGY,ANDREWAndrewWIRELESS CALLER
                         break;
                     }
@@ -257,6 +288,11 @@ foreach ($scheme_name_array as $list) {
                 $end_time_whole = ($end_time_whole == 0) ? $superfecta->mctime_float() : $end_time_whole;
                 $superfecta->outn("result <img src='images/scrollup.gif'> took " . number_format(($end_time_whole - $start_time_whole), 4) . " seconds.</b>");
                 $superfecta->outn("<hr>");
+            }
+            
+            //Debug log
+            if(!empty($superfecta->debug_log)) {
+                file_put_contents(dirname(dirname(__FILE__))."/logs/debug-log-".time(), implode("\n", $superfecta->debug_log));
             }
         }
     } elseif (($superfecta->type == 'MULTI') && ($superfecta->multi_type == 'CHILD')) {
