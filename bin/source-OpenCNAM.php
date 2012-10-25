@@ -9,12 +9,12 @@
 //The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
 $source_desc = "http://www.opencnam.com      This data source returns CNAM data listed at OpenCNAM.";
 $source_param = array();
-$source_param['Username']['desc'] = "Enter OpenCNAM user account name.  If you don't have an account leave this blank to use free service.";
-$source_param['Username']['type'] = 'text';
-$source_param['Username']['default'] = null;
-$source_param['API']['desc'] = "Enter OpenCNAM user account API.  If you don't have an account leave this blank to use free service.";
-$source_param['API']['type'] = 'text';
-$source_param['API']['default'] = null;
+$source_param['Account_SID']['desc'] = "Enter OpenCNAM Account SID.  If you don't have an account leave this blank to use free service.";
+$source_param['Account_SID']['type'] = 'textarea';
+$source_param['Account_SID']['default'] = null;
+$source_param['Auth_Token']['desc'] = "Enter OpenCNAM user account Auth Token.  If you don't have an account leave this blank to use free service.";
+$source_param['Auth_Token']['type'] = 'textarea';
+$source_param['Auth_Token']['default'] = null;
 $source_param['Ignore_Keywords']['desc'] = 'If this source provides CNAM including any of the keywords listed  here, the CNAM will be ignored and other sources will be used to find the value.<br>
 Seperate keywords with commas.';
 $source_param['Ignore_Keywords']['type'] = 'textarea';
@@ -29,13 +29,13 @@ if($usage_mode == 'get caller id')
             print 'Searching OpenCNAM..<br> ';
     }
 
-		if ($run_param['Username'] == null or $run_param['API'] == null)  //use free url
+		if ($run_param['Account_SID'] == null or $run_param['Auth_Token'] == null)  //use free url
         {
 			$url = "https://api.opencnam.com/v2/phone/" . $thenumber . "?format=pbx";
         }
 		else  //use premium url
         {
-			$url = "https://api.opencnam.com/v2/phone/" . $thenumber . "?format=pbx&username=".$run_param['Username']."&api_key=".$run_param['API'];
+			$url = "https://api.opencnam.com/v2/phone/" . $thenumber . "?format=pbx&account_sid=".$run_param['Account_SID']."&auth_token=".$run_param['Auth_Token'];
         }
         $sname =  get_url_contents($url);
 		$sname = trim(strip_tags($sname));
