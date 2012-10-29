@@ -150,6 +150,11 @@
 		<md5>dd76247a3d0f8b4f674e65d83f95afea</md5>
 	</source>
 	<source>
+		<name>source-MySQLi_DB.php</name>
+		<modified>1351513567</modified>
+		<md5>3081c31348d859e2b30411e005520bfb</md5>
+	</source>
+	<source>
 		<name>source-NumberGuru.php</name>
 		<modified>1312810472</modified>
 		<md5>851b73f9abf6445e70c947f08f6ad588</md5>
@@ -166,8 +171,8 @@
 	</source>
 	<source>
 		<name>source-OpenCNAM.php</name>
-		<modified>1346097427</modified>
-		<md5>f25961642744ed0f6896808615c53a5c</md5>
+		<modified>1351513567</modified>
+		<md5>6c88e6a857fd6973c2285c7989b5f5cf</md5>
 	</source>
 	<source>
 		<name>source-Paginasamarillas_DO.php</name>
@@ -321,8 +326,8 @@
 	</source>
 	<source>
 		<name>source-US411.php</name>
-		<modified>1346097427</modified>
-		<md5>0270f1059723efdb94b0e14b43e3ff26</md5>
+		<modified>1351514173</modified>
+		<md5>b51f91a3023a166680dd2d80defa62a9</md5>
 	</source>
 	<source>
 		<name>source-VTiger_CRM.php</name>
