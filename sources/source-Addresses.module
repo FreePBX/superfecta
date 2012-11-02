@@ -1,0 +1,33 @@
+<?php
+
+class Addresses extends superfecta_base {
+
+    public $description = "http://phonenumbers.addresses.com - This will return only residential listings, business listings will not be returned.";
+    public $version_requirement = "3.0";
+
+    function get_caller_id($thenumber, $run_param=array()) {
+        $caller_id = null;
+        $name = "";
+        $npa = "";
+        $nxx = "";
+        $station = "";
+
+        if (!$this->IsValidNumber(array('US', 'CA'), $thenumber, $npa, $nxx, $station)) {
+            $this->DebugPrint("Skipping Source - Not a valid US/CAN number: " . $thenumber);
+        } else {
+            $this->DebugPrint("Searching Addresses.com with (${npa})${nxx}-${station} ... ");
+
+            $url = "http://phonenumbers.addresses.com/results.php?ReportType=33&qfilter[pro]=on&qi=0&qk=10&qnpa=$npa&qp=" . $nxx . $station;
+            // Grab the first result that matches our phone number
+            $pattern = "/searchFName=(.*)&searchLName=(.*)&/U";
+
+            if ($this->SearchURL($url, $pattern, $match)) {
+                $name1 = $this->ExtractMatch($match, 1);
+                $name2 = $this->ExtractMatch($match, 2);
+                $caller_id = ($name2) ? trim($name1 . " " . $name2) : $name1;
+            }
+        }
+        return($caller_id);
+    }
+
+}

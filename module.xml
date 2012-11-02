@@ -1,0 +1,22 @@
+<module>
+	<rawname>superfecta</rawname>
+	<name>CID Superfecta</name>
+	<version>3.0.1alpha5</version>
+	<type>setup</type>
+	<category>Other</category>
+	<publisher>POSSA</publisher> 
+	<license>GPLv2+</license>
+	<description>
+	       Provides simultaneous use of, and complete control over multiple caller id data sources.
+	</description>
+	<changelog>
+	</changelog>
+	<menuitems>
+		<superfecta>CID Superfecta</superfecta>
+	</menuitems>
+	<info>https://github.com/POSSA/Caller-ID-Superfecta/wiki</info>
+	<location>https://github.com/POSSA/Caller-ID-Superfecta</location>
+	<depends>
+		<module>core</module>
+	</depends>
+</module>

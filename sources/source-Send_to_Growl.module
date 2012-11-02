@@ -1,0 +1,83 @@
+<?php
+
+class Send_to_Growl extends superfecta_base {
+
+    public $description = "This source will send the number and the Caller ID to a dreambox.<br>Enter the URL to the destination dreambox in the format `http://url:port`.<br>This datasource should be one of the last data sources on your list, as it does not provide any data of its own, and can only send what information has been collected before it is run.";
+    public $version_requirement = "3.0";
+    public $source_param = array(
+        'Server_address' => array(
+            'description' => 'Specify the Client IP address',
+            'type' => 'text',
+            'default' => ''
+        ),
+        'Server_password' => array(
+            'description' => 'Specify the password required to connect. Leave blank if not used',
+            'type' => 'text',
+            'default' => ''
+        ),
+        'Date_format' => array(
+            'description' => 'Specify the date/time format required.<br><br>Valid values are<br><pre>
+    %a - abbreviated weekday name
+    %A - full weekday name
+    %b - abbreviated month name
+    %B - full month name
+    %c - preferred date and time representation
+    %C - century number (the year divided by 100, range 00 to 99)
+    %d - day of the month (01 to 31)
+    %D - same as %m/%d/%y
+    %e - day of the month (1 to 31)
+    %g - like %G, but without the century
+    %G - 4-digit year corresponding to the ISO week number (see %V).
+    %h - same as %b
+    %H - hour, using a 24-hour clock (00 to 23)
+    %I - hour, using a 12-hour clock (01 to 12)
+    %j - day of the year (001 to 366)
+    %m - month (01 to 12)
+    %M - minute
+    %n - newline character
+    %p - either am or pm according to the given time value
+    %r - time in a.m. and p.m. notation
+    %R - time in 24 hour notation
+    %S - second
+    %t - tab character
+    %T - current time, equal to %H:%M:%S
+    %u - weekday as a number (1 to 7), Monday=1.
+    %U - week number of the current year, starting with the first Sunday as the first day of the first week
+    %V - The ISO 8601 week number of the current year (01 to 53), where week 1 is the first week that has at least 4 days in the current year, and with Monday as the first day of the week
+    %W - week number of the current year, starting with the first Monday as the first day of the first week
+    %w - day of the week as a decimal, Sunday=0
+    %x - preferred date representation without the time
+    %X - preferred time representation without the date
+    %y - year without a century (range 00 to 99)
+    %Y - year including the century
+    %Z or %z - time zone or name or abbreviation
+    %% - a literal % character</pre>',
+            'type' => 'text',
+            'default' => '%x at %R'
+        )
+    );
+
+    function __construct() {
+        require_once(dirname(dirname(__FILE__)) . "/includes/php-growl/class.growl.php");
+    }
+
+    function post_processing($cache_found, $winning_source, $first_caller_id, $run_param, $thenumber) {
+        if (($run_param['Server_address'] != '') && ($first_caller_id != '')) {            
+            $growl = new Growl($run_param['Server_address'], (isset($run_param['Server_password']) ? $run_param['Server_password'] : ''));
+
+            $connection = array('address' => $run_param['Server_address'], 'password' => (isset($run_param['Server_password']) ? $run_param['Server_password'] : ''));
+            $growl = new Growl();
+
+            $growl->addNotification('CallerID Superfecta');
+            $growl->register($connection);
+
+            $text = "{$first_caller_id}\n{$thenumber}\n" . strftime((isset($run_param['Date_format']) ? $run_param['Date_format'] : '%x at %R'));
+
+            // Send a notification
+            $growl->notify($connection, 'CallerID Superfecta', 'Incoming Call', $text);
+
+            $this->DebugPrint("Send to Growl: \"{$first_caller_id} {$text}\"<br><br>");
+        }
+        return($thenumber);
+    }
+}

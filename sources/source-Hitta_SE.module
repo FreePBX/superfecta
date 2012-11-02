@@ -1,0 +1,88 @@
+<?php
+
+class Hitta_SE extends superfecta_base {
+
+    public $description = "http://www.hitta.se - This listing includes data from the Swedish Hitta.se directory.";
+    public $version_requirement = "3.0";
+    public $source_param = array(
+        'Search_Type' => array(
+            'description' => 'Select which sources you want to search',
+            'type' => 'select',
+            'option' => array(
+                1 => 'Residential',
+                2 => 'Business',
+                3 => 'Residential & Business'
+            ),
+            'default' => 3
+        )
+    );
+
+    function get_caller_id($thenumber, $run_param=array()) {
+        $caller_id = null;
+
+        if (!$this->IsValidNumber('SE', $this->thenumber)) {
+            $this->DebugPrint("Skipping Source - Non Swedish number: {$this->thenumber}");
+        } else {
+            if ($run_param['Search_Type'] != 2) {
+                $this->DebugPrint("Searching Hitta.se residential ... {$this->thenumber}");
+
+                $url = "http://wap.hitta.se/default.aspx?Who=$this->thenumber&Where=&PageAction=White";
+                $value = $this->get_url_contents($url);
+
+                $notfound = strpos($value, "<a href=\"/Details"); //No information found
+                $notfound = ($notfound < 1);
+                if ($notfound) {
+                    $value = "";
+                } else {
+                    $start = strpos($value, "<a href=\"/Details");
+                    $value = substr($value, $start + 17);
+                    $start = strpos($value, ">");
+                    $value = substr($value, $start + 3);
+                    $end = strpos($value, "</a>");
+                    $value = substr($value, 0, $end);
+                }
+
+                if (strlen($value) > 1) {
+                    $caller_id = strip_tags($value);
+                } else {
+                    $this->DebugPrint("not found");
+                }
+            }
+
+            if ($run_param['Search_Type'] >= 2) {
+                $this->DebugPrint("Searching Hitta.se business ... {$this->thenumber}");
+
+                $url = "http://wap.hitta.se/default.aspx?Who=$this->thenumber&Where=&PageAction=Pink";
+                $value = $this->get_url_contents($url);
+
+                $notfound = strpos($value, "Ingen exakt"); //No direct match. Ignore suggestions.
+                $notfound = ($notfound < 1) ? strpos($value, "Ingen exakt") : $notfound;
+
+                if ($notfound) {
+                    $value = "";
+                } else {
+                    $start = strpos($value, "<a href=\"/Details");
+                    $value = substr($value, $start + 17);
+                    $start = strpos($value, ">");
+                    $value = substr($value, $start + 3);
+                    $end = strpos($value, "</a>");
+                    $value = substr($value, 0, $end);
+                }
+
+                $notfound = strpos($value, "tta.se"); //nothing found.
+                $notfound = ($notfound < 1) ? strpos($value, "tta.se") : $notfound;
+                if ($notfound) {
+                    $value = "";
+                }
+
+                if (strlen($value) > 1) {
+                    $caller_id = strip_tags($value);
+                } else {
+                    $this->DebugPrint("not found");
+                }
+            }
+        }
+        return $caller_id;
+    }
+
+}

@@ -1,0 +1,45 @@
+<?php
+// last edited Sept 18, 2012 by lgaetz
+class Trunk_Provided extends superfecta_base {
+
+    public $description = "Locates the Caller ID Name provided by the trunk, and then decides based on a list of key words if the provided name should be used.";
+    public $version_requirement = "3.0";
+    public $source_param = array(
+        'Ignore_Keywords' => array(
+            'description' => 'If the trunk provided caller id includes any of the keywords listed  here, the trunk provided value will be ignored and other sources will be used to find the value.<br> Seperate keywords with commas.',
+            'type' => 'textarea',
+            'default' => 'unknown, toll free, unlisted, (N/A)'
+        )
+    );
+
+    function get_caller_id($thenumber, $run_param=array()) {
+        $this->DebugPrint("Looking for Trunk Provided Caller ID ... ");
+        $key_words = array();
+        $temp_array = explode(',', (isset($run_param['Ignore_Keywords']) ? $run_param['Ignore_Keywords'] : Trunk_Provided::$source_param['Ignore_Keywords']['default']));
+        foreach ($temp_array as $val) {
+            $key_words[] = trim($val);
+        }
+
+	$provided_caller_id = $this->trunk_info['calleridname'];
+	$thenumber_orig = $this->trunk_info['callerid'];
+	        
+        if ($provided_caller_id == $thenumber_orig) {
+            $provided_caller_id = '';
+            $this->DebugPrint("CID name is the same as CID number");
+        }
+
+        if ($provided_caller_id == '') {
+            $this->DebugPrint("not found");
+        } else if ($provided_caller_id != '') {
+            $this->DebugPrint("found value of $provided_caller_id ... ");
+            $test_string = str_ireplace($key_words, '', $provided_caller_id);
+            if ($test_string == $provided_caller_id) {
+                $this->DebugPrint("determined good.");
+                return($provided_caller_id);
+            } else {
+                $this->DebugPrint(" contains flagged key words, returning nothing");
+            }
+        }
+    }
+
+}
