@@ -2,6 +2,7 @@
 	<rawname>superfecta</rawname>
 	<name>CID Superfecta</name>
 	<version>3.0.1alpha5</version>
+	<repo>extended</repo>
 	<type>setup</type>
 	<category>Other</category>
 	<publisher>POSSA</publisher> 
