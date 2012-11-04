@@ -2,7 +2,7 @@
 
 class OpenCNAM extends superfecta_base {
 
-    public $description = "http://www.opencnam.com This data source returns CNAM data listed at OpenCNAM.";
+    public $description = "https://www.opencnam.com This data source returns CNAM data listed at OpenCNAM.";
     public $version_requirement = "3.0";
 	public $source_param = array(
         'Account_SID' => array(
