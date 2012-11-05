@@ -1,9 +1,10 @@
 <module>
 	<rawname>superfecta</rawname>
+	<repo>extended</repo>
 	<name>CID Superfecta</name>
 	<version>2.11.0beta1</version>
 	<type>setup</type>
-	<category>Other</category>
+	<category>Admin</category>
 	<publisher>POSSA</publisher> 
 	<license>GPLv2+</license>
 	<description>
