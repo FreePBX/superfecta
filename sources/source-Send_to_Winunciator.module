@@ -8,7 +8,7 @@ define("MAX_WINUNCIATORS", 5);
 class Send_to_Winunciator extends superfecta_base {
 
     public $description = "This send-only source sends the number and the CNAM to the companion Windows Winunciator program.<br>You may configure up to 5 Winunciator installations at once.<br>This datasource should be one of the last data sources on your list, as it does not provide any data of its own, and can only send what information has been collected before it is run.";
-    public $version_requirement = "3.0";
+    public $version_requirement = "2.11";
     public $source_param = array();
 
     function __construct() {

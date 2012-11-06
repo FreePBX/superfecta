@@ -5,7 +5,7 @@ define("ROOT_PATH", dirname(__FILE__) . '/');
 
 //fix in the future
 $version = preg_replace('/(alpha|beta)/i', '.0.', $module_info['module']['version']);
-preg_match('/^(\d\.\d)/i', $version, $matches);
+preg_match('/^(\d\.(:?\d*)\.(:?\d*))/i', $version, $matches);
 $major_version = $matches[1];
 
 //Get the enabled sources from this scheme

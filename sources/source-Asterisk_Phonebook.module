@@ -3,7 +3,7 @@
 class Asterisk_Phonebook extends superfecta_base {
 
     public $description = "Searches the built in Asterisk Phonebook for caller ID information. This is a very fast source of information.<br>If you are caching to the phonebook, this should be the first lookup source.";
-    public $version_requirement = "3.0";
+    public $version_requirement = "2.11";
 
     function get_caller_id($thenumber, $run_param=array()) {
         $caller_id = null;

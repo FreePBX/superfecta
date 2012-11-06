@@ -8,7 +8,7 @@
 class Superfecta_Cache extends superfecta_base {
 
     public $description = "Searches the built in Superfecta Cache for caller ID information. This is a very fast source of information.<br>This source is generally faster than the Asterisk Phonebook, and more efficient with larger caches.<br><br>Module version 2.2.4 or higher, for CID Rules.";
-    public $version_requirement = "3.0";
+    public $version_requirement = "2.11";
     public $source_param = array(
         'Cache_Timeout' => array(
             'description' => 'Specify the number of days that a cached value should stay in the database.',

@@ -3,7 +3,7 @@
 class UKPhoneInfo_UK extends superfecta_base {
 
     public $description = "http://www.ukphoneinfo.com - The UK Telephone Code Locator will return the exchange or service area location. No names are returned by this source.<br>Because the data provided is less specific than other sources, this data source is usualy configured near the bottom of the list of active data sources.";
-    public $version_requirement = "3.0";
+    public $version_requirement = "2.11";
 
     function get_caller_id($thenumber, $run_param=array()) {
         $caller_id = null;

@@ -3,7 +3,7 @@
 class OpenCNAM extends superfecta_base {
 
     public $description = "https://www.opencnam.com This data source returns CNAM data for any NANPA phone number (any number that starts with +1).";
-    public $version_requirement = "3.0";
+    public $version_requirement = "2.11";
     public $source_param = array(
         'Account_SID' => array(
                 'description' => 'Account SID from OpenCNAM Dashboard',

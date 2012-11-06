@@ -3,7 +3,7 @@
 class Lokaldelen_SE extends superfecta_base {
 
     public $description = "http://www.lokaldelen.se - This listings include data from the Swedish lokaldelen.se directory.";
-    public $version_requirement = "3.0";
+    public $version_requirement = "2.11";
 
     function get_caller_id($thenumber, $run_param=array()) {
 
