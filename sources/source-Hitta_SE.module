@@ -3,7 +3,7 @@
 class Hitta_SE extends superfecta_base {
 
     public $description = "http://www.hitta.se - This listing includes data from the Swedish Hitta.se directory.";
-    public $version_requirement = "3.0";
+    public $version_requirement = "2.11";
     public $source_param = array(
         'Search_Type' => array(
             'description' => 'Select which sources you want to search',

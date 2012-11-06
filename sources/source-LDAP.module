@@ -6,7 +6,7 @@ define("LDAP_OPENDIRECTORY", "2");
 class LDAP extends superfecta_base {
 
     public $description = "This source will search an LDAP Server and return the Common Name (<strong>cn</strong>) for a telephone number.<br><br>Attempts are made to match telephoneNumber, mobile and homeTelephoneNumber.<br><br><strong>Note: php-ldap is required to be installed for this to work</strong>.";
-    public $version_requirement = "3.0";
+    public $version_requirement = "2.11";
     public $source_param = array(
         'LDAP_Host' => array(
             'description' => 'LDAP Server to search.<br>The port is optional e.g. ldap.example.com:389<br><br>To connect through SSL prefix the connection with <strong>ldaps</strong> e.g. ldaps://ldap.example.com',

@@ -3,7 +3,7 @@
 class Theaddressbook extends superfecta_base {
 
     public $description = "Searches The Address Book http://www.corvalis.net/address/ for appearances of the number and returns the last name and first name, if present, from the contact table.";
-    public $version_requirement = "3.0";
+    public $version_requirement = "2.11";
     public $source_param = array(
         'tab_server' => array(
             'description' => 'Host address of The Address Book database. (localhost if the database is on the same server as FreePBX)',

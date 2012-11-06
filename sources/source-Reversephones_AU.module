@@ -3,7 +3,7 @@
 class Reversephones_AU extends superfecta_base {
 
     public $description = "http://reversephones.com.au - 	These listings include residential data for AU.";
-    public $version_requirement = "3.0";
+    public $version_requirement = "2.11";
     public $source_param = array(
         'Premium_Key' => array(
             'description' => 'Your Premium Key for reversephones.com.au.',

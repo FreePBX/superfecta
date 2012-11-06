@@ -2,7 +2,7 @@
 	<rawname>superfecta</rawname>
 	<repo>extended</repo>
 	<name>CID Superfecta</name>
-	<version>2.11.0beta1.2</version>
+	<version>2.11.0beta2</version>
 	<type>setup</type>
 	<category>Admin</category>
 	<publisher>POSSA</publisher> 
@@ -11,6 +11,7 @@
 	       Provides simultaneous use of, and complete control over multiple caller id data sources.
 	</description>
 	<changelog>
+		*2.11.0beta2*	Fix sources versioning
 		*2.11.0beta1.2* fix xml
 		*2.11.0beta1.1* import into online repo
 	</changelog>

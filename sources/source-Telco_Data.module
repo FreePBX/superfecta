@@ -3,12 +3,12 @@
 class Telco_Data extends superfecta_base {
 
     public $description = "http://www.telcodata.com - These listings are generally only return the geographic location of the caller, not a name.";
-    public $version_requirement = "3.0";
+    public $version_requirement = "2.11";
 
     function get_caller_id($thenumber, $run_param=array()) {
 
         $caller_id = null;
-
+		$number_error = false;
 
         $this->DebugPrint("Searching Telco Data ... : {$thenumber}");
         //check for the correct 11 digits in US/CAN phone numbers in international format.

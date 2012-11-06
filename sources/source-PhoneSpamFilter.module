@@ -3,7 +3,7 @@
 class PhoneSpamFilter extends superfecta_base {
 
     public $description = "http://www.phonespamfilter.com - A datasource devoted to identifying telemarketers. These listings are provided by other users of this service.";
-    public $version_requirement = "3.0";
+    public $version_requirement = "2.11";
     public $source_param = array(
         'SPAM_Threshold' => array(
             'description' => 'Specify the # of listings required to mark a call as spam.',

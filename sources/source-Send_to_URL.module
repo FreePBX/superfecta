@@ -3,7 +3,7 @@
 class Send_to_URL extends superfecta_base {
 
     public $description = "This source will send the number and the Caller ID to an URL for external processing.<br>The URL you enter will be sent, with the following appended to it:<br>?thenumber=<i>the CID number</i>&CLID=<i>the CID Name</i>.<br>The destination url must be able to collect and use those arguments.<br>This datasource should be one of the last data sources on your list, as it does not provide any data of its own, and can only send what information has been collected before it is run.";
-    public $version_requirement = "3.0";
+    public $version_requirement = "2.11";
     public $source_param = array(
         'URL_address' => array(
             'description' => 'Specify A URL to send CID/CNAM data to. Use the format \'http://url.org\'',

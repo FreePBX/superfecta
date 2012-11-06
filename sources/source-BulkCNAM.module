@@ -3,7 +3,7 @@
 class BulkCNAM extends superfecta_base {
 
     public $description = "http://www.bulkcnam.com - This module provides lookups from the AsteriskCNAM.com lookup service.";
-    public $version_requirement = "3.0";
+    public $version_requirement = "2.11";
     public $source_param = array(
         'API_Key' => array(
             'description' => 'API Key gotten from bulkcnam.com',
