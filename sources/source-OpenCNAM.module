@@ -31,7 +31,7 @@ class OpenCNAM extends superfecta_base {
         }
         else {
             // Professional Tier URL (unlimited real-time CNAM lookups)
-            $url = "https://api.opencnam.com/v2/phone/" . $thenumber . "?format=pbx&account_sid=".$run_param['Account_SID']."&auth_token=".$run_param['Auth_Token'];
+            $url = "https://api.opencnam.com/v2/phone/" . $thenumber . "?format=pbx&ref=possa&account_sid=".$run_param['Account_SID']."&auth_token=".$run_param['Auth_Token'];
         }
 
         $sname = $this->get_url_contents($url);
