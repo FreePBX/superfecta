@@ -3,7 +3,7 @@
 //If a valid match is found, it will give $caller_id a value
 //available variables for use are: $thenumber
 //retreive website contents using get_url_contents($url);
-//last edited June 19, 2012 by lgaetz
+//last edited Nov 13, 2012 by lgaetz
 
 //configuration / display parameters
 //The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
@@ -13,9 +13,11 @@ $source_desc = "http://www.canada411.ca - These listings include business and re
 //run this if the script is running in the "get caller id" usage mode.
 if($usage_mode == 'get caller id')
 {
+	// initialize variables
 	$value = "";
 	$number_error = false;
 	$validnpaCAN = false;
+	$name = "";
 
 	if($debug)
 	{
@@ -97,28 +99,46 @@ if($usage_mode == 'get caller id')
 	}
 	else
 	{
-		// Set the url we're searching for valid as of June 19, 2012
-                $url="http://canada411.yellowpages.ca/search/re/1/$thenumber";
-				      
+		// business results url valid as of Nov 13, 2012
+		$url="http://canada411.yellowpages.ca/search/re/1/$thenumber";
 		$value = get_url_contents($url);
 
-		// Patterns to search for
+		// Business pattern(s) to search for
 		$regexp = array(
-			
-			"/<div class=\"ypgBackfillListing\">\n(.*)<br\/>/",												//residential results June 19, 2012
-			"/<span class=\"listingTitle\">(.+?)<\/span>/",													//business results June 19, 2012
-			
+			"/<span class=\"listingTitle\">(.+?)<\/span>/",	       //business results Nov 13, 2012
 		);
 
- 		// By default, there is no match
-		$name = "";
-
 		// Look through each pattern to see if we find a match -- take the first match
-                foreach ($regexp as $pattern){
+		foreach ($regexp as $pattern){
 			preg_match($pattern, $value, $match);
 			if(isset($match[1]) && (strlen(trim(strip_tags($match[1]))))){
 				$name = trim(strip_tags($match[1]));
 				break;
+			}
+		}
+
+		// If no business results, look for residential
+		if ($name == "")  {
+			// residential results url valid as of Nov 13, 2012
+			$url="http://www.canada411.ca/search/re/1/$thenumber/-";
+			$value = get_url_contents($url);
+			
+			// Residential pattern(s) to search for
+			$regexp = array(
+				"/<input type=\"text\" class=\"c411Text\" id=\"c411HdrFapWhat\" name=\"what\" value=\"(.*)\" tabindex=\"16\"/",	   //residential results not working Nov 13, 2012
+			);
+			
+			// Look through each pattern to see if we find a match -- take the first match
+			foreach ($regexp as $pattern){
+				preg_match($pattern, $value, $match);
+				if(isset($match[1]) && (strlen(trim(strip_tags($match[1]))))){
+					$name = trim(strip_tags($match[1]));
+					// unsuccessful lookups return the number back instead of the name, this will reset
+					if (is_numeric($name))  {
+						$name = "";
+					}
+					break;
+				}
 			}
 		}
 

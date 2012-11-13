@@ -3,12 +3,18 @@
 //If a valid match is found, it will give $caller_id a value
 //available variables for use are: $thenumber
 //retreive website contents using get_url_contents($url);
-//Last edited Oct. 25, 2012 by lgaetz
+//Last edited Nov. 10, 2012 by lgaetz
 
 //configuration / display parameters
 //The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
 $source_desc = "http://www.opencnam.com      This data source returns CNAM data listed at OpenCNAM.";
 $source_param = array();
+$source_param['POSSA_Notice']['type'] = 'select';
+$source_param['POSSA_Notice']['option'][1] = 'OpenCNAM is a finacial contributor to POSSA';
+$source_param['POSSA_Notice']['option'][2] = 'A portion of the funds for each preium search';
+$source_param['POSSA_Notice']['option'][3] = 'done from Superfecta is contributed to POSSA';
+$source_param['POSSA_Notice']['option'][4] = 'for continued development';
+$source_param['POSSA_Notice']['default'] = 1;
 $source_param['Account_SID']['desc'] = "Enter OpenCNAM Account SID.  If you don't have an account leave this blank to use free service.";
 $source_param['Account_SID']['type'] = 'textarea';
 $source_param['Account_SID']['default'] = null;
@@ -20,10 +26,10 @@ Seperate keywords with commas.';
 $source_param['Ignore_Keywords']['type'] = 'textarea';
 $source_param['Ignore_Keywords']['default'] = 'unavailable';
 
-
 //run this if the script is running in the "get caller id" usage mode.
 if($usage_mode == 'get caller id')
 {
+
     if($debug)
     {
             print 'Searching OpenCNAM..<br> ';
@@ -35,7 +41,7 @@ if($usage_mode == 'get caller id')
         }
 		else  //use premium url
         {
-			$url = "https://api.opencnam.com/v2/phone/" . $thenumber . "?format=pbx&account_sid=".$run_param['Account_SID']."&auth_token=".$run_param['Auth_Token'];
+			$url = "https://api.opencnam.com/v2/phone/" . $thenumber . "?format=pbx&ref=possa&account_sid=".$run_param['Account_SID']."&auth_token=".$run_param['Auth_Token'];
         }
         $sname =  get_url_contents($url);
 		$sname = trim(strip_tags($sname));
