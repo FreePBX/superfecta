@@ -125,7 +125,7 @@ if($usage_mode == 'get caller id')
 			
 			// Residential pattern(s) to search for
 			$regexp = array(
-				"/<input type=\"text\" class=\"c411Text\" id=\"c411HdrFapWhat\" name=\"what\" value=\"(.*)\" tabindex=\"16\"/",	   //residential results not working Nov 13, 2012
+				"/<input type=\"text\" class=\"c411Text\" id=\"c411HdrFapWhat\" name=\"what\" value=\"(.*)\" tabindex=\"16\"/",	   // working Nov 13, 2012
 			);
 			
 			// Look through each pattern to see if we find a match -- take the first match
