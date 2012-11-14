@@ -1,18 +1,18 @@
 <?php
-//	Superfecta code maintained by forummembers at PBXIAF.
-//  Development SVN is at projects.colsolgrp.net
-//	Caller ID Tricfecta / Superfecta was invented by Ward Mundy,
+//  Superfecta code maintained by PBX Open Source Software Alliance.
+//  Development site is at: https://github.com/POSSA/Caller-ID-Superfecta/
+//  Caller ID Tricfecta / Superfecta was invented by Ward Mundy,
 //  based on another authors work.
 //
 //	v 1.0.0 - 1.1.0 Created / coded by Tony Shiffer
 //	V 2.0.0 - 2.20 Principle developer Jeremy Jacobs
-//  v 2.2.1		Significant development by Patrick ELX
+//	v 2.2.1  Significant development by Patrick ELX
 //
 //	This program is free software; you can redistribute it and/or modify it
 //	under the terms of the GNU General Public License as published by
 //	the Free Software Foundation; either version 2 of the License, or
 //	(at your option) any later version.
-//
+
 
 $scheme = (isset($_REQUEST['scheme'])) ? $_REQUEST['scheme'] : '';
 $module_info = xml2array("modules/superfecta/module.xml");
@@ -338,9 +338,9 @@ action="javascript:Ht_debug(document.forms.debug_form.thenumber.value,'.$did_tes
 //uncomment line below to see the available array values in $module_info.
 //print '<pre>'.print_r($module_info,true).'</pre>';
 
-print '<p align="center" style="font-size:10px;">This Project is now hosted/maintained at <a href="https://github.com/tm1000/Caller-ID-Superfecta">https://github.com/tm1000/Caller-ID-Superfecta</a> Feel free to fork/help/complain<br />The CallerID Superfecta module was maintained by the Community at<a target="_blank" href="http://projects.colsolgrp.net/projects/show/superfecta"> CSG Software Projects</a>, and by the forum users at <a target="_blank" href="http://www.pbxinaflash.com/forum">PBX In A Flash Forums</a>.<br>The Superfecta was Modularized for FreePBX by Tony Shiffer, based on an earlier (non module) work by <a target="_blank" href="http://www.nerdvittles.com">Ward Mundy</a>.<br>  
-		<a target="_blank" href="https://github.com/tm1000/Caller-ID-Superfecta/wiki">This Module\'s wiki pages can be found here.</a>
-		<br><br><a target="_blank" href="https://github.com/tm1000/Caller-ID-Superfecta/issues?sort=created&amp;direction=desc&amp;state=open">Module version '.$module_info['module']['version'].'</a></p>';
+print '<p align="center" style="font-size:10px;">This Project is now hosted/maintained at <a href="https://github.com/POSSA/Caller-ID-Superfecta">https://github.com/POSSA/Caller-ID-Superfecta</a> Feel free to fork/help/complain<br />The CallerID Superfecta module was formerly maintained by the Community at CSG Software Projects, and by the forum users at <a target="_blank" href="http://pbxinaflash.com/community/index.php">PBX In A Flash Forums</a>.<br>The Superfecta was Modularized for FreePBX by Tony Shiffer, based on an earlier (non module) work by <a target="_blank" href="http://www.nerdvittles.com">Ward Mundy</a>.<br>  
+		<a target="_blank" href="https://github.com/POSSA/Caller-ID-Superfecta/wiki">This Module\'s wiki pages can be found here.</a>
+		<br><br><a target="_blank" href="https://github.com/POSSA/Caller-ID-Superfecta/issues?sort=created&amp;direction=desc&amp;state=open">Module version '.$module_info['module']['version'].'</a></p>';
 ?>
 <script language="javascript">
 <!--

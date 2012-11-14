@@ -3,8 +3,7 @@
 //If a valid match is found, it will give $caller_id a value
 //available variables for use are: $thenumber
 //retreive website contents using get_url_contents($url);
-//April 16,2012 by Ward Mundy
-
+//Last edited Oct 29, 2012 by lgaetz
 
 //configuration / display parameters
 //The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
@@ -15,7 +14,7 @@ $source_desc = "http://411.info - These listings include business and residentia
 if($usage_mode == 'get caller id')
 {
 	$value = "";
-        $name = "";
+	$name = "";
 	$number_error = false;
 
 	if($debug)
@@ -35,8 +34,8 @@ if($usage_mode == 'get caller id')
 		{
 			$number_error = true;
 		}
-
 	}
+
 	// international dialing prefix + country code + number
 	if (strlen($thenumber) > 11)
 	{
@@ -55,7 +54,6 @@ if($usage_mode == 'get caller id')
 				$number_error = true;
 			}
 		}
-
 	}
 
 	if(strlen($thenumber) < 10)
@@ -72,19 +70,19 @@ if($usage_mode == 'get caller id')
 	}
 	else
 	{
-        	$thenumber = (substr($thenumber,0,1) == 1) ? substr($thenumber,1) : $thenumber;
+		$thenumber = (substr($thenumber,0,1) == 1) ? substr($thenumber,1) : $thenumber;
 		// Set the url we're searching for valid as of April 16, 2012
 		$url="http://411.info/reverse/?r=$thenumber";
 		$value = get_url_contents($url);
 
 		// Patterns to search for
 		$regexp = array(
-			"/<span class=\"list_title\"><a href=\".*\">(.*)<\/a>/",
-
+			"/<span class=\"list_title\"><a href=\".*\">(.*)<\/a>/",    // not working Oct 29, 2012
+			"/<div class=\"cname\" itemprop=\"name\">(.*)<\/div>/",     // working Oct 29, 2012
 		);
 
 		// Look through each pattern to see if we find a match -- take the first match
-                foreach ($regexp as $pattern){
+		foreach ($regexp as $pattern){
 			preg_match($pattern, $value, $match);
 			if(isset($match[1]) && (strlen(trim(strip_tags($match[1]))))){
 				$name = trim(strip_tags($match[1]));
