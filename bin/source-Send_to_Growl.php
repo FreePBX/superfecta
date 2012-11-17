@@ -1,24 +1,27 @@
 <?php 
 /*	
 	Growl Notification Module : Send notifications to multiple hosts
-	
+	Version 1.1
 	Written By Francois Dechery, aka Soif. https://github.com/soif/,
 	
-	* Version 1.0, Nov 14, 2012 - Initial Release
+	* Version History:
+	 	- 1.1, Nov 17, 2012 - Fix bug when one workstation is not online
+	 	- 1.0, Nov 14, 2012 - Initial Release
 
 	* Requirements: 
 		- Php 5.x.x
 		- Growl Pear Module (see below)
-		- Mac, Windows workstation or iphone, ipad, android phones with a Growl client:
+		- Mac, Windows, linux workstations or iphone, ipad, android phones with a Growl client:
 			Mac		: http://growl.info/
 			Win		: http://www.growlforwindows.com
+			Linux	: http://mattn.github.com/growl-for-linux/
 			IOS		: http://www.prowlapp.com/
 			Android	: https://play.google.com/store/apps/details?id=com.growlforandroid.client
 
 	* Notes: I've only tested this software on mac clients, but I expect it to also 
 	work on others clients (using the 'Gntp' mode).
 
-	*Licence: This program is free software; you can redistribute it and/or modify it 
+	* Licence: This program is free software; you can redistribute it and/or modify it 
 	under the terms of the GNU General Public License as published by the Free Software 
 	Foundation; either version 2 of the License, or (at your option) any later version.
 */
@@ -167,6 +170,7 @@ if($usage_mode == 'post processing'){
 					if($debug){print "OK</li>\n";}
 				}
 				catch (Net_Growl_Exception $e) {
+					$growl->reset();
 					if($debug){print "ERROR= ".$e->getMessage() ."</li>\n";}
 				}
 				
@@ -182,7 +186,8 @@ if($usage_mode == 'post processing'){
 						if($debug){print "OK</li>\n";}
 					}
 						catch (Net_Growl_Exception $e) {
-						if($debug){print "ERROR= ".$e->getMessage() ."</li>\n";}
+							$growl->reset();
+							if($debug){print "ERROR= ".$e->getMessage() ."</li>\n";}
 					}
 				}
 			}
