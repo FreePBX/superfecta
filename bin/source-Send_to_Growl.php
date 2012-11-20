@@ -1,10 +1,11 @@
 <?php 
 /*	
 	Growl Notification Module : Send notifications to multiple hosts
-	Version 1.2
+	Version 1.3
 	Written By Francois Dechery, aka Soif. https://github.com/soif/,
 	
 	* Version History:
+	 	- 1.3, Now 20, 2012 - Allow Infos to be entered even if the pear module is not installed
 	 	- 1.2, Nov 19, 2012 - Do not run if required Net_growl pear module is not installed and shout in debug mode when the module is missing
 	 	- 1.1, Nov 17, 2012 - Fix bug when one workstation is not online
 	 	- 1.0, Nov 14, 2012 - Initial Release
@@ -44,54 +45,53 @@ $path_to_growl_autoload='Net/Growl/Autoload.php';
 
 // #######################################################################################
 
+//The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
+$source_desc = "This source will send the number and the Caller ID to multiple computers.<br>This datasource should be one of the last data sources on your list, as it does not provide any data of its own, and can only send what information has been collected before it is run.";
+
+$source_param = array();
+$source_param['Hosts']['desc'] 			= 'Specify the IPs of hosts to be notified (separated by ",") ';
+$source_param['Hosts']['type'] 			= 'text';
+$source_param['Hosts']['default'] 		= '10.0.0.1';
+
+$source_param['Display_Setting']['desc'] = 'Number Format';
+$source_param['Display_Setting']['type'] = 'select';
+$source_param['Display_Setting']['option'][1] = '(132) 456-7890';
+$source_param['Display_Setting']['option'][2] = '12 34 56 78 90';
+$source_param['Display_Setting']['option'][3] = 'no formatting';
+$source_param['Display_Setting']['default'] = 3;
+
+$source_param['Mode']['desc'] 			= 'Growl Protocol';
+$source_param['Mode']['type'] 			= 'select';
+$source_param['Mode']['option']['udp'] 	= 'Udp (MacOSX only )';
+$source_param['Mode']['option']['gntp'] = 'Gntp (MacOSX >=10.7 , Windows )';
+$source_param['Mode']['option']['both'] = 'Both';
+$source_param['Mode']['default'] 		= 'udp';
+
+$source_param['Priority']['desc'] 		= 'Priority (-2|-1|0|1|2)';
+$source_param['Priority']['type'] 		= 'select';
+$source_param['Priority']['option'][-2] = 'Low';
+$source_param['Priority']['option'][-1] = 'Moderate';
+$source_param['Priority']['option'][0] 	= 'Normal';
+$source_param['Priority']['option'][1] 	= 'High';
+$source_param['Priority']['option'][2] 	= 'Emergency';
+$source_param['Priority']['default'] 	= 1;
+
+$source_param['Sticky']['desc'] 		= 'Sticky (0|1)';
+$source_param['Sticky']['type'] 		= 'select';
+$source_param['Sticky']['option'][0] 	= 'No';
+$source_param['Sticky']['option'][1] 	= 'Yes';
+
+$source_param['Application']['desc'] 	= 'Application Name';
+$source_param['Application']['type'] 	= 'text';
+$source_param['Application']['default'] = 'Pbx Notification';
+
+$source_param['Password']['desc'] 		= 'Password';
+$source_param['Password']['type'] 		= 'text';
+$source_param['Password']['default'] 	= '';
+
 @include_once $path_to_growl_autoload;
 
 if( class_exists("Net_Growl") ){
-
-	//The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
-	$source_desc = "This source will send the number and the Caller ID to multiple computers.<br>This datasource should be one of the last data sources on your list, as it does not provide any data of its own, and can only send what information has been collected before it is run.";
-
-	$source_param = array();
-	$source_param['Hosts']['desc'] 			= 'Specify the IPs of hosts to be notified (separated by ",") ';
-	$source_param['Hosts']['type'] 			= 'text';
-	$source_param['Hosts']['default'] 		= '10.0.0.1';
-
-	$source_param['Display_Setting']['desc'] = 'Number Format';
-	$source_param['Display_Setting']['type'] = 'select';
-	$source_param['Display_Setting']['option'][1] = '(132) 456-7890';
-	$source_param['Display_Setting']['option'][2] = '12 34 56 78 90';
-	$source_param['Display_Setting']['option'][3] = 'no formatting';
-	$source_param['Display_Setting']['default'] = 3;
-
-	$source_param['Mode']['desc'] 			= 'Growl Protocol';
-	$source_param['Mode']['type'] 			= 'select';
-	$source_param['Mode']['option']['udp'] 	= 'Udp (MacOSX only )';
-	$source_param['Mode']['option']['gntp'] = 'Gntp (MacOSX >=10.7 , Windows )';
-	$source_param['Mode']['option']['both'] = 'Both';
-	$source_param['Mode']['default'] 		= 'udp';
-
-	$source_param['Priority']['desc'] 		= 'Priority (-2|-1|0|1|2)';
-	$source_param['Priority']['type'] 		= 'select';
-	$source_param['Priority']['option'][-2] = 'Low';
-	$source_param['Priority']['option'][-1] = 'Moderate';
-	$source_param['Priority']['option'][0] 	= 'Normal';
-	$source_param['Priority']['option'][1] 	= 'High';
-	$source_param['Priority']['option'][2] 	= 'Emergency';
-	$source_param['Priority']['default'] 	= 1;
-
-	$source_param['Sticky']['desc'] 		= 'Sticky (0|1)';
-	$source_param['Sticky']['type'] 		= 'select';
-	$source_param['Sticky']['option'][0] 	= 'No';
-	$source_param['Sticky']['option'][1] 	= 'Yes';
-
-	$source_param['Application']['desc'] 	= 'Application Name';
-	$source_param['Application']['type'] 	= 'text';
-	$source_param['Application']['default'] = 'Pbx Notification';
-
-	$source_param['Password']['desc'] 		= 'Password';
-	$source_param['Password']['type'] 		= 'text';
-	$source_param['Password']['default'] 	= '';
-
 
 	// Start Processing ----------------------------------------------------------------------
 	if($usage_mode == 'post processing'){
