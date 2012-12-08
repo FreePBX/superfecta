@@ -3,7 +3,7 @@
 //If a valid match is found, it will give $caller_id a value
 //available variables for use are: $thenumber
 //retreive website contents using get_url_contents($url);
-//Created December 7,2011 by lgaetz
+//Last edited December 12,2012 by lgaetz
 
 //configuration / display parameters
 //The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
@@ -23,15 +23,17 @@ if($usage_mode == 'get caller id')
 
 	//all number checking removed, Austria numbering conventions are not straightforward,
 
-	// Set the url we're searching for valid as of December 7, 2011
-	$url="http://www.herold.at/en/gelbe-seiten/telefon_".$thenumber."/";
+	// Set the url we're searching for 
+//	$url="http://www.herold.at/en/gelbe-seiten/telefon_".$thenumber."/";  //valid December 7, 2011
+	$url="http://www.herold.at/telefonbuch/telefon_".$thenumber."/";    //working December 8, 2012
 
 	$value = get_url_contents($url);
 
 	// Patterns to search for
 	$regexp = array(
 //		"/<span title=\"Siehe Karte Position A\">A<\/span><\/div><\/td><td><h2><a href=.*\/\">(.*)<\/a><\/h2>/",
-		"/<span title=\"Siehe Karte Position A\">A.*\">(.*)<\/a><\/h2>/",
+//		"/<span title=\"Siehe Karte Position A\">A.*\">(.*)<\/a><\/h2>/",
+		"/<div class=\"result\"><p class=\"poiIcon none\"><\/p><div class=\"result-wrap\"><h2 class=\"fullw\"><a href=\".*?\">(.*?)<\/a><\/h2><div class=\"addr fullw\">/",
  	);
 
 	// By default, there is no match
