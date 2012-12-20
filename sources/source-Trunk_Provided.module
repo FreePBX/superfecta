@@ -1,5 +1,5 @@
 <?php
-// last edited Sept 18, 2012 by lgaetz
+// last edited Dec 20, 2012 by tm1000
 class Trunk_Provided extends superfecta_base {
 
     public $description = "Locates the Caller ID Name provided by the trunk, and then decides based on a list of key words if the provided name should be used.";
