@@ -15,7 +15,7 @@ class Trunk_Provided extends superfecta_base {
     function get_caller_id($thenumber, $run_param=array()) {
         $this->DebugPrint("Looking for Trunk Provided Caller ID ... ");
         $key_words = array();
-        $temp_array = explode(',', (isset($run_param['Ignore_Keywords']) ? $run_param['Ignore_Keywords'] : Trunk_Provided::$source_param['Ignore_Keywords']['default']));
+        $temp_array = explode(',', (isset($run_param['Ignore_Keywords']) ? $run_param['Ignore_Keywords'] : $this->source_param['Ignore_Keywords']['default']));
         foreach ($temp_array as $val) {
             $key_words[] = trim($val);
         }
