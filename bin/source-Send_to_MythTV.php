@@ -1,7 +1,7 @@
 <?php
 // this file is designed to be used as an include that is part of a loop.
 // created by lgaetz
-// last edited Jan 9, 2013
+// last edited Jan 10, 2013
 
 //configuration / display parameters
 //The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
@@ -40,7 +40,7 @@ if($usage_mode == 'post processing')
 	// format $thenumber for display
 	$thenumberformated = $thenumber;
 	switch ($run_param['Format_Incomming_Number'])  {
-		case 1:
+		case 2:
 			if (strlen($thenumber)==10)	{
 				$thenumberformated='('.substr($thenumber,0,3).') '.substr($thenumber,3,3).'-'.substr($thenumber,6,4);
 			}
@@ -48,7 +48,7 @@ if($usage_mode == 'post processing')
 				$thenumberformated='1('.substr($thenumber,1,3).') '.substr($thenumber,4,3).'-'.substr($thenumber,7,4);
 			}
 			break;
-		case 2:
+		case 3:
 			if (strlen($thenumber)==10) {
 				$thenumberformated=substr($thenumber,0,3).'-'.substr($thenumber,3,3).'-'.substr($thenumber,6,4);
 			}
@@ -56,7 +56,7 @@ if($usage_mode == 'post processing')
 				$thenumberformated='1-'.substr($thenumber,1,3).'-'.substr($thenumber,4,3).'-'.substr($thenumber,7,4);
 			}
 			break;
-		case 3:
+		case 4:
 			if (strlen($thenumber)==10)  {
 				$thenumberformated=substr($thenumber,0,2).' '.substr($thenumber,2,2).' '.substr($thenumber,4,2).' '.substr($thenumber,6,2).' '.substr($thenumber,8,2);
 			}
@@ -64,18 +64,28 @@ if($usage_mode == 'post processing')
 	}
 	
 	// replace [NAME] and [NUMBER] placeholders with actual values
-	$notice = str_replace('[NAME]',  preg_replace( '/\s+/', ' ', trim($myth_cnam)), $run_param['Notification']);
+	$notice = $run_param['Notification'];
+	$notice = str_replace('[NAME]',  preg_replace( '/\s+/', ' ', trim($myth_cnam)), $notice);
 	$notice = str_replace('[NUMBER]', $thenumberformated, $notice);
+	$notice = str_replace('[name]',  preg_replace( '/\s+/', ' ', trim($myth_cnam)), $notice);
+	$notice = str_replace('[number]', $thenumberformated, $notice);
 
-	//  break up hosts string into individual hosts and push URL to each
+	
+	if($debug)  {
+		print 'MythTV Notice: '.$notice;
+	}
+
+	//  break up hosts string into individual hosts and push notice to each
 	$mythtv_hosts=explode(',',$run_param['IP_address:Port']);
+	$index = 1;
 	foreach ( $mythtv_hosts as $mythtv_host )  {
 		if ($mythtv_host && $myth_cnam != "")  {
 			$url="http://".trim($mythtv_host)."/Frontend/SendMessage?Message=\"".urlencode($notice)."\"";
 			if($debug)  {
-				print 'Send to URL: '.$url.'<br>';
+				print '<br>MythTV host #'.$index.': '.$mythtv_host.'<br>';
 			}
 		$value = get_url_contents($url);
+		$index++;
 		}
 	}
 }
