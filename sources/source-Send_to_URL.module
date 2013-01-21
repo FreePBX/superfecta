@@ -1,20 +1,34 @@
 <?php
+/*** ****** *** *** 
+Send_to_URL dev notes:
+August 7, 2011		Initial migration from 2.2.x by ukstevef
+January 21, 2013	Update to permit freeform URL by lgaetz
+
+*** ****** *** ***/
 
 class Send_to_URL extends superfecta_base {
 
-    public $description = "This source will send the number and the Caller ID to an URL for external processing.<br>The URL you enter will be sent, with the following appended to it:<br>?thenumber=<i>the CID number</i>&CLID=<i>the CID Name</i>.<br>The destination url must be able to collect and use those arguments.<br>This datasource should be one of the last data sources on your list, as it does not provide any data of its own, and can only send what information has been collected before it is run.";
+    public $description = "This source will send the CID number and the CID name to an URL for external processing.  The URL you enter will be sent with the actual values substitued for [NAME] and [NUMBER] but otherwise UNMODIFIED.";
     public $version_requirement = "2.11";
     public $source_param = array(
         'URL_address' => array(
-            'description' => 'Specify A URL to send CID/CNAM data to. Use the format \'http://url.org\'',
-            'type' => 'text',
-            'default' => ""
+            'description' => 'Specify A URL to send CID/CNAM data to. Use the format \'http://url.org?thenumber=[NUMBER]&CLID=[NAME]\' where [NAME] and [NUMBER] will have actual values substituted',
+            'type' => 'textarea',
+            'default' => "http://10.0.0.10?thenumber=[NUMBER]&CLID=[NAME]"
         )
     );
 
     function post_processing($cache_found, $winning_source, $first_caller_id, $run_param, $thenumber) {
+
         if (($run_param['URL_address'] != '') && ($first_caller_id != '')) {
-            $url = $run_param['URL_address'] . '?thenumber=' . $thenumber . '&CLID=' . $first_caller_id;
+
+			// replace [NAME] and [NUMBER] placeholders with actual values and urlencode
+			$url = $run_param['URL_address'];
+			$url = str_replace('[NAME]',  $first_caller_id, $url);
+			$url = str_replace('[NUMBER]', $thenumber, $url);
+			$url = str_replace('[name]',  $first_caller_id, $url);
+			$url = str_replace('[number]', $thenumber, $url);
+            $url = urlencode($url);
 
             $this->DebugPrint("Send to URL: {$url}");
 
