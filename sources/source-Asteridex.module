@@ -1,0 +1,82 @@
+<?php
+/*** *** ***
+Dev Notes:
+Created Feb 2, 2013 by lgaetz - rev. 0 
+*** *** ***/
+
+class Asteridex extends superfecta_base {
+
+    public $description = "Searches The Asteridex for appearance of the number and return name if present";
+    public $version_requirement = "2.11";
+    public $source_param = array(
+        'DB_Host' => array(
+            'description' => 'Host address of Asteridex database. (localhost if the database is on the same server as FreePBX)',
+            'type' => 'text',
+            'default' => 'localhost'
+        ),
+        'DB_Name' => array(
+            'description' => 'Name of Asteridex database',
+            'type' => 'text',
+            'default' => 'asteridex'
+        ),
+		'DB_User' => array(
+            'description' => 'Username used to connect to the Asteridex database',
+            'type' => 'text',
+            'default' => 'root'
+        ),
+        'DB_Password' => array(
+            'description' => 'Password used to connect to the Asteridex database',
+            'type' => 'password',
+            'default' => 'passw0rd'
+        ),
+		'Filter_Length' => array(
+            'description' => 'The number of rightmost digits to check for a match. Enter zero to disable.',
+            'type' => 'number',
+            'default' => '10'
+        ),
+    );
+
+    function get_caller_id($thenumber, $run_param=array()) {
+     
+		// initialize variables
+		$wresult_caller_name = "";
+		$wquery_result = "";
+		$wquery_row = "";
+		$caller_id = null;
+
+		$this->DebugPrint("Searching Asteridex ... ");
+			
+		//  trim incoming number to specified filter length if specified
+		if ($run_param['Filter_Length'] != 0)   {
+			$thenumber = substr($thenumber, (-1*$run_param['Filter_Length']));
+		}
+
+		//  Build regular expression from the modified $thenumber to avoid non-digit characters stored in database
+		$wquery = "'[^0-9]*";
+		for( $x=0; $x < ((strlen($thenumber))-1); $x++ ) {
+			$wquery .=  substr($thenumber,$x,1)."[^0-9]*" ;
+		}
+		$wquery = $wquery.(substr($thenumber,-1))."([^0-9]+|$)'";
+
+		//  Make a MySQL Connection
+		mysql_connect($run_param['DB_Host'], $run_param['DB_User'], $run_param['DB_Password']) or die(mysql_error());
+		mysql_select_db($run_param['DB_Name']) or die(mysql_error());
+
+		//  Search Asteridex
+		$wquery_string = "SELECT * FROM `user1` where `out` REGEXP ".$wquery;
+		$wquery_result = mysql_query($wquery_string) or die("AsteriDex query failed: $wquery_string");
+
+		if (mysql_num_rows($wquery_result)>0)  {
+			$row = mysql_fetch_array($wquery_result);
+			$value = $row["name"];
+		}
+
+		//  Pass result to Superfecta module via $caller_id variable
+		if ($value != "")  {
+			$caller_id = trim($value);
+			
+		}
+
+        return($caller_id);
+	}
+}
