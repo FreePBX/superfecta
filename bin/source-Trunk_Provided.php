@@ -3,6 +3,7 @@
 //If a valid match is found, it should give $caller_id a value
 //available variables for use are: $thenumber
 //retreive website contents using get_url_contents($url);
+// Last edited February 6, 2013 by lgaetz
 
 //configuration / display parameters
 //The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
@@ -15,6 +16,10 @@ $source_param['Ignore_Keywords']['default'] = 'unknown, toll free, unlisted, (N/
 $source_param['Discard_Numeric']['desc'] = 'Enable this setting to discard trunk provided CNAM that is all digits.';
 $source_param['Discard_Numeric']['type'] = 'checkbox';
 $source_param['Discard_Numeric']['default'] = 'on';
+$source_param['Convert_to_Lowercase']['desc'] = 'Enable this setting convert ALL CAPS to Lower Case with Leading Caps.';
+$source_param['Convert_to_Lowercase']['type'] = 'checkbox';
+$source_param['Convert_to_Lowercase']['default'] = 'on';
+
 
 //run this if the script is running in the "get caller id" usage mode.
 if($usage_mode == 'get caller id')
@@ -79,9 +84,16 @@ if($usage_mode == 'get caller id')
 		$provided_caller_id='';
 		if($debug)
 		{
-		print "CID is all numeric - discarded<br>\n";
+			print "CID is all numeric - discarded<br>\n";
 		}
-        }
+	}
+
+	//  Convert case if user enables
+	if ($run_param['Convert_to_Lowercase'] == 'on')
+	{
+		 $provided_caller_id = ucwords(strtolower($provided_caller_id));
+	}
+
 	if($debug && ($provided_caller_id == ''))
 	{
 		print "not found<br>\n";
