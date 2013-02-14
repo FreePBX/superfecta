@@ -1,11 +1,21 @@
 <?php
 
+if (! function_exists("out")) {
+	function out($text) {
+		echo $text."<br />";
+	}
+}
+
+if (! function_exists("outn")) {
+	function outn($text) {
+		echo $text;
+	}
+}
+
 $sql = 'SELECT value FROM `admin` WHERE `variable` LIKE CONVERT(_utf8 \'version\' USING latin1) COLLATE latin1_swedish_ci';
 preg_match('/^(\d*)\.(\d*)/', $db->getOne($sql), $versions);
 
 $amp_version['minor'] = $versions[2];
-
-print 'Installing Caller ID Superfecta<br>';
 
 // Set execute permissions for AGI script
 chmod(dirname(__FILE__) . '/superfecta.agi', 0755);
@@ -341,3 +351,18 @@ if ($amp_version['minor'] < 9) {
         }
     }
 }
+
+out("Removing old/broken symlinks");
+$dir_iterator = new RecursiveDirectoryIterator($amp_conf['AMPBIN']."/");
+$iterator = new RecursiveIteratorIterator($dir_iterator, RecursiveIteratorIterator::SELF_FIRST);
+foreach ($iterator as $filename) {
+    $path_parts = pathinfo($filename);
+    if(($path_parts['extension'] == "php") && is_link($filename)) {
+        $location = readlink($filename);
+        if(($location) && (dirname($location) == dirname(__FILE__)."/bin") && !file_exists($location)) {
+            out("Removing ".$filename);
+            unlink($filename);
+        }
+    }
+}
+

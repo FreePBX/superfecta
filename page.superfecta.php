@@ -24,9 +24,9 @@ define("SUPERFECTA_ROOT_PATH", dirname(__FILE__) . '/');
 require_once(SUPERFECTA_ROOT_PATH . 'includes/rain.tpl.class.php');
 
 //Define template locations
-raintpl::configure("base_url", SUPERFECTA_ROOT_PATH . '/tpl/images/');
-raintpl::configure("tpl_dir", SUPERFECTA_ROOT_PATH . 'tpl/');
-raintpl::configure("cache_dir", SUPERFECTA_ROOT_PATH . 'tpl/compiled/');
+raintpl::configure("base_url", SUPERFECTA_ROOT_PATH . '/views/images/');
+raintpl::configure("tpl_dir", SUPERFECTA_ROOT_PATH . 'views/');
+raintpl::configure("cache_dir", SUPERFECTA_ROOT_PATH . 'views/compiled/');
 
 //Setup templating engine
 $supertpl = new RainTPL;
@@ -107,44 +107,6 @@ foreach ($results as $data) {
 $supertpl->assign('schemes', $scheme_list);
 
 $supertpl->draw('header');
-
-/*
-  $count = 1;
-  foreach($results as $val)
-  {
-  print '';
-  if($count < count($results))
-  {
-  print '<img style="float: left; margin: 4px 1px 0px 1px;" class="button" onmouseover="this.style.cursor=\'pointer\';" onclick="window.location.href=\'config.php?display=superfecta&amp;schemedown='.$val[0].'\'" src="images/scrolldown.gif" alt="Down Arrow" title="Move Down List">';
-  }
-  else
-  {
-  print '<div style="width: 11px; float: left; height: 5px;"></div>';
-  }
-  if(($count > 1) && (count($results) > 1))
-  {
-  print '<img style="float: left; margin: 4px 1px 0px 1px;" class="button" onmouseover="this.style.cursor=\'pointer\';" onclick="window.location.href=\'config.php?display=superfecta&amp;schemeup='.$val[0].'\'" src="images/scrollup.gif" alt="Up Arrow" title="Move Up List">';
-  }
-  else
-  {
-  print '<div style="width: 11px; float: left; height: 5px;"></div>';
-  }
-  print '<img style="float: left; margin: 4px 1px 0px 1px;" class="button" onmouseover="this.style.cursor=\'pointer\';" onclick="window.location.href=\'config.php?display=superfecta&amp;schemecopy='.$val[0].'\'" src="assets/superfecta/images/copy.gif" alt="Duplicate Scheme" title="Duplicate Scheme">
-  <img style="float: left; margin: 4px 1px 0px 1px;" class="button" onmouseover="this.style.cursor=\'pointer\';" onclick="decision(\'Are you sure you want to delete this Scheme?\',\'config.php?display=superfecta&amp;schemedelete='.$val[0].'\');" src="assets/superfecta/images/delete.gif" alt="Delete Button" title="Delete Scheme">
-  <a href="config.php?display=superfecta&amp;scheme='.$val[0].'" style="float: left;">';
-  if($val[1] > 0)
-  {
-  print substr($val[0],5);
-  }
-  else
-  {
-  print '<font color="#ff3c3c">'.substr($val[0],5).'</font>';
-  }
-  print '</a>&nbsp;</li>';
-  $count++;
-  }
- * 
- */
 
 if ($scheme != "") {
     $conf = superfecta_getConfig($scheme);

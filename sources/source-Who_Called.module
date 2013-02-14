@@ -2,7 +2,7 @@
 
 class Who_Called extends superfecta_base {
 
-    public $description = "http://whocalled.us - These listings are provided by other users of the whocalled service. This service requires authentication - which you configure by clicking on this datasource. <br>This data source requires Superfecta Module version 2.2.1 or higher.";
+    public $description = "http://whocalled.us - These listings are provided by other users of the whocalled service. This service requires authentication - which you configure by clicking on this datasource.";
     public $version_requirement = "2.11";
     public $source_param = array(
         'Username' => array(
@@ -24,6 +24,11 @@ class Who_Called extends superfecta_base {
             $this->DebugPrint("Searching Who Called ... ");
 
             $url = "http://whocalled.us/do?action=getWho&name=" . $run_param['Username'] . "&pass=" . $run_param['Password'] . "&phoneNumber=$thenumber";
+            if(empty($run_param['Username']) || empty($run_param['Password'])) {
+                $this->DebugPrint("No username and/or password set!");
+                return '';
+            }
+            
             $value = $this->get_url_contents($url);
 
             $variables = preg_split('/\&/i', $value);

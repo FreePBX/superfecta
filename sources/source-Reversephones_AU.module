@@ -1,5 +1,5 @@
 <?php
-
+//This needs to be re-written to use API
 class Reversephones_AU extends superfecta_base {
 
     public $description = "http://reversephones.com.au - 	These listings include residential data for AU.";

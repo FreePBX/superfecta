@@ -1,4 +1,4 @@
-<p>Add, Remove, Enable, Disable, Sort and Configure data sources as appropriate for your situation.</p>
+<?php if(!class_exists('raintpl')){exit;}?><p>Add, Remove, Enable, Disable, Sort and Configure data sources as appropriate for your situation.</p>
 <p>Select which data source(s) to use for your lookups, and the order in which you want them used:</p>
 <div id="CIDSourcesList">
     <script language="javascript">
@@ -60,7 +60,7 @@
             var debuglevel = $('#debug_level').val();
             var thenumber = $('#thenumber').val();
             var thedid = $('#thedid').val();
-            var scheme = '{$scheme}';
+            var scheme = '<?php echo $scheme;?>';
             if($('#allscheme').is (':checked')) {
                 scheme = 'ALL';
             }
@@ -125,7 +125,7 @@
             });
             source_json = source_json + "]";
             $.ajaxSetup({ cache: false });
-            $.getJSON("config.php?quietmode=1&handler=file&module=superfecta&file=ajax.html.php&type=update_sources&scheme={$scheme}", 
+            $.getJSON("config.php?quietmode=1&handler=file&module=superfecta&file=ajax.html.php&type=update_sources&scheme=<?php echo $scheme;?>", 
             {
                 data: source_json
             },
@@ -167,7 +167,7 @@
             var parent_id = $('#' + id).parent().parent().attr("id");
             $('#options').fadeOut('slow', function() {
                 $.ajaxSetup({ cache: false });
-                $.getJSON("config.php?quietmode=1&handler=file&module=superfecta&file=ajax.html.php&type=options&scheme={$scheme}&source="+parent_id, function(json) {
+                $.getJSON("config.php?quietmode=1&handler=file&module=superfecta&file=ajax.html.php&type=options&scheme=<?php echo $scheme;?>&source="+parent_id, function(json) {
                     if(json.success && json.show) {
                         $('#options').fadeIn('slow').html(json.data);
                         $('#form_options_'+parent_id).submit(function() { 
@@ -186,7 +186,7 @@
     <input type="hidden" name="update_file" value="">
     <input type="hidden" name="delete_file" value="">
     <input type="hidden" name="revert_file" value="">
-    <span id="message" class="superfecta_message">{$update_site_message}</span></br>
+    <span id="message" class="superfecta_message"><?php echo $update_site_message;?></span></br>
     <font size=2><input id="update_check" name="update_check" type="checkbox">&nbsp;Check for Data Source File updates online.<br></font>
 
     <table>
@@ -202,17 +202,19 @@
                         <td align="center"><strong>Disabled</strong></td>
                         <td align="center"><strong>Enabled</strong></td>
                     </tr>
-                    {loop="sources"}
-                    <tr id="{$value.source_name}" class="{$value.status}">
+                    <?php $counter1=-1; if( isset($sources) && is_array($sources) && sizeof($sources) ) foreach( $sources as $key1 => $value1 ){ $counter1++; ?>
+
+                    <tr id="<?php echo $value1["source_name"];?>" class="<?php echo $value1["status"];?>">
                         <td>&nbsp;</td>
                         <td>&nbsp;</td>
-                        <td><img id="{$value.source_name}_movedown" onclick="movedown_source(this.id);" src="images/scrolldown.gif" {if condition="$value.showdown === FALSE"}hidden{/if}/></td>
-                        <td><img id="{$value.source_name}_moveup" onclick="moveup_source(this.id);" src="images/scrollup.gif" {if condition="$value.showup === FALSE"}hidden{/if}/></td>
-                        <td>{if condition="$value.show_link === TRUE"}<a id="{$value.source_name}_options" onclick="options(this.id)" style="cursor:pointer;">{/if}{$value.pretty_source_name}{if condition="$value.show_link === TRUE"}</a>{/if}<a class="info"><span>{$value.description}</span></a><img id="{$value.source_name}_update" onclick="movedown_update(this.id);" src="assets/superfecta/images/update.png" {if condition="$value.showupdate === FALSE"}hidden{/if}/></td>
-                        <td align="center"><input type="radio" id="{$value.source_name}_disabled" name="{$value.source_name}" value="disabled" onclick="disable_source(this.id)" {if condition="$value.enabled === FALSE"}checked{/if}/></td>
-                        <td align="center"><input type="radio" id="{$value.source_name}_enabled" name="{$value.source_name}" value="enabled" onclick="enable_source(this.id)" {if condition="$value.enabled === TRUE"}checked{/if}/></td>
+                        <td><img id="<?php echo $value1["source_name"];?>_movedown" onclick="movedown_source(this.id);" src="images/scrolldown.gif" <?php if( $value1["showdown"] === FALSE ){ ?>hidden<?php } ?>/></td>
+                        <td><img id="<?php echo $value1["source_name"];?>_moveup" onclick="moveup_source(this.id);" src="images/scrollup.gif" <?php if( $value1["showup"] === FALSE ){ ?>hidden<?php } ?>/></td>
+                        <td><?php if( $value1["show_link"] === TRUE ){ ?><a id="<?php echo $value1["source_name"];?>_options" onclick="options(this.id)" style="cursor:pointer;"><?php } ?><?php echo $value1["pretty_source_name"];?><?php if( $value1["show_link"] === TRUE ){ ?></a><?php } ?><a class="info"><span><?php echo $value1["description"];?></span></a><img id="<?php echo $value1["source_name"];?>_update" onclick="movedown_update(this.id);" src="assets/superfecta/images/update.png" <?php if( $value1["showupdate"] === FALSE ){ ?>hidden<?php } ?>/></td>
+                        <td align="center"><input type="radio" id="<?php echo $value1["source_name"];?>_disabled" name="<?php echo $value1["source_name"];?>" value="disabled" onclick="disable_source(this.id)" <?php if( $value1["enabled"] === FALSE ){ ?>checked<?php } ?>/></td>
+                        <td align="center"><input type="radio" id="<?php echo $value1["source_name"];?>_enabled" name="<?php echo $value1["source_name"];?>" value="enabled" onclick="enable_source(this.id)" <?php if( $value1["enabled"] === TRUE ){ ?>checked<?php } ?>/></td>
                     </tr>
-                    {/loop}
+                    <?php } ?>
+
                 </table>
             </td>
             <td valign="top">
@@ -227,11 +229,11 @@
     <tr>
         <td valign="top">
             <form method="POST" action="config.php?quietmode=1&handler=file&module=superfecta&file=ajax.html.php&type=update_scheme" name="superfecta_options" id="superfecta_options">
-                <input type="hidden" name="scheme_name_orig" value="{$scheme_name}">
+                <input type="hidden" name="scheme_name_orig" value="<?php echo $scheme_name;?>">
                 <table border="0" id="table1" cellspacing="1">
                     <tr>
                         <td><a href="javascript:return(false);" class="info"><strong>Scheme Name:</strong><span>Duplicate Scheme names not allowed.</span></a></td>
-                        <td><input type="text" name="scheme_name" size="23" maxlength="20" value="{$scheme_name}"></td>
+                        <td><input type="text" name="scheme_name" size="23" maxlength="20" value="<?php echo $scheme_name;?>"></td>
                     </tr>
                     <tr>
                         <td colspan="2"><font face="Arial"><br><u>General Options</font></u></td>
@@ -241,7 +243,7 @@
                     <tr>
                         <td valign="top"><a href="javascript:return(false);" class="info">DID Rules<span>Define the expected DID Number if your trunk passes DID on incoming calls. <br><br>Leave this blank to match calls with any or no DID info.<br><br>This rule trys both absolute and pattern matching (eg "_2[345]X", to match a range of numbers). (The "_" underscore is optional.)</span></a>:</td>
                         <td>
-                            <textarea id="DID" tabindex="1" cols="20" rows="5" name="DID">{$did}</textarea>
+                            <textarea id="DID" tabindex="1" cols="20" rows="5" name="DID"><?php echo $did;?></textarea>
                         </td>
                     </tr>
                     <tr>
@@ -258,7 +260,7 @@
                                     You can also use both + and |, for example: 01+0|1ZXXXXXXXXX would match "016065551234" and dial it as "0116065551234" Note that the order does not matter, eg. 0|01+1ZXXXXXXXXX does the same thing.</span></a>:
                         </td>
                         <td valign="top">
-                            <textarea tabindex="2" id="dialrules" cols="20" rows="5" name="CID_rules">{$cid_rules}</textarea>
+                            <textarea tabindex="2" id="dialrules" cols="20" rows="5" name="CID_rules"><?php echo $cid_rules;?></textarea>
                         </td>
                     </tr>
                     <tr>
@@ -267,32 +269,36 @@
                     </tr>
                     <tr>
                         <td><a href="javascript:return(false);" class="info">Lookup Timeout<span>Specify a timeout in seconds for each source. If the source fails to return a result within the alloted time, the script will move on.</span></a></td>
-                        <td><input type="text" name="Curl_Timeout" size="4" maxlength="5" value="{$curl_timeout}"></td>
+                        <td><input type="text" name="Curl_Timeout" size="4" maxlength="5" value="<?php echo $curl_timeout;?>"></td>
                     </tr>
                     <tr>
                         <td>
                             <a href="javascript:return(false);" class="info">Superfecta Processor
                                 <span>These are the types of Superfecta Processors:<br />
-                                    {loop="processors_list"}
-                                    <strong>{$value.name}:</strong> {$value.description}<br />
-                                    {/loop}
+                                    <?php $counter1=-1; if( isset($processors_list) && is_array($processors_list) && sizeof($processors_list) ) foreach( $processors_list as $key1 => $value1 ){ $counter1++; ?>
+
+                                    <strong><?php echo $value1["name"];?>:</strong> <?php echo $value1["description"];?><br />
+                                    <?php } ?>
+
                                 </span></a>
                         </td>
                         <td>
                             <select name="processor">
-                                {loop="processors_list"}
-                                <option value='{$value.filename}' {if condition="$value.selected === TRUE"}selected{/if}>{$value.name}</option>
-                                {/loop}
+                                <?php $counter1=-1; if( isset($processors_list) && is_array($processors_list) && sizeof($processors_list) ) foreach( $processors_list as $key1 => $value1 ){ $counter1++; ?>
+
+                                <option value='<?php echo $value1["filename"];?>' <?php if( $value1["selected"] === TRUE ){ ?>selected<?php } ?>><?php echo $value1["name"];?></option>
+                                <?php } ?>
+
                             </select>
                         </td>
                     </tr>
                     <tr>
                         <td><a href="javascript:return(false);" class="info">Multifecta Timeout<span>Specify a timeout in seconds defining how long multifecta will obey the source priority. After this timeout, the first source to respond with a CNAM will be taken, until "Lookup Timeout" is reached.</span></a></td>
-                        <td><input type="text" name="multifecta_timeout" size="4" maxlength="5" value="{$multifecta_timeout}"></td>
+                        <td><input type="text" name="multifecta_timeout" size="4" maxlength="5" value="<?php echo $multifecta_timeout;?>"></td>
                     </tr>
                     <tr>
                         <td><a href="javascript:return(false);" class="info">CID Prefix URL<span>If you wish to prefix information on the caller id you can specify a url here where that prefix can be retrieved.<br>The data will not be parsed in any way, and will be truncated to the first 10 characters.<br>Example URL: http://www.example.com/GetCID.php?phone_number=[thenumber]<br>[thenumber] will be replaced with the full 10 digit phone number when the URL is called.</span></a></td>
-                        <td><input type="text" name="Prefix_URL" size="23" maxlength="255" value="{$prefix_url}"></td>
+                        <td><input type="text" name="Prefix_URL" size="23" maxlength="255" value="<?php echo $prefix_url;?>"></td>
                     </tr>
                     <tr>
                         <td>&nbsp;</td>
@@ -300,31 +306,31 @@
                     </tr>
                     <tr>
                         <td><a href="javascript:return(false);" class="info">SPAM Text<span>This text will be prepended to Caller ID information to help you identify calls as SPAM calls.</span></a></td>
-                        <td><input type="text" name="SPAM_Text" size="23" maxlength="20" value="{$spam_text}"></td>
+                        <td><input type="text" name="SPAM_Text" size="23" maxlength="20" value="<?php echo $spam_text;?>"></td>
                     </tr>
                     <tr>
                         <td><a href="javascript:return(false);" class="info">SPAM Text Substituted<span>When enabled, the text entered in "SPAM Text" (above) will replace the CID completely rather than pre-pending the CID value.</span></a></td>
                         <td>
-                            <input type="checkbox" name="SPAM_Text_Substitute" value="Y" {if condition="$spam_text_substitute === TRUE"}checked{/if}>
+                            <input type="checkbox" name="SPAM_Text_Substitute" value="Y" <?php if( $spam_text_substitute === TRUE ){ ?>checked<?php } ?>>
                         </td>
                     </tr>
                     <tr>
                         <td><a href="javascript:return(false);" class="info">Enable SPAM Interception<span>When enabled, Spam calls can be diverted or terminated.</span></a></td>
                         <td>
-                            <input type="checkbox" onclick="toggleInterceptor()" name="enable_interceptor" value="Y" {if condition="$spam_int === TRUE"}checked{/if}>
+                            <input type="checkbox" onclick="toggleInterceptor()" name="enable_interceptor" value="Y" <?php if( $spam_int === TRUE ){ ?>checked<?php } ?>>
                         </td>
                     </tr>
                 </table>
                 <table id="InterceptorVector" border="0">
                     <tr>
                         <td><a href="javascript:return(false);" class="info">SPAM Send Threshold<span>This is the threshold to send the call to the specified destination below</span></a></td>
-                        <td><input type="text" name="SPAM_threshold" size="4" maxlength="2" value="{$spam_threshold}"></td>
+                        <td><input type="text" name="SPAM_threshold" size="4" maxlength="2" value="<?php echo $spam_threshold;?>"></td>
                     </tr>
                     <tr class="incerceptorCell">
                         <td colspan="2">Send Spam Call To:</td>
                     </tr>
                     <tr class="incerceptorCell">
-                        <td colspan="2">{$interceptor_select}</td>
+                        <td colspan="2"><?php echo $interceptor_select;?></td>
                     </tr>
                 </table>
                 <p><a target="_blank" href="modules/superfecta/disclaimer.html">(License Terms)&nbsp; </a><input type="submit" value="Agree and Save" name="Save"></p>
