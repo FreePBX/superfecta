@@ -75,10 +75,9 @@ if($usage_mode == 'get caller id')
 
 		// Patterns to search for
 		$regexp = array(
-			"/<h3 class=\"cut-off\"><a href=\"\/.*?\/\" class=\"cut\">(.+?)<\/a><\/h3>/",			//working Mar 13, 2013
+			"/<h3 class=\"cut-off\"><a href=\"\/.*?\/\" class=\"cut\">(.+?)<\/a><\/h3>/",			//working for land lines Mar 13, 2013
+			"/<h3 class=\"hide-overflow cut-off\"><span class=\"cut\">(.+?)<\/span><\/h3>/",        //working for gsm Mar 13, 2012
 		);
-
-		
 
 		// Look through each pattern to see if we find a match -- take the first match
 		foreach ($regexp as $pattern)
