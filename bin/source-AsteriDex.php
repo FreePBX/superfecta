@@ -3,7 +3,7 @@
 //If a valid match is found, it will give $caller_id a value
 //available variables for use are: $thenumber
 //retreive website contents using get_url_contents($url);
-//Last edited Feb 6, 2013 by lgaetz
+//Last edited Mar 15, 2013 by lgaetz
 
 //The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
 $source_desc = "Searches an AsteriDex Database - local or remote.";
@@ -132,7 +132,7 @@ if($usage_mode == 'post processing'  && $run_param['Add_inbound_call_to_AsteriDe
 		}
 
 		// This INSERT statement may need work to prevent injection 
-		$query = "INSERT INTO `user1` (`id`, `name`, `in`, `out`, `dialcode`) VALUES ('', '".mysql_real_escape_string($first_caller_id)."', '', '".$thenumber."','')";
+		$query = "INSERT INTO `user1` (`id`, `name`, `in`, `out`, `dialcode`) VALUES ('', '".mysql_real_escape_string($first_caller_id)."', '*', '".$thenumber."','')";
 		$result = mysql_query($query) or die("AsteriDex INSERT failed: $query");
 	}
 
