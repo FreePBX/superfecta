@@ -18,7 +18,7 @@
 
 class Send_to_Mythtv extends superfecta_base {
 
-    public $description = "This source will send the Caller ID name and number to a Mythtv mythmessage service for external processing.<br>The message will be sent as a Call notification<br>
+    public $description = "This source will send the Caller ID name and number to a Mythtv mythmessage service for external processing.<br>The message will be sent as a Call notification<br>";
     public $version_requirement = "2.11";
     public $source_param = array(
         'Broadcast_address' => array(
