@@ -43,7 +43,6 @@ function superfecta_hook_core($viewing_itemid, $target_menuid) {
 
         $html .= '</td></tr>';
     }
-
     return $html;
 }
 

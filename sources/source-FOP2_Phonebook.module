@@ -1,0 +1,111 @@
+<?php
+
+class FOP2_Phonebook extends superfecta_base {
+
+    public $description = "Look up First Name, Last Name, Company Name in the FOP2 visual address book MySQL table";
+    public $version_requirement = "2.11";
+    public $source_param = array(
+        'DB_Host' => array(
+                'description' => 'Host address of the Asteridex database. (localhost if the database is on the same server as FreePBX)',
+                'type' => 'text',
+				'default' => 'localhost'
+        ),
+        'DB_Name' => array(
+                'description' => 'Database name of the Asteridex database',
+                'type' => 'text',
+				'default' => 'fop2'
+        ),
+        'DB_User' => array(
+                'description' => 'Username used to connect to the Asteridex database',
+                'type' => 'text',
+				'default' => 'root'
+        ),
+        'DB_Password' => array(
+                'description' => 'Password used to connect to the Asteridex database',
+                'type' => 'password',
+				'default' => 'passw0rd'
+        ),
+        'Filter_Length' => array(
+                'description' => 'The number of rightmost digits to check for a match. Enter the word false to disable this setting',
+                'type' => 'number',
+				'default' => 10
+        )
+    );
+
+
+    function get_caller_id($thenumber, $run_param=array()) {
+        $caller_id = null;
+
+        $this->DebugPrint("Searching FOP2 ... ");
+
+		// Initialize variables
+		$wquery = "";
+		$wquery_string = "";
+		$wquery_result = "";
+
+		// Abandon search if not enough digits in $thenumber
+		if (strlen($thenumber) < $run_param['Filter_Length']) {
+			$this->DebugPrint("Not enough digits");
+		} else {
+			//  trim incoming number to specified filter length
+			$thenumber = substr($thenumber, (-1*$run_param['Filter_Length']));
+
+			//  Build regular expression from modified $thenumber to avoid non-digit characters
+			$wquery = "'[^0-9]*";
+			for( $x=0; $x < ((strlen($thenumber))-1); $x++ ) {
+				$wquery .=  substr($thenumber,$x,1)."[^0-9]*" ;
+			}
+			$wquery = $wquery.(substr($thenumber,-1))."([^0-9]+|$)'";
+
+			//  Connect to database
+			$wdb_handle = mysql_connect($run_param['DB_Host'], $run_param['DB_User'], $run_param['DB_Password']) or die("FOP2 connection failed" . mysql_error());
+			mysql_select_db($run_param['DB_Name']) or die("FOP2 db open error: " . mysql_error());
+			mysql_query("SET NAMES 'utf8'") or die("UTF8 set query  failed: " . mysql_error());
+
+			// search database
+			$wquery_string = 'SELECT firstname, lastname, company FROM visual_phonebook WHERE (phone1 REGEXP '.$wquery.') OR (phone2 REGEXP '.$wquery.') ORDER BY id DESC';
+			$wquery_result = mysql_query($wquery_string) or die("FOP2 query failed" . mysql_error());
+			if (mysql_num_rows($wquery_result)>0) {
+				$wquery_row = mysql_fetch_array($wquery_result);
+				if ($run_param['CNAM_Type'] == 3) {
+					if ($wquery_row["lastname"] != "" and $wquery_row["company"] != "") {
+						$caller_id = $wquery_row["lastname"]." ".$wquery_row["company"];
+					} else {
+						$run_param['CNAM_Type'] = 1;
+					}
+				}
+				if ($run_param['CNAM_Type'] == 1) {
+					if ($wquery_row["company"] != "") {
+						$caller_id = $wquery_row["company"];
+					} else if ($wquery_row["firstname"] != "" and $wquery_row["lastname"] != "") {
+						$caller_id = $wquery_row["firstname"]." ".$wquery_row["lastname"];
+					} else if ($wquery_row["firstname"] != "") {
+						$caller_id = $wquery_row["firstname"];
+					} else {
+						$caller_id = $wquery_row["lastname"];
+					}
+				}
+				if ($run_param['CNAM_Type'] == 2) {
+					if ($wquery_row["firstname"] != "" and $wquery_row["lastname"] != "") {
+						$caller_id = $wquery_row["firstname"]." ".$wquery_row["lastname"];
+					} else if ($wquery_row["firstname"] != "") {
+						$caller_id = $wquery_row["firstname"];
+					} else if ($wquery_row["lastname"] != "") {
+						$caller_id = $wquery_row["lastname"];
+					} else {
+						$caller_id = $wquery_row["company"];
+					}
+				}
+			}
+
+            // Close dbase connection
+           	mysql_close($wdb_handle);
+
+			if ($caller_id == "") {
+				$this->DebugPrint("Not Found");
+			}	
+			return(trim($caller_id));
+		}
+    }
+}
+

@@ -195,4 +195,3 @@ class Send_to_Growl extends superfecta_base {
 		return($thenumber);
 	}
 }
-?>

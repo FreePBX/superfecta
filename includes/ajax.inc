@@ -182,27 +182,27 @@ switch($_REQUEST['type']) {
             switch($data['type']) {
                 case "text":
                     $value = isset($n_settings[$key]) ? $n_settings[$key] : $default;
-                    $form_html .= '<td>'.str_replace("_", " ", $key).'</td><td><input type="text" name="'.$key.'" value="'.$value.'" /></td>';
+                    $form_html .= '<td>'.str_replace("_", " ", $key).'<a class="info"><span>'.$data['description'].'</span></a></td><td><input type="text" name="'.$key.'" value="'.$value.'" size="50"/></td>';
                     break;
                 case "password":
                     $value = isset($n_settings[$key]) ? $n_settings[$key] : $default;
-                    $form_html .= '<td>'.str_replace("_", " ", $key).'</td><td><input type="password" name="'.$key.'" value="'.$value.'" /></td>';
+                    $form_html .= '<td>'.str_replace("_", " ", $key).'<a class="info"><span>'.$data['description'].'</span></td><td><input type="password" name="'.$key.'" value="'.$value.'" size="50"/></td>';
                     break;
                 case "checkbox":
                     $checked = isset($n_settings[$key]) && ($n_settings[$key] == 'on') ? 'checked' : $default; 
-                    $form_html .= '<td>'.str_replace("_", " ", $key).'</td><td><input type="checkbox" name="'.$key.'" value="on" '.$checked.'/></td>';
+                    $form_html .= '<td>'.str_replace("_", " ", $key).'<a class="info"><span>'.$data['description'].'</span></td><td><input type="checkbox" name="'.$key.'" value="on" '.$checked.'/></td>';
                     break;
                 case "textarea":
                     $value = isset($n_settings[$key]) ? $n_settings[$key] : $default;
-                    $form_html .= '<td>'.str_replace("_", " ", $key).'</td><td><textarea name="'.$key.'">'.$value.'</textarea></td>';
+                    $form_html .= '<td>'.str_replace("_", " ", $key).'<a class="info"><span>'.$data['description'].'</span></td><td><textarea name="'.$key.'" rows="4" cols="50">'.$value.'</textarea></td>';
                     break;
                 case "number":
                     $value = isset($n_settings[$key]) ? $n_settings[$key] : $default;
-                    $form_html .= '<td>'.str_replace("_", " ", $key).'</td><td><input type="number" name="'.$key.'" value="'.$value.'" /></td>';
+                    $form_html .= '<td>'.str_replace("_", " ", $key).'<a class="info"><span>'.$data['description'].'</span></td><td><input type="number" name="'.$key.'" value="'.$value.'" /></td>';
                     break;
                 case "select":
                     $value = isset($n_settings[$key]) ? $n_settings[$key] : $default;
-                    $form_html .= '<td>'.str_replace("_", " ", $key).'</td><td><select name="'.$key.'">';
+                    $form_html .= '<td>'.str_replace("_", " ", $key).'<a class="info"><span>'.$data['description'].'</span></td><td><select name="'.$key.'">';
                     foreach($data['option'] as $options_k => $options_l) {
                         $selected = ($value == $options_k) ? 'selected' : '';
                         $form_html .= "<option value=".$options_k." ".$selected.">".$options_l."</option>";

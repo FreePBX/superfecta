@@ -4,7 +4,6 @@ $base_dir = dirname(dirname(__FILE__));
 require_once($base_dir . '/agi/phpagi.php');
 $agi = new AGI();
 $agi->verbose("CID Superfecta is Answering the Channel");
-$agi->answer(); //Is this needed? I forget. I think this helps to 'pause' the channel until we get valid information
 $scheme_return = $agi->get_variable("CIDSFSCHEME");
 
 if (($scheme_return['result']) && (trim(base64_decode($scheme_return['data'])) != '')) {
