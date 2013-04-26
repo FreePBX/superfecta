@@ -1,0 +1,87 @@
+<?php
+
+class Database extends superfecta_base {
+
+    public $description = "Searches any supported PDO databse<br/>Example PDO Query: 'SELECT `name` FROM `users` WHERE `outboundcid` = :thenumber'";
+    public $version_requirement = "2.11";
+    public $source_param = array(
+        'DB_Driver' => array(
+                'description' => 'The PDO Driver',
+	            'type' => 'select',
+	            'option' => array(
+	                'none' => 'none'
+	            ),
+	            'default' => 'mysql'
+        ),
+        'DB_Host' => array(
+                'description' => 'Host address of the database. (localhost if the database is on the same server as FreePBX)',
+                'type' => 'text',
+				'default' => 'localhost'
+        ),
+        'DB_Name' => array(
+                'description' => 'Database name of the database',
+                'type' => 'text',
+				'default' => 'asterisk'
+        ),
+        'DB_User' => array(
+                'description' => 'Username used to connect to the database',
+                'type' => 'text',
+				'default' => 'root'
+        ),
+        'DB_Password' => array(
+                'description' => 'Password used to connect to the database',
+                'type' => 'password',
+				'default' => 'passw0rd'
+        ),
+        'SQL_Query' => array(
+                'description' => 'Structure a valid MySQL query that returns the value of a single field. Using :thnumber as the variable for the CID<br>Example1: SELECT name_field WHERE cid = :thenumber',
+                'type' => 'text',
+				'default' => ''
+        )
+    );
+	
+	function __construct() {
+		if(class_exists('PDO')) {
+			$this->source_param['DB_Driver']['option'] = array_combine(PDO::getAvailableDrivers(),PDO::getAvailableDrivers());
+		}
+	}
+
+    function get_caller_id($thenumber, $run_param=array()) {
+        $caller_id = null;
+		
+		if(class_exists('PDO')) {
+	        $this->DebugPrint("Connecting to database....");
+		
+			try {
+			    $dbh = new PDO($run_param['DB_Driver'].':dbname='.$run_param['DB_Name'].';host='.$run_param['DB_Host'], $run_param['DB_User'], $run_param['DB_Password']);
+			} catch (PDOException $e) {
+			    $this->DebugPrint('Connection failed: ' . $e->getMessage());
+			}
+		} else {
+			$this->DebugPrint("PDO not present on system...Skipping");
+		}
+		$sql = $run_param['SQL_Query'];
+		if(!strpos($sql,':thenumber')) {
+			$this->DebugPrint("You Must include ':thenumber' in your SQL query...Skipping");
+			return null;
+		}
+		$sth = $dbh->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+		if(!$sth) {
+			$this->DebugPrint("Failed to Prepare the SQL Statement. Are we connected?...Skipping");
+			return null;
+		}
+		$this->DebugPrint("Connected!");
+		$this->DebugPrint("Searching Database...");
+		$sth->execute(array(':thenumber' => $thenumber));
+		$find = $sth->fetch(PDO::FETCH_BOTH);
+		
+		if($find && is_array($find)) {
+			$this->DebugPrint("Found..");
+			return $find[0];
+		} else {
+			$this->DebugPrint("Not Found");
+			return null;
+		}
+    }
+
+}
