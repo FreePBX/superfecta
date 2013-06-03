@@ -1,5 +1,12 @@
 <?php
 
+/***** ***** ***** ***** ***** ***** ***** 
+Module Dev notes:
+
+last edited Apr 29, 2013 by lgaetz
+
+***** ***** ***** ***** ***** ***** ***** *****/
+
 class AsteriDex extends superfecta_base {
 
     public $description = "Searches an AsteriDex Database - local or remote.";
@@ -26,7 +33,7 @@ class AsteriDex extends superfecta_base {
 				'default' => 'passw0rd'
         ),
         'Filter_Length' => array(
-                'description' => 'The number of rightmost digits to check for a match. Enter the word false to disable this setting',
+                'description' => 'The number of rightmost digits to check for a match. Enter zero to disable ',
                 'type' => 'number',
 				'default' => 10
         )
@@ -37,8 +44,8 @@ class AsteriDex extends superfecta_base {
 
         $this->DebugPrint("Searching AsteriDex ... ");
 		
-		if ($run_param['Filter_Length'] != false) {
-			if (strlen($wquery_input) > $run_param['Filter_Length']) $wquery_input = substr($wquery_input, -$run_param['Filter_Length']);
+		if ($run_param['Filter_Length'] != 0) {
+			if (strlen($thenumber) > $run_param['Filter_Length']) $thenumber = substr($thenumber, -$run_param['Filter_Length']);
 		}
 		
 		$link = mysql_connect($run_param['DB_Host'], $run_param['DB_User'], $run_param['DB_Password'])or die("AsteriDex connection failed:". $run_param['DB_Host']);
@@ -50,14 +57,15 @@ class AsteriDex extends superfecta_base {
 
 		//  Build regular expression from the number to avoid non-digit characters stored in database
 		$wquery = "'[^0-9]*";
-		for( $x=0; $x < ((strlen($wquery_input))-1); $x++ )
+		for( $x=0; $x < ((strlen($thenumber))-1); $x++ )
 	   	{
-			$wquery .=  substr($wquery_input,$x,1)."[^0-9]*" ;
+			$wquery .=  substr($thenumber,$x,1)."[^0-9]*" ;
 		}
-		$wquery = $wquery.(substr($wquery_input,-1))."([^0-9]+|$)'";
+		$wquery = $wquery.(substr($thenumber,-1))."([^0-9]+|$)'";
 
 		// query database
 		$query = "SELECT * FROM `user1` where `out` REGEXP ".$wquery;
+
 		$result = mysql_query($query) or die("AsteriDex query failed: $query");
 
 		// Get first name if any results are returned from query
