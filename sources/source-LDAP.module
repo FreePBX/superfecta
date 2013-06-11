@@ -2,6 +2,7 @@
 
 define("LDAP_OPENLDAP", "1");
 define("LDAP_OPENDIRECTORY", "2");
+define("LDAP_CUSTOM", "3");
 
 class LDAP extends superfecta_base {
 
@@ -9,11 +10,11 @@ class LDAP extends superfecta_base {
     public $version_requirement = "2.11";
     public $source_param = array(
         'LDAP_Host' => array(
-            'description' => 'LDAP Server to search.<br>The port is optional e.g. ldap.example.com:389<br><br>To connect through SSL prefix the connection with <strong>ldaps</strong> e.g. ldaps://ldap.example.com',
+            'description' => 'LDAP Server to search.<br>The port is optional e.g. ldap.example.com:389<br><br>To connect through SSL prefix the connection with <strong>ldaps</strong> e.g. ldaps://ldap.example.com<br><br>This value may be used to automatically create the <b>dc</b> component for the <b>LDAP User</b> below, depending on the value of <b>LDAP Server</b>, e.g. dc=ldap,dc=example,dc=com',
             'type' => 'text'
         ),
         'LDAP_User' => array(
-            'description' => 'Authentication Username to connect to the LDAP server',
+            'description' => 'Authentication Username to connect to the LDAP server.  Other information is added to the field value, depending on the value of <b>LDAP Server</b>:<br><br><small>Open LDAP</small>: cn=<i><b>LDAP User</b></i>, dc=<i>automatically created from <b>LDAP Host</b></i><br><br><small>Apple Open Directory</small>: uid=<i><b>LDAP User</b></i>,cn=users, dc=<i>automatically created from <b>LDAP Host</b></i><br><br><small>Custom</small>: <i><b>LDAP User</b></i>',
             'type' => 'text'
         ),
         'LDAP_Password' => array(
@@ -25,12 +26,13 @@ class LDAP extends superfecta_base {
             'type' => 'select',
             'option' => array(
                 LDAP_OPENLDAP => 'Open LDAP',
-                LDAP_OPENDIRECTORY => 'Apple Open Directory'
+                LDAP_OPENDIRECTORY => 'Apple Open Directory',
+                LDAP_CUSTOM => 'Custom'
             ),
             'default' => LDAP_OPENLDAP
         ),
         'LDAP_Unit' => array(
-            'description' => 'Organizational Unit to search.<br><br>Leave blank to search all OU',
+            'description' => 'Organizational Unit to search.  Leave blank to search all OU.  Other information is added to the field value, depending on the value of <b>LDAP Server</b>:<br><br><small>Open LDAP</small>: ou=<i><b>LDAP Unit</b></i>, dc=<i>automatically created from <b>LDAP Host</b></i><br><br><small>Apple Open Directory</small>: ou=<i><b>LDAP Unit</b></i>, dc=<i>automatically created from <b>LDAP Host</b></i><br><br><small>Custom</small>: <i><b>LDAP Unit</b></i>',
             'type' => 'text'
         ),
         'LDAP_Format' => array(
@@ -136,13 +138,27 @@ class LDAP extends superfecta_base {
         }
 
         // Set user id
-        if ($run_param['LDAP_Server'] == LDAP_OPENDIRECTORY) {
-            $UID = "uid={$run_param['LDAP_User']},cn=users, {$dc}";
-        } else {
-            $UID = "cn={$run_param['LDAP_User']}, {$dc}";
+        switch ($run_param['LDAP_Server']) {
+            case LDAP_OPENDIRECTORY:
+                $UID = "uid={$run_param['LDAP_User']},cn=users, {$dc}";
+                break;
+
+            case LDAP_OPENLDAP:
+                $UID = "cn={$run_param['LDAP_User']}, {$dc}";
+                break;
+
+            case LDAP_CUSTOM:
+                $UID = $run_param['LDAP_User'];
+                break;
         }
+        // if ($run_param['LDAP_Server'] == LDAP_OPENDIRECTORY) {
+        //     $UID = "uid={$run_param['LDAP_User']},cn=users, {$dc}";
+        // } else {
+        //     $UID = "cn={$run_param['LDAP_User']}, {$dc}";
+        // }
 
         // Establish connection with LDAP server
+        $this->DebugEcho("Attempting to bind, using ad:'$ad'  UID:'$UID' ... <br>");
         $bd = @ldap_bind($ad, $UID, "{$run_param['LDAP_Password']}") or $this->DebugDie("Could not bind to {$scheme}://{$server}");
 
         // Check for OU to limit search
@@ -151,7 +167,16 @@ class LDAP extends superfecta_base {
             $ou = addslashes($run_param['LDAP_Unit']);
 
             // Set Organizational Unit e.g "ou=people, dc=ldap,dc=example,dc=com"
-            $dn = "ou=${ou},${dc}";
+            switch ($run_param['LDAP_Server']) {
+                case LDAP_OPENDIRECTORY:
+                case LDAP_OPENLDAP:
+                    $dn = "ou=${ou},${dc}";
+                    break;
+
+                case LDAP_CUSTOM:
+                    $dn = $run_param['LDAP_Unit'];
+                    break;
+             }
         } else {
             $dn = "${dc}";
         }
