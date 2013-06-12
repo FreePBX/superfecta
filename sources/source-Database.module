@@ -50,7 +50,7 @@ class Database extends superfecta_base {
         $caller_id = null;
 		
 		if(class_exists('PDO')) {
-	        $this->DebugPrint("Connecting to database....");
+	        	$this->DebugPrint("Connecting to database....");
 		
 			try {
 			    $dbh = new PDO($run_param['DB_Driver'].':dbname='.$run_param['DB_Name'].';host='.$run_param['DB_Host'], $run_param['DB_User'], $run_param['DB_Password']);
@@ -60,6 +60,7 @@ class Database extends superfecta_base {
 			}
 		} else {
 			$this->DebugPrint("PDO not present on system...Skipping");
+			return null;
 		}
 		$sql = $run_param['SQL_Query'];
 		if(!strpos($sql,':thenumber')) {
