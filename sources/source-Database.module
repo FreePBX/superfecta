@@ -56,6 +56,7 @@ class Database extends superfecta_base {
 			    $dbh = new PDO($run_param['DB_Driver'].':dbname='.$run_param['DB_Name'].';host='.$run_param['DB_Host'], $run_param['DB_User'], $run_param['DB_Password']);
 			} catch (PDOException $e) {
 			    $this->DebugPrint('Connection failed: ' . $e->getMessage());
+			    return null;
 			}
 		} else {
 			$this->DebugPrint("PDO not present on system...Skipping");
