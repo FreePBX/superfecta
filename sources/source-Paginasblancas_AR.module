@@ -1,31 +1,31 @@
 <?php
 
+/**** **** **** **** **** ****
+Development notes:
+Previous versions of this module would check for valid Argentina number format by using:
+$this->IsValidNumber('AR', $this->thenumber, $areacode, $number2, $number3)
+but this did not appear to be working properly and requires maintenance of the AR area code list. This check
+abandoned on July 29, 2013
+
+Change log:
+July 29, 2013 - remove valid number check, update URL and update regex
+ **** **** **** **** **** ****/
+
 class Paginasblancas_AR extends superfecta_base {
 
-    public $description = "Searches Argentina http://www.paginasblancas.com.ar/ <br>CID must include area code with the leading 0.";
-    public $version_requirement = "2.11";
+	public $description = "Searches Argentina http://www.paginasblancas.com.ar/ <br>CID must include area code with the leading 0.";
+	public $version_requirement = "2.11";
 
-    function get_caller_id($thenumber, $run_param=array()) {
+	function get_caller_id($thenumber, $run_param=array()) {
 
-        $caller_id = null;
-        $areacode = "";
-        $number2 = "";
-        $number3 = "";
+		$this->DebugPrint("Searching www.paginasblancas.com.ar for number: $thenumber");
 
-        if (!$this->IsValidNumber('AR', $this->thenumber, $areacode, $number2, $number3)) {
-            $this->DebugPrint("Skipping Source - Non Argentina number: {$this->thenumber}");
-        } else {
-            $this->DebugPrint("Searching www.paginasblancas.com.ar for number: {$this->thenumber}");
-
-            $url = "http://www.paginasblancas.com.ar/busqueda-telefono/argentina/{$areacode}-{$number2}-{$number3}";
-
-            $pattern = "/<H2 class=\"alta\">(.*)<\/H2>/";
-
-            if ($this->SearchURL($url, $pattern, $match)) {
-                $caller_id = $this->ExtractMatch($match);
-            }
-        }
-        return($caller_id);
-    }
+		$url = "http://www.paginasblancas.com.ar/Telefono/".$thenumber;
+		$pattern = "/<h2 class=\"advertise-name\">(.*)<\/h2>/";
+		if ($this->SearchURL($url, $pattern, $match)) {
+			$caller_id = $this->ExtractMatch($match);
+		}
+	return($caller_id);
+	}
 
 }
