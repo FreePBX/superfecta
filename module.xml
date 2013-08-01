@@ -11,7 +11,7 @@
 	       Provides simultaneous use of, and complete control over multiple caller id data sources.
 	</description>
 	<changelog>
-		*2.11.3* Asteridex fixes
+		*2.11.3* Added paginasblancas.ar and sugarcm
 		*2.11.2* Added in PDO Database search, Regular Expressions Search, FOP2 Phonebook search, Abandon Lookup, Trunk Provided Updates, also fixed descriptions in source items
 		*2.11.1* Added in a bunch of sources: Send To Growl, Send To URL, OpenCNAM, TAB Reloaded, CallWithUs, Send to MythTV and Asteridex
         *2.11.0beta4* Remove dangling symlinks. Remove all illegal sources (against TOS)
@@ -23,6 +23,6 @@
 		<superfecta>CID Superfecta</superfecta>
 	</menuitems>
 	<info>https://github.com/POSSA/Caller-ID-Superfecta/wiki</info>
-	<md5sum>0ed7520010dbaab0a51e376a5e8987c8</md5sum>
-	<location>release/2.11/superfecta-2.11.3.tgz</location>
+	<md5sum>2f924eda746ee80ca4f96a68083b8d87</md5sum>
+	<location>release/2.11/superfecta-2.11.1.tgz</location>
 </module>
