@@ -27,7 +27,7 @@ class Send_to_Email extends superfecta_base {
 			'default' => 'Incoming call from [NAME] at [NUMBER]. Automated notification email sent by the POSSA Superfecta Caller ID Module'
 		),
 		'Default_CNAM' => array(
-			'description' => 'If no CNAM is found, input a default name to use for the email notice, the user will receive an email with the number and this default name.',
+			'description' => 'If no CNAM is found, input a default name to use for the email notice, the user will receive an email with the number and this default name. Leave blank to send no email if no CNAM is found.',
 			'type' => 'text',
 			'default' => ''
 		)
