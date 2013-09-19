@@ -61,37 +61,21 @@ class Telco_Data extends superfecta_base {
         } else {
             $url = "http://www.telcodata.us/query/queryexchangexml.html?npa=$npa&nxx=$nxx";
             $value = $this->get_url_contents($url);
+			
+			$xml = @simplexml_load_string($value);
 
-            // Telcodata will tell us if we have an invalid NPA/NXX
-            $start = strpos($value, "<valid>");
-            $valid = substr($value, $start + 7);
-            $end = strpos($valid, "</valid>");
-            $valid = substr($valid, 0, $end);
-
-            if ($valid == 'NO') {
+            if (!$xml && !isset($xml->exchangedata)) {
                 $this->DebugPrint("Skipping Source - Telcodata reports invalid NPA/NXX: {$thenumber}");
             } else {
-
-                $start = strpos($value, "<ratecenter>");
-                $ratecenter = substr($value, $start + 12);
-                $end = strpos($ratecenter, "</ratecenter>");
-                $ratecenter = substr($ratecenter, 0, $end);
-
-                $start = strpos($value, "<state>");
-                $state = substr($value, $start + 7);
-                $end = strpos($state, "</state>");
-                $state = substr($state, 0, $end);
-
-                $value = $ratecenter . ", " . $state;
-
-                if (strlen($ratecenter) > 1) {
-                    $caller_id = strip_tags($value);
-                } else {
-                    $this->DebugPrint("not found");
-                }
+				if(isset($xml->exchangedata->ratecenter) && isset($xml->exchangedata->state)) {
+	                $value = (string)$xml->exchangedata->ratecenter . ", " . (string)$xml->exchangedata->state;
+	                if (strlen($value) > 2) {
+	                    $caller_id = strip_tags($value);
+						return($caller_id);
+	                }
+				}
+				$this->DebugPrint("not found");
             }
         }
-        return($caller_id);
     }
-
 }

@@ -51,7 +51,7 @@ class Superfecta_Cache extends superfecta_base {
             $this->DebugPrint("Searching Superfecta Cache ... ");
 
             //clear old cache
-            $sql = "DELETE FROM superfectacache WHERE dateentered < DATE_SUB(NOW(),INTERVAL " . (isset($run_param['Cache_Timeout']) ? $run_param['Cache_Timeout'] : $source_param['Cache_Timeout']['default']) . " DAY)";
+            $sql = "DELETE FROM superfectacache WHERE dateentered < DATE_SUB(NOW(),INTERVAL " . (isset($run_param['Cache_Timeout']) ? $run_param['Cache_Timeout'] : $this->source_param['Cache_Timeout']['default']) . " DAY)";
             $this->db->query($sql);
 
             //query cache

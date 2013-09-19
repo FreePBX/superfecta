@@ -6,17 +6,19 @@ class superfecta_single extends superfecta_base {
     public $description = 'Runs all sources in specified order, like old superfecta';
     public $type = 'SINGLE';
 
-    function __construct($options) {
-        $this->setDebug($options['debug']);
-        $sn = explode("_", $options['scheme_name']);
-        $this->scheme_name = $sn[1];
-        $this->scheme = $options['scheme_name'];
-        $this->db = $options['db'];
-        $this->amp_conf = $options['amp_conf'];
-        $this->astman = $options['astman'];
-        $this->scheme_param = $options['scheme_parameters'];
-        $this->path_location = $options['path_location'];
-        $this->trunk_info = $options['trunk_info'];      
+    function __construct($options=array()) {
+		if(!empty($options)) {
+	        $this->setDebug($options['debug']);
+	        $sn = explode("_", $options['scheme_name']);
+	        $this->scheme_name = $sn[1];
+	        $this->scheme = isset($options['scheme_name']) ? $options['scheme_name'] : '';
+	        $this->db = isset($options['db']) ? $options['db'] : '';
+	        $this->amp_conf = isset($options['amp_conf']) ? $options['amp_conf'] : '';
+	        $this->astman = isset($options['astman']) ? $options['astman'] : '';
+	        $this->scheme_param = isset($options['scheme_parameters']) ? $options['scheme_parameters'] : '';
+	        $this->path_location = isset($options['path_location']) ? $options['path_location'] : '';
+	        $this->trunk_info = isset($options['trunk_info']) ? $options['trunk_info'] : ''; 
+		}   
     }
 
     function is_master() {

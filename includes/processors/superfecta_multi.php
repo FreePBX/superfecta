@@ -6,43 +6,45 @@ class superfecta_multi extends superfecta_base {
     public $description = 'Multifecta, runs all sources at the same time';
     public $type = 'MULTI';
 
-    function __construct($options) {
-        $this->setDebug($options['debug']);
-        $sn = explode("_", $options['scheme_name']);
-        $this->scheme_name = $sn[1];
-        $this->scheme = $options['scheme_name'];
-        $this->db = $options['db'];
-        $this->amp_conf = $options['amp_conf'];
-        $this->astman = $options['astman'];
-        $this->scheme_param = $options['scheme_parameters'];
-        $this->path_location = $options['path_location'];
-        $this->multifecta_id = $options['multifecta_id'];
-        $this->source = $options['source'];
-        $this->trunk_info = $options['trunk_info'];  
-        //Check if we are a multifecta child, if so, get our variables from our child record
-        $this->multi_type = $this->multifecta_id ? 'CHILD' : 'PARENT';
+    function __construct($options=array()) {
+		if(!empty($options)) {
+	        $this->setDebug($options['debug']);
+	        $sn = explode("_", $options['scheme_name']);
+	        $this->scheme_name = $sn[1];
+	        $this->scheme = $options['scheme_name'];
+	        $this->db = $options['db'];
+	        $this->amp_conf = $options['amp_conf'];
+	        $this->astman = $options['astman'];
+	        $this->scheme_param = $options['scheme_parameters'];
+	        $this->path_location = $options['path_location'];
+	        $this->multifecta_id = $options['multifecta_id'];
+	        $this->source = $options['source'];
+	        $this->trunk_info = $options['trunk_info'];  
+	        //Check if we are a multifecta child, if so, get our variables from our child record
+	        $this->multi_type = $this->multifecta_id ? 'CHILD' : 'PARENT';
 
-        if ($this->multi_type == "CHILD") {
-            $query = "SELECT mf.superfecta_mf_id, mf.scheme, mf.cidnum, mf.extension, mf.debug, mfc.source
-					FROM superfecta_mf mf, superfecta_mf_child mfc
-					WHERE mfc.superfecta_mf_child_id = " . $this->db->quoteSmart($this->multifecta_id) . "
-					AND mf.superfecta_mf_id = mfc.superfecta_mf_id";
+	        if ($this->multi_type == "CHILD") {
+	            $query = "SELECT mf.superfecta_mf_id, mf.scheme, mf.cidnum, mf.extension, mf.debug, mfc.source
+						FROM superfecta_mf mf, superfecta_mf_child mfc
+						WHERE mfc.superfecta_mf_child_id = " . $this->db->quoteSmart($this->multifecta_id) . "
+						AND mf.superfecta_mf_id = mfc.superfecta_mf_id";
 
-            $res = $this->db->query($query);
-            if (DB::IsError($res)) {
-                $this->DebugDie("Unable to load child record: " . $res->getMessage());
-            }
-            if ($row = $res->fetchRow(DB_FETCHMODE_ASSOC)) {
+	            $res = $this->db->query($query);
+	            if (DB::IsError($res)) {
+	                $this->DebugDie("Unable to load child record: " . $res->getMessage());
+	            }
+	            if ($row = $res->fetchRow(DB_FETCHMODE_ASSOC)) {
 
-                $this->scheme = $row['scheme'];
-                $this->trunk_info['callerid'] = $row['cidnum'];
-                $this->DID = $row['extension'];
-                $this->multifecta_parent_id = $row['superfecta_mf_id'];
-                $this->single_source = $row['source'];
-            } else {
-                $this->DebugDie("Unable to load multifecta child record '" . $this->multifecta_id . "'");
-            }
-        }
+	                $this->scheme = $row['scheme'];
+	                $this->trunk_info['callerid'] = $row['cidnum'];
+	                $this->DID = $row['extension'];
+	                $this->multifecta_parent_id = $row['superfecta_mf_id'];
+	                $this->single_source = $row['source'];
+	            } else {
+	                $this->DebugDie("Unable to load multifecta child record '" . $this->multifecta_id . "'");
+	            }
+	        }
+		}
     }
 
     function is_master() {
