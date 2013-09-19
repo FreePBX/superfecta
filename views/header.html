@@ -62,7 +62,7 @@
             scheme_order();
         })
     }
-    
+    {if="isset($scheme)"}
     //Fix graphics display and send content
     function scheme_order() {
         //Get order here and then re-do all of the gfx to make sense again to the gui
@@ -101,6 +101,7 @@
 
         });
     }
+	{/if}
 </script>
 <style type="text/css">
     .superfecta_schemes {
@@ -115,7 +116,7 @@
 </style>
 <div class="rnav" style="width:250px;">
     <ul id="schemeorder_list" >
-        <li id="add_new"><a href="config.php?display=superfecta&scheme=new">Add Caller ID Scheme</a></li>
+        <li id="add_new"><a href="config.php?display=superfecta&amp;scheme=new">Add Caller ID Scheme</a></li>
         {loop="schemes"}<li id="scheme_{$value.source}">
             <img id="scheme_{$value.source}_power" onclick="power_scheme(this.id);" class="superfecta_schemes button" src="assets/superfecta/images/{if condition="$value.powered === TRUE"}on{else}off{/if}.gif" alt="On/Off" title="Turn this scheme on and off" />
                  <img id="scheme_{$value.source}_movedown" class="superfecta_schemes button" onclick="movedown_scheme(this.id);" src="images/scrolldown.gif" alt="Down Arrow" title="Move Down List" {if condition="$value.showdown === FALSE"}hidden{/if}/>

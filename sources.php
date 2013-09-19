@@ -66,10 +66,6 @@ ksort($tpl_sources);
 
 $supertpl->assign("scheme", $scheme);
 
-$supertpl->assign("check_updates_check", ($check_updates == 'on') ? 'checked' : '' );
-
-$supertpl->assign("check_updates_check", ($update_site_unavailable) ? 'Update Server Unavalible' : '' );
-
 $supertpl->assign("sources", $tpl_sources);
 
 $supertpl->assign("web_path", 'http://' . $_SERVER['SERVER_NAME'] . '/admin/modules/superfecta/tpl/js/jquery.form.js');

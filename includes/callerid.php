@@ -110,7 +110,6 @@ if (empty($trunk_info['callerid']) && !is_int($trunk_info['callerid'])) {
         )));
     }
 }
-
 foreach ($scheme_name_array as $list) {
     $scheme_name = $list;
 
@@ -143,6 +142,7 @@ foreach ($scheme_name_array as $list) {
         'path_location' => dirname(dirname(__FILE__)) . '/sources',
         'trunk_info' => $trunk_info
     );
+	
     switch ($scheme_param['processor']) {
         case 'superfecta_multi.php':
             require_once(dirname(__FILE__) . '/processors/superfecta_multi.php');
@@ -292,6 +292,9 @@ foreach ($scheme_name_array as $list) {
             
             //Debug log
             if(!empty($superfecta->debug_log)) {
+				if(!file_exists(dirname(dirname(__FILE__))."/logs")) {
+					mkdir(dirname(dirname(__FILE__))."/logs");
+				}
                 file_put_contents(dirname(dirname(__FILE__))."/logs/debug-log-".time(), implode("\n", $superfecta->debug_log));
             }
         }
@@ -302,6 +305,17 @@ foreach ($scheme_name_array as $list) {
             $callerid = $superfecta->get_results();
         }
     }
+	//cleanup
+	if(file_exists(dirname(dirname(__FILE__))."/logs")) {
+		$files = glob(dirname(dirname(__FILE__))."/logs/*"); // get all file names
+		foreach($files as $file){ // iterate files
+		  if(is_file($file))
+		    unlink($file); // delete file
+		}
+	}
+	if(file_exists(dirname(dirname(__FILE__)).'/log')) {
+		unlink(dirname(dirname(__FILE__)).'/log');
+	}
 }
 
 function FnDeprecated($fnName) {
