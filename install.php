@@ -347,7 +347,7 @@ if ($amp_version['minor'] < 9) {
             unlink($dir . '/' . basename($filename));
             symlink($filename, $dir . '/' . basename($filename));
         } else {
-            symlink($filename, $dir . '/' . basename($filename));
+            symlink($filename, $dir . '/' . basename($filename));
         }
     }
 }
