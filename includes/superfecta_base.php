@@ -372,11 +372,20 @@ class superfecta_base {
                     }
                     break;
                 case '.':
+					// Match one or more occurrences of any number
+					if(!$wildcard){
+						$wildcard = true;
+						$expression .= $tmp."[0-9]+";
+						$tmp = "";
+					}else{
+						$error = "Cannot have more than one wildcard";
+					}
+                break;
                 case '!':
-                    // Match and number, and any amount of them
+                    // zero or more occurrences of any number
                     if (!$wildcard) {
                         $wildcard = true;
-                        $expression .= $tmp . "[0-9]+";
+                        $expression .= $tmp . "[0-9]*";
                         $tmp = "";
                     } else {
                         $error = "Cannot have more than one wildcard";
