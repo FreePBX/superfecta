@@ -1,5 +1,13 @@
 <?php
 
+/*** *** *** *** *** *** *** *** *** *** 
+Developer Notes:
+2013-09-20:	Added loop to build regex, fixed minor typo, expanded query help.
+			Can't figure out how to get Superfecta to accept single or double quotes in input fields. Quotes are necessary for a lot of queries.
+
+*** *** *** *** *** *** *** *** *** ***/
+
+
 class Database extends superfecta_base {
 
     public $description = "Searches any supported PDO databse<br/>Example PDO Query: 'SELECT `name` FROM `users` WHERE `outboundcid` = :thenumber'";
@@ -34,7 +42,7 @@ class Database extends superfecta_base {
 				'default' => 'passw0rd'
         ),
         'SQL_Query' => array(
-                'description' => 'Structure a valid MySQL query that returns the value of a single field. Using :thnumber as the variable for the CID<br>Example1: SELECT name_field WHERE cid = :thenumber',
+                'description' => 'Structure a valid MySQL query that returns the value of a single field. Using :thnumber as the variable for the CID and using :theregex as a variable for a regular expression that can be used to ignore non-digit characters stored in the database.<br>Example1: SELECT name_field FROM table_name WHERE cid = :thenumber<br>Example2: SELECT CONCAT(firstname,lastname) FROM table_name WHERE number REGEXP :theregex',
                 'type' => 'text',
 				'default' => ''
         )
@@ -63,10 +71,18 @@ class Database extends superfecta_base {
 			return null;
 		}
 		$sql = $run_param['SQL_Query'];
-		if(!strpos($sql,':thenumber')) {
-			$this->DebugPrint("You Must include ':thenumber' in your SQL query...Skipping");
+		if(!(strpos($sql,':thenumber') || strpos($sql,':theregex'))) {
+			$this->DebugPrint("You Must include ':thenumber' or ':theregex' in your SQL query...Skipping");
 			return null;
 		}
+
+		//  Build regular expression from the $thenumber to avoid non-digit characters stored in database
+		$theregex = "[^0-9]*";
+		for( $x=0; $x < ((strlen($thenumber))-1); $x++ )  {
+			$theregex .=  substr($thenumber,$x,1)."[^0-9]*";
+		}
+		$theregex = $theregex.(substr($thenumber,-1))."([^0-9]+|$)";
+
 		$sth = $dbh->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
 		if(!$sth) {
 			$this->DebugPrint("Failed to Prepare the SQL Statement. Are we connected?...Skipping");
@@ -75,6 +91,7 @@ class Database extends superfecta_base {
 		$this->DebugPrint("Connected!");
 		$this->DebugPrint("Searching Database...");
 		$sth->execute(array(':thenumber' => $thenumber));
+		$sth->execute(array(':theregex' => $theregex));
 		$find = $sth->fetch(PDO::FETCH_BOTH);
 		
 		if($find && is_array($find)) {
@@ -85,5 +102,4 @@ class Database extends superfecta_base {
 			return null;
 		}
     }
-
 }
