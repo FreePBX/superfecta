@@ -1,5 +1,14 @@
 <?php
 
+/*** *** *** *** *** *** *** *** *** *** 
+Developer Notes:
+2013-09-20:	Added loop to build regex, fixed minor typo, expanded query help.
+			Can't figure out how to get Superfecta to accept single or double quotes in input fields. Quotes are necessary for a lot of queries.
+			Added support for Post Processing query
+			Fixed issue with my previous commit that handled the sql param substitution incorrectly.
+*** *** *** *** *** *** *** *** *** ***/
+
+
 class Database extends superfecta_base {
 
     public $description = "Searches any supported PDO databse<br/>Example PDO Query: 'SELECT `name` FROM `users` WHERE `outboundcid` = :thenumber'";
@@ -34,10 +43,15 @@ class Database extends superfecta_base {
 				'default' => 'passw0rd'
         ),
         'SQL_Query' => array(
-                'description' => 'Structure a valid MySQL query that returns the value of a single field. Using :thnumber as the variable for the CID<br>Example1: SELECT name_field WHERE cid = :thenumber',
+                'description' => 'Structure a valid MySQL query that returns the value of a single field. Using :thenumber as the variable for the CID and using :theregex as a variable for a regular expression that can be used to ignore non-digit characters stored in the database.<br>Example1: SELECT name_field FROM table_name WHERE cid = :thenumber<br>Example2: SELECT CONCAT(firstname,lastname) FROM table_name WHERE number REGEXP :theregex',
                 'type' => 'text',
 				'default' => ''
-        )
+        ),
+		'Post_Processing_SQL_Query' => array(
+				'description' => 'A query that uses the Superfecta supplied name and number to perform a database operation. Use :thename and :thenumber as variables for CNAM and CID.<br>Example1: INSERT INTO table_name VALUES (:thename,:thenumber)',
+				'type' => 'text',
+				'default' => ''
+        ),
     );
 	
 	function __construct() {
@@ -62,9 +76,22 @@ class Database extends superfecta_base {
 			$this->DebugPrint("PDO not present on system...Skipping");
 			return null;
 		}
+		$sql_params = array();
 		$sql = $run_param['SQL_Query'];
-		if(!strpos($sql,':thenumber')) {
-			$this->DebugPrint("You Must include ':thenumber' in your SQL query...Skipping");
+		if(strpos($sql,':thenumber')) {
+			$sql_params[':thenumber'] = $thenumber;
+		}
+		if (strpos($sql,':theregex')) {
+			//  Build regular expression from the $thenumber to avoid non-digit characters stored in database
+			$theregex = "[^0-9]*";
+			for( $x=0; $x < ((strlen($thenumber))-1); $x++ )  {
+				$theregex .=  substr($thenumber,$x,1)."[^0-9]*";
+			}
+			$theregex = $theregex.(substr($thenumber,-1))."([^0-9]+|$)";
+			$sql_params[':theregex'] = $theregex;
+		}
+		if (count($sql_params) == 0) {
+			$this->DebugPrint("You Must include ':thenumber' or ':theregex' in your SQL query...Skipping");
 			return null;
 		}
 		$sth = $dbh->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
@@ -74,7 +101,7 @@ class Database extends superfecta_base {
 		}
 		$this->DebugPrint("Connected!");
 		$this->DebugPrint("Searching Database...");
-		$sth->execute(array(':thenumber' => $thenumber));
+		$sth->execute($sql_params);
 		$find = $sth->fetch(PDO::FETCH_BOTH);
 		
 		if($find && is_array($find)) {
@@ -86,4 +113,41 @@ class Database extends superfecta_base {
 		}
     }
 
+	function post_processing($cache_found, $winning_source, $first_caller_id, $run_param, $thenumber) {
+
+		if ($run_param['Post_Processing_SQL_Query'] == '') {
+			$this->DebugPrint("No post processing query, skipping.");
+			return null;
+		}
+		if(class_exists('PDO')) {
+			$this->DebugPrint("Connecting to database....");
+		
+			try {
+			    $dbh = new PDO($run_param['DB_Driver'].':dbname='.$run_param['DB_Name'].';host='.$run_param['DB_Host'], $run_param['DB_User'], $run_param['DB_Password']);
+			} catch (PDOException $e) {
+			    $this->DebugPrint('Connection failed: ' . $e->getMessage());
+			    return null;
+			}
+		} else {
+			$this->DebugPrint("PDO not present on system...Skipping");
+			return null;
+		}
+		$sql = $run_param['Post_Processing_SQL_Query'];
+		$sql_params = array();
+		if(strpos($sql,':thenumber')) {
+			$sql_params[':thenumber'] = $thenumber;
+		}
+		if (strpos($sql,':thename')) {
+			$sql_params[':thename'] = $first_caller_id;
+		}
+		
+		$sth = $dbh->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+		if(!$sth) {
+			$this->DebugPrint("Failed to Prepare the SQL Statement. Are we connected?...Skipping");
+			return null;
+		}
+		$this->DebugPrint("Connected!");
+		$this->DebugPrint("Executing post processing query...");
+		$sth->execute($sql_params);
+	}
 }

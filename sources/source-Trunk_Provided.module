@@ -40,6 +40,7 @@ class Trunk_Provided extends superfecta_base {
         } else if ($provided_caller_id != '') {
             $this->DebugPrint("found value of $provided_caller_id ... ");
             $test_string = str_ireplace($key_words, '', $provided_caller_id);
+			$run_param['Discard_Numeric'] = isset($run_param['Discard_Numeric']) ? $run_param['Discard_Numeric'] : $this->source_param['Discard_Numeric']['default'];
 			if (($run_param['Discard_Numeric'] == 'on') && (is_numeric($provided_caller_id))) {
 				$this->DebugPrint("CID is all numeric - discarded");
 				return null;

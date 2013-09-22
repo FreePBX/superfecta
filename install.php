@@ -366,3 +366,12 @@ foreach ($iterator as $filename) {
     }
 }
 
+// Remove entries from Caller ID Lookup sources left by legacy Superfecta Installs
+$sql = "SELECT * FROM `cidlookup` WHERE `description` = 'Caller ID Superfecta'";
+$res = $db->query($sql);
+
+if($res->numRows() != 0) {
+	echo "Cleaning up remnants of legacy Superfecta installations.</p>";
+	$sql = "DELETE FROM cidlookup WHERE description = 'Caller ID Superfecta'";
+	$res = $db->query($sql);
+}

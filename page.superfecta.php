@@ -33,7 +33,7 @@ $supertpl = new RainTPL;
 
 $scheme = (isset($_REQUEST['scheme'])) ? $_REQUEST['scheme'] : '';
 $module_info = $superfecta->xml2array("modules/superfecta/module.xml");
-
+$schemecopy = '';
 $goto = NULL;
 
 //create a copy of a scheme if requested
