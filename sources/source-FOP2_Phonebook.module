@@ -1,5 +1,19 @@
 <?php
 
+/*** *** *** *** *** *** *** *** *** *** *** *** *** 
+Developer Notes:
+This source still relies on mysql_ functions, it should 
+updated to use the PDO class.
+There may be some users who would want this module to do
+post processing to insert name/number into FOP2 address book
+
+History:
+20xx-xx-xx	Initial migration to 2.11 platform
+2013-12-19	bug fix, CNAM_Type missing from Source Param user input - lgaetz
+
+
+*** *** *** *** *** *** *** *** *** *** *** *** ***/
+
 class FOP2_Phonebook extends superfecta_base {
 
     public $description = "Look up First Name, Last Name, Company Name in the FOP2 visual address book MySQL table";
@@ -25,13 +39,21 @@ class FOP2_Phonebook extends superfecta_base {
                 'type' => 'password',
 				'default' => 'passw0rd'
         ),
+		'CNAM_Type' => array(
+			'description' => 'Select how returned CNAM is prioritized',
+			'type' => 'select',
+			'option' => array(
+				'1' => 'Company_name then First_name Last_name',
+				'2' => 'First_name Last_name then Company_name',
+				'3' => 'Last_name Company_name if both exist',
+			),
+		),
         'Filter_Length' => array(
                 'description' => 'The number of rightmost digits to check for a match. Enter the word false to disable this setting',
                 'type' => 'number',
 				'default' => 10
         )
     );
-
 
     function get_caller_id($thenumber, $run_param=array()) {
         $caller_id = null;
