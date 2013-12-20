@@ -1,18 +1,19 @@
 <?php
 
-/*** *** *** *** *** *** *** *** *** *** *** *** *** 
+/*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** 
 Developer Notes:
-This source still relies on mysql_ functions, it should 
-updated to use the PDO class.
-There may be some users who would want this module to do
-post processing to insert name/number into FOP2 address book
+This source still relies on mysql_ functions, it should be updated to use the PDO class.
+There may be some users who would want this module to do post processing to
+	insert name/number into FOP2 address book
+Versions prior to 2013-12-20 would abandon the search if there were fewer digits than specified
+	in the filter length which I (lgaetz) didn't agree with. 
 
-History:
+Versopm History:
 20xx-xx-xx	Initial migration to 2.11 platform
 2013-12-19	bug fix, CNAM_Type missing from Source Param user input - lgaetz
 2013-12-20	bug fix, don't modify $run_param variables inside get_caller_id function, fix filter length - lgaetz
 
-*** *** *** *** *** *** *** *** *** *** *** *** ***/
+*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
 
 class FOP2_Phonebook extends superfecta_base {
 
