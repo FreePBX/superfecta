@@ -3,7 +3,7 @@
 //If a valid match is found, it will give $caller_id a value
 //available variables for use are: $thenumber
 //retreive website contents using get_url_contents($url);
-// last update: Aug 28, 2012
+// last update: Apr 3, 2013 by lgaetz
 
 //configuration / display parameters
 //The description cannot contain "a" tags, but can contain limited HTML. Some HTML (like the a tags) will break the UI.
@@ -243,6 +243,8 @@ if($usage_mode == 'get caller id')
 		switch ($Country)
 		{
 			case "FR" :
+				preg_match_all('/<span class="fn org">(.+?)<\/span><\/a>/', $sresult, $sname);
+				break;
 			case "BE" :
 			case "LU" :
 			case "DK":

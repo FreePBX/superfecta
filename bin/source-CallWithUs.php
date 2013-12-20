@@ -71,4 +71,3 @@ if($usage_mode == 'get caller id') {
     $caller_id = strip_tags($sresult);
   } 
 }
-?>
