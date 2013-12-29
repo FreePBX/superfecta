@@ -7,7 +7,7 @@ This module only supports MySQL searches at the moment, but OpenEMR has a fledge
 that may (or may not) support CNAM lookups. Possible future feature.
 
 History:
-2013-12-27 created by RajR
+2013-12-27 initial commit
 2013-12-28 minor query edits by lgaetz
 
  ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****/
