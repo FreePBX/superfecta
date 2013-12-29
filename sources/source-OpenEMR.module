@@ -1,0 +1,92 @@
+<?php
+
+/***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** 
+Module Dev Notes:
+If MySQL table has a date field, query should be modified to include: ORDER BY `date_field` DESC
+This module only supports MySQL searches at the moment, but OpenEMR has a fledgeling API
+that may (or may not) support CNAM lookups. Possible future feature.
+
+History:
+2013-12-27 created by RajR
+2013-12-28 minor query edits by lgaetz
+
+ ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****/
+
+class OpenEMR extends superfecta_base {
+
+	public $description = "Searches a MySQL OpenEMR Database - see http://www.open-emr.org/";
+	public $version_requirement = "2.11";
+	public $source_param = array(
+		'DB_Host' => array(
+				'description' => 'Host address of the OpenEMR database. (localhost if the database is on the same server as FreePBX)',
+				'type' => 'text',
+				'default' => 'localhost'
+		),
+		'DB_Name' => array(
+				'description' => 'Database name of the OpenEMR database',
+				'type' => 'text',
+				'default' => 'openemr'
+		),
+		'DB_User' => array(
+				'description' => 'Username used to connect to the OpenEMR database',
+				'type' => 'text',
+				'default' => 'root'
+		),
+		'DB_Password' => array(
+				'description' => 'Password used to connect to the OpenEMR database',
+				'type' => 'password',
+				'default' => 'passw0rd'
+		),
+		'Filter_Length' => array(
+				'description' => 'The number of rightmost digits to check for a match. Enter zero to disable',
+				'type' => 'number',
+				'default' => 10
+		)
+	);
+
+	function get_caller_id($thenumber, $run_param=array()) {
+		$caller_id = null;
+
+		$this->DebugPrint("Searching OpenEMR ... ");
+		
+		if ($run_param['Filter_Length'] != 0) {
+			if (strlen($thenumber) > $run_param['Filter_Length']) $thenumber = substr($thenumber, -$run_param['Filter_Length']);
+		}
+		
+		$link = mysql_connect($run_param['DB_Host'], $run_param['DB_User'], $run_param['DB_Password'])or die("OpenEMR connection failed:". $run_param['DB_Host']);
+		
+		if(!mysql_select_db($run_param['DB_Name'])) {
+			$this->DebugPrint("OpenEMR database open failed");
+			return false;
+		}
+
+		//  Build regular expression from the number to avoid non-digit characters stored in database
+		$wquery = "'[^0-9]*";
+		for( $x=0; $x < ((strlen($thenumber))-1); $x++ ) {
+			$wquery .=  substr($thenumber,$x,1)."[^0-9]*" ;
+		}
+		$wquery = $wquery.(substr($thenumber,-1))."([^0-9]+|$)'";
+
+		// query database
+//		$query = "SELECT * FROM `patient_data` where `phone_home` REGEXP ".$wquery;  // working query by RajR
+		$query = "SELECT * FROM `patient_data` WHERE `phone_home` REGEXP ".$wquery." OR `phone_cell` REGEXP ".$wquery." OR `phone_contact` REGEXP ".$wquery." LIMIT 1";
+		$result = mysql_query($query) or die("OpenEMR query failed: $query");
+
+		// Get last & first name if any results are returned from query
+		if (mysql_num_rows($result)>0) {
+			$row = mysql_fetch_array($result);
+			$value = $row["lname"]." ".$row["fname"];
+		}
+
+		mysql_close($link);              // close link to database
+
+		if(strlen($value) > 0) {
+			$caller_id = trim($value);
+		}
+		else if($debug) {
+			$this->DebugPrint("not found");
+		}
+
+		return $caller_id;
+	}
+}
