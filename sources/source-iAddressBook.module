@@ -8,13 +8,11 @@ figure it out anyway
 iAddressBook installer supports both mysql and sqlite (possibly postgre as well). This module was
 only tested using mysql. Both mysql and sqlite are available user options but there is currently no check
 to ensure that both drivers are available to the PDO class
-The phone number label is only returned if the number in the address book exactly matches $thenumber, 
-the array_search needs to be updated to search with the regex
 
 
 Version History
 2013-12-31  Initial commit by lgaetz
-2014-01-01	Added filter length and other minor edits by lgaetz
+2014-01-01	Added filter length and phone label by regex, other minor edits by lgaetz
 *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
 
 
@@ -133,12 +131,8 @@ class iAddressBook extends superfecta_base {
 				$tmp = explode(";", $line); 
 				$phones_array[trim($tmp[0])] = trim($tmp[1]);
 			}
-			
-			// this line attempts to determine what the label is for the phone number but currently
-			// only returns the label if the stored phone number exactly matches $thenumber
-//			$phone_label = array_search($thenumber,$phones_array);
-			
-			// searches phone number array for regex and returns key for that number
+
+			// searches phone number array with regex and returns key for that number
 			$key_array = array_keys(preg_grep("/".$regex."/", $phones_array));
 			$phone_label = trim($key_array[0]);
 
