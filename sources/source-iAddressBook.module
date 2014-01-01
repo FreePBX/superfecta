@@ -14,7 +14,7 @@ the array_search needs to be updated to search with the regex
 
 Version History
 2013-12-31  Initial commit by lgaetz
-
+2014-01-01	Added filter length and other minor edits by lgaetz
 *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
 
 
@@ -40,7 +40,7 @@ class iAddressBook extends superfecta_base {
 		'DB_Name' => array(
 				'description' => 'Database name of the database',
 				'type' => 'text',
-				'default' => 'asterisk',
+				'default' => 'iaddressbook',
 		),
 		'DB_User' => array(
 				'description' => 'Username used to connect to the database',
@@ -51,6 +51,11 @@ class iAddressBook extends superfecta_base {
 				'description' => 'Password used to connect to the database',
 				'type' => 'password',
 				'default' => 'passw0rd',
+		),
+	   'Filter_Length' => array(
+				'description' => 'The number of rightmost digits to check for a match. Enter zero to disable this setting',
+				'type' => 'number',
+				'default' => 10
 		),
 		'Name_Display_Format' => array(
 				'description' => 'Choose how you want the name displayed on the endpoint.',
@@ -80,7 +85,7 @@ class iAddressBook extends superfecta_base {
 		$caller_id = null;
 		
 		if(class_exists('PDO')) {
-				$this->DebugPrint("Connecting to database....");
+				$this->DebugPrint("Connecting to iAddressBook database....");
 		
 			try {
 				$dbh = new PDO($run_param['DB_Driver'].':dbname='.$run_param['DB_Name'].';host='.$run_param['DB_Host'], $run_param['DB_User'], $run_param['DB_Password']);
@@ -93,7 +98,12 @@ class iAddressBook extends superfecta_base {
 			return null;
 		}
 
-		//  Build regular expression from the $thenumber to avoid non-digit characters stored in database
+		// trim leading digits beyond the filter length
+		if ($run_param['Filter_Length'] != 0) {
+			if (strlen($thenumber) > $run_param['Filter_Length']) $thenumber = substr($thenumber, -$run_param['Filter_Length']);
+		}
+
+		//  Build regular expression from the modified $thenumber to avoid non-digit characters stored in database
 		$regex = "[^0-9]*";
 		for( $x=0; $x < ((strlen($thenumber))-1); $x++ )  {
 			$regex .=  substr($thenumber,$x,1)."[^0-9]*";
@@ -108,13 +118,12 @@ class iAddressBook extends superfecta_base {
 			$this->DebugPrint("Failed to Prepare the SQL Statement. Are we connected?...Skipping");
 			return null;
 		}
-		$this->DebugPrint("Connected!");
-		$this->DebugPrint("Searching Database...");
+		$this->DebugPrint("Connected to database, searching ...");
 		$sth->execute($sql_params);
 		$find = $sth->fetch(PDO::FETCH_BOTH);
 
 		if($find && is_array($find)) {
-			$this->DebugPrint("Found..");
+			$this->DebugPrint("Found ...");
 			
 			// phone numbers and number labels are all returned in a single string, $find['phones']
 			// these lines break the `phones` string into an array of numbers with label keys
@@ -127,7 +136,11 @@ class iAddressBook extends superfecta_base {
 			
 			// this line attempts to determine what the label is for the phone number but currently
 			// only returns the label if the stored phone number exactly matches $thenumber
-			$phone_label = array_search($thenumber,$phones_array);
+//			$phone_label = array_search($thenumber,$phones_array);
+			
+			// searches phone number array for regex and returns key for that number
+			$key_array = array_keys(preg_grep("/".$regex."/", $phones_array));
+			$phone_label = trim($key_array[0]);
 
 			if ($find['company'] == 1 && $find['organization'] && $run_param['Use_Company_Name'] == 'on') {
 				return trim($find['organization']);
