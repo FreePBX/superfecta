@@ -3,43 +3,46 @@
 /*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** 
 Developer Notes:
 This source still relies on mysql_ functions, it should be updated to use the PDO class.
-There may be some users who would want this module to do post processing to
-	insert name/number into FOP2 address book
-Versions prior to 2013-12-20 would abandon the search if there were fewer digits than specified
-	in the filter length which I (lgaetz) didn't agree with. 
+There may be some users who would want this module to do post processing to insert name/number into FOP2 address book
+Versions prior to 2013-12-20 would abandon the search if there were fewer digits than specified, disabled by lgaetz
 
-Versopm History:
+Version History:
 20xx-xx-xx	Initial migration to 2.11 platform
 2013-12-19	bug fix, CNAM_Type missing from Source Param user input - lgaetz
 2013-12-20	bug fix, don't modify $run_param variables inside get_caller_id function, fix filter length - lgaetz
+2014-01-02	add user setting to use native FreeBPX connection to the asterisk database.
 
 *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
 
 class FOP2_Phonebook extends superfecta_base {
-
     public $description = "Look up First Name, Last Name, Company Name in the FOP2 visual address book MySQL table";
     public $version_requirement = "2.11";
     public $source_param = array(
-        'DB_Host' => array(
-                'description' => 'Host address of the Asteridex database. (localhost if the database is on the same server as FreePBX)',
-                'type' => 'text',
-				'default' => 'localhost'
-        ),
-        'DB_Name' => array(
-                'description' => 'Database name of the Asteridex database',
-                'type' => 'text',
-				'default' => 'fop2'
-        ),
-        'DB_User' => array(
-                'description' => 'Username used to connect to the Asteridex database',
-                'type' => 'text',
-				'default' => 'root'
-        ),
-        'DB_Password' => array(
-                'description' => 'Password used to connect to the Asteridex database',
-                'type' => 'password',
-				'default' => 'passw0rd'
-        ),
+		'Use_Native_FreePBX_Connection' => array(
+				'description' => '<b>This setting is recommended</b>. Database connection is automatically configured using native FreePBX connection to the `asterisk` MySQL database. If this setting does not work, disable and manually configure database access fields below.',
+				'type' => 'checkbox',
+				'default' => 'on',
+		),
+		'DB_Host' => array(
+				'description' => 'Host address of the Asteridex database. (localhost if the database is on the same server as FreePBX). Only required when the `Native FreePBX Connection` above is not enabled.',
+				'type' => 'text',
+				'default' => 'localhost',
+		),
+		'DB_Name' => array(
+				'description' => 'Database name of the Asteridex database. Only required when the `Native FreePBX Connection` above is not enabled.',
+				'type' => 'text',
+				'default' => 'fop2',
+		),
+		'DB_User' => array(
+				'description' => 'Username used to connect to the Asteridex database. Only required when the `Native FreePBX Connection` above is not enabled.',
+				'type' => 'text',
+				'default' => 'root',
+		),
+		'DB_Password' => array(
+				'description' => 'Password used to connect to the Asteridex database. Only required when the `Native FreePBX Connection` above is not enabled.',
+				'type' => 'password',
+				'default' => 'passw0rd',
+		),
 		'CNAM_Type' => array(
 			'description' => 'Select how returned CNAM is prioritized',
 			'type' => 'select',
@@ -48,16 +51,18 @@ class FOP2_Phonebook extends superfecta_base {
 				'2' => 'First_name Last_name then Company_name',
 				'3' => 'Last_name Company_name if both exist',
 			),
+			'default' => '1',
 		),
-        'Filter_Length' => array(
-                'description' => 'The number of rightmost digits to check for a match. Enter zero to disable this setting',
-                'type' => 'number',
+		'Filter_Length' => array(
+				'description' => 'The number of rightmost digits to check for a match. Enter zero to disable this setting',
+				'type' => 'number',
 				'default' => 10
-        )
-    );
+		)
+	);
 
     function get_caller_id($thenumber, $run_param=array()) {
         $caller_id = null;
+		
         $this->DebugPrint("Searching FOP2 ... ");
 
 		// Initialize variables
@@ -76,50 +81,68 @@ class FOP2_Phonebook extends superfecta_base {
 			$wquery .=  substr($thenumber,$x,1)."[^0-9]*" ;
 		}
 		$wquery = $wquery.(substr($thenumber,-1))."([^0-9]+|$)'";
-
-		//  Connect to database
-		$wdb_handle = mysql_connect($run_param['DB_Host'], $run_param['DB_User'], $run_param['DB_Password']) or die("FOP2 connection failed" . mysql_error());
-		mysql_select_db($run_param['DB_Name']) or die("FOP2 db open error: " . mysql_error());
-		mysql_query("SET NAMES 'utf8'") or die("UTF8 set query  failed: " . mysql_error());
-
-		// search database
 		$wquery_string = 'SELECT firstname, lastname, company FROM visual_phonebook WHERE (phone1 REGEXP '.$wquery.') OR (phone2 REGEXP '.$wquery.') ORDER BY id DESC';
-		$wquery_result = mysql_query($wquery_string) or die("FOP2 query failed" . mysql_error());
-		if (mysql_num_rows($wquery_result)>0) {
-			$wquery_row = mysql_fetch_array($wquery_result);
+
+		// Two different access methods to database. It was discovered that if FreePBX mysql credentials are used in Superfecta, it would error out because of the mysql_close line
+		if ($run_param['Use_Native_FreePBX_Connection'] != 'on') {
+			//  Connect to database using user mysql settings
+			$wdb_handle = mysql_connect($run_param['DB_Host'], $run_param['DB_User'], $run_param['DB_Password']) or die("FOP2 connection failed" . mysql_error());
+			mysql_select_db($run_param['DB_Name']) or die("FOP2 db open error: " . mysql_error());
+			mysql_query("SET NAMES 'utf8'") or die("UTF8 set query  failed: " . mysql_error());
+
+			// search database
+			$wquery_result = mysql_query($wquery_string) or die("FOP2 query failed" . mysql_error());
+			if (mysql_num_rows($wquery_result)>0) {
+				$wquery_row = mysql_fetch_array($wquery_result);
+				if (is_array($wquery_row)) {
+					$last_name = $wquery_row["lastname"];
+					$first_name = $wquery_row["firstname"];
+					$company_name = $wquery_row["company"];
+				}
+			}
+			// Close dbase connection, if FreePBX mysql credentials are used the next line will mess things up. Perhaps a check
+			// to make sure that $amp_conf['AMPDBUSER'] != $run_param['DB_User']
+			mysql_close($wdb_handle);
+		}
+		else {
+			// search database using FreePBX settings
+			$wquery_row = sql($wquery_string, "getAll", DB_FETCHMODE_ASSOC);  //probalby need an error handler here
+			if (is_array($wquery_row)) {
+				$last_name = $wquery_row[0]["lastname"];
+				$first_name = $wquery_row[0]["firstname"];
+				$company_name = $wquery_row[0]["company"];
+			}
+		}
+
 			if ($cnam_type == 3) {
-				if ($wquery_row["lastname"] != "" and $wquery_row["company"] != "") {
-					$caller_id = $wquery_row["lastname"]." ".$wquery_row["company"];
+				if ($last_name != "" and $company_name != "") {
+					$caller_id = $last_name." ".$company_name;
 				} else {
 					$cnam_type = 1;
 				}
 			}
 			if ($cnam_type == 1) {
-				if ($wquery_row["company"] != "") {
-					$caller_id = $wquery_row["company"];
-				} else if ($wquery_row["firstname"] != "" and $wquery_row["lastname"] != "") {
-					$caller_id = $wquery_row["firstname"]." ".$wquery_row["lastname"];
-				} else if ($wquery_row["firstname"] != "") {
-					$caller_id = $wquery_row["firstname"];
+				if ($company_name != "") {
+					$caller_id = $company_name;
+				} else if ($first_name != "" and $last_name != "") {
+					$caller_id = $first_name." ".$last_name;
+				} else if ($first_name != "") {
+					$caller_id = $first_name;
 				} else {
-					$caller_id = $wquery_row["lastname"];
+					$caller_id = $last_name;
 				}
 			}
 			if ($cnam_type == 2) {
-				if ($wquery_row["firstname"] != "" and $wquery_row["lastname"] != "") {
-					$caller_id = $wquery_row["firstname"]." ".$wquery_row["lastname"];
-				} else if ($wquery_row["firstname"] != "") {
-					$caller_id = $wquery_row["firstname"];
-				} else if ($wquery_row["lastname"] != "") {
-					$caller_id = $wquery_row["lastname"];
+				if ($first_name != "" and $last_name != "") {
+					$caller_id = $first_name." ".$last_name;
+				} else if ($first_name != "") {
+					$caller_id = $first_name;
+				} else if ($last_name != "") {
+					$caller_id = $last_name;
 				} else {
-					$caller_id = $wquery_row["company"];
+					$caller_id = $company_name;
 				}
 			}
-		}
-
-		// Close dbase connection
-		mysql_close($wdb_handle);
 
 		if ($caller_id == "") {
 			$this->DebugPrint("Not Found");
