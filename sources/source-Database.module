@@ -2,10 +2,17 @@
 
 /*** *** *** *** *** *** *** *** *** *** 
 Developer Notes:
+Any user field that needs to accpet quotes MUST be of type textarea, not text.
+
+Version History:
 2013-09-20:	Added loop to build regex, fixed minor typo, expanded query help.
 			Can't figure out how to get Superfecta to accept single or double quotes in input fields. Quotes are necessary for a lot of queries.
 			Added support for Post Processing query
 			Fixed issue with my previous commit that handled the sql param substitution incorrectly.
+
+2014-0-21:	Added additional placeholder for :pernumber, which puts % around thenubmer in the query
+			Finaly fixed bug that prevented quotes in query
+
 *** *** *** *** *** *** *** *** *** ***/
 
 
@@ -15,7 +22,7 @@ class Database extends superfecta_base {
     public $version_requirement = "2.11";
     public $source_param = array(
         'DB_Driver' => array(
-                'description' => 'The PDO Driver',
+                'description' => 'Select PDO driver for database type',
 	            'type' => 'select',
 	            'option' => array(
 	                'none' => 'none'
@@ -28,28 +35,32 @@ class Database extends superfecta_base {
 				'default' => 'localhost'
         ),
         'DB_Name' => array(
-                'description' => 'Database name of the database',
+                'description' => 'Name of database',
                 'type' => 'text',
 				'default' => 'asterisk'
         ),
         'DB_User' => array(
-                'description' => 'Username used to connect to the database',
+                'description' => 'Username to connect to the database',
                 'type' => 'text',
 				'default' => 'root'
         ),
         'DB_Password' => array(
-                'description' => 'Password used to connect to the database',
+                'description' => 'Password to connect to the database',
                 'type' => 'password',
 				'default' => 'passw0rd'
         ),
         'SQL_Query' => array(
-                'description' => 'Structure a valid MySQL query that returns the value of a single field. Using :thenumber as the variable for the CID and using :theregex as a variable for a regular expression that can be used to ignore non-digit characters stored in the database.<br>Example1: SELECT name_field FROM table_name WHERE cid = :thenumber<br>Example2: SELECT CONCAT(firstname,lastname) FROM table_name WHERE number REGEXP :theregex',
-                'type' => 'text',
+                'description' => 'Structure a valid PDO query that returns the value of a single field. Use :thenumber as a placeholder for the CID, use :theregex
+				as a placeholder for a regular expression used to ignore non-digit characters stored in the database, use :pernumber as a placeholder for the CID
+				including leading and trailing % in the query. Don\'t use quotes around the placeholders.<br>Example1: SELECT `name_field` FROM `table_name` WHERE
+				`cid` LIKE :thenumber<br>Example2: SELECT CONCAT(`firstname`,`lastname`) FROM `table_name` WHERE `number` REGEXP :theregex<br>Example3: Select `name`
+				FROM `table` WHERE `number` LIKE :pernumber',
+                'type' => 'textarea',
 				'default' => ''
         ),
 		'Post_Processing_SQL_Query' => array(
 				'description' => 'A query that uses the Superfecta supplied name and number to perform a database operation. Use :thename and :thenumber as variables for CNAM and CID.<br>Example1: INSERT INTO table_name VALUES (:thename,:thenumber)',
-				'type' => 'text',
+				'type' => 'textarea',
 				'default' => ''
         ),
     );
@@ -90,8 +101,11 @@ class Database extends superfecta_base {
 			$theregex = $theregex.(substr($thenumber,-1))."([^0-9]+|$)";
 			$sql_params[':theregex'] = $theregex;
 		}
+		if(strpos($sql,':pernumber')) {
+			$sql_params[':pernumber'] = "%".$thenumber."%";
+		}
 		if (count($sql_params) == 0) {
-			$this->DebugPrint("You Must include ':thenumber' or ':theregex' in your SQL query...Skipping");
+			$this->DebugPrint("You Must include :thenumber, :theregex or :pernumber in your SQL query...Skipping");
 			return null;
 		}
 		$sth = $dbh->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
@@ -140,7 +154,18 @@ class Database extends superfecta_base {
 		if (strpos($sql,':thename')) {
 			$sql_params[':thename'] = $first_caller_id;
 		}
-		
+		if (strpos($sql,':theregex')) {
+			//  Build regular expression from the $thenumber to avoid non-digit characters stored in database
+			$theregex = "[^0-9]*";
+			for( $x=0; $x < ((strlen($thenumber))-1); $x++ )  {
+				$theregex .=  substr($thenumber,$x,1)."[^0-9]*";
+			}
+			$theregex = $theregex.(substr($thenumber,-1))."([^0-9]+|$)";
+			$sql_params[':theregex'] = $theregex;
+		}
+		if(strpos($sql,':pernumber')) {
+			$sql_params[':pernumber'] = "%".$thenumber."%";
+		}
 		$sth = $dbh->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
 		if(!$sth) {
 			$this->DebugPrint("Failed to Prepare the SQL Statement. Are we connected?...Skipping");
