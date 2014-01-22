@@ -9,7 +9,7 @@ Summary by github user Totole: 	TOS dated Sept. 2011: Only for private use, no r
 Version History
 2014-01-09	Initial migration to 2.11, new regex and url by lgaetz
 *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
-class Klicktel extends superfecta_base {
+class Klicktel_DE extends superfecta_base {
 
 	public $description = "http://www.klicktel.de - Usage of this module requires acceptance of Klicktel terms of service";
 	public $version_requirement = "2.11";
