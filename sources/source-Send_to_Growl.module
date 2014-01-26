@@ -1,24 +1,21 @@
 <?php
 
-/*	
-	Growl Notification Module for CID Superfecta v3.x : Send notifications to multiple hosts
-	
-	Version 1.0
-	
-	Written By Francois Dechery, aka Soif. https://github.com/soif/,
-	
-	* Version History:
-		- 1.0, Nov 20, 2012 - Initial Release
-
-	* Notes: I've only tested this software on mac clients, but I expect it to also 
-	work on others clients (using the 'Gntp' mode).
-
-	* Licence: This program is free software; you can redistribute it and/or modify it 
-	under the terms of the GNU General Public License as published by the Free Software 
-	Foundation; either version 2 of the License, or (at your option) any later version.
-
-	#######################################################################################
-*/
+/*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** 
+ * Growl Notification Module for CID Superfecta
+ * 
+ * Written By Francois Dechery, aka Soif. https://github.com/soif/,
+ * 
+ * 
+ * Licence: This program is free software; you can redistribute it and/or modify it 
+ * under the terms of the GNU General Public License as published by the Free Software 
+ * Foundation; either version 2 of the License, or (at your option) any later version.
+ * 
+ * Version History:
+ * 		2012-11-20 - Initial Release by soif
+ * 		2014-01-25 - Added support for callback URL by lgaetz
+ * 
+ * 
+ *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
 
 class Send_to_Growl extends superfecta_base {
 
@@ -78,8 +75,13 @@ class Send_to_Growl extends superfecta_base {
 		),
 		'Password' => array(
 			'description'	=> 'Password',
-			'type'			=> 'text',
+			'type'			=> 'password',
 			'default'		=> ''
+		),
+		'Callback_URL' => array(
+			'description'	=> 'Allows user to click the notification box and open the URL specified here.',
+			'type'			=> 'text',
+			'default'		=> null,
 		),
 	);
 
@@ -139,9 +141,13 @@ class Send_to_Growl extends superfecta_base {
 	//	optionally (in Gntp Mode) you might include an icon from a local path or remote URL.
 	//			'AppIcon'  => 'http://www.laurent-laville.org/growl/images/Help.png',
 			);
-			$growl_options     	= array(
-				'priority'	=> $run_param['Priority'],
-				'sticky' 	=> (bool) $run_param['Sticky'],
+			$growl_options = array(
+				'priority' => $run_param['Priority'],
+				'sticky' => (bool) $run_param['Sticky'],
+				'CallbackContext' => 'context',  // no idea what is supposed to be here - lgaetz
+				'CallbackContextType' => 'STRING',
+				'CallbackTarget'=> $run_param['Callback_URL'],
+
 			);
 		
 			$this->DebugPrint('Sending Growl Notifications: <ul>');
