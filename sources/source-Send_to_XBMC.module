@@ -14,13 +14,14 @@
  *          Enhanced display,
  *          Time parameter,
  *          No more crash when xbmc device is off
- *     2014-02-09  incorporate soif improvements in 2.11 branch by lgaetz
- * 
+ *     2014-02-09  First attempt to incorporate soif improvements in 2.11 branch by lgaetz
+ *     2014-02-11  Bug fixes and cleanup
  * 
  **** **** **** **** **** **** **** **** **** **** **** **** **** **** **** ****/
+
 class Send_to_XBMC extends superfecta_base {
 
-	public $description = "This source will send the CallerID number and CallerID name to XBMC.";
+	public $description = "This source will send the CallerID number and CallerID name to XBMC hosts.";
 	public $version_requirement = "2.11";
 	public $source_param = array(
 		'Hosts' => array(
@@ -78,8 +79,8 @@ class Send_to_XBMC extends superfecta_base {
 	function post_processing($cache_found, $winning_source, $first_caller_id, $run_param, $thenumber) {
 	
 		// initialize variables - perhaps these should be collected with $source_param
-		$my_anonymous_title = "Unknown";	// Title displayed for calls without  a Caller Id name
-		$my_host_timeout = 0.5; 		//time (in seconds) to wait for each host before it is considered off (should be short)
+		$my_anonymous_title = "Unknown";	// Title displayed for calls without CallerID name 
+		$my_host_timeout = 0.5; 			//time (in seconds) to wait for each host before it is considered off (should be short)
 
 		
 		if ($run_param['Hosts']) {
@@ -98,7 +99,7 @@ class Send_to_XBMC extends superfecta_base {
 			//format number
 			$thenumberformated = $thenumber;
 			switch ($run_param['Format_Incoming_Number']) {
-				case 1:
+				case 1:			// (132) 456-7890 or 1(132) 456-7890
 					if (strlen($thenumber)==10) {
 						$thenumberformated='('.substr($thenumber,0,3).') '.substr($thenumber,3,3).'-'.substr($thenumber,6,4);
 					}
@@ -106,7 +107,7 @@ class Send_to_XBMC extends superfecta_base {
 						$thenumberformated='1('.substr($thenumber,1,3).') '.substr($thenumber,4,3).'-'.substr($thenumber,7,4);
 					}
 				break;
-				case 2:
+				case 2:			// 132-456-7890 or 1-132-456-7890
 					if (strlen($thenumber)==10) {
 						$thenumberformated=substr($thenumber,0,3).'-'.substr($thenumber,3,3).'-'.substr($thenumber,6,4);
 					}
@@ -114,14 +115,14 @@ class Send_to_XBMC extends superfecta_base {
 						$thenumberformated='1-'.substr($thenumber,1,3).'-'.substr($thenumber,4,3).'-'.substr($thenumber,7,4);
 					}
 				break;
-				case 3:
+				case 3:			// 12 34 56 78 90
 					if (strlen($thenumber)==10) {
 						$thenumberformated=substr($thenumber,0,2).' '.substr($thenumber,2,2).' '.substr($thenumber,4,2).' '.substr($thenumber,6,2).' '.substr($thenumber,8,2);
 					}
 				break;
 			}
 			
-			// for some reason we are removing commas from CallerID name
+			// remove commas from CallerID name as was done in older versions, is this necessary?
 			$first_caller_id = str_replace(",", "", $first_caller_id);
 
 			//make notification
@@ -135,11 +136,11 @@ class Send_to_XBMC extends superfecta_base {
 			}
 
 			$my_xbmc_time = $run_param['Notification_Time']*1000;
-			$my_xbmc_icon = "DefaultActor.png";       // relative to /usr/share/xbmc/addons/skin.confluence/media  or absolute
-			
+			$my_xbmc_icon = "DefaultActor.png";       // relative to /usr/share/xbmc/addons/skin.confluence/media or absolute, should this be a $source_param?
+
 			$my_dharma_params.="$my_xbmc_title,$my_xbmc_mess,$my_xbmc_time,$my_xbmc_icon";
 			$my_dharma_params = urlencode($my_dharma_params);
-			
+
 			// hosts loop
 			$hosts=explode(',',$run_param['Hosts']);
 			foreach ($hosts as $host){
@@ -182,25 +183,28 @@ class Send_to_XBMC extends superfecta_base {
 					$url3 = $url . _myXbmcUrl($my_request);
 				}
 				else{
-					$url1 = $url . '/xbmcCmds/xbmcHttp?command=SetVolume(' . $run_param['Change_Volume'] . ')';
-					$url2 = $url . '/xbmcCmds/xbmcHttp?command=Pause()';
-					$url3 = $url . '/xbmcCmds/xbmcHttp?command=ExecBuiltIn&parameter=XBMC.Notification(' . $my_dharma_params . ')';			
+					$url1 = $url . urlencode('/xbmcCmds/xbmcHttp?command=SetVolume(' . $run_param['Change_Volume'] . ')');
+					$url2 = $url . urlencode('/xbmcCmds/xbmcHttp?command=Pause()');
+					$url3 = $url . urlencode('/xbmcCmds/xbmcHttp?command=ExecBuiltIn&parameter=XBMC.Notification(' . $my_dharma_params . ')');			
 				}
 
-				//debug ------------------------
-				
-				$this->DebugPrint("Sending XBMC command To Host: $host <br>\n");
-				if ($run_param['Change_Volume']		!= '') 		{ $this->DebugPrint('Volume: ' . $url1 . '<br>'); }
-				if ($run_param['Pause_PlayBack']	!= 'off')	{ $this->DebugPrint('Pause : ' . $url2 . '<br>'); }
-				if ($run_param['Notification_Time'] )			{ $this->DebugPrint('Notif : ' . $url3 . '<br>'); }
-
-				// Send Out The Strings if host is online (else bug) -------------------
-				if($fp = @fsockopen($host,80,$errCode,$errStr,$my_host_timeout)){   
-					if ($run_param['Change_Volume'] !='') 		{ $value = $this->get_url_contents($url1); }
-					if ($run_param['Pause_PlayBack'] != 'off')	{ $value = $this->get_url_contents($url2); }
-					if ($run_param['Notification_Time'])		{ $value = $this->get_url_contents($url3); }
+				//Send URLs and debug output
+				$this->DebugPrint("Sending XBMC command(s) To Host: $host",DEBUG_INFO);
+				if ($run_param['Change_Volume'] != ''){
+					$this->DebugPrint("Setting Volume on $host...",DEBUG_INFO);
+					$this->DebugPrint('<code>Volume URL: ' . $url1 . '</code>',DEBUG_ALL);
+					$value = $this->get_url_contents($url1);
 				}
-				@fclose($fp);
+				if ($run_param['Pause_PlayBack'] != 'off') {
+					$this->DebugPrint("Pausing Media on $host...",DEBUG_INFO);
+					$this->DebugPrint('<code>Pause URL: ' . $url2 . '</code>',DEBUG_ALL);
+					$value = $this->get_url_contents($url2);
+				}
+				if ($run_param['Notification_Time'] ) {
+					$this->DebugPrint("Setting Notification Time to $host...",DEBUG_INFO);
+					$this->DebugPrint('<code>Notif URL: ' . $url3 . '</code>',DEBUG_ALL);
+					$value = $this->get_url_contents($url3);
+				}
 			}
 		}
 	}
