@@ -16,7 +16,7 @@ Version History:
 *** *** *** *** *** *** *** *** *** ***/
 
 
-class Database extends superfecta_base {
+class SFDatabase extends superfecta_base {
 
     public $description = "Searches any supported PDO databse<br/>Example PDO Query: 'SELECT `name` FROM `users` WHERE `outboundcid` = :thenumber'";
     public $version_requirement = "2.11";
