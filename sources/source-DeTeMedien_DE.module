@@ -25,8 +25,8 @@ class DeTeMedien_DE extends superfecta_base {
 		// Patterns to search for 
 		$regexp = array(
 //			'/arkey=.*>(.*)&nbsp;/',    // old regex from ver 2.2.x occasionally gives bad result
-			'/class="preview iname"><span class="">(.*?)<\/span><\/a> <\/span>/',   // working 2014-01-08
-			'/class="preview iname" onmouseover="" onMouseOut=""><span class="">(.*?)</span></a> </span>/',    // working 2014-01-08
+//			'/class="preview iname"><span class="">(.*?)<\/span><\/a> <\/span>/',   // working 2014-01-08
+			'/class="preview iname" onmouseover="" onMouseOut=""><span class="">(.*?)<\/span>/',    // working 2014-01-08
 		);
 
 		if ($this->SearchURL($url, $regexp, $match, NULL, TRUE)) {
