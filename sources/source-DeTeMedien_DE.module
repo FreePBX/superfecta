@@ -1,15 +1,17 @@
 <?php
 /*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
-Developer Notes:
-Discussion about TOS for this site here: 
-https://github.com/POSSA/Caller-ID-Superfecta/issues/167#issuecomment-31667257
-Summary by github user Totole: 	TOS: has no limitations besides reselling downloaded information’s
-								to 3rd party. It belongs to Deutsche Telekom group.
+ * Developer Notes:
+ * Discussion about TOS for this site here: 
+ * https://github.com/POSSA/Caller-ID-Superfecta/issues/167#issuecomment-31667257
+ * Summary by github user Totole:  TOS: has no limitations besides reselling downloaded information’s
+ *                                 to 3rd party. It belongs to Deutsche Telekom group.
+ *
+ * Version History
+ *        2014-01-08   Initial migration to 2.11 and update regex's by lgaetz
+ *        2014-03-25   Regex fix by Håkan
+ *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
 
-Version History
-2014-01-08	Initial migration to 2.11 and update regex's by lgaetz
-*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
-class DeTeMedien_DE extends superfecta_base {
+ class DeTeMedien_DE extends superfecta_base {
 
 
 	public $description = "http://www.detemedien.de/";
@@ -26,7 +28,7 @@ class DeTeMedien_DE extends superfecta_base {
 		$regexp = array(
 //			'/arkey=.*>(.*)&nbsp;/',    // old regex from ver 2.2.x occasionally gives bad result
 //			'/class="preview iname"><span class="">(.*?)<\/span><\/a> <\/span>/',   // working 2014-01-08
-			'/class="preview iname" onmouseover="" onMouseOut=""><span class="">(.*?)<\/span>/',    // working 2014-01-08
+			'/class="preview iname" onmouseover="" onMouseOut=""><span class="">(.*?)<\/span>/',    // working 2014-03-25
 		);
 
 		if ($this->SearchURL($url, $regexp, $match, NULL, TRUE)) {
