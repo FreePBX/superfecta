@@ -42,7 +42,7 @@ class Send_to_Squeezebox_Server extends superfecta_base {
             $url = $run_param['URL_address'] . '/status.txt?p0=display&p1=' . $clid2 . '&p2=' . $clid1 . '&p3=30&player=*';
 
             $this->DebugPrint("Send to Squeezebox: " . $run_param['URL_address']);
-            $value = get_url_contents($url);
+            $value = $this->get_url_contents($url);
 
             return($thenumber);
         }
