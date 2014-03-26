@@ -1,10 +1,12 @@
 <?php
-/*** ****** *** *** 
-Send_to_URL dev notes:
-August 7, 2011		Initial migration from 2.2.x by ukstevef
-January 21, 2013	Update to permit freeform URL by lgaetz
-
-*** ****** *** ***/
+/*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+ * Developer Notes:
+ *
+ * Version History 
+ *     2011-08-07  Initial migration from 2.2.x by ukstevef
+ *     2013-01-21  Update to permit free form URL by lgaetz
+ *     2014-03-26  Fix issue with urlencode #151
+ *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
 
 class Send_to_URL extends superfecta_base {
 
@@ -22,14 +24,11 @@ class Send_to_URL extends superfecta_base {
 
         if (($run_param['URL_address'] != '') && ($first_caller_id != '')) {
 
-			// replace [NAME] and [NUMBER] placeholders with actual values and urlencode
-			$url = $run_param['URL_address'];
-			$url = str_replace('[NAME]',  $first_caller_id, $url);
-			$url = str_replace('[NUMBER]', $thenumber, $url);
-			$url = str_replace('[name]',  $first_caller_id, $url);
-			$url = str_replace('[number]', $thenumber, $url);
-            $url = urlencode($url);
-
+			// replace [NAME] and [NUMBER] placeholders with actual urlencoded values
+			$url = str_replace('[NAME]',  urlencode($first_caller_id), $url);
+			$url = str_replace('[NUMBER]', urlencode($thenumber), $url);
+			$url = str_replace('[name]',  urlencode($first_caller_id), $url);
+			$url = str_replace('[number]', urlencode($thenumber), $url);
             $this->DebugPrint("Send to URL: {$url}");
 
             $value = $this->get_url_contents($url);
