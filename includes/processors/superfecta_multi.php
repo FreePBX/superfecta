@@ -100,7 +100,13 @@ class superfecta_multi extends superfecta_base {
         // (jkiel - 01/04/2011) Get id of the parent record 
         // (jkiel - 01/04/2011) [Insert complaints on Pear DB not supporting a last_insert_id method here]
         // (jkiel - 01/04/2011) What is the point of an abstraction layer when you are forced to bypass it?!?!?
-        if ($superfecta_mf_id = (($this->amp_conf["AMPDBENGINE"] == "sqlite3") ? sqlite_last_insert_rowid($this->db->connection) : mysql_insert_id($this->db->connection))) {
+		// instead of complaining, just fix it
+		if(method_exists($db,'insert_id')) {
+			$id = $db->insert_id();
+		} else {
+			$id = $amp_conf["AMPDBENGINE"] == "sqlite3" ? sqlite_last_insert_rowid($db->connection) : mysql_insert_id($db->connection);
+		}
+        if ($superfecta_mf_id = $id) {
             // We have the parent record id
             $this->DebugPrint("Multifecta Parent ID:" . $superfecta_mf_id);
         } else {
@@ -126,7 +132,12 @@ class superfecta_multi extends superfecta_base {
             if (DB::IsError($res2)) {
                 $this->DebugDie("Unable to create child record: " . $res2->getMessage());
             }
-            if ($superfecta_mf_child_id = (($this->amp_conf["AMPDBENGINE"] == "sqlite3") ? sqlite_last_insert_rowid($this->db->connection) : mysql_insert_id($this->db->connection))) {
+			if(method_exists($db,'insert_id')) {
+				$id = $db->insert_id();
+			} else {
+				$id = $amp_conf["AMPDBENGINE"] == "sqlite3" ? sqlite_last_insert_rowid($db->connection) : mysql_insert_id($db->connection);
+			}
+            if ($superfecta_mf_child_id = $id) {
                 $trunk_info = base64_encode(serialize($this->trunk_info));
                 if ($this->isDebug()) {
                     $this->DebugPrint("Spawning child " . $superfecta_mf_child_id . ":" . $data);

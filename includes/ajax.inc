@@ -6,6 +6,7 @@ require_once('JSON/JSON.php');
 $root_dir = dirname(dirname(__FILE__));
 
 $out = array("success" => false);
+global $db;
 
 switch($_REQUEST['type']) {
     case "display_debug":
@@ -15,7 +16,7 @@ switch($_REQUEST['type']) {
     case "update_sources":
         $sources_list = json_decode($_REQUEST['data']);
         $sources_commaed = implode(",", $sources_list);
-        $sql = "REPLACE INTO superfectaconfig (value, source, field) VALUES('".mysql_real_escape_string($sources_commaed)."', '".mysql_real_escape_string($_REQUEST['scheme'])."', 'sources')";
+        $sql = "REPLACE INTO superfectaconfig (value, source, field) VALUES('".$db->escapeSimple($sources_commaed)."', '".$db->escapeSimple($_REQUEST['scheme'])."', 'sources')";
         sql($sql);   
         $out = array("success" => true);
         break;
@@ -24,32 +25,32 @@ switch($_REQUEST['type']) {
         $order = 1;
         foreach($scheme_list as $data) {
             $data = preg_replace('/^scheme_/i', '', $data);
-            $sql = "REPLACE INTO superfectaconfig (value, source, field) VALUES('".mysql_real_escape_string($order)."', '".mysql_real_escape_string($data)."', 'order')";
+            $sql = "REPLACE INTO superfectaconfig (value, source, field) VALUES('".$db->escapeSimple($order)."', '".$db->escapeSimple($data)."', 'order')";
             sql($sql);
             $order++;
         }
         $out = array("success" => true);
         break;
     case "update_scheme":
-        $enable_interceptor = mysql_real_escape_string(utf8_decode($_POST['enable_interceptor']));
+        $enable_interceptor = $db->escapeSimple(utf8_decode($_POST['enable_interceptor']));
         $enable_interceptor = (isset($enable_interceptor) && $enable_interceptor == 'Y') ? TRUE : FALSE;
-	$scheme_name = mysql_real_escape_string(preg_replace('/\s/i', '_', preg_replace('/\+/i', '_', trim($_POST['scheme_name']))));
-	$scheme_name_orig = mysql_real_escape_string($_POST['scheme_name_orig']);
-	$DID = mysql_real_escape_string($_POST['DID']);
-	$CID_rules = mysql_real_escape_string($_POST['CID_rules']);
-	$Prefix_URL = mysql_real_escape_string($_POST['Prefix_URL']);
-	$Curl_Timeout = mysql_real_escape_string($_POST['Curl_Timeout']);
-	$http_password = mysql_real_escape_string(utf8_decode($_POST['http_password']));
-	$http_username = mysql_real_escape_string(utf8_decode($_POST['http_username']));
-	$SPAM_Text = mysql_real_escape_string($_POST['SPAM_Text']);
-	$SPAM_Text_Substitute = (isset($_POST['SPAM_Text_Substitute'])) ? mysql_real_escape_string($_POST['SPAM_Text_Substitute']) : 'N';
-	$processor =  mysql_real_escape_string(utf8_decode($_POST['processor']));
-	$multifecta_timeout =  mysql_real_escape_string(utf8_decode($_POST['multifecta_timeout']));
-	$SPAM_threshold = mysql_real_escape_string($_POST['SPAM_threshold']);
+	$scheme_name = $db->escapeSimple(preg_replace('/\s/i', '_', preg_replace('/\+/i', '_', trim($_POST['scheme_name']))));
+	$scheme_name_orig = $db->escapeSimple($_POST['scheme_name_orig']);
+	$DID = $db->escapeSimple($_POST['DID']);
+	$CID_rules = $db->escapeSimple($_POST['CID_rules']);
+	$Prefix_URL = $db->escapeSimple($_POST['Prefix_URL']);
+	$Curl_Timeout = $db->escapeSimple($_POST['Curl_Timeout']);
+	$http_password = $db->escapeSimple(utf8_decode($_POST['http_password']));
+	$http_username = $db->escapeSimple(utf8_decode($_POST['http_username']));
+	$SPAM_Text = $db->escapeSimple($_POST['SPAM_Text']);
+	$SPAM_Text_Substitute = (isset($_POST['SPAM_Text_Substitute'])) ? $db->escapeSimple($_POST['SPAM_Text_Substitute']) : 'N';
+	$processor =  $db->escapeSimple(utf8_decode($_POST['processor']));
+	$multifecta_timeout =  $db->escapeSimple(utf8_decode($_POST['multifecta_timeout']));
+	$SPAM_threshold = $db->escapeSimple($_POST['SPAM_threshold']);
 	$error = false;
 
-        $type = mysql_real_escape_string($_POST['goto0']);
-	$destination = mysql_real_escape_string($_POST[$type.'0']);
+        $type = $db->escapeSimple($_POST['goto0']);
+	$destination = $db->escapeSimple($_POST[$type.'0']);
 
 	//see if the scheme name has changed, and make sure that there isn't already one named the new name.
 	if($scheme_name == "")
@@ -133,7 +134,7 @@ switch($_REQUEST['type']) {
         break;
     case "delete_scheme":
         $data = preg_replace('/^scheme_/i', '', $_REQUEST['scheme']);
-        $sql = "DELETE FROM superfectaconfig WHERE source = '".  mysql_real_escape_string($data)."'";
+        $sql = "DELETE FROM superfectaconfig WHERE source = '".  $db->escapeSimple($data)."'";
         sql($sql);
         
         //We now have to reorder the array. Well, we don't -have- to. But it's prettier
@@ -141,7 +142,7 @@ switch($_REQUEST['type']) {
         $scheme_list = sql($sql, 'getAll', DB_FETCHMODE_ASSOC);
         $order = 1;
         foreach($scheme_list as $data) {
-            $sql = "REPLACE INTO superfectaconfig (value, source, field) VALUES('".mysql_real_escape_string($order)."', '".mysql_real_escape_string($data['source'])."', 'order')";
+            $sql = "REPLACE INTO superfectaconfig (value, source, field) VALUES('".$db->escapeSimple($order)."', '".$db->escapeSimple($data['source'])."', 'order')";
             sql($sql);
             $order++;
         }
@@ -150,7 +151,7 @@ switch($_REQUEST['type']) {
         break;
     case "power_scheme":
         $data = preg_replace('/^scheme_/i', '', $_REQUEST['scheme']);
-        $sql = "UPDATE superfectaconfig SET value = (value * -1) WHERE field = 'order' AND source = '".  mysql_real_escape_string($data)."'";
+        $sql = "UPDATE superfectaconfig SET value = (value * -1) WHERE field = 'order' AND source = '".  $db->escapeSimple($data)."'";
         sql($sql);
         $out = array("success" => true);
         break;
