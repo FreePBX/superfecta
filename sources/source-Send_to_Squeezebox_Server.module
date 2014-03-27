@@ -34,6 +34,8 @@ class Send_to_Squeezebox_Server extends superfecta_base {
     );
 
     function post_processing($cache_found, $winning_source, $first_caller_id, $run_param, $thenumber) {
+        if ($run_param['Display_Time'] == '') $run_param['Display_Time'] = '30';
+        if ($run_param['Player_Name'] == '') $run_param['Player_Name'] = '*';
         if (($run_param['URL_address'] != '') && ($first_caller_id != '')) {
             $thenumberformated = $thenumber;
             switch ($run_param['Display_Setting']) {
