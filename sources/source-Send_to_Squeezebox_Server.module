@@ -20,10 +20,22 @@ class Send_to_Squeezebox_Server extends superfecta_base {
                 4 => 'No Formatting',
             ),
             'default' => 4
+        ),
+        'Display_Time' => array (
+            'description' => 'Specify the number of seconds you want the information displayed on your Squeezebox to last.',
+            'type' => 'text',
+	    'default' => '30'
+        ),
+        'Player_Name' => array (
+            'description' => 'Enter the MAC address of the Squeezebox player that will display the information.<br>Enter * to display on all players in a network.<br>You will find the MAC address if you go to the Squeezebox server settings, look in the Players tab for your player',
+            'type' => 'text',
+            'default' => '*'
         )
     );
 
     function post_processing($cache_found, $winning_source, $first_caller_id, $run_param, $thenumber) {
+        if ($run_param['Display_Time'] == '') $run_param['Display_Time'] = '30';
+        if ($run_param['Player_Name'] == '') $run_param['Player_Name'] = '*';
         if (($run_param['URL_address'] != '') && ($first_caller_id != '')) {
             $thenumberformated = $thenumber;
             switch ($run_param['Display_Setting']) {
@@ -39,10 +51,10 @@ class Send_to_Squeezebox_Server extends superfecta_base {
             $clid1 = urlencode($first_caller_id);
             $clid2 = urlencode($thenumberformated);
 
-            $url = $run_param['URL_address'] . '/status.txt?p0=display&p1=' . $clid2 . '&p2=' . $clid1 . '&p3=30&player=*';
+            $url = $run_param['URL_address'] . '/status.txt?p0=display&p1=' . $clid2 . '&p2=' . $clid1 . '&p3=' . $run_param['Display_Time'] . '&player=' . $run_param['Player_Name'];
 
-            $this->DebugPrint("Send to Squeezebox: " . $run_param['URL_address']);
-            $value = get_url_contents($url);
+            $this->DebugPrint("Send to Squeezebox: " . $url);
+            $value = $this->get_url_contents($url);
 
             return($thenumber);
         }
