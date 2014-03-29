@@ -25,6 +25,7 @@ class Send_to_URL extends superfecta_base {
         if (($run_param['URL_address'] != '') && ($first_caller_id != '')) {
 
 			// replace [NAME] and [NUMBER] placeholders with actual urlencoded values
+		        $url = $run_param['URL_address'];
 			$url = str_replace('[NAME]',  urlencode($first_caller_id), $url);
 			$url = str_replace('[NUMBER]', urlencode($thenumber), $url);
 			$url = str_replace('[name]',  urlencode($first_caller_id), $url);
