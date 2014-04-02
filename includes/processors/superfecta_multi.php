@@ -64,6 +64,9 @@ class superfecta_multi extends superfecta_base {
     }
 
     function run_parent() {
+	
+		global $db;
+		
         // We are a multifecta parent
         $multifecta_start_time = $this->mctime_float();
         // Clean up multifecta records that are over 10 minutes old
