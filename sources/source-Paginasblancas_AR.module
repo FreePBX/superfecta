@@ -8,20 +8,21 @@ but this did not appear to be working properly and requires maintenance of the A
 abandoned on July 29, 2013
 
 Change log:
-July 29, 2013 - remove valid number check, update URL and update regex
+	2013-07-29 - remove valid number check, update URL and update regex
+	2014-04-07 - Update URL and regex
  **** **** **** **** **** ****/
 
 class Paginasblancas_AR extends superfecta_base {
 
-	public $description = "Searches Argentina http://www.paginasblancas.com.ar/ <br>CID must include area code with the leading 0.";
+	public $description = "Searches Argentina http://www.paginasblancas.com.ar/";
 	public $version_requirement = "2.11";
 
 	function get_caller_id($thenumber, $run_param=array()) {
 
 		$this->DebugPrint("Searching www.paginasblancas.com.ar for number: $thenumber");
 
-		$url = "http://www.paginasblancas.com.ar/Telefono/".$thenumber;
-		$pattern = "/<h2 class=\"advertise-name\">(.*)<\/h2>/";
+		$url = "http://www.paginasblancas.com.ar/es-ar/telefono/".$thenumber;    //updated 2014-04-07
+		$pattern = '/<a class="no-link" rel="nofollow" href="javascript:void.0.;">(.*?)<\/a>/';   //updated 2014-04-07
 		if ($this->SearchURL($url, $pattern, $match)) {
 			$caller_id = $this->ExtractMatch($match);
 		}
