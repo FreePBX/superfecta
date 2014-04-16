@@ -35,7 +35,7 @@ if(!isset($amp_conf) OR empty($amp_conf)) {
             }
 
             //connect to the asterisk manager
-            $phpasman_location = exec('find /var/www/html/admin -name php-asmanager.php');
+            $phpasman_location = exec('find '.$amp_conf['AMPWEBROOT'].'/admin -name php-asmanager.php');
             if (file_exists($phpasman_location)) {
 
                 require_once($phpasman_location);
@@ -58,7 +58,7 @@ if(!isset($amp_conf) OR empty($amp_conf)) {
     global $db,$amp_conf,$astman;
     
     if (!is_object($astman)) {
-        $phpasman_location = exec('find /var/www/html/admin -name php-asmanager.php');
+        $phpasman_location = exec('find '.$amp_conf['AMPWEBROOT'].'/admin -name php-asmanager.php');
         if (file_exists($phpasman_location)) {
             require_once($phpasman_location);
             $astman = new AGI_AsteriskManager();
