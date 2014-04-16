@@ -66,6 +66,7 @@ class superfecta_multi extends superfecta_base {
     function run_parent() {
 	
 		global $db;
+		global $amp_conf;
 		
         // We are a multifecta parent
         $multifecta_start_time = $this->mctime_float();
