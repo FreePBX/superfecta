@@ -88,7 +88,7 @@ class Send_to_XBMC extends superfecta_base {
 			if(!function_exists("_myXbmcUrl")){
 				function _myXbmcUrl($array){
 					$request=$array;
-					$request['jsonrpc']="2.0";
+					//$request['jsonrpc']="2.0";
 					//$request['method']="Player.PlayPause";
 					$json=json_encode($request);
 					$url='/jsonrpc?request='.urlencode($json);
@@ -156,6 +156,7 @@ class Send_to_XBMC extends superfecta_base {
 				// make url params
 				if($run_param['Mode']=='json'){
 					$my_request=array(
+						'jsonrpc'=>"2.0",
 						'method'=>'Application.SetVolume',
 						'params'=>array(
 							'volume'=>$run_param['Change_Volume']
@@ -164,14 +165,18 @@ class Send_to_XBMC extends superfecta_base {
 					$url1 = $url . _myXbmcUrl($my_request);
 					
 					$my_request=array(
+						'jsonrpc'=>"2.0",
 						'method'=>'Player.PlayPause',
 						'params'=>array(
-							'play'=>'pause'
+							// Note: playerid 1 is video and playerid 0 is audio.
+							'playerid'=>1,
+							'play'=>false
 						)
 					);
 					$url2 = $url . _myXbmcUrl($my_request);
 					
 					$my_request=array(
+						'jsonrpc'=>"2.0",
 						'method'=>'GUI.ShowNotification',	
 						'params'=>array(
 							'title'			=>$my_xbmc_title,
