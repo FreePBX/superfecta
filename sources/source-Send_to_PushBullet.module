@@ -1,0 +1,91 @@
+<?php
+
+/*** *** *** *** *** *** *** *** *** *** 
+ * Developer Notes:
+ *      The __contruct function needs work, it will not currently support multiple APIs in multiple schemes
+ *      The API key must be saved before devices are available in the dropdown menu
+ *      There is a decent PHP class for PushBullet https://github.com/ivkos/PushBullet-for-PHP, may be worth exploring this option
+ * 
+ * Version History:
+ *      2014-06-04  Initial commit, working but rough
+ * 
+ *** *** *** *** *** *** *** *** *** ***/
+
+
+class Send_to_PushBullet extends superfecta_base {
+
+	public $description = "Sends Caller ID Name and Number as a PushBullet notice";
+	public $version_requirement = "2.11";
+	public $source_param = array(
+		'API' => array(
+				'description' => 'Enter free API key available from https://www.pushbullet.com/account',
+				'type' => 'text',
+				'default' => null
+		),
+		'Device' => array(
+				'description' => 'After entering and saving API key, select from registered devices',
+				'type' => 'select',
+				'option' => array(
+					'none' => 'none',
+				),
+		),
+	);
+	
+	function __construct() {
+		// This function takes the user supplied API to query PushBullet for a list of registered devices. It then builds an array 
+		// for a drop down menu to allow user to send the note to a device.
+		
+		// can't figure out how to access $run_param from this function, this is most certainly not the best way to do this
+		global $db;
+		$sql = "SELECT `field`,`value` FROM `superfectaconfig` WHERE `source` LIKE '%PushBullet%'  AND `field` LIKE 'API' LIMIT 1";
+		$run_param = $db->getAssoc($sql);
+		$api = $run_param['API'];
+
+		//tried using PHP class, but this just seems easier
+		if ($api) {
+			$curl = curl_init();
+			$url = 'https://api.pushbullet.com/v2/devices?';
+			curl_setopt($curl, CURLOPT_URL, $url);
+			curl_setopt($curl, CURLOPT_USERPWD, $api);
+			curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'GET');
+
+			curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
+			curl_setopt($curl, CURLOPT_HEADER, FALSE);
+			$response = curl_exec($curl);
+			curl_close($curl);
+			$devices = json_decode($response);
+
+			$bar = array();
+			foreach ($devices->devices as $foo) {
+				$bar1 = $foo->nickname;
+				$bar2 = $foo->iden;
+				$bar[$bar2]=$bar1;
+			}
+			$this->source_param['Device']['option'] = $bar;
+		}
+	}
+
+	function post_processing($cache_found, $winning_source, $first_caller_id, $run_param, $thenumber) {
+
+		$api = $run_param['API'];
+		$curl = curl_init();
+		$url = 'https://api.pushbullet.com/v2/pushes';
+		curl_setopt($curl, CURLOPT_URL, $url);
+		curl_setopt($curl, CURLOPT_USERPWD, $api);
+		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'POST');
+		$queryData['device_iden'] = $run_param['Device'];
+		$queryData['type'] = 'note';
+		$queryData['title'] = "Incoming call from: ".$first_caller_id;
+		$queryData['body']   = "From phone number: ".$thenumber;
+		$data = json_encode($queryData);
+		curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+			'Content-Type: application/json',
+			'Content-Length: ' . strlen($data)
+		));
+		curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
+		curl_setopt($curl, CURLOPT_HEADER, FALSE);
+		$response = curl_exec($curl);
+		curl_close($curl);
+	}
+}
