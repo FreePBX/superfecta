@@ -5,9 +5,11 @@
  *      The __contruct function needs work, it will not currently support multiple APIs in multiple schemes
  *      The API key must be saved before devices are available in the dropdown menu
  *      There is a decent PHP class for PushBullet https://github.com/ivkos/PushBullet-for-PHP, may be worth exploring this option
+ *      The PushBullet service does not support foreign accented characters, empty notice gets pushed.
  * 
  * Version History:
  *      2014-06-04  Initial commit, working but rough
+ *      2014-06-07  Caches devices to flat file to prevent polling PushBullet for devices on every lookup
  * 
  *** *** *** *** *** *** *** *** *** ***/
 
@@ -29,32 +31,48 @@ class Send_to_PushBullet extends superfecta_base {
 					'none' => 'none',
 				),
 		),
+		'Sync_Devices' => array(
+			'description' => 'Once API is set, enabling this option will load devices from the PushBullet account.',
+			'type' => 'checkbox',
+			'default' => 'off'
+		),
 	);
 	
 	function __construct() {
 		// This function takes the user supplied API to query PushBullet for a list of registered devices. It then builds an array 
 		// for a drop down menu to allow user to send the note to a device.
 		
-		// can't figure out how to access $run_param from this function, this is most certainly not the best way to do this
+		// can't figure out how to access $run_param from this function, this is a bad way to do this because it does not support mult schemes
 		global $db;
-		$sql = "SELECT `field`,`value` FROM `superfectaconfig` WHERE `source` LIKE '%PushBullet%'  AND `field` LIKE 'API' LIMIT 1";
-		$run_param = $db->getAssoc($sql);
-		$api = $run_param['API'];
+		$cache_file = '.pushbullet_cache';
 
+		$sql = "SELECT `field`,`value` FROM `superfectaconfig` WHERE `source` LIKE '%PushBullet%'";
+		$run_param = $db->getAssoc($sql);
+		
 		//tried using PHP class, but this just seems easier
-		if ($api) {
+		if ($run_param['API'] && $run_param['Sync_Devices'] == 'on') {
 			$curl = curl_init();
 			$url = 'https://api.pushbullet.com/v2/devices?';
 			curl_setopt($curl, CURLOPT_URL, $url);
-			curl_setopt($curl, CURLOPT_USERPWD, $api);
+			curl_setopt($curl, CURLOPT_USERPWD, $run_param['API']);
 			curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'GET');
 
 			curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
 			curl_setopt($curl, CURLOPT_HEADER, FALSE);
 			$response = curl_exec($curl);
 			curl_close($curl);
-			$devices = json_decode($response);
+			
 
+			
+			$content = serialize($response);
+			file_put_contents($cache_file, $content);
+
+			// add code here reset the sync_devices param back to off
+		}
+		
+		// load devices from cache
+			$response = unserialize(file_get_contents($cache_file));
+			$devices = json_decode($response);
 			$bar = array();
 			foreach ($devices->devices as $foo) {
 				$bar1 = $foo->nickname;
@@ -62,16 +80,14 @@ class Send_to_PushBullet extends superfecta_base {
 				$bar[$bar2]=$bar1;
 			}
 			$this->source_param['Device']['option'] = $bar;
-		}
 	}
 
 	function post_processing($cache_found, $winning_source, $first_caller_id, $run_param, $thenumber) {
-
-		$api = $run_param['API'];
+		$this->DebugPrint("Pushing notice to PushBullet");
 		$curl = curl_init();
 		$url = 'https://api.pushbullet.com/v2/pushes';
 		curl_setopt($curl, CURLOPT_URL, $url);
-		curl_setopt($curl, CURLOPT_USERPWD, $api);
+		curl_setopt($curl, CURLOPT_USERPWD, $run_param['API']);
 		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'POST');
 		$queryData['device_iden'] = $run_param['Device'];
 		$queryData['type'] = 'note';
