@@ -1,0 +1,49 @@
+<?php
+
+/*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+ * Developer Notes:
+ * Open79xx is an OSS project that provides an XML contact list for Cisco 79XX phones
+ * and with a web GUI.
+ * See http://sourceforge.net/projects/open79xxdir/ for project details
+ * 
+ * There are two separate URLS for reverse searching, one for yellowpages one for ppl:
+ *  http://www.herold.at/en/telefonbuch/telefon_$thenumber    - people
+ *  http://www.herold.at/en/gelbe-seiten/telefon_$thenumber   - business
+ * I could only get reverse searches to work for ppl
+ * 
+ * herold.at Terms of Service:
+ * As summarized in the post here on 2014-06-27
+ * https://github.com/POSSA/Caller-ID-Superfecta/issues/131#issuecomment-47354154
+ * herold.at TOS do not explicitly prohibit automated lookups
+ *
+ * Version History:
+ * 2014-06-28:	Initial migration from 2.2.x 
+ * 
+ *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
+
+
+class Herold_Austria extends superfecta_base {
+
+	public $description = "http://www.herold.at/ - These listings include data for Austria.";
+	public $version_requirement = "2.11";
+
+	function get_caller_id($thenumber, $run_param=array()) {
+		$this->DebugPrint("Searching http://www.herold.at/ ... ");
+
+
+		// Set the url we're searching for
+		$url = "http://www.herold.at/telefonbuch/telefon_" . $thenumber . "/";   // valid as of 2014-06-27 for residential
+
+		// regex patterns to search for
+		$regexp = array(
+			'~<div class="result-wrap"><h2 class="fullw"><a href=".*?">(.+?)</a></h2>~',   // 2014-06-27 working for residential
+		);
+		
+		if ($this->SearchURL($url, $regexp, $match)) {
+				$caller_id = $this->ExtractMatch($match);
+		}
+
+		return($caller_id);
+	}
+
+}
