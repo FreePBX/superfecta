@@ -17,7 +17,8 @@
  * herold.at TOS do not explicitly prohibit automated lookups
  *
  * Version History:
- * 2014-06-28:	Initial migration from 2.2.x 
+ * 2014-06-28	Initial migration from 2.2.x
+ * 2014-07-02	Add business lookups and change urls to mobile site
  * 
  *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
 
@@ -32,17 +33,27 @@ class Herold_Austria extends superfecta_base {
 
 
 		// Set the url we're searching for
-		$url = "http://www.herold.at/telefonbuch/telefon_" . $thenumber . "/";   // valid as of 2014-06-27 for residential
+//		$url = "http://www.herold.at/telefonbuch/telefon_" . $thenumber . "/";		// valid as of 2014-06-27 for residential
+//		$url = "http://www.herold.mobi/suche/was_$thenumber/";						// 2014-07-02 mostly okay for both residential and business but gives occasional false name
+		
+		$res_rul = "http://www.herold.mobi/telefonbuch/was_$thenumber/";			// url for searching residential listings
+		$bus_url = "http://www.herold.mobi/gelbe-seiten/was_$thenumber/";			// url for searching business listings
 
 		// regex patterns to search for
 		$regexp = array(
-			'~<div class="result-wrap"><h2 class="fullw"><a href=".*?">(.+?)</a></h2>~',   // 2014-06-27 working for residential
+//			'~<div class="result-wrap"><h2 class="fullw"><a href=".*?">(.+?)</a></h2>~',   // 2014-06-27 working for residential
+			'~<b>1.</b> <a onclick=".*?" href=".*?">(.+?)</a>    </h2>~',  // 2014-07-02 working for residential and business from mobi links
 		);
-		
-		if ($this->SearchURL($url, $regexp, $match)) {
-				$caller_id = $this->ExtractMatch($match);
+
+		// first search for Residential match
+		if ($this->SearchURL($res_rul, $regexp, $match)) {
+			$caller_id = $this->ExtractMatch($match);
 		}
 
+		// if no residential match found, search business
+		if (!$caller_id && $this->SearchURL($bus_url, $regexp, $match)) {
+			$caller_id = $this->ExtractMatch($match);
+		}
 		return($caller_id);
 	}
 
