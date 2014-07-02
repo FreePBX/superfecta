@@ -2,9 +2,6 @@
 
 /*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
  * Developer Notes:
- * Open79xx is an OSS project that provides an XML contact list for Cisco 79XX phones
- * and with a web GUI.
- * See http://sourceforge.net/projects/open79xxdir/ for project details
  * 
  * There are two separate URLS for reverse searching, one for yellowpages one for ppl:
  *  http://www.herold.at/en/telefonbuch/telefon_$thenumber    - people
