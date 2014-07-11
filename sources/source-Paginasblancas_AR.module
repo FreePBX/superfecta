@@ -1,16 +1,19 @@
 <?php
 
-/**** **** **** **** **** ****
-Development notes:
-Previous versions of this module would check for valid Argentina number format by using:
-$this->IsValidNumber('AR', $this->thenumber, $areacode, $number2, $number3)
-but this did not appear to be working properly and requires maintenance of the AR area code list. This check
-abandoned on July 29, 2013
-
-Change log:
-	2013-07-29 - remove valid number check, update URL and update regex
-	2014-04-07 - Update URL and regex
- **** **** **** **** **** ****/
+/**** **** **** **** **** **** **** **** **** **** **** **** **** **** **** **** ****
+ * Development notes:
+ * Previous versions of this module would check for valid Argentina number format by using:
+ * $this->IsValidNumber('AR', $this->thenumber, $areacode, $number2, $number3)
+ * but this did not appear to be working properly and requires maintenance of the AR area code list. This check
+ * abandoned on July 29, 2013
+ * 
+ * Change log:
+ *		2013-07-29 - remove valid number check, update URL and update regex
+ *		2014-04-07 - Update URL and regex
+ *		2014-07-11 - Add regex for business name matching
+ *
+ *
+ **** **** **** **** **** **** **** **** **** **** **** **** **** **** **** **** ****/
 
 class Paginasblancas_AR extends superfecta_base {
 
