@@ -12,7 +12,7 @@
  *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
 
 class FreePBX_UCP extends superfecta_base {
-    public $description = "Look up name from list of users for FreePBX UCP";
+    public $description = "Look up name from the FreePBX User Management module";
     public $version_requirement = "2.11";
     public $source_param = array(
 		'CNAM_Format' => array(
