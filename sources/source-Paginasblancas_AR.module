@@ -11,6 +11,7 @@
  *		2013-07-29 - remove valid number check, update URL and update regex
  *		2014-04-07 - Update URL and regex
  *		2014-07-11 - Add regex for business name matching
+ *		2014-08-05 - Updated URL
  *
  *
  **** **** **** **** **** **** **** **** **** **** **** **** **** **** **** **** ****/
@@ -24,7 +25,7 @@ class Paginasblancas_AR extends superfecta_base {
 
 		$this->DebugPrint("Searching www.paginasblancas.com.ar for number: $thenumber");
 
-		$url = "http://www.paginasblancas.com.ar/es-ar/telefono/".$thenumber;    //updated 2014-04-07
+		$url = "http://www.paginasblancas.com.ar/telefono/".$thenumber;    //updated 2014-08-05
 		$pattern = array(
 			'/<a class="no-link" rel="nofollow" href="javascript:void.0.;">(.*?)<\/a>/',      //updated 2014-04-07 for residential
 			'~<h3 class="m-results-business--name" itemprop="name">.*?<a  href=".*?">(.+?)</a>.*?</h3>~s',  // added 2014-07-11 for business
