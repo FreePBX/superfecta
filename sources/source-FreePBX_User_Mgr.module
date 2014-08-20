@@ -1,17 +1,17 @@
 <?php
 
-/*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** 
+/*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
  * Developer Notes:
  * This module developed and tested using PIAF "black" FreePBX 12/Asterisk 12. Needs additional testing\
  * on other distros.
- * 
+ *
  * Version History:-
  * 2014-08-04	Initial commit by lgaetz
- * 
- * 
+ *
+ *
  *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
 
-class FreePBX_UCP extends superfecta_base {
+class FreePBX_User_Mgr extends superfecta_base {
     public $description = "Look up name from the FreePBX User Management module";
     public $version_requirement = "2.11";
     public $source_param = array(
@@ -40,7 +40,7 @@ class FreePBX_UCP extends superfecta_base {
 		$wquery = null;
 		$wquery_string = null;
 		$wquery_result = null;
-		
+
 		// Set defaults in case user hasn't
 		if (!$run_param['CNAM_Format']) {
 			$run_param['CNAM_Format'] = 1;
@@ -58,7 +58,7 @@ class FreePBX_UCP extends superfecta_base {
 			$wquery .=  substr($thenumber,$x,1)."[^0-9]*" ;
 		}
 		$wquery = $wquery.(substr($thenumber,-1))."([^0-9]+|$)'";
-		
+
 		$wquery_string = 'SELECT `fname`, `lname` FROM `freepbx_users` WHERE (`cell` REGEXP '.$wquery.') OR (`work` REGEXP '.$wquery.') OR (`home` REGEXP '.$wquery.')ORDER BY id DESC';
 
 		// The following lines work, and perhaps may be preferable to search
@@ -80,8 +80,7 @@ class FreePBX_UCP extends superfecta_base {
 
 		if ($caller_id == "") {
 			$this->DebugPrint("Not Found");
-		}	
+		}
 		return(trim($caller_id));
     }
 }
-
