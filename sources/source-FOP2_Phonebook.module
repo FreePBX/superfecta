@@ -1,23 +1,23 @@
 <?php
 
-/*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** 
-Developer Notes:
-This source still relies on mysql_ functions, it should be updated to use the PDO class.
-There may be some users who would want this module to do post processing to insert name/number into FOP2 address book
-Versions prior to 2013-12-20 would abandon the search if there were fewer digits than specified, disabled by lgaetz
+/*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+ * Developer Notes:
+* This source still relies on mysql_ functions, it should be updated to use the PDO class.
+* There may be some users who would want this module to do post processing to insert name/number into FOP2 address book
+* Versions prior to 2013-12-20 would abandon the search if there were fewer digits than specified, disabled by lgaetz
 
-Version History:
-20xx-xx-xx	Initial migration to 2.11 platform
-2013-12-19	bug fix, CNAM_Type missing from Source Param user input - lgaetz
-2013-12-20	bug fix, don't modify $run_param variables inside get_caller_id function, fix filter length - lgaetz
-2014-01-02	add user setting to use native FreeBPX connection to the asterisk database.
+* Version History:
+* 20xx-xx-xx	Initial migration to 2.11 platform
+* 2013-12-19	bug fix, CNAM_Type missing from Source Param user input - lgaetz
+* 2013-12-20	bug fix, don't modify $run_param variables inside get_caller_id function, fix filter length - lgaetz
+* 2014-01-02	add user setting to use native FreeBPX connection to the asterisk database.
 
 *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
 
 class FOP2_Phonebook extends superfecta_base {
-    public $description = "Look up First Name, Last Name, Company Name in the FOP2 visual address book MySQL table";
-    public $version_requirement = "2.11";
-    public $source_param = array(
+	public $description = "Look up First Name, Last Name, Company Name in the FOP2 visual address book MySQL table";
+	public $version_requirement = "2.11";
+	public $source_param = array(
 		'Use_Native_FreePBX_Connection' => array(
 				'description' => '<b>This setting is recommended</b>. Database connection is automatically configured using native FreePBX connection to the `asterisk` MySQL database. If this setting does not work, disable and manually configure database access fields below.',
 				'type' => 'checkbox',
@@ -60,16 +60,17 @@ class FOP2_Phonebook extends superfecta_base {
 		)
 	);
 
-    function get_caller_id($thenumber, $run_param=array()) {
-        $caller_id = null;
-		
-        $this->DebugPrint("Searching FOP2 ... ");
+	function get_caller_id($thenumber, $run_param=array()) {
+		$caller_id = null;
+
+		$this->DebugPrint("Searching FOP2 ... ");
 
 		// Initialize variables
 		$wquery = "";
 		$wquery_string = "";
 		$wquery_result = "";
 		$cnam_type = $run_param['CNAM_Type'];
+		$sql_params = array();
 
 		//  trim incoming number to specified filter length
 		if ($run_param['Filter_Length'] != 0 && strlen($thenumber) > $run_param['Filter_Length']) {
@@ -81,31 +82,45 @@ class FOP2_Phonebook extends superfecta_base {
 			$wquery .=  substr($thenumber,$x,1)."[^0-9]*" ;
 		}
 		$wquery = $wquery.(substr($thenumber,-1))."([^0-9]+|$)'";
-		$wquery_string = 'SELECT firstname, lastname, company FROM visual_phonebook WHERE (phone1 REGEXP '.$wquery.') OR (phone2 REGEXP '.$wquery.') ORDER BY id DESC';
+
 
 		// Two different access methods to database. It was discovered that if FreePBX mysql credentials are used in Superfecta, it would error out because of the mysql_close line
 		if ($run_param['Use_Native_FreePBX_Connection'] != 'on') {
+			$sql_params[':wquery'] = $wquery;
+			$wquery_string = 'SELECT firstname, lastname, company FROM visual_phonebook WHERE (phone1 REGEXP :wquery) OR (phone2 REGEXP :wquery) ORDER BY id DESC';
 			//  Connect to database using user mysql settings
-			$wdb_handle = mysql_connect($run_param['DB_Host'], $run_param['DB_User'], $run_param['DB_Password']) or die("FOP2 connection failed" . mysql_error());
-			mysql_select_db($run_param['DB_Name']) or die("FOP2 db open error: " . mysql_error());
-			mysql_query("SET NAMES 'utf8'") or die("UTF8 set query  failed: " . mysql_error());
+			if(class_exists('PDO')) {
+				$this->DebugPrint("Connecting to FOP2 Database....");
+				try {
+					$dbh = new PDO('mysql:dbname='.$run_param['DB_Name'].';host='.$run_param['DB_Host'], $run_param['DB_User'], $run_param['DB_Password']);
+				} catch (PDOException $e) {
+					$this->DebugPrint('Connection failed: ' . $e->getMessage());
+					return null;
+				}
+			} else {
+				$this->DebugPrint("PDO not present on system...Skipping");
+				return null;
+			}
+			$sth = $dbh->prepare("SET NAMES 'utf8'");
+			$sth->execute();
 
 			// search database
-			$wquery_result = mysql_query($wquery_string) or die("FOP2 query failed" . mysql_error());
-			if (mysql_num_rows($wquery_result)>0) {
-				$wquery_row = mysql_fetch_array($wquery_result);
+			try {
+				$sth = $dbh->prepare($wquery_string);
+				$wquery_row = $sth->fetch(PDO::FETCH_ASSOC);
 				if (is_array($wquery_row)) {
 					$last_name = $wquery_row["lastname"];
 					$first_name = $wquery_row["firstname"];
 					$company_name = $wquery_row["company"];
 				}
+			} catch (PDOException $e) {
+				$this->DebugPrint('Connection failed: ' . $e->getMessage());
+				return null;
 			}
-			// Close dbase connection, if FreePBX mysql credentials are used the next line will mess things up. Perhaps a check
-			// to make sure that $amp_conf['AMPDBUSER'] != $run_param['DB_User']
-			mysql_close($wdb_handle);
-		}
-		else {
+		} else {
+			global $db;
 			// search database using FreePBX settings
+			$wquery_string = 'SELECT firstname, lastname, company FROM visual_phonebook WHERE (phone1 REGEXP '.$db->escapeSimple($wquery).') OR (phone2 REGEXP '.$db->escapeSimple($wquery).') ORDER BY id DESC';
 			$wquery_row = sql($wquery_string, "getAll", DB_FETCHMODE_ASSOC);  //probalby need an error handler here
 			if (is_array($wquery_row)) {
 				$last_name = $wquery_row[0]["lastname"];
@@ -114,40 +129,39 @@ class FOP2_Phonebook extends superfecta_base {
 			}
 		}
 
-			if ($cnam_type == 3) {
-				if ($last_name != "" and $company_name != "") {
-					$caller_id = $last_name." ".$company_name;
-				} else {
-					$cnam_type = 1;
-				}
+		if ($cnam_type == 3) {
+			if ($last_name != "" and $company_name != "") {
+				$caller_id = $last_name." ".$company_name;
+			} else {
+				$cnam_type = 1;
 			}
-			if ($cnam_type == 1) {
-				if ($company_name != "") {
-					$caller_id = $company_name;
-				} else if ($first_name != "" and $last_name != "") {
-					$caller_id = $first_name." ".$last_name;
-				} else if ($first_name != "") {
-					$caller_id = $first_name;
-				} else {
-					$caller_id = $last_name;
-				}
+		}
+		if ($cnam_type == 1) {
+			if ($company_name != "") {
+				$caller_id = $company_name;
+			} else if ($first_name != "" and $last_name != "") {
+				$caller_id = $first_name." ".$last_name;
+			} else if ($first_name != "") {
+				$caller_id = $first_name;
+			} else {
+				$caller_id = $last_name;
 			}
-			if ($cnam_type == 2) {
-				if ($first_name != "" and $last_name != "") {
-					$caller_id = $first_name." ".$last_name;
-				} else if ($first_name != "") {
-					$caller_id = $first_name;
-				} else if ($last_name != "") {
-					$caller_id = $last_name;
-				} else {
-					$caller_id = $company_name;
-				}
+		}
+		if ($cnam_type == 2) {
+			if ($first_name != "" and $last_name != "") {
+				$caller_id = $first_name." ".$last_name;
+			} else if ($first_name != "") {
+				$caller_id = $first_name;
+			} else if ($last_name != "") {
+				$caller_id = $last_name;
+			} else {
+				$caller_id = $company_name;
 			}
+		}
 
 		if ($caller_id == "") {
 			$this->DebugPrint("Not Found");
-		}	
+		}
 		return(trim($caller_id));
-    }
+	}
 }
-
