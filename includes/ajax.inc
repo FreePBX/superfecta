@@ -222,7 +222,7 @@ switch($_REQUEST['type']) {
         $out = array("success" => true, "show" => $show, "data" => $form_html);
         break;
     case "save_options":
-        file_put_contents('/var/www/html/admin/modules/superfecta/log', print_r($_REQUEST,TRUE));
+        file_put_contents($amp_conf['AMPWEBROOT'].'/admin/modules/superfecta/log', print_r($_REQUEST,TRUE));
         
         $path = dirname(dirname(__FILE__));
         require_once($path.'/sources/source-'.$_REQUEST['source'].'.module');

@@ -66,6 +66,7 @@ class superfecta_multi extends superfecta_base {
     function run_parent() {
 	
 		global $db;
+		global $amp_conf;
 		
         // We are a multifecta parent
         $multifecta_start_time = $this->mctime_float();
@@ -144,9 +145,9 @@ class superfecta_multi extends superfecta_base {
                 $trunk_info = base64_encode(serialize($this->trunk_info));
                 if ($this->isDebug()) {
                     $this->DebugPrint("Spawning child " . $superfecta_mf_child_id . ":" . $data);
-                    exec('/usr/bin/php /var/www/html/admin/modules/superfecta/includes/callerid.php -s ' . $this->scheme_name . ' -d ' . $this->getDebug() . ' -m ' . $superfecta_mf_child_id . ' -t ' . $trunk_info . ' -r ' . $data . ' > log-' . $superfecta_mf_child_id . '.log 2>&1 &');                    
+                    exec('/usr/bin/php '.$amp_conf['AMPWEBROOT'].'/admin/modules/superfecta/includes/callerid.php -s ' . $this->scheme_name . ' -d ' . $this->getDebug() . ' -m ' . $superfecta_mf_child_id . ' -t ' . $trunk_info . ' -r ' . $data . ' > log-' . $superfecta_mf_child_id . '.log 2>&1 &');                    
                 } else {
-                    exec('/usr/bin/php /var/www/html/admin/modules/superfecta/includes/callerid.php -s ' . $this->scheme_name . ' -m ' . $superfecta_mf_child_id . ' -t ' . $trunk_info . ' -r ' . $data . ' > /dev/null 2>&1 &');
+                    exec('/usr/bin/php '.$amp_conf['AMPWEBROOT'].'/admin/modules/superfecta/includes/callerid.php -s ' . $this->scheme_name . ' -m ' . $superfecta_mf_child_id . ' -t ' . $trunk_info . ' -r ' . $data . ' > /dev/null 2>&1 &');
                 }
             }
             $multifecta_count++;

@@ -45,7 +45,7 @@ class Regular_Expressions_1 extends superfecta_base {
 			$this->DebugPrint("Empty Query. What should I do?? hmmmm?");
 		}
 
-        return($caller_id);
+        return(strip_tags(trim($caller_id)));
     }
 
 }
