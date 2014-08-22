@@ -49,7 +49,7 @@ class ConnectWise extends superfecta_base {
 				'default' => 10
 		),
 		'API_Version' => array(
-				'description' => 'The part of the URL excluding slashes following the host name that indicates the API version, e.g. "v2014_4" (without quotes)',
+				'description' => 'The part of the URL excluding slashes following the host name that indicates the API version, e.g. "v2014_4" or "v4_6_release" (without quotes)',
 				'type' => 'text',
 				'default' => 'v2014_4',
 		),
@@ -66,7 +66,7 @@ class ConnectWise extends superfecta_base {
 		if ($run_param['API_Version']) {
 			$integration_apiver = $run_param['API_Version'];
 		} else {
-			$integration_apiver = 'v2014_4';
+			$integration_apiver = 'v4_6_release';
 		}
 
 		$wquery_string = "";
