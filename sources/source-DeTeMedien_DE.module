@@ -9,33 +9,37 @@
  * Version History
  *        2014-01-08   Initial migration to 2.11 and update regex's by lgaetz
  *        2014-03-25   Regex fix by Håkan
+ *        2014-07-23   Regex fix by kossmac
  *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
 
  class DeTeMedien_DE extends superfecta_base {
 
 
-	public $description = "http://www.detemedien.de/";
-	public $version_requirement = "2.11";
+    public $description = "http://www.detemedien.de/";
+    public $version_requirement = "2.11";
 
-	function get_caller_id($thenumber, $run_param=array()) {
-		$caller_id = null;
-		$this->DebugPrint("Searching http://www.detemedien.de/ for $thenumber...");
+    function get_caller_id($thenumber, $run_param=array()) {
+        $caller_id = null;
+        $this->DebugPrint("Searching http://www.detemedien.de/ for $thenumber...");
 
-		// url from ver. 2.2.x still working 2014-01-08
-		$url = "http://www.dasoertliche.de/Controller?context=4&form_name=search_inv&action=43&page=5&ph=". $thenumber;    
+        // url from ver. 2.2.x still working 2014-01-08
+        $url = "http://www.dasoertliche.de/Controller?context=4&form_name=search_inv&action=43&page=5&ph=". $thenumber;    
 
-		// Patterns to search for 
-		$regexp = array(
-//			'/arkey=.*>(.*)&nbsp;/',    // old regex from ver 2.2.x occasionally gives bad result
-//			'/class="preview iname"><span class="">(.*?)<\/span><\/a> <\/span>/',   // working 2014-01-08
-			'/class="preview iname" onmouseover="" onMouseOut=""><span class="">(.*?)<\/span>/',    // working 2014-03-25
-		);
+        // Patterns to search for 
+        $regexp = array(
+//          '/arkey=.*>(.*)&nbsp;/',    // old regex from ver 2.2.x occasionally gives bad result
+//          '/class="preview iname"><span class="">(.*?)<\/span><\/a> <\/span>/',   // working 2014-01-08
+//          '/class="preview iname" onmouseover="" onMouseOut=""><span class="">(.*?)<\/span>/',    // working 2014-07-23
+            '/class="name " onmouseover="" onMouseOut=""><span class="">(.*?)<\/span>/',    // working 2014-07-23
+            '/class="name "><span class="">(.*?)<\/span>/',    // working 2014-07-23
+            '/class="name " onmouseover="" onmouseout=""><span class="">(.*?)<\/span>/',    // working 2014-07-23
+        );
 
-		if ($this->SearchURL($url, $regexp, $match, NULL, TRUE)) {
-			$caller_id = $this->ExtractMatch($match);
-		}
+        if ($this->SearchURL($url, $regexp, $match, NULL, TRUE)) {
+            $caller_id = $this->ExtractMatch($match);
+        }
 
-		return($caller_id);
-	}
+        return(str_replace("&nbsp;", '', $caller_id));
+    }
 
 }
