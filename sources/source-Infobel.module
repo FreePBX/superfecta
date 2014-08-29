@@ -202,13 +202,14 @@ class Infobel extends superfecta_base {
             switch ($Country) {
                 case "FR" :
                 case "BE" :
+                    preg_match_all('/<span itemprop="name" class="fn org">(.*)<\/span><\/a>/U', $sresult, $sname);
+                    break;
                 case "LU" :
                 case "DK":
                 case "AU":
                 case "DE" :
-                    preg_match_all('/<span class="fn org">(.*)<\/span><\/a>/U', $sresult, $sname);
+                    preg_match_all('/<span itemprop="name" class="fn org">(.*)<\/span><\/a>/U', $sresult, $sname);
                     break;
-
                 default :
                     preg_match_all('/businessdetails.aspx">(.*)<\/a>/U', $sresult, $sname);
                     break;
@@ -228,7 +229,7 @@ class Infobel extends superfecta_base {
         } else {
             $this->DebugPrint("country source not found");
         }
-
+        $caller_id=str_replace(chr(160)," ",$caller_id);
         return $caller_id;
     }
 
