@@ -16,6 +16,7 @@
  *          No more crash when xbmc device is off
  *     2014-02-09  First attempt to incorporate soif improvements in 2.11 branch by lgaetz
  *     2014-02-11  Bug fixes and cleanup
+ *     2014-08-30  Fixed bug where pause checkbox setting was ignored
  * 
  **** **** **** **** **** **** **** **** **** **** **** **** **** **** **** ****/
 
@@ -200,7 +201,7 @@ class Send_to_XBMC extends superfecta_base {
 					$this->DebugPrint('<code>Volume URL: ' . $url1 . '</code>',DEBUG_ALL);
 					$value = $this->get_url_contents($url1);
 				}
-				if ($run_param['Pause_PlayBack'] != 'off') {
+				if ($run_param['Pause_PlayBack']) {
 					$this->DebugPrint("Pausing Media on $host...",DEBUG_INFO);
 					$this->DebugPrint('<code>Pause URL: ' . $url2 . '</code>',DEBUG_ALL);
 					$value = $this->get_url_contents($url2);
