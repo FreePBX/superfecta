@@ -10,7 +10,7 @@ Superfecta usage looks to be okay, provided users are not reselling the data fro
 Version History
 2012-xx-xx	Initial migration
 2014-01-08	minor updates
-2014-08-29      minor updates
+2014-08-29      fix+minor updates
 *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
 class Infobel extends superfecta_base {
 
