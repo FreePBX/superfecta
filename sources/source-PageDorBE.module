@@ -97,8 +97,15 @@ class PageDorBE extends superfecta_base {
         } else {
             $this->DebugPrint("country source not found");
         }
-        //$caller_id=str_replace(chr(160)," ",$caller_id);
-        return utf8_decode($caller_id);
+        
+        // bad char removing
+        $caller_id=str_replace(chr(168),"",$caller_id);
+        $caller_id=str_replace(chr(195),"e",$caller_id);
+        $caller_id=str_replace(chr(39)," ",$caller_id);
+        $caller_id=str_replace(chr(170),"",$caller_id);
+        $caller_id=str_replace(chr(169),"",$caller_id);
+        
+        return $caller_id;
     }
 
 }
