@@ -44,6 +44,8 @@ class PageDor extends superfecta_base {
             } else if (substr($loc_number, 0, 5) == '01132') {
                 $loc_number = '0' . substr($loc_number, 5);
                 $Country = "BE";
+            } else if ((substr($loc_number, 0, 2) == '00') && (strlen($loc_number) == 10) && (substr($loc_number, 2, 1) != '0'))  {
+                $loc_number = (substr($loc_number, 1));
             }
         }
 
