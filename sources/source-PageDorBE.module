@@ -7,7 +7,7 @@ TOS Summary : /
 Version History
 2014-09-01      Initial release
 *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
-class PageDor extends superfecta_base {
+class PageDorBE extends superfecta_base {
 
     public $description = "http://www.pagedor.be";
     public $version_requirement = "2.11";
