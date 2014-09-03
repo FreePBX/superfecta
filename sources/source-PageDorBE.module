@@ -88,6 +88,12 @@ class PageDorBE extends superfecta_base {
             } else {
                 $sname = "";
             }
+            
+            $errorpattern="orthographe";
+
+            if (strstr($sname,$errorpattern)){
+                $sname="";
+            }
 
             if ($sname != "") {
                 $caller_id = strip_tags($sname);
