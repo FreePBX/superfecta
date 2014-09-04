@@ -1,16 +1,17 @@
 <?php
 
 /***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** 
-Module Dev Notes:
-This module only supports MySQL searches at the moment, but OpenEMR has a fledgeling API
-that may (or may not) support CNAM lookups. Possible future feature.
-This module relies on the old mysql_ functions and should be upgraded to use the PDO class
-
-History:
-2013-12-27 initial commit
-2013-12-28 minor query edits by lgaetz
-2013-12-30 added checkbox to enable/disable lookups, added search priority, added sort by date desc, add number format option by lgaetz
-
+ * Module Dev Notes:
+ *     This module only supports MySQL searches at the moment, but OpenEMR has a fledgeling API
+ *     that may (or may not) support CNAM lookups. Possible future feature.
+ *
+ *
+ * Version History:
+ *     2013-12-27 initial commit
+ *     2013-12-28 minor query edits by lgaetz
+ *     2013-12-30 added checkbox to enable/disable lookups, added search priority, added sort by date desc, add number format option by lgaetz
+ *     2014-09-03 Removed dependency on deprecated mysql functions
+ *
  ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****/
 
 class OpenEMR extends superfecta_base {
@@ -24,7 +25,7 @@ class OpenEMR extends superfecta_base {
 				'default' => 'localhost',
 		),
 		'DB_Name' => array(
-				'description' => 'Database name of the OpenEMR database',
+				'description' => 'MySQL Database name of the OpenEMR database',
 				'type' => 'text',
 				'default' => 'openemr',
 		),
@@ -70,65 +71,97 @@ class OpenEMR extends superfecta_base {
 	function get_caller_id($thenumber, $run_param=array()) {
 		$caller_id = null;
 		$value = null;
+		$sql_params = array();
 
-		$this->DebugPrint("Searching OpenEMR ... ");
-		
+		//  Connect to database
+		if(class_exists('PDO')) {
+			$this->DebugPrint("Searching OpenEMR MySQL Database ... ");
+			try {
+				$dbh = new PDO('mysql:dbname='.$run_param['DB_Name'].';host='.$run_param['DB_Host'], $run_param['DB_User'], $run_param['DB_Password']);
+			} catch (PDOException $e) {
+				$this->DebugPrint('Connection failed: ' . $e->getMessage());
+				return null;
+			}
+		} else {
+			$this->DebugPrint("PDO not present on system...Skipping");
+			return null;
+		}
+		$sth = $dbh->prepare("SET NAMES 'utf8'");
+		$sth->execute();
+
+		// trim number to filter length
 		if ($run_param['Filter_Length'] != 0) {
 			if (strlen($thenumber) > $run_param['Filter_Length']) $thenumber = substr($thenumber, -$run_param['Filter_Length']);
 		}
-		
-		$link = mysql_connect($run_param['DB_Host'], $run_param['DB_User'], $run_param['DB_Password'])or die("OpenEMR connection failed:". $run_param['DB_Host']);
-		
-		if(!mysql_select_db($run_param['DB_Name'])) {
-			$this->DebugPrint("OpenEMR database open failed");
-			return false;
-		}
 
 		//  Build regular expression from the number to avoid non-digit characters stored in database
-		$wquery = "'[^0-9]*";
+		//  PDO params can't have quote delimiters
+		$regex = "[^0-9]*";
 		for( $x=0; $x < ((strlen($thenumber))-1); $x++ ) {
-			$wquery .=  substr($thenumber,$x,1)."[^0-9]*" ;
+			$regex .=  substr($thenumber,$x,1)."[^0-9]*" ;
 		}
-		$wquery = $wquery.(substr($thenumber,-1))."([^0-9]+|$)'";
+		$regex = $regex.(substr($thenumber,-1))."([^0-9]+|$)";
+		$sql_params[':regex'] = $regex;
 
 		// query database first for cell number
-		if ($run_param['Search_Cell_Number'] == 'on') {
-			$query = "SELECT * FROM `patient_data` where `phone_cell` REGEXP ".$wquery." ORDER BY `date` DESC LIMIT 1";
-			$result = mysql_query($query) or die("OpenEMR query failed: $query");
+		if ($run_param['Search_Cell_Number']) {
+			$query = "SELECT * FROM `patient_data` where `phone_cell` REGEXP :regex ORDER BY `date` DESC LIMIT 1";
+			try {
+				$sth = $dbh->prepare($query,array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+				$sth->execute($sql_params);
+				$wquery_row = $sth->fetch(PDO::FETCH_BOTH);
+				
+			} catch (PDOException $e) {
+				$this->DebugPrint('Connection failed: ' . $e->getMessage());
+				return null;
+			}
 		}
 
 		// search home number if enabled and if no hit on cell
-		if ($run_param['Search_Home_Number'] == 'on' && mysql_num_rows($result)== 0) {
-			$query = "SELECT * FROM `patient_data` where `phone_home` REGEXP ".$wquery." ORDER BY `date` DESC LIMIT 1";
-			$result = mysql_query($query) or die("OpenEMR query failed: $query");
+		if ($run_param['Search_Home_Number'] && !$wquery_row) {
+			$query = "SELECT * FROM `patient_data` where `phone_home` REGEXP :regex ORDER BY `date` DESC LIMIT 1";
+			try {
+				$sth = $dbh->prepare($query);
+				$sth->execute($sql_params);
+				$wquery_row = $sth->fetch(PDO::FETCH_ASSOC);
+				
+			} catch (PDOException $e) {
+				$this->DebugPrint('Connection failed: ' . $e->getMessage());
+				return null;
+			}
 		}
 
 		// search work number if enabled and if no hit on cell or home
-		if ($run_param['Search_Work_Number'] == 'on' && mysql_num_rows($result)== 0) {
-			$query = "SELECT * FROM `patient_data` where `phone_biz` REGEXP ".$wquery." ORDER BY `date` DESC LIMIT 1";
-			$result = mysql_query($query) or die("OpenEMR query failed: $query");
+		if ($run_param['Search_Work_Number'] && !$wquery_row) {
+			$query = "SELECT * FROM `patient_data` where `phone_biz` REGEXP :regex ORDER BY `date` DESC LIMIT 1";
+			try {
+				$sth = $dbh->prepare($query);
+				$sth->execute($sql_params);
+				$wquery_row = $sth->fetch(PDO::FETCH_ASSOC);
+				
+			} catch (PDOException $e) {
+				$this->DebugPrint('Connection failed: ' . $e->getMessage());
+				return null;
+			}
 		}
+
 
 		// Get last & first name if any results are returned from query
-		if (mysql_num_rows($result)>0) {
-			$row = mysql_fetch_array($result);
+		if ($wquery_row && is_array($wquery_row)) {
 			if ($run_param['Result_Format'] == '1') {
-				$value = trim($row["lname"].", ".$row["fname"]);
+				$value = trim($wquery_row["lname"].", ".$wquery_row["fname"]);
 			}
 			elseif ($run_param['Result_Format'] == '2') {
-				$value = trim($row["fname"]." ".$row["lname"]);
+				$value = trim($wquery_row["fname"]." ".$wquery_row["lname"]);
 			}
 		}
-
-		mysql_close($link);              // close link to database
 
 		if(strlen($value) > 0) {
 			$caller_id = trim($value);
+			return $caller_id;
 		}
 		else if($debug) {
 			$this->DebugPrint("not found");
 		}
-
-		return $caller_id;
 	}
 }
