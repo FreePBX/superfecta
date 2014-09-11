@@ -6,6 +6,7 @@ TOS Date: unknown
 TOS Summary : /
 Version History
 2014-09-01      Initial release
+2014-09-11      Cleanup - fixes - option added
 *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
 class PageDorBE extends superfecta_base {
 
@@ -19,6 +20,12 @@ class PageDorBE extends superfecta_base {
                                 'BE' => 'BE',
                         ),
             'default' => 'BE',
+        ),
+
+         'Leading_Zero' => array(
+                    'description' => 'If you add a leading zero to the caller_id for all incoming calls',
+                    'type' => 'checkbox',
+                                'default' => 'off'
         )
     );
 
@@ -31,7 +38,12 @@ class PageDorBE extends superfecta_base {
         //BE: 8 to 9 digits; FR: 9 digits, IT: 8 to 11 digits, AU: 4 to 13 digits, DK: 8 digits, LU: 6 to 9 digits, ES: 9 digits, DE:6 to 12.
 
         $loc_number = $thenumber;
-        $adddecode = false;
+
+
+        // Removing leading zero
+        if ($run_param['Leading_Zero'] == 'on'){
+                $loc_number = (substr($loc_number, 1));
+        }
 
         // Test for BE
         if ($Country == "None" && (strlen($loc_number) > 9)) {
@@ -44,8 +56,6 @@ class PageDorBE extends superfecta_base {
             } else if (substr($loc_number, 0, 5) == '01132') {
                 $loc_number = '0' . substr($loc_number, 5);
                 $Country = "BE";
-            } else if ((substr($loc_number, 0, 2) == '00') && (strlen($loc_number) == 10) && (substr($loc_number, 2, 1) != '0'))  {
-                $loc_number = (substr($loc_number, 1));
             }
         }
 
@@ -83,12 +93,13 @@ class PageDorBE extends superfecta_base {
                          $pattern = "/<$tagname>(.*?)<\/$tagname>/";
                          preg_match($pattern, $sresult, $sname);
             }
+            
             if (count($sname[0]) > 0) {
                 $sname = $sname[0];
             } else {
                 $sname = "";
             }
-            
+
             $errorpattern="orthographe";
 
             if (strstr($sname,$errorpattern)){
@@ -110,7 +121,6 @@ class PageDorBE extends superfecta_base {
         $caller_id=str_replace(chr(39)," ",$caller_id);
         $caller_id=str_replace(chr(170),"",$caller_id);
         $caller_id=str_replace(chr(169),"",$caller_id);
-        
         return $caller_id;
     }
 
