@@ -13,6 +13,7 @@
  * Version History:
  * 		2012-11-20 - Initial Release by soif
  * 		2014-01-25 - Added support for callback URL by lgaetz
+ *      2014-09-30 - Added support for CID, DID and CNAM to be substituted into URL
  * 
  * 
  *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
@@ -79,7 +80,7 @@ class Send_to_Growl extends superfecta_base {
 			'default'		=> ''
 		),
 		'Callback_URL' => array(
-			'description'	=> 'Allows user to click the notification box and open the URL specified here.',
+			'description'	=> 'Allows user to click the notification box and open the URL specified here. Use the text ":cid:" to substitute the CallerID number, ":did:" for the DID and ":cnam:" for the Caller ID name.',
 			'type'			=> 'text',
 			'default'		=> null,
 		),
@@ -117,6 +118,12 @@ class Send_to_Growl extends superfecta_base {
 					break;
 			}
 
+			// prepare URL
+			$url = str_replace(":cid:",urlencode($thenumber), $run_param['Callback_URL']);
+			$url = str_replace(":cnam:",urlencode($first_caller_id), $url);
+			$url = str_replace(":did:",urlencode($the_did_formated), $url);
+			$this->DebugPrint("Growl URL: $url");
+			
 			// prepare message ----------------------
 			$gr_did		=$the_did_formated;
 			$gr_name	=htmlspecialchars($first_caller_id);
@@ -146,7 +153,7 @@ class Send_to_Growl extends superfecta_base {
 				'sticky' => (bool) $run_param['Sticky'],
 				'CallbackContext' => 'context',  // no idea what is supposed to be here - lgaetz
 				'CallbackContextType' => 'STRING',
-				'CallbackTarget'=> $run_param['Callback_URL'],
+				'CallbackTarget'=> $url,
 
 			);
 		
