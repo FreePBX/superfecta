@@ -55,6 +55,12 @@ if (!preg_match('/\D/i', $agi->request['agi_callerid'])) {
                 $agi->verbose("CID Superfecta: " . $data['message']);
             } elseif (isset($data['success'])) {
                 if ($data['success']) {
+                    // Display issues on phones and CDR with special characters
+					// convert CNAM to UTF-8 to fix
+					if (function_exists('mb_convert_encoding')) {
+						$agi->verbose("Converting result to UTF-8");
+						$data['cid'] = mb_convert_encoding($data['cid'], "UTF-8");
+					}
                     $agi->verbose("CID Superfecta: CID Determined to be: '" . trim($data['cid']) . "'");
                     $agi->verbose("CID Superfecta: Attempting to set lookupcid");
                     $agi->set_variable("lookupcid", trim($data['cid']));
