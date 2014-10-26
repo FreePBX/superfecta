@@ -4,10 +4,12 @@
  * Module Dev notes:
  *   Notes for using this service at: 
  *   https://secure.calleridservice.com/howto.html
+ *   Version written for Superfecta 2.x is here:
+ *   http://calleridservice.com/CallerIDSuperfecta.tar.gz
  * 
  * Version history:
  *   2014-10-16 Initial migration from ver. 2.2
- * 
+ *   2014-10-26 Improved error error checking
  * 
  ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****/
 
@@ -40,34 +42,45 @@ class CallerID_Service extends superfecta_base {
 		if ($run_param['Account_User'] == null or $run_param['Account_Key'] == null) {
 			// missing required user config
 			$this->DebugPrint("Missing account user name or key");
+			Return;
 		}
 		else {
 			$url = "http://cnam.calleridservice.com/query?u=".$run_param['Account_User']."&k=".$run_param['Account_Key']."&n=".$thenumber;
-			// $this->DebugPrint("$url");  //debug
+			$this->DebugPrint("URL: $url",3);
 
 			$sname = $this->get_url_contents($url);
 
-			if (strlen($sname) > 1) {
-					// convert list of ignore keywords into array
-					$key_words = array();
-					$temp_array = explode(',',(isset($run_param['Ignore_Keywords'])?$run_param['Ignore_Keywords']:$source_param['Ignore_Keywords']['default']));
-					foreach($temp_array as $val) {
-						$key_words[] = trim($val);
-					}
+			// CallerID service returns CNAM with the following prefixes if there are errors
+			$st_error = strstr($sname, "CNAM ");
+			$st_unknown = strstr($sname, "UNKNOWN");
+			$st_unavail = strstr($sname, "UNAVAILABLE");
+			
+			// give up if any errors
+			if($st_error || $st_unkown || $st_unavail) {
+				$this->DebugPrint("Error in Lookup.");
+				Return;
+			}
 
-					// Remove all ignore keywords from the retuned CNAM string and compare the before and after.
-					$test_string = str_ireplace($key_words,'',$sname);
-					if($test_string == $sname) {
-						$caller_id = $sname;
-						$this->DebugPrint("CNAM determined good.");
-					} else {
-						$this->DebugPrint("CNAM contains flagged key words, returning nothing.");
-					}
+			if (strlen($sname) > 1) {
+				// convert list of ignore keywords into array
+				$key_words = array();
+				$temp_array = explode(',',(isset($run_param['Ignore_Keywords'])?$run_param['Ignore_Keywords']:$source_param['Ignore_Keywords']['default']));
+				foreach($temp_array as $val) {
+					$key_words[] = trim($val);
+				}
+
+				// Remove all ignore keywords from the retuned CNAM string and compare the before and after.
+				$test_string = str_ireplace($key_words,'',$sname);
+				if($test_string == $sname) {
+					$caller_id = $sname;
+					$this->DebugPrint("CNAM determined good.");
+				} else {
+					$this->DebugPrint("CNAM contains flagged key words, returning nothing.");
+				}
 			} else {
 				$this->DebugPrint("CNAM not found.");
 			}
 			return($caller_id);
 		}
 	}
-
 }
