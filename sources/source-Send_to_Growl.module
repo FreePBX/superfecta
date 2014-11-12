@@ -13,8 +13,8 @@
  * Version History:
  * 		2012-11-20 - Initial Release by soif
  * 		2014-01-25 - Added support for callback URL by lgaetz
- *      2014-09-30 - Added support for CID, DID and CNAM to be substituted into URL
- * 
+ * 		2014-09-30 - Added support for CID, DID and CNAM to be substituted into URL
+ *		2014-11-12 - Add check for mbstring extensions
  * 
  *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
 
@@ -93,6 +93,12 @@ class Send_to_Growl extends superfecta_base {
 
 	function post_processing($cache_found, $winning_source, $first_caller_id, $run_param, $thenumber) {
 
+		// check for mbstring extensions and exit if absent to prevent crashing system
+		if (!extension_loaded('mbstring')) {
+			$this->DebugPrint("The Send to Growl module requires PHP mbstring extensions...skipping.");
+			return;
+		}
+
 		$growl_start_time=$this->mctime_float();
 		if (($run_param['Hosts'] !='') ){
 
@@ -153,9 +159,11 @@ class Send_to_Growl extends superfecta_base {
 				'sticky' => (bool) $run_param['Sticky'],
 				'CallbackContext' => 'context',  // no idea what is supposed to be here - lgaetz
 				'CallbackContextType' => 'STRING',
-				'CallbackTarget'=> $url,
-
 			);
+			// only set callbacktarget if $url is populated, otherwise clicking on growl notice causes 'unknown url' error
+			if ($url) {
+				$growl_options['CallbackTarget'] = $url;
+			}
 		
 			$this->DebugPrint('Sending Growl Notifications: <ul>');
 
