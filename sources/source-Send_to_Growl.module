@@ -20,7 +20,7 @@
 
 class Send_to_Growl extends superfecta_base {
 
-	public $description = "This source will send the number and the Caller ID to multiple computers.<br> This datasource should be one of the last data sources on your list, as it does not provide any data of its own, and can only send what information has been collected before it is run.";
+	public $description = "This source will send the number and the Caller ID to multiple Growl clients.";
 	public $version_requirement = "2.11";
 	public $source_param = array(
 		'Hosts' => array(
