@@ -285,14 +285,14 @@ if ((function_exists('cidlookup_add')) && (function_exists('cidlookup_edit'))) {
     if ($res->numRows() > 0) {
         print 'Upgrading database to remove CallerID Lookup dependency.<br>';
         // Move any inbound routes using superfecta for cid Lookups to superfecta's table
-        $sql = "INSERT IGNORE INTO superfecta_to_incoming (extension,cidnum) 
+        $sql = "INSERT IGNORE INTO superfecta_to_incoming (extension,cidnum)
 						(SELECT c2.extension, c2.cidnum FROM cidlookup c1, cidlookup_incoming c2
 							WHERE c1.description = 'Caller ID Superfecta'
 							AND c2.cidlookup_id = c1.cidlookup_id)";
         $res = $db->query($sql);
         // Delete the inbound superfect routes from cid lookup's table
-        $sql = "delete c1, c2 from cidlookup_incoming c1, cidlookup c2 
-						where c1.cidlookup_id = c2.cidlookup_id 
+        $sql = "delete c1, c2 from cidlookup_incoming c1, cidlookup c2
+						where c1.cidlookup_id = c2.cidlookup_id
 						AND c2.description = 'Caller ID Superfecta'";
         $res = $db->query($sql);
     }
@@ -357,7 +357,7 @@ $dir_iterator = new RecursiveDirectoryIterator($amp_conf['AMPBIN']."/");
 $iterator = new RecursiveIteratorIterator($dir_iterator, RecursiveIteratorIterator::SELF_FIRST);
 foreach ($iterator as $filename) {
     $path_parts = pathinfo($filename);
-    if(($path_parts['extension'] == "php") && is_link($filename)) {
+    if(!empty($path_parts['extension']) && ($path_parts['extension'] == "php") && is_link($filename)) {
         $location = readlink($filename);
         if(($location) && (dirname($location) == dirname(__FILE__)."/bin") && !file_exists($location)) {
             out("Removing ".$filename);
