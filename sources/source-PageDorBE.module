@@ -1,0 +1,127 @@
+<?php
+/*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+Developer Notes:
+TOS: http://www.goldenpages.be/qn/business/static/juridique.html
+TOS Date: unknown
+TOS Summary : /
+Version History
+2014-09-01      Initial release
+2014-09-11      Cleanup - fixes - option added
+*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
+class PageDorBE extends superfecta_base {
+
+    public $description = "http://www.pagedor.be";
+    public $version_requirement = "2.11";
+    public $source_param = array(
+        'Default_Country' => array(
+            'description' => 'Default Country to search if the number is not presented in the international format',
+            'type' => 'select',
+                        'option' => array(
+                                'BE' => 'BE',
+                        ),
+            'default' => 'BE',
+        ),
+
+         'Leading_Zero' => array(
+                    'description' => 'If you add a leading zero to the caller_id for all incoming calls',
+                    'type' => 'checkbox',
+                                'default' => 'off'
+        )
+    );
+
+    function get_caller_id($thenumber, $run_param=array()) {
+        $caller_id = null;
+
+        $this->DebugPrint('Searching PageDor.be...');
+
+        $Country = 'None';
+        //BE: 8 to 9 digits; FR: 9 digits, IT: 8 to 11 digits, AU: 4 to 13 digits, DK: 8 digits, LU: 6 to 9 digits, ES: 9 digits, DE:6 to 12.
+
+        $loc_number = $thenumber;
+
+
+        // Removing leading zero
+        if ($run_param['Leading_Zero'] == 'on'){
+                $loc_number = (substr($loc_number, 1));
+        }
+
+        // Test for BE
+        if ($Country == "None" && (strlen($loc_number) > 9)) {
+            if (substr($loc_number, 0, 2) == 32) {
+                $loc_number = '0' . substr($loc_number, 2);
+                $Country = "BE";
+            } else if (substr($loc_number, 0, 4) == '0032') {
+                $loc_number = '0' . substr($loc_number, 4);
+                $Country = "BE";
+            } else if (substr($loc_number, 0, 5) == '01132') {
+                $loc_number = '0' . substr($loc_number, 5);
+                $Country = "BE";
+            }
+        }
+
+
+        if ($Country == "None" && (strlen($loc_number) <= 12)) {
+            $Country = $run_param['Default_Country'];
+        }
+
+        $this->DebugEcho($Country . ' : ');
+
+        switch ($Country) {
+            case "BE" :
+                $url = "http://www.pagesdor.be/qn/business/advanced/telephone";
+                break;
+            default :
+                $url = "";
+                break;
+        }
+
+        if ($url != "") {
+
+            $url = $url . "/" . $loc_number . "/?stubServiceFolder=&contentErrorLinkEnabled=false&redirectUrl=%2Fqn%2Fbusiness%2F";
+            $sresult = $this->get_url_contents($url);
+
+            switch ($Country) {
+                case "BE" :
+                         $tagname="span";
+                         $pattern = "/<$tagname>(.*?)<\/$tagname>/";
+                         preg_match($pattern, $sresult, $sname);
+
+                break;
+
+                default :
+                         $tagname="span";
+                         $pattern = "/<$tagname>(.*?)<\/$tagname>/";
+                         preg_match($pattern, $sresult, $sname);
+            }
+            
+            if (count($sname[0]) > 0) {
+                $sname = $sname[0];
+            } else {
+                $sname = "";
+            }
+
+            $errorpattern="orthographe";
+
+            if (strstr($sname,$errorpattern)){
+                $sname="";
+            }
+
+            if ($sname != "") {
+                $caller_id = strip_tags($sname);
+            } else {
+                $this->DebugPrint("not found");
+            }
+        } else {
+            $this->DebugPrint("country source not found");
+        }
+        
+        // bad char removing
+        $caller_id=str_replace(chr(168),"",$caller_id);
+        $caller_id=str_replace(chr(195),"e",$caller_id);
+        $caller_id=str_replace(chr(39)," ",$caller_id);
+        $caller_id=str_replace(chr(170),"",$caller_id);
+        $caller_id=str_replace(chr(169),"",$caller_id);
+        return $caller_id;
+    }
+
+}
