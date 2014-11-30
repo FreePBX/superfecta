@@ -1,9 +1,15 @@
 <?php
 
 /*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
-UKPhoneInfo_UK dev notes:
-October 17, 2013 - Change URL 
-*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
+ * UKPhoneInfo_UK dev notes:
+ *   TOS for this site are here: http://www.ukphoneinfo.com/tandcs as of 2014-11-30 there is aboslutely
+ *   nothing that prevents Superfecta usage.
+ * 
+ * Version Info:
+ *   2013-10-17 Change URL 
+ *   2014-11-30 Change URL
+ * 
+ *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
 
 class UKPhoneInfo_UK extends superfecta_base {
 
@@ -19,9 +25,7 @@ class UKPhoneInfo_UK extends superfecta_base {
             $this->DebugPrint("Skipping Source - Non UK number: {$thenumber}");
         } else {
             $this->DebugPrint('Searching UKPhoneInfo ...');
-
-            $url = "http://www.ukphoneinfo.com/search.php?GNG={$thenumber}";
-
+            $url = "http://www.ukphoneinfo.com/search?q={$thenumber}";
             if ($this->SearchURL($url, "=<h2[^>]*>(.*)</h2>=siU", $match)) {
                 $caller_id = $this->ExtractMatch($match);
             }
