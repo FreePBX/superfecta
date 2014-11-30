@@ -10,26 +10,24 @@ Superfecta usage looks to be okay, provided users are not reselling the data fro
 Version History
 2012-xx-xx	Initial migration
 2014-01-08	minor updates
+2014-11-30	(zorka) removed FR (CAPTCHA needed), DE (redirect to ), ES (prohibited by law). Minor changes for the other countries
 *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
 class Infobel extends superfecta_base {
 
-    public $description = "http://www.infobel.com - This source includes business and residential data for Belgium, France, Luxembourg, Denmark, Austria, and Germany. Users may be subject to limits as imposed on by the Infobel terms of service. Use of this lookup source requires users to agree and conform with the TOS.";
+    public $description = "http://www.infobel.com - This source includes business and residential data for Belgium, Luxembourg, Denmark, Austria, Italy. Users may be subject to limits as imposed on by the Infobel terms of service. Use of this lookup source requires users to agree and conform with the TOS.";
     public $version_requirement = "2.11";
     public $source_param = array(
         'Default_Country' => array(
             'description' => 'Default Country to search if the number is not presented in the international format',
             'type' => 'select',
 			'option' => array(
-				'FR' => 'FR',
-				'ES' => 'ES',
 				'BE' => 'BE',
 				'IT' => 'IT',
 				'DK' => 'DK',
-				'DE' => 'DE',
 				'LU' => 'LU',
 				'AU' => 'AU',
 			),
-            'default' => 'FR',
+            'default' => 'BE',
         )
     );
 
@@ -39,11 +37,14 @@ class Infobel extends superfecta_base {
         $this->DebugPrint('Searching Infobel...');
 
         $Country = 'None';
-        //BE: 8 to 9 digits; FR: 9 digits, IT: 8 to 11 digits, AU: 4 to 13 digits, DK: 8 digits, LU: 6 to 9 digits, ES: 9 digits, DE:6 to 12. 
+        //BE: 8 to 9 digits, IT: 8 to 11 digits, AU: 4 to 13 digits, DK: 8 digits, LU: 6 to 9 digits. 
 
         $loc_number = $thenumber;
         $adddecode = false;
 
+/*************************************************************************************
+****** No longer working *************************************************************
+**************************************************************************************
         // Test for FR
         if (strlen($loc_number) > 10) {
             if (substr($loc_number, 0, 2) == '33') {
@@ -71,6 +72,22 @@ class Infobel extends superfecta_base {
                 $Country = "ES";
             }
         }
+
+       // Test for DE
+        if ($Country == "None" && (strlen($loc_number) > 8)) {
+            if (substr($loc_number, 0, 2) == 49) {
+                $loc_number = '0' . substr($loc_number, 2);
+                $Country = "DE";
+            } else if (substr($loc_number, 0, 4) == '0049') {
+                $loc_number = '0' . substr($loc_number, 4);
+                $Country = "DE";
+            } else if (substr($loc_number, 0, 5) == '01149') {
+                $loc_number = '0' . substr($loc_number, 5);
+                $Country = "DE";
+            }
+        }
+
+****************************************************************************************/
 
         // Test for BE
         if ($Country == "None" && (strlen($loc_number) > 9)) {
@@ -111,19 +128,6 @@ class Infobel extends superfecta_base {
             } else if (substr($loc_number, 0, 5) == '01145') {
                 $loc_number = substr($loc_number, 5);
                 $Country = "DK";
-            }
-        }
-        // Test for DE
-        if ($Country == "None" && (strlen($loc_number) > 8)) {
-            if (substr($loc_number, 0, 2) == 49) {
-                $loc_number = '0' . substr($loc_number, 2);
-                $Country = "DE";
-            } else if (substr($loc_number, 0, 4) == '0049') {
-                $loc_number = '0' . substr($loc_number, 4);
-                $Country = "DE";
-            } else if (substr($loc_number, 0, 5) == '01149') {
-                $loc_number = '0' . substr($loc_number, 5);
-                $Country = "DE";
             }
         }
 
@@ -167,9 +171,6 @@ class Infobel extends superfecta_base {
             case "BE" :
                 $url = "http://www.infobel.com/en/belgium/Inverse.aspx?q=Belgie";
                 break;
-            case "FR" :
-                $url = "http://www.infobel.com/en/france/Inverse.aspx?q=France";
-                break;
             case "LU" :
                 $url = "http://www.infobel.com/en/luxembourg/Inverse.aspx?q=Luxembourg";
                 break;
@@ -182,12 +183,19 @@ class Infobel extends superfecta_base {
             case "IT" :
                 $url = "http://www.infobel.com/en/italy/Inverse.aspx?q=Italy";
                 break;
+/***************************************************************************************************
+****** No longer working ***************************************************************************
+****************************************************************************************************
             case "DE" :
                 $url = "http://www.infobel.com/en/germany/Inverse.aspx?q=germany";
                 break;
             case "ES" :
                 $url = "http://www.infobel.com/en/spain/Inverse.aspx?q=spain";
                 break;
+            case "FR" :
+                $url = "http://www.infobel.com/en/france/Inverse.aspx?q=France";
+                break;
+****************************************************************************************************/
 
             default :
                 $url = "";
@@ -202,11 +210,12 @@ class Infobel extends superfecta_base {
             switch ($Country) {
                 case "FR" :
                 case "BE" :
-                case "LU" :
+                case "IT" : 
+		case "LU" :
                 case "DK":
                 case "AU":
                 case "DE" :
-                    preg_match_all('/<span class="fn org">(.*)<\/span><\/a>/U', $sresult, $sname);
+                    preg_match_all('/<span itemprop="name" class="fn org">(.*)<\/span><\/a>/U', $sresult, $sname);
                     break;
 
                 default :
