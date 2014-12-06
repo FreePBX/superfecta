@@ -1,94 +1,46 @@
 <?php
 /**** **** **** **** **** **** **** **** **** **** **** **** **** **** **** **** **** ****
  * Developer Notes:
- *      This module relies on the oauth-php library licensed under MIT License
- * 
+ *      No longer using OAuth as of December '14
+ *
  * Version History:
  *      2013-08-15  Initial commit by tm1000
  *      2014-09-02  Support for OAuth 1.0a by ssanders76
+ *		2014-12-05  Support for API v2 w/ Basic Auth by RossIV
  *
  **** **** **** **** **** **** **** **** **** **** **** **** **** **** **** **** **** ****/
 
 class NextCaller extends superfecta_base {
 
-	public $description = "https://www.nextcaller.com This data source returns CNAM data for any NANPA phone number (any number that starts with +1).";
-	public $version_requirement = "2.11";
-	public $source_param = array(
-		'Auth_Code' => array(
-				'description' => 'Auth Token from NextCaller Dashboard',
-				'type' => 'textarea'
-		),
-		'Auth_Secret' => array(
-				'description' => 'Consumer Secret',
-				'type' => 'textarea'
-		),
-		'Ignore_Keywords' => array(
-				'description' => 'If this source provides CNAM including any of the keywords listed here, the CNAM will be ignored and other sources will be used to find the value.<br>Separate keywords with commas.',
-				'type' => 'textarea',
-				'default' => 'unavailable, unknown'
-		)
-	);
+    public $description = "http://nextcaller.com  This source is free for up to 250 lookups/month, but you do need an account. Returns CID for any NANPA number without +1.";
+    public $version_requirement = "2.11";
+    public $source_param = array(
+        'username' => array(
+                'description' => 'Username from NextCaller Dashboard',
+                'type' => 'text'
+        ),
+        'password' => array(
+                'description' => 'Password from NextCaller Dashboard',
+                'type' => 'password'
+        )
+    );
 
-function __construct() {
-		require_once(dirname(dirname(__FILE__)) . "/includes/oauth-php/library/OAuthStore.php");
-		require_once(dirname(dirname(__FILE__)) . "/includes/oauth-php/library/OAuthRequester.php");
-	}
-
-	function get_caller_id($thenumber, $run_param=array()) {
-
-		$caller_id = null;
-		$this->DebugPrint("Searching Nextcaller ... ");
-
-		$key = $run_param['Auth_Code']; // this is your consumer key
-		$secret = $run_param['Auth_Secret']; // this is your secret key
-		if ($secret && $key) {
-			$options = array( 'consumer_key' => $key, 'consumer_secret' => $secret );
-			OAuthStore::instance("2Leg", $options );
-
-			$url = "https://api.nextcaller.com/v2/records/?phone=".$thenumber."&format=json"; // this is the URL of the request
-			$method = "GET"; // you can also use POST instead
-			$params = null;
-			$response = null;
-			try {
-			   // Obtain a request object for the request we want to make
-			   $request = new OAuthRequester($url, $method, $params);
-
-			   // Sign the request, perform a curl request and return the results, 
-			   // throws OAuthException2 exception on an error
-			   // $result is an array of the form: array ('code'=>int, 'headers'=>array(), 'body'=>string)
-			   $result = $request->doRequest();
-			
-			   $response = $result['body'];
-			   //$this->DebugPrint($response);
-			} catch(OAuthException2 $e) {
-			   $this->DebugPrint("OAuth Exception 2.");
-			}
-			$o = json_decode($response,TRUE);
-			$this->DebugPrint(print_r($o,TRUE));
-
-			$user = $o["records"][0];
-			$this->DebugPrint($user);
-			if (strlen($user['name']) > 1) {
-			   // convert list of ignore keywords into array
-			   $key_words = array();
-			   $temp_array = explode(',',(isset($run_param['Ignore_Keywords'])?$run_param['Ignore_Keywords']:$source_param['Ignore_Keywords']['default']));
-			   foreach($temp_array as $val) {
-				  $key_words[] = trim($val);
-			   }
-
-				// Remove all ignore keywords from the retuned CNAM string and compare the before and after.
-				$test_string = str_ireplace($key_words,'',$user['name']);
-				if($test_string == $user['name']) {
-					$this->DebugPrint("CNAM determined good.");
-					return($user['name']);
+        function get_caller_id($thenumber, $run_param=array()) {
+            $this->DebugPrint("Searching NextCaller..");
+			if (!$run_param['username'] || !$run_param['password']) {
+				$this->DebugPrint("You did not specify a valid username or password.");
+			} else {
+                $url = "https://".$run_param['username'].":".$run_param['password']."@api.nextcaller.com/v2/records/?format=json&phone=$thenumber";
+                $sresult = $this->get_url_contents($url);
+				$result = json_decode($sresult, true);
+				$name = $result['records']['0']['name'];
+                // If we found a match, return it
+				if (strlen($name) > 1) {
+					$caller_id = $name;
 				} else {
-					$this->DebugPrint("CNAM contains flagged key words, returning nothing.");
+					$this->DebugPrint("not found");
 				}
+				return($caller_id);
 			}
-			$this->DebugPrint("CNAM not found.");
-			return false;
-		} else {
-			$this->DebugPrint("Missing Auth code and/or Auth Secret.");
 		}
-	}
 }
