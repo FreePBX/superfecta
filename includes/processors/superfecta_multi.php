@@ -364,6 +364,7 @@ class superfecta_multi extends superfecta_base {
                 $source_class = NEW $source_name;
                 $source_class->set_DB($this->db);
                 $source_class->setDebug($this->isDebug());
+ 	            $source_class->set_TrunkInfo($this->trunk_info);	// not really needed for 'send_to' current sources, but it doesnt hurt to get environment infos to be propagated for future uses.....
                 $source_class->setDID($this->trunk_info['did']);	// needed for notifications 'send_to' sources (XBMC, Growl, Dreambox...)
                if (method_exists($source_class, 'post_processing')) {
                     $source_class->post_processing($this->isCacheFound(), NULL, $caller_id, $run_param, $this->trunk_info['callerid']);
