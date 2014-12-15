@@ -364,7 +364,8 @@ class superfecta_multi extends superfecta_base {
                 $source_class = NEW $source_name;
                 $source_class->set_DB($this->db);
                 $source_class->setDebug($this->isDebug());
-                if (method_exists($source_class, 'post_processing')) {
+                $source_class->setDID($this->trunk_info['did']);	// needed for notifications 'send_to' sources (XBMC, Growl, Dreambox...)
+               if (method_exists($source_class, 'post_processing')) {
                     $source_class->post_processing($this->isCacheFound(), NULL, $caller_id, $run_param, $this->trunk_info['callerid']);
                 } else {
                     print "Method 'post_processing' doesn't exist<br\>\n";
