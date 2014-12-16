@@ -149,21 +149,20 @@ class Send_to_XBMC extends superfecta_base {
 				// make url params
 				if($run_param['Mode']=='json'){
 
-					// send the volume command. BTW if volume is not casted to integer, it just NOT work with a cryptic debug message... 
+					// Send the volume command. BTW if 'volume' is not casted to integer, it just DONT work with a cryptic debug message... 
 					// You XBMC team could do this better !!!!
 					$url1 = $url . $this->_myXbmcUrl('Application.SetVolume',array('volume'=>intval($run_param['Change_Volume'])));
 					
-
-					// Toggle beween play and pause : normally in play mode, it pause ; in stop mode, it wont play ; but it in pause mode it will play
+					// Toggle beween play and pause : Normally in play mode, it pause ; in stop mode, it wont play ; but in pause mode, it would play
 					
 					// XBMC team : Why cant you just expose a simple Pause command in the API, like it was before ! 
-					// the current API would require to first query xbmc to get its play state, then depending on this, send the corresponding the playid/action
+					// the current API would require to first query Xxbmc to get its play state, then depending on this, send the corresponding the playid/action
 					// This is definitively just complicated for nothing, and LONG (2 requests)
 					
 					$url2_video = $url . $this->_myXbmcUrl('Player.PlayPause',array('playerid'=>1));
 					$url2_audio = $url . $this->_myXbmcUrl('Player.PlayPause',array('playerid'=>0));
-					
-					
+
+
 					// send Notification
 					$notification=array(
 						'title'			=>$my_xbmc_title,
