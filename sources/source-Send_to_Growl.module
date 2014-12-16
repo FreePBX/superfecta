@@ -2,8 +2,7 @@
 
 /*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** 
  * Growl Notification Module for CID Superfecta
- * 
- * Written By Francois Dechery, aka Soif. https://github.com/soif/,
+ * (Written By Francois Dechery, aka Soif. https://github.com/soif/)
  * 
  * 
  * Licence: This program is free software; you can redistribute it and/or modify it 
@@ -11,16 +10,18 @@
  * Foundation; either version 2 of the License, or (at your option) any later version.
  * 
  * Version History:
- * 		2012-11-20 - Initial Release by soif
- * 		2014-01-25 - Added support for callback URL by lgaetz
- * 		2014-09-30 - Added support for CID, DID and CNAM to be substituted into URL
- *		2014-11-12 - Add check for mbstring extensions
+ * 		2012-11-20	- Initial Release by soif
+ * 		2014-01-25	- Added support for callback URL by lgaetz
+ * 		2014-09-30	- Added support for CID, DID and CNAM to be substituted into URL
+ * 		2014-11-12	- Add check for mbstring extensions
+ * 		2014-12-15	- Faster Notification (Ping hosts before sending Notification) + Nicest Debug ; by Soif
+ * 
  * 
  *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
 
 class Send_to_Growl extends superfecta_base {
 
-	public $description = "This source will send the number and the Caller ID to multiple Growl clients.";
+	public $description = "This source will send the number and the Caller ID to multiple computers.<br> This datasource should be one of the last data sources on your list, as it does not provide any data of its own, and can only send what information has been collected before it is run.";
 	public $version_requirement = "2.11";
 	public $source_param = array(
 		'Hosts' => array(
@@ -80,17 +81,24 @@ class Send_to_Growl extends superfecta_base {
 			'default'		=> ''
 		),
 		'Callback_URL' => array(
-			'description'	=> 'Allows user to click the notification box and open the URL specified here. Use the text ":cid:" to substitute the CallerID number, ":did:" for the DID and ":cnam:" for the Caller ID name.',
+            'description'    => 'Allows user to click the notification box and open the URL specified here. Use the text ":cid:" to substitute the CallerID number, ":did:" for the DID and ":cnam:" for the Caller ID name.',
 			'type'			=> 'text',
 			'default'		=> null,
 		),
+		'Timemout' => array(
+			'description'	=> 'Maximum time (in seconds) to wait for a host to answer, before giving up.',
+			'type'			=> 'text',
+			'default'		=> '1'
+		),
 	);
 
+	// -------------------------------------------------------------------------------------------------
 	function __construct() {
 		require_once(dirname(dirname(__FILE__)) . "/includes/pear/Net/Growl/Autoload.php");
 	}
 
 
+	// -------------------------------------------------------------------------------------------------
 	function post_processing($cache_found, $winning_source, $first_caller_id, $run_param, $thenumber) {
 
 		// check for mbstring extensions and exit if absent to prevent crashing system
@@ -100,11 +108,12 @@ class Send_to_Growl extends superfecta_base {
 		}
 
 		$growl_start_time=$this->mctime_float();
-		if (($run_param['Hosts'] !='') ){
 
-			// format numbers -------------------------------
+		if (($run_param['Hosts'] !='') ){
+			// format numbers --------------
 			$thenumberformated = $thenumber;
 			$the_did_formated =$this->get_DID();
+
 			switch ($run_param['Display_Setting']){
 				case 1:
 					if (strlen($thenumber)==10){
@@ -124,95 +133,131 @@ class Send_to_Growl extends superfecta_base {
 					break;
 			}
 
-			// prepare URL
-			$url = str_replace(":cid:",urlencode($thenumber), $run_param['Callback_URL']);
-			$url = str_replace(":cnam:",urlencode($first_caller_id), $url);
-			$url = str_replace(":did:",urlencode($the_did_formated), $url);
-			$this->DebugPrint("Growl URL: $url");
-			
-			// prepare message ----------------------
-			$gr_did		=$the_did_formated;
-			$gr_name	=htmlspecialchars($first_caller_id);
-			$gr_num		=$thenumberformated;
-	
+				
 			//Growl it -----------------------------
-			$growl_timeout				=3;
-			$growl_do_register			=true;
-		
-			$grow_application 			= $run_param['Application'];
-			$growl_notification_messages= 'Messages';
-			$growl_app_notifications 	= array($growl_notification_messages);
-			$growl_app_password 		= $run_param['Password'];
-			$growl_mode 				= $run_param['Mode'];
+			$growl_params['app_name']			= $run_param['Application'];
+			$growl_params['app_password']		= $run_param['Password'];			
+			$growl_params['notif_messages']		="Messages";
+			$growl_params['app_notifications']	= array($growl_params['notif_messages']);
 
-			$growl_title		="Line: $gr_did";
-			$growl_message		="$gr_name\n$gr_num";	
+			$growl_mode 						= $run_param['Mode'];
+			$growl_params['app_options']  		= array(
+					'protocol'		=> $growl_mode, 
+					'timeout'		=> intval($run_param['Timemout']),
+				//	optionally (in Gntp Mode) you might include an icon from a local path or remote URL.
+				//	'AppIcon'  		=> 'http://www.laurent-laville.org/growl/images/Help.png',
+			);
 
-			$growl_app_options  = array(
-				'protocol'	=> $growl_mode, 
-				'timeout'	=> $growl_timeout,
-	//	optionally (in Gntp Mode) you might include an icon from a local path or remote URL.
-	//			'AppIcon'  => 'http://www.laurent-laville.org/growl/images/Help.png',
+			$growl_params['mess_title']		="Line: $the_did_formated";
+			$growl_params['mess_content']	=htmlspecialchars($first_caller_id) . "\n$thenumberformated";	
+
+			$growl_params['mess_options']	 = array(
+				'priority' 				=> $run_param['Priority'],
+				'sticky' 				=> (bool) $run_param['Sticky'],
+				'CallbackContext' 		=> 'context',  // no idea what is supposed to be here - lgaetz
+				'CallbackContextType'	=> 'STRING'
 			);
-			$growl_options = array(
-				'priority' => $run_param['Priority'],
-				'sticky' => (bool) $run_param['Sticky'],
-				'CallbackContext' => 'context',  // no idea what is supposed to be here - lgaetz
-				'CallbackContextType' => 'STRING',
-			);
+
 			// only set callbacktarget if $url is populated, otherwise clicking on growl notice causes 'unknown url' error
-			if ($url) {
-				$growl_options['CallbackTarget'] = $url;
+			if ($run_param['Callback_URL']) {
+				$url = str_replace(":cid:",urlencode($thenumber), $run_param['Callback_URL']);
+				$url = str_replace(":cnam:",urlencode($first_caller_id), $url);
+				$url = str_replace(":did:",urlencode($the_did_formated), $url);
+				//$this->DebugPrint("Growl callback URL: $url");
+
+				$growl_params['mess_options']['CallbackTarget'] = $url;
 			}
-		
+
+			// for each hosts --------------------
 			$this->DebugPrint('Sending Growl Notifications: <ul>');
 
 			$growl_hosts=explode(',',$run_param['Hosts']);
 			foreach ( $growl_hosts as $growl_host ){
-				$growl_host	=trim($growl_host);
-			
-				if($growl_host){
-				
+				if($growl_host	=trim($growl_host)){
+					$growl_params['app_options']['host']=$growl_host;
+										
 					// first run ----------------------------
-					$growl_app_options['host']=$growl_host;
 					if($growl_mode=='both'){
-						$growl_app_options['protocol']='udp';
-					}
-				
-					$this->DebugPrint("<li><b>{$growl_app_options['protocol']}</b>&nbsp; to $growl_host : ");
-					try {
+						$growl_params['app_options']['protocol']='udp';
+					}					
 					
-						$growl = Net_Growl::singleton($grow_application, $growl_app_notifications, $growl_app_password, $growl_app_options);
-						$growl_do_register and $growl->register();
-						$growl->publish($growl_notification_messages, $growl_title, $growl_message,$growl_options);
-						$growl->reset();
-						$this->DebugPrint(" ... OK!</li>");
-					}
-					catch (Net_Growl_Exception $e) {
-						$growl->reset();
-						$this->DebugPrint(" ... ERROR= ".$e->getMessage() ."</li>");
-					}
-				
+					$this->_SendGrowNotification($growl_params);
+
 					//(mode=both) do it again baby ------------------- 
 					if($growl_mode=='both'){
-						$growl_app_options['protocol']='gntp';
-						$this->DebugPrint("<li><b>{$growl_app_options['protocol']}</b> to $growl_host : ");
-						try {
-							$growl = Net_Growl::singleton($grow_application, $growl_app_notifications, $growl_app_password, $growl_app_options);
-							$growl_do_register and $growl->register();
-							$growl->publish($growl_notification_messages, $growl_title, $growl_message,$growl_options);
-							$growl->reset();
-							$this->DebugPrint(" ... OK!</li>");
-						}
-							catch (Net_Growl_Exception $e) {
-								$growl->reset();
-								$this->DebugPrint(" ... ERROR= ".$e->getMessage() ."</li>");
-						}
+						$growl_params['app_options']['protocol']='gntp';
+						$this->_SendGrowNotification($growl_params);
 					}
 				}
 			}
-			$this->DebugPrint(" </ul>Growl <img src='images/scrollup.gif'> took ".number_format(($this->mctime_float()-$growl_start_time),4)." seconds To notify all hosts.<br>\n<br>\n");
+			$this->DebugPrint(" </ul>Total time spent by module Send_To_Growl :  ".$this->_GetExeTimeSince($growl_start_time)." to notify all hosts.<br>\n", DEBUG_INFO);
 		}
 		return($thenumber);
+	}
+	
+	// -------------------------------------------------------------------------------------------------
+	private function _GetExeTimeSince($time){
+		return number_format(($this->mctime_float()-$time),4). " seconds";
+	}
+	
+
+	// -------------------------------------------------------------------------------------------------
+	private function _SendGrowNotification($params,$ping_timeout=0.1){
+		$this->DebugEcho(" - <b>{$params['app_options']['protocol']}</b> to {$params['app_options']['host']} : ",DEBUG_INFO);
+		if($ping_timeout and !$this->_VerifyHostCanBeReached($params['app_options']['host'],$params['app_options']['protocol'],$ping_timeout)){
+			$this->DebugPrint("	... CANCELED! Can't be reached in $ping_timeout seconds.");
+			return;
+		}
+		$host_start_time=$this->mctime_float();				
+		$growl_do_register = true;
+		try {
+			$growl = Net_Growl::singleton($params['app_name'], $params['app_notifications'], $params['app_password'], $params['app_options']);
+			$growl_do_register and $growl->register();	
+			$growl->publish( $params['notif_messages'], $params['mess_title'], $params['mess_content'], $params['mess_options']);
+			$growl->reset();
+			$this->DebugEcho("	... OK!");
+		}
+		catch (Net_Growl_Exception $e) {
+			$growl->reset();
+			$this->DebugEcho("	... ERROR= ".$e->getMessage());
+		}
+		$this->DebugPrint(" <i>(Processed in ".$this->_GetExeTimeSince($host_start_time).")</i>",DEBUG_INFO);
+	}
+
+
+	// -------------------------------------------------------------------------------------------------
+	private function _VerifyHostCanBeReached($host,$growl_mode='udp',$timeout=0.1){
+		if($growl_mode=='udp'){
+			// we need a reliable FAST udp pinger
+			/* 
+			if($fp = fsockopen("udp://$host", 9887, $errno, $errstr, $timeout)){
+				list($s,$trash)=explode('.',$timeout);
+				$ms	=round( ($timeout - $s) * 1000000);
+				//$this->DebugEcho(" [ $s , $ms ] ");
+				socket_set_timeout($fp,$s,$ms);
+				if($write = fwrite($fp,"x00") ){
+					$startTime = $this->mctime_float();
+					$r=fread($fp, 1);
+					$endTime = $this->mctime_float();
+					$timeDiff = $endTime - $startTime;
+					$this->DebugEcho(" [ $timeDiff ] ");
+					fclose($fp);
+					if ($timeDiff >= $timeout) {
+						return true;
+					}				
+				}
+				fclose($fp);
+			}
+			*/
+			
+			return true;
+		}
+		elseif($growl_mode=='gntp'){
+			if($fp = fsockopen("$host", 23053, $errno, $errstr, $timeout)){
+				fclose($fp);
+				return true;
+			}
+		}
+		return false;		
 	}
 }
