@@ -138,7 +138,8 @@ class Send_to_Growl extends superfecta_base {
 			$growl_params['app_name']			= $run_param['Application'];
 			$growl_params['app_password']		= $run_param['Password'];			
 			$growl_params['notif_messages']		="Messages";
-			$growl_params['app_notifications']	= array($growl_params['notif_messages']);
+			$growl_params['notif_speech']		="Speech";
+			$growl_params['app_notifications']	= array($growl_params['notif_messages'],$growl_params['notif_speech']);
 
 			$growl_mode 						= $run_param['Mode'];
 			$growl_params['app_options']  		= array(
@@ -167,6 +168,18 @@ class Send_to_Growl extends superfecta_base {
 
 				$growl_params['mess_options']['CallbackTarget'] = $url;
 			}
+
+			/*
+			$growl_params['speech_title']	="Call from : ";
+			$growl_params['speech_content']	="$first_caller_id , $thenumberformated, on line : $the_did_formated";
+
+			$growl_params['speech_options']	 = array(
+				'priority' 				=> $run_param['Priority'],
+				'sticky' 				=> (bool) $run_param['Sticky'],
+			);
+			*/
+
+
 
 			// for each hosts --------------------
 			$this->DebugPrint('Sending Growl Notifications: <ul>');
@@ -214,6 +227,7 @@ class Send_to_Growl extends superfecta_base {
 			$growl = Net_Growl::singleton($params['app_name'], $params['app_notifications'], $params['app_password'], $params['app_options']);
 			$growl_do_register and $growl->register();	
 			$growl->publish( $params['notif_messages'], $params['mess_title'], $params['mess_content'], $params['mess_options']);
+			//$growl->publish( $params['notif_speech'], $params['speech_title'], $params['speech_content'], $params['speech_options']);
 			$growl->reset();
 			$this->DebugEcho("	... OK!");
 		}
@@ -260,4 +274,18 @@ class Send_to_Growl extends superfecta_base {
 		}
 		return false;		
 	}
+/*
+	// -----------------------------------------------------------------------------------
+	function _EnumStrToDigits($str){
+		if($len=strlen($str)){
+			for ($i=0; $i < $len ; $i++) { 
+				$out .=substr($str,$i,1).' ';
+			}
+			return $out;
+		}
+		return $str;
+	}
+*/
+
+
 }
