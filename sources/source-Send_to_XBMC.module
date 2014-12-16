@@ -1,8 +1,6 @@
 <?php
 /**** **** **** **** **** **** **** **** **** **** **** **** **** **** **** **** 
- * Developer Notes:
- * 
- * 
+ * XBMC Notification Module for CID Superfecta
  * 
  * 
  * Version history:
@@ -17,6 +15,9 @@
  *     2014-02-09  First attempt to incorporate soif improvements in 2.11 branch by lgaetz
  *     2014-02-11  Bug fixes and cleanup
  *     2014-08-30  Fixed bug where pause checkbox setting was ignored
+ *     2014-12-15	- Fixed RPC API : play/pause works for video + audio, Volume fixed
+ * 					- Faster execution time
+ * 					- Better Debug messages + cleaner code
  * 
  **** **** **** **** **** **** **** **** **** **** **** **** **** **** **** ****/
 
@@ -46,8 +47,8 @@ class Send_to_XBMC extends superfecta_base {
 			'description' => 'Select either old deprecated mode or json mode.',
 			'type' => 'select',
 			'option' => array(
-				'old' => 'Old API : For XBMC up to v11',
-				'json' => 'Json RPC: For XBMC v12 (Frodo)',
+				'old' => 'Old API : For XBMC until v11',
+				'json' => 'Json RPC: For XBMC v12 and up (Frodo)',
 			),
 			'default' => 'json',
 		),
@@ -77,25 +78,16 @@ class Send_to_XBMC extends superfecta_base {
 		)
 	);
 
+	// -----------------------------------------------------------------------------------
 	function post_processing($cache_found, $winning_source, $first_caller_id, $run_param, $thenumber) {
-	
+
 		// initialize variables - perhaps these should be collected with $source_param
 		$my_anonymous_title = "Unknown";	// Title displayed for calls without CallerID name 
 		$my_host_timeout = 0.5; 			//time (in seconds) to wait for each host before it is considered off (should be short)
 
+		$time_module_started=$this->mctime_float();
 		
 		if ($run_param['Hosts']) {
-			//make sure function has not been declared before
-			if(!function_exists("_myXbmcUrl")){
-				function _myXbmcUrl($array){
-					$request=$array;
-					//$request['jsonrpc']="2.0";
-					//$request['method']="Player.PlayPause";
-					$json=json_encode($request);
-					$url='/jsonrpc?request='.urlencode($json);
-					return $url;
-				}
-			}
 
 			//format number
 			$thenumberformated = $thenumber;
@@ -156,62 +148,97 @@ class Send_to_XBMC extends superfecta_base {
 		
 				// make url params
 				if($run_param['Mode']=='json'){
-					$my_request=array(
-						'jsonrpc'=>"2.0",
-						'method'=>'Application.SetVolume',
-						'params'=>array(
-							'volume'=>$run_param['Change_Volume']
-						)
-					);
-					$url1 = $url . _myXbmcUrl($my_request);
+
+					// send the volume command. BTW if volume is not casted to integer, it just NOT work with a cryptic debug message... 
+					// You XBMC team could do this better !!!!
+					$url1 = $url . $this->_myXbmcUrl('Application.SetVolume',array('volume'=>intval($run_param['Change_Volume'])));
 					
-					$my_request=array(
-						'jsonrpc'=>"2.0",
-						'method'=>'Player.PlayPause',
-						'params'=>array(
-							// Note: playerid 1 is video and playerid 0 is audio.
-							'playerid'=>1,
-							'play'=>false
-						)
-					);
-					$url2 = $url . _myXbmcUrl($my_request);
+
+					// Toggle beween play and pause : normally in play mode, it pause ; in stop mode, it wont play ; but it in pause mode it will play
 					
-					$my_request=array(
-						'jsonrpc'=>"2.0",
-						'method'=>'GUI.ShowNotification',	
-						'params'=>array(
-							'title'			=>$my_xbmc_title,
-							'message'		=>$my_xbmc_mess,
-							'image'			=>$my_xbmc_icon,
-							'displaytime'	=>$my_xbmc_time
-							)
+					// XBMC team : Why cant you just expose a simple Pause command in the API, like it was before ! 
+					// the current API would require to first query xbmc to get its play state, then depending on this, send the corresponding the playid/action
+					// This is definitively just complicated for nothing, and LONG (2 requests)
+					
+					$url2_video = $url . $this->_myXbmcUrl('Player.PlayPause',array('playerid'=>1));
+					$url2_audio = $url . $this->_myXbmcUrl('Player.PlayPause',array('playerid'=>0));
+					
+					
+					// send Notification
+					$notification=array(
+						'title'			=>$my_xbmc_title,
+						'message'		=>$my_xbmc_mess,
+						'image'			=>$my_xbmc_icon,
+						'displaytime'	=>$my_xbmc_time
 					);
-					$url3 = $url . _myXbmcUrl($my_request);
+					$url3 = $url . $this->_myXbmcUrl('GUI.ShowNotification',$notification);
+
 				}
 				else{
-					$url1 = $url . urlencode('/xbmcCmds/xbmcHttp?command=SetVolume(' . $run_param['Change_Volume'] . ')');
-					$url2 = $url . urlencode('/xbmcCmds/xbmcHttp?command=Pause()');
-					$url3 = $url . urlencode('/xbmcCmds/xbmcHttp?command=ExecBuiltIn&parameter=XBMC.Notification(' . $my_dharma_params . ')');			
+					$url1 		= $url . urlencode('/xbmcCmds/xbmcHttp?command=SetVolume(' . $run_param['Change_Volume'] . ')');
+					$url2_video = $url . urlencode('/xbmcCmds/xbmcHttp?command=Pause()');
+					$url3 		= $url . urlencode('/xbmcCmds/xbmcHttp?command=ExecBuiltIn&parameter=XBMC.Notification(' . $my_dharma_params . ')');			
 				}
+
+				$time_host_started=$this->mctime_float();
 
 				//Send URLs and debug output
 				$this->DebugPrint("Sending XBMC command(s) To Host: $host",DEBUG_INFO);
 				if ($run_param['Change_Volume'] != ''){
-					$this->DebugPrint("Setting Volume on $host...",DEBUG_INFO);
+					$this->DebugPrint("	- Setting Volume on $host...",DEBUG_INFO);
 					$this->DebugPrint('<code>Volume URL: ' . $url1 . '</code>',DEBUG_ALL);
-					$value = $this->get_url_contents($url1);
+					$this->_triggerUrlFasterThanRoadRunner($url1);
 				}
 				if ($run_param['Pause_PlayBack']) {
-					$this->DebugPrint("Pausing Media on $host...",DEBUG_INFO);
-					$this->DebugPrint('<code>Pause URL: ' . $url2 . '</code>',DEBUG_ALL);
-					$value = $this->get_url_contents($url2);
+					$this->DebugPrint("	- Pausing Media on $host...",DEBUG_INFO);
+					$this->DebugPrint('<code>Pause URL: ' . $url2_video . '</code>',DEBUG_ALL);
+					$this->_triggerUrlFasterThanRoadRunner($url2_video);
+					if($url2_audio){
+						$this->DebugPrint('<code>Pause URL: ' . $url2_audio . '</code>',DEBUG_ALL);
+						$this->_triggerUrlFasterThanRoadRunner($url2_audio);
+					}
 				}
 				if ($run_param['Notification_Time'] ) {
-					$this->DebugPrint("Setting Notification Time to $host...",DEBUG_INFO);
+					$this->DebugPrint("	- Setting Notification Time to $host...",DEBUG_INFO);
 					$this->DebugPrint('<code>Notif URL: ' . $url3 . '</code>',DEBUG_ALL);
-					$value = $this->get_url_contents($url3);
+					$this->_triggerUrlFasterThanRoadRunner($url3);
 				}
+				$this->DebugPrint(" --> Processed in ".$this->_GetExeTimeSince($time_host_started)."<br>\n" ,DEBUG_INFO);
 			}
+			$this->DebugPrint("Total time spent by module Send_To_XBMC : ".$this->_GetExeTimeSince($time_module_started) . " to notify all hosts.<br>\n" ,DEBUG_INFO);
 		}
 	}
+
+
+	// -----------------------------------------------------------------------------------
+	private function _myXbmcUrl($method,$params){
+		$request=array();
+		$request['jsonrpc']	="2.0";
+		$request['method']	="$method";
+		$request['params']	=$params;
+		$request['id']		="1";
+		$json=json_encode($request);
+		$url='/jsonrpc?request='.urlencode($json);
+		return $url;
+		
+	}
+
+	// -----------------------------------------------------------------------------------
+	// we just need to send a request to the API, not waiting to the answer
+	private function _triggerUrlFasterThanRoadRunner($url,$timeout=0.001){
+		$opts = array(
+			'http'=>array(
+				'timeout'=> $timeout,
+			)
+		);
+		$context = stream_context_create($opts);
+		return file_get_contents($url,false,$context);
+	}
+
+	// -----------------------------------------------------------------------------------
+	private function _GetExeTimeSince($time){
+		return number_format(($this->mctime_float()-$time),4). " seconds";
+	}
+
+
 }
