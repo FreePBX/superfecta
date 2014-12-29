@@ -1,0 +1,89 @@
+<?php
+
+/*This is an example of getting information for caller ID from the Google
+ * Places API.
+ *
+ * This code is expressly MIT License (http://opensource.org/licenses/MIT)
+ * and its use constitutes acknowledgement and agreement to those terms.
+ * Copyright (c) 2014 eric-cgn
+ *
+ */
+class GooglePlaces extends superfecta_base {
+
+    public $description = "Google Places API Query (Powered by Google)";
+    public $version_requirement = "2.11";
+    public $source_param = array(
+        'API_KEY' => array(
+            'description' => 'API Key for Google Places API',
+            'type' => 'text'
+        ),
+        'Google_Agreements' => array(
+            'type' => 'info',
+            'description' => 'Required Information from Google\'s TOS',
+            'default' => '<p style="width:350px">By checking the box you agree to Google&#39;s 
+<a href="http://www.google.com/intl/en/policies/privacy/"> Privacy Policy</a>, Google&#39;s
+<a href="http://www.google.com/intl/en/policies/terms/">Terms of Service</a>, and this
+module&#39;s Privacy Policy and Terms of Service given below.</p>',
+        ),
+       'Privacy_Policy' => array (
+            'description' => 'Google Maps API requires this module provide the
+ this privacy policy',
+            'type' => 'info',
+            'default' => '<textarea readonly cols="40" rows="5">Privacy Policy and Terms of Use:
+To comply with the Google Maps TOS, 
+this module must have a privacy policy
+and terms of use. This is the privacy
+policy and terms of use, additional to 
+any other terms or policies given in 
+any other parts of this application. 
+By using this Google Maps API 
+implementation you are agreeing to 
+Google\'s Terms of Use and Privacy 
+Policy and this privacy policy.
+
+The phone numbers looked up by this
+module are submitted to the Google 
+Maps/Places API. Results returned may
+be cached by other modules or displayed 
+as caller id information on devices. 
+This module, by itself, does not send 
+your data anywhere other than Google. 
+It retains your API key and your 
+agreement to the privacy policies and 
+terms of use. You are agreeing to
+the data (phone numbers) being
+submitted to the Places API using
+the given API key. You are asserting you
+have the authority to agree on behalf 
+of others using this service, and that
+you agree with this use and the above
+stated terms on their behalf.
+</textarea>'
+        ),
+         'I_Agree' => array(
+            'type' => 'checkbox',
+            'description' => 'I have read, understand, and agree to the terms/policy.',
+            'default' => null
+        )
+    );
+
+    function get_caller_id($thenumber, $run_param=array()) {
+        $caller_id = null;
+        if ($run_param['I_Agree'] === null) {
+            $this->DebugPrint("Skipping this module. You must agree to the terms of use and privacy policy");
+            return($caller_id);
+        }
+        $this->DebugPrint("Searching Google Places API ... ");
+        $url = "https://maps.googleapis.com/maps/api/place/textsearch/xml?query=%22" . $thenumber . "%22&key=" . $run_param['API_KEY'];
+        $xml = $this->get_url_contents($url);
+        $p = xml_parser_create();
+        xml_parse_into_struct($p, $xml, $vals, $index);
+        xml_parser_free($p);
+        $caller_id = $vals[$index["NAME"][0]]["value"];
+        if (strpos($xml,"DENIED") !== false) {
+            $this->DebugPrint("Invalid API Key!");
+        }
+        return($caller_id);
+    }
+
+}
