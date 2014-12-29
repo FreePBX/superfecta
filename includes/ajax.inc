@@ -210,6 +210,9 @@ switch($_REQUEST['type']) {
                     }
                     $form_html .= "</select></td>";
                     break;
+                case "info":
+                    $form_html .= '<td>'.str_replace("_", " ", $key).'<a class="info"><span>'.$data['description'].'</span></a></td><td>' . $default . '</td>';
+                    break;
                 default:
                     $form_html .= '<td colspan="2"><span class="superfecta_message">WARN: Unrecognized option \''.$data['type'].'\'</span></td>';
                     break;
