@@ -1,0 +1,39 @@
+<?php
+
+/*This is an example of getting information for caller ID from the Google
+ * Places API. Since the information is not output to a 'page or view' it is
+ * up to the integrator of this code to determine how to comply with:
+ * https://developers.google.com/places/policies#terms_of_use
+ *
+ * This code is expressly MIT License (http://opensource.org/licenses/MIT)
+ * and its use constitutes acknowledgement and agreement to those terms.
+ * Copyright (c) 2014 eric-cgn
+ *
+ */
+class GooglePlaces extends superfecta_base {
+
+    public $description = "Google Places API Query (Powered by Google)";
+    public $version_requirement = "2.11";
+    public $source_param = array(
+        'API_KEY' => array(
+                'description' => 'API Key for Google Places API',
+                'type' => 'text'
+        ),
+    );
+
+    function get_caller_id($thenumber, $run_param=array()) {
+        $caller_id = null;
+        $this->DebugPrint("Searching Google Places API ... ");
+        $url = "https://maps.googleapis.com/maps/api/place/textsearch/xml?query=%22" . $thenumber . "%22&key=" . $run_param['API_KEY'];
+        $xml = $this->get_url_contents($url);
+        $p = xml_parser_create();
+        xml_parse_into_struct($p, $xml, $vals, $index);
+        xml_parser_free($p);
+        $caller_id = $vals[$index["NAME"][0]]["value"];
+        if (strpos($xml,"DENIED") !== false) {
+            $this->DebugPrint("Invalid API Key!");
+        }
+        return($caller_id);
+    }
+
+}
