@@ -83,6 +83,15 @@ stated terms on their behalf.
         if (strpos($xml,"DENIED") !== false) {
             $this->DebugPrint("Invalid API Key!");
         }
+        if ($caller_id !== null){
+            //Add the logo and attribution to the log where it may be viewed by users
+            $this->DebugPrint("<img src='https://maps.gstatic.com/mapfiles/api-3/images/powered-by-google-on-white2.png' alt='Powered by Google'/>");
+            //Unable to find any examples with this set, so this is good faith effort to note the attribution:
+            $attribution = $vals[$index["HTML_ATTRIBUTIONS"][0]]["value"];
+            if($attribution !== null){
+                $this->DebugPrint($attribution);
+            }
+        }
         return($caller_id);
     }
 
