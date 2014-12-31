@@ -2,7 +2,7 @@
 	<rawname>superfecta</rawname>
 	<repo>extended</repo>
 	<name>CID Superfecta</name>
-	<version>2.11.16</version>
+	<version>12.0</version>
 	<type>setup</type>
 	<category>Admin</category>
 	<publisher>POSSA</publisher>
@@ -38,7 +38,7 @@
 	</menuitems>
 	<info>https://github.com/POSSA/Caller-ID-Superfecta/wiki</info>
 	<supported>
-		<version>2.10</version>
+		<version>12.0</version>
 	</supported>
 	<md5sum>a71ce14e885b43669a50395c975c0df9</md5sum>
 	<location>release/2.11/superfecta-2.11.5.tgz</location>
