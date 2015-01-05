@@ -37,7 +37,7 @@ if (php_sapi_name() == 'cli' && empty($_SERVER['REMOTE_ADDR'])) {
 				$debug = isset($options['d']) ? $options['d'] : 0;
 
 				//AGI Trunk values
-				$trunk_info_temp = isset($options['t']) ? unserialize(base64_decode($options['t'])) : array();
+				$trunk_info_temp = isset($options['t']) ? json_decode(base64_decode($options['t']),true) : array();
 				if (!isset($options['m'])) {
 						$trunk_info = array(
 								'channel' => $trunk_info_temp['agi_channel'],
@@ -50,7 +50,7 @@ if (php_sapi_name() == 'cli' && empty($_SERVER['REMOTE_ADDR'])) {
 								'context' => $trunk_info_temp['agi_context']
 						);
 				} else {
-						$trunk_info = isset($options['t']) ? unserialize(base64_decode($options['t'])) : array();
+						$trunk_info = isset($options['t']) ? json_decode(base64_decode($options['t']),true) : array();
 				}
 
 				//Multifecta only
@@ -87,6 +87,10 @@ if (php_sapi_name() == 'cli' && empty($_SERVER['REMOTE_ADDR'])) {
 $trunk_info['callerid'] = preg_replace('/\D/i', '', $trunk_info['callerid']);
 $trunk_info['did'] = preg_replace('/\D/i', '', $trunk_info['did']);
 
+//Remove leading +1-9 on numbers.
+$trunk_info['callerid'] = trim(preg_replace('/^\+[1-9]/', '', $trunk_info['callerid']));
+$trunk_info['calleridname'] = trim(preg_replace('/^\+[1-9]/', '', $trunk_info['calleridname']));
+
 //Die on Scheme unknown
 if ((trim($scheme_name_request) == '') OR ($scheme_name_request == 'ALL')) {
 		if ((!$cli) OR ($scheme_name_request == 'ALL')) {
@@ -107,11 +111,12 @@ if (empty($trunk_info['callerid']) && !is_int($trunk_info['callerid'])) {
 		if (!$cli) {
 				die('Invalid Number');
 		} else {
-				echo base64_encode(serialize(array(
+				echo base64_encode(json_encode(array(
 						'message' => 'Invalid Number'
 				)));
 		}
 }
+
 foreach ($scheme_name_array as $list) {
 		$scheme_name = $list;
 
@@ -269,7 +274,7 @@ foreach ($scheme_name_array as $list) {
 												$final_data['cid'] = $spam_text . " " . $superfecta->get_Prefix() . $callerid;
 												$final_data['destination'] = $spam_dest;
 												$final_data['success'] = TRUE;
-												echo base64_encode(serialize($final_data));
+												echo base64_encode(json_encode($final_data));
 												if(!empty($superfecta->debug_log)) {
 														file_put_contents(dirname(dirname(__FILE__))."/logs/debug-log-".time(), implode("\n", $superfecta->debug_log));
 												}

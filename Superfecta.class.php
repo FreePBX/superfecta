@@ -20,6 +20,9 @@ class Superfecta implements \BMO {
 		'sources' => array(),
 		'name' => null
 	);
+	private $spamCount = 0;
+	private $destination = null;
+	private $agi = null;
 	public function __construct($freepbx) {
 		$this->freepbx = $freepbx;
 		$this->db = $freepbx->Database;
@@ -42,6 +45,178 @@ class Superfecta implements \BMO {
 
 	public function myDialplanHooks() {
 		return true;
+	}
+
+	private function out($message) {
+		if(is_object($this->agi)) {
+			$this->agi->verbose($message);
+		}
+	}
+
+	public function setAgi($agi) {
+		$this->agi = $agi;
+	}
+	public function execute($scheme='ALL', $request) {
+		if(empty($scheme) || !is_array($request) || empty($request)) {
+			return '';
+		}
+
+		$trunk_info = array();
+
+		foreach($request as $key => $value) {
+			$key = preg_replace('/^agi_/','',$key);
+			$trunk_info[$key] = $value;
+		}
+
+		//Remove all invalid characters from number! (\D = Anything other than a digit)
+		$trunk_info['callerid'] = preg_replace('/\D/i', '', $trunk_info['callerid']);
+		$trunk_info['did'] = preg_replace('/\D/i', '', $trunk_info['did']);
+
+		//Remove leading +1-9 on numbers.
+		$trunk_info['callerid'] = trim(preg_replace('/^\+[1-9]/', '', $trunk_info['callerid']));
+		$trunk_info['calleridname'] = trim(preg_replace('/^\+[1-9]/', '', $trunk_info['calleridname']));
+
+		$this->out("CID Superfecta: Scheme is '" . $scheme . "'");
+
+		$this->out("CID Superfecta: The DID is: " . $trunk_info['extension']);
+		$this->out("CID Superfecta: The CNUM is: " . $trunk_info['callerid']);
+		$this->out("CID Superfecta: The CNAME is: " . $trunk_info['calleridname']);
+
+		//If ALL then run through all Schemes, else just the single one
+		if($scheme == 'ALL') {
+			$schemes = $this->getAllPoweredSchemes();
+		} else {
+			$schemes[0] = $scheme;
+		}
+
+		include __DIR__ . '/includes/superfecta_base.php';
+		include __DIR__ . '/includes/processors/superfecta_multi.php';
+		include __DIR__ . '/includes/processors/superfecta_single.php';
+
+		global $db, $amp_conf, $astman;
+		$options = array(
+			'db' => $db,
+			'amp_conf' => $amp_conf,
+			'astman' => $astman,
+			'debug' => 0,
+			'path_location' => __DIR__ . '/sources',
+			'trunk_info' => $trunk_info
+		);
+
+		foreach ($schemes as $s) {
+			$options['scheme_settings'] = $this->getScheme($s['name']);;
+			$options['module_parameters'] = $this->getSchemeAllModuleSettings($s['name']);
+
+			switch ($options['scheme_settings']) {
+				case 'superfecta_multi.php':
+					//TODO: This is broken and needs to be fixed, there are better ways to do it of course
+					//for now send all results back through to single
+					//$options['multifecta_id'] = isset($multifecta_id) ? $multifecta_id : null;
+					//$options['source'] = isset($source) ? $source : null;
+					//$superfecta = NEW \superfecta_multi($options);
+					//break;
+				case 'superfecta_single.php':
+				default:
+					$superfecta = NEW \superfecta_single($options);
+				break;
+			}
+
+			$superfecta->setCLI(true);
+			$superfecta->setDID($trunk_info['did']);
+			$superfecta->set_CurlTimeout($scheme_param['Curl_Timeout']);
+
+			// Determine if this is the correct DID, if this scheme is limited to a DID.
+			$rule_match = $superfecta->match_pattern_all((isset($options['scheme_settings']['DID'])) ? $options['scheme_settings']['DID'] : '', $trunk_info['did']);
+			if ($rule_match['number']) {
+				$this->out("Matched DID Rule: '" . $rule_match['pattern'] . "' with '" . $rule_match['number'] . "'");
+			} elseif ($rule_match['status']) {
+				$this->out("No matching DID rules. Skipping scheme");
+				continue;
+			}
+
+			// Determine if the CID matches any patterns defined for this scheme
+			$rule_match = $superfecta->match_pattern_all((isset($options['scheme_settings']['CID_rules'])) ? $options['scheme_settings']['CID_rules'] : '', $trunk_info['callerid']);
+			if ($rule_match['number']) {
+				$this->out("Matched CID Rule: '" . $rule_match['pattern'] . "' with '" . $rule_match['number'] . "'");
+				$trunk_info['callerid'] = $rule_match['number'];
+			} elseif ($rule_match['status'] && $run_this_scheme) {
+				$this->out("No matching CID rules. Skipping scheme");
+				continue;
+			}
+
+			//if a prefix lookup is enabled, look it up, and truncate the result to 10 characters
+			///Clean these up, set NULL values instead of blanks then don't check for ''
+			$superfecta->set_Prefix('');
+			if ((isset($scheme_param['Prefix_URL'])) && (trim($scheme_param['Prefix_URL']) != '')) {
+				$start_time = $superfecta->mctime_float();
+
+				$superfecta->set_Prefix($superfecta->get_url_contents(str_replace("[thenumber]", $trunk_info['callerid'], $options['scheme_settings']['Prefix_URL'])));
+
+				if ($superfecta->prefix != '') {
+					$this->out("Prefix Url defined ... returned: " . $superfecta->get_Prefix());
+				} else {
+					$this->out("Prefix Url defined ... result was empty");
+				}
+				$this->out("Prefix Url defined ... result took " . number_format((mctime_float() - $start_time), 4) . " seconds.");
+			}
+
+			$superfecta->set_TrunkInfo($trunk_info);
+
+			if($this->agi === null) {
+				$callerid = $superfecta->web_debug();
+			} else {
+				$callerid = $superfecta->get_results();
+			}
+
+			$callerid = trim($callerid);
+
+			if (!empty($callerid)) {
+				//$first_caller_id = _utf8_decode($first_caller_id);
+				$callerid = trim(strip_tags($callerid));
+				if ($superfecta->isCharSetIA5()) {
+					$callerid = $superfecta->stripAccents($callerid);
+				}
+				//Why?
+				$callerid = preg_replace("/[\";']/", "", $callerid);
+				//limit caller id to the first 60 char
+				$callerid = substr($callerid, 0, 60);
+				//send off
+				$superfecta->send_results($callerid);
+			}
+
+			//Set Spam text
+			$spam_text = ($superfecta->isSpam()) ? $options['scheme_settings']['SPAM_Text'] : '';
+			if($options['scheme_settings']['SPAM_Text_Substitute'] == 'Y') {
+				$callerid = $spam_text;
+			} else {
+				$callerid = $spam_text . " " . $superfecta->get_Prefix() . $callerid;
+			}
+			// Display issues on phones and CDR with special characters
+			// convert CNAM to UTF-8 to fix
+			if (function_exists('mb_convert_encoding')) {
+				$this->out("Converting result to UTF-8");
+				$callerid = mb_convert_encoding($callerid, "UTF-8");
+			}
+
+			//Set Spam Destination
+			$spam_dest = (!empty($options['scheme_settings']['spam_interceptor']) && ($options['scheme_settings']['spam_interceptor'] == 'Y')) ? $options['scheme_settings']['spam_destination'] : '';
+			$this->spamCount = $this->spamCount + (int)$superfecta->get_SpamCount();
+			if(!empty($spam_dest) && ($this->spamCount >= (int)$options['scheme_settings']['SPAM_threshold'])) {
+				$parts = explode(",", $spam_dest);
+				$this->destination = $parts;
+				//stop all processing at this point, the spam score is too high
+				return $callerid;
+			}
+		}
+		return $callerid;
+	}
+
+	public function getSpamScore() {
+		return $this->spamCount;
+	}
+
+	public function getDest() {
+		return $this->destination;
 	}
 
 	public function getSchemeDefaults() {
@@ -113,12 +288,12 @@ class Superfecta implements \BMO {
 				/** GET MODULE CONFIGS **/
 				$sql = "SELECT * FROM superfectaconfig WHERE source LIKE ?";
 				$sth = $this->db->prepare($sql);
-				$sth->execute(array('base\_'.$scheme.'\_%'));
+				$sth->execute(array($scheme.'\_%'));
 				$options = $sth->fetchAll(\PDO::FETCH_ASSOC);
 				$sql = "INSERT INTO superfectaconfig (source, field, value) VALUES (?,?,?)";
 				$sth = $this->db->prepare($sql);
 				foreach($options as $option) {
-					$source = preg_replace('/^base_'.$scheme.'_/','base_'.$scheme.'copy'.$int.'_',$option['source']);
+					$source = preg_replace('/^'.$scheme.'_/','base_'.$scheme.'copy'.$int.'_',$option['source']);
 					$sth->execute(array($source,$option['field'],$option['value']));
 				}
 
@@ -217,15 +392,9 @@ class Superfecta implements \BMO {
 				$source = $_REQUEST['source'];
 
 				foreach($params as $key => $data) {
-					if(isset($_POST[$key]) && $_POST[$key] != "off") {
-						$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES (?, ?, ?)";
-						$sth = $this->db->prepare($sql);
-						$sth->execute(array('base_'.$scheme . "_" . $source, $key, $_POST[$key]));
-					} else {
-						$sql = "DELETE FROM superfectaconfig WHERE source = ? AND field = ?";
-						$sth = $this->db->prepare($sql);
-						$sth->execute(array('base_'.$scheme . "_" . $source, $key));
-					}
+					$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES (?, ?, ?)";
+					$sth = $this->db->prepare($sql);
+					$sth->execute(array($scheme . "_" . $source, $key, $_POST[$key]));
 				}
 				return array("status" => true);
 			break;
@@ -236,7 +405,7 @@ class Superfecta implements \BMO {
 
 				$sql = "SELECT field, value FROM superfectaconfig WHERE source = ?";
 				$sth = $this->db->prepare($sql);
-				$sth->execute(array('base_'.$scheme . "_" . $source));
+				$sth->execute(array($scheme . "_" . $source));
 				$n_settings = $sth->fetchAll(\PDO::FETCH_KEY_PAIR);
 
 				$path = __DIR__;
@@ -248,7 +417,7 @@ class Superfecta implements \BMO {
 				$module = new $_REQUEST['source'];
 				$params = $module->source_param;
 
-				$form_html = '<form id="form_options_'.$_REQUEST['source'].'" action="ajax.php?module=superfecta&command=save_options&scheme='.$scheme.'&source='.$source.'" method="post">';
+				$form_html = '<form id="form_options_'.$_REQUEST['source'].'" action="ajax.php?module=superfecta&command=save_options&scheme='.urlencode($scheme).'&source='.$source.'" method="post">';
 				foreach($params as $key => $data) {
 					$form_html .= '<div class="form-group">';
 					$show = TRUE;
@@ -265,7 +434,14 @@ class Superfecta implements \BMO {
 							$form_html .= '<input type="password" class="form-control" name="'.$key.'" id="'.$key.'" value="'.$value.'"/>';
 						break;
 						case "checkbox":
-							$checked = isset($n_settings[$key]) && ($n_settings[$key] == 'on') ? 'checked' : $default;
+							$checked = $default;
+							if(isset($n_settings[$key])) {
+								if($n_settings[$key] == 'on') {
+									$checked = 'checked';
+								} else {
+									$checked = '';
+								}
+							}
 							$form_html .= '<label for="'.$key.'">'.str_replace("_", " ", $key).'</label><a class="info"><span>'.$data['description'].'</span></a>';
 							$form_html .= '<br/><span class="radioset">';
 							$form_html .= '<input type="radio" id="'.$key.'_yes" name="'.$key.'"value="on" '.($checked == 'checked' ? 'checked' : '').'>';
@@ -316,6 +492,17 @@ class Superfecta implements \BMO {
 			$start++;
 		}
 
+	}
+
+	public function getAllPoweredSchemes() {
+		$allSchemes = $this->getAllSchemes();
+		$schemes = array();
+		foreach($allSchemes as $scheme) {
+			if($scheme['powered']) {
+				$schemes[] = $scheme;
+			}
+		}
+		return $schemes;
 	}
 
 	public function getAllSchemes() {
@@ -419,6 +606,38 @@ class Superfecta implements \BMO {
 
 		$return['name'] = $scheme;
 		$return['sources'] = !empty($return['sources']) ? explode(',', $return['sources']) : array();
+		return $return;
+	}
+
+	public function getSchemeAllModuleSettings($scheme) {
+		$sql = "SELECT source, field, value FROM superfectaconfig WHERE source LIKE ?";
+		$sth = $this->db->prepare($sql);
+		$sth->execute(array($scheme.'\_%'));
+		$results = $sth->fetchAll(\PDO::FETCH_ASSOC);
+		$return = array();
+		foreach($results as $result) {
+			$result['source'] = preg_replace('/^'.$scheme.'_/i','',$result['source']);
+			if(trim($result['value']) == 'off') {
+				continue;
+			}
+			$return[$result['source']][$result['field']] = $result['value'];
+		}
+		return $return;
+	}
+
+	public function getSchemeModuleSettings($scheme, $module) {
+		$sql = "SELECT source, field, value FROM superfectaconfig WHERE source LIKE ?";
+		$sth = $this->db->prepare($sql);
+		$sth->execute(array($scheme.'\_'.$module.'\_%'));
+		$results = $sth->fetchAll(\PDO::FETCH_ASSOC);
+		$return = array();
+		foreach($results as $result) {
+			$result['source'] = preg_replace('/^'.$scheme.'_/i','',$result['source']);
+			if(trim($result['value']) == 'off') {
+				continue;
+			}
+			$return[$result['source']][$result['field']] = $result['value'];
+		}
 		return $return;
 	}
 }

@@ -8,7 +8,7 @@
 			<i class="fa fa-arrow-up <?php echo ($scheme['showup']) ? '' : 'hidden'?>" data-type="up"></i>
 			<i class="fa fa-files-o" data-type="duplicate"></i>
 			<i class="fa fa-trash-o" data-type="delete"></i>
-			<span onclick="window.location.href='config.php?display=superfecta&amp;action=edit&amp;scheme=<?php echo $scheme['name']?>';"><?php echo $scheme['name']?></span>
+			<span onclick="window.location.href='config.php?display=superfecta&amp;action=edit&amp;scheme=<?php echo urlencode($scheme['name'])?>';"><?php echo $scheme['name']?></span>
 		</li>
 		<?php } ?>
 	</ul>

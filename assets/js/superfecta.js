@@ -3,13 +3,13 @@ $("li.scheme i").click(function() {
 	switch (type) {
 		case "power":
 			if ($(this).hasClass("fa-toggle-on")) {
-				$.post("ajax.php?module=superfecta&command=power&scheme=" + name, {}, function(data) {
+				$.post("ajax.php?module=superfecta&command=power&scheme=" + encodeURIComponent(name), {}, function(data) {
 					if (data.status) {
 						$($this).removeClass("fa-toggle-on").addClass("fa-toggle-off");
 					}
 				}, "json");
 			} else {
-				$.post("ajax.php?module=superfecta&command=power&scheme=" + name, {}, function(data) {
+				$.post("ajax.php?module=superfecta&command=power&scheme=" + encodeURIComponent(name), {}, function(data) {
 					if (data.status) {
 						$($this).removeClass("fa-toggle-off").addClass("fa-toggle-on");
 					}
@@ -17,7 +17,7 @@ $("li.scheme i").click(function() {
 			}
 		break;
 		case "up":
-			$.post("ajax.php?module=superfecta&command=sort&scheme=" + name, {position: "up"}, function(data) {
+			$.post("ajax.php?module=superfecta&command=sort&scheme=" + encodeURIComponent(name), {position: "up"}, function(data) {
 				if (data.status) {
 					row.fadeOut('slow', function() {
 						row.insertBefore(row.prev());
@@ -28,7 +28,7 @@ $("li.scheme i").click(function() {
 			}, "json");
 		break;
 		case "down":
-			$.post("ajax.php?module=superfecta&command=sort&scheme=" + name, {position: "down"}, function(data) {
+			$.post("ajax.php?module=superfecta&command=sort&scheme=" + encodeURIComponent(name), {position: "down"}, function(data) {
 				if (data.status) {
 					row.fadeOut('slow', function() {
 						row.insertAfter(row.next());
@@ -40,7 +40,7 @@ $("li.scheme i").click(function() {
 		break;
 		case "duplicate":
 			if (confirm("Are you sure you wish to duplicate this scheme?")) {
-				$.post("ajax.php?module=superfecta&command=copy&scheme=" + name, {}, function(data) {
+				$.post("ajax.php?module=superfecta&command=copy&scheme=" + encodeURIComponent(name), {}, function(data) {
 					if (data.status) {
 						document.location.href = data.redirect;
 					}
@@ -49,7 +49,7 @@ $("li.scheme i").click(function() {
 		break;
 		case "delete":
 			if (confirm("Are you sure you wish to delete this scheme?")) {
-				$.post("ajax.php?module=superfecta&command=delete&scheme=" + name, {}, function(data) {
+				$.post("ajax.php?module=superfecta&command=delete&scheme=" + encodeURIComponent(name), {}, function(data) {
 					if (data.status) {
 						if(typeof scheme !== "undefined" && scheme == name) {
 							document.location.href = "config.php?display=superfecta";
@@ -140,7 +140,7 @@ $(".source i").click(function() {
 				},
 				open: function() {
 					var $this = this;
-					$.post("ajax.php?module=superfecta&command=options&scheme=" + scheme + "&source=" + name, {}, function(data) {
+					$.post("ajax.php?module=superfecta&command=options&scheme=" + encodeURIComponent(scheme) + "&source=" + name, {}, function(data) {
 						if (data.status) {
 							$($this).html(data.html);
 							$("a.info").each(function(){$(this).after('<span class="help"><i class="fa fa-question-circle"></i><span>'+$(this).find('span').html()+'</span></span>');$(this).find('span').remove();$(this).replaceWith($(this).html())})
@@ -243,7 +243,7 @@ function source_order() {
 			source_order.push(id);
 		}
 	});
-	$.post("ajax.php?module=superfecta&command=update_sources&scheme=" + scheme, {data: source_order}, function(data) {
+	$.post("ajax.php?module=superfecta&command=update_sources&scheme=" + encodeURIComponent(scheme), {data: source_order}, function(data) {
 
 	}, "json");
 }
