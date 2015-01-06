@@ -56,7 +56,7 @@ class Superfecta implements \BMO {
 	public function setAgi($agi) {
 		$this->agi = $agi;
 	}
-	public function execute($scheme='ALL', $request) {
+	public function execute($scheme='ALL', $request, $debug=0) {
 		if(empty($scheme) || !is_array($request) || empty($request)) {
 			return '';
 		}
@@ -69,8 +69,8 @@ class Superfecta implements \BMO {
 		}
 
 		//Remove all invalid characters from number! (\D = Anything other than a digit)
-		$trunk_info['callerid'] = preg_replace('/\D/i', '', $trunk_info['callerid']);
-		$trunk_info['did'] = preg_replace('/\D/i', '', $trunk_info['did']);
+		//$trunk_info['callerid'] = preg_replace('/\D/i', '', $trunk_info['callerid']);
+		//$trunk_info['did'] = preg_replace('/\D/i', '', $trunk_info['did']);
 
 		//Remove leading +1-9 on numbers.
 		$trunk_info['callerid'] = trim(preg_replace('/^\+[1-9]/', '', $trunk_info['callerid']));
@@ -86,7 +86,7 @@ class Superfecta implements \BMO {
 		if($scheme == 'ALL') {
 			$schemes = $this->getAllPoweredSchemes();
 		} else {
-			$schemes[0] = $scheme;
+			$schemes[0] = array("name" => $scheme);
 		}
 
 		include __DIR__ . '/includes/superfecta_base.php';
@@ -121,6 +121,7 @@ class Superfecta implements \BMO {
 				break;
 			}
 
+			$superfecta->setDebug($debug);
 			$superfecta->setCLI(true);
 			$superfecta->setDID($trunk_info['did']);
 			$superfecta->set_CurlTimeout($scheme_param['Curl_Timeout']);
@@ -186,11 +187,12 @@ class Superfecta implements \BMO {
 
 			//Set Spam text
 			$spam_text = ($superfecta->isSpam()) ? $options['scheme_settings']['SPAM_Text'] : '';
-			if($options['scheme_settings']['SPAM_Text_Substitute'] == 'Y') {
+			if($superfecta->isSpam() && $options['scheme_settings']['SPAM_Text_Substitute'] == 'Y') {
 				$callerid = $spam_text;
 			} else {
 				$callerid = $spam_text . " " . $superfecta->get_Prefix() . $callerid;
 			}
+
 			// Display issues on phones and CDR with special characters
 			// convert CNAM to UTF-8 to fix
 			if (function_exists('mb_convert_encoding')) {
@@ -254,6 +256,31 @@ class Superfecta implements \BMO {
 			case "update_scheme":
 			case "copy":
 			case "sort":
+			case "debug":
+				return true;
+			break;
+		}
+	}
+
+	public function ajaxCustomHandler() {
+		switch($_REQUEST['command']) {
+			case "debug":
+				echo "<span class='header'>"._('Debug is on and set at level:')."</span> ".$_REQUEST['level']."</br>";
+				echo "<span class='header'>"._('The Original Number:')."</span> ".$_REQUEST['tel']."</br>";
+				echo "<span class='header'>"._('The Scheme:')."</span> ".$_REQUEST['scheme']."</br>";
+				echo "<span class='header'>"._('Scheme Type:')."</span> SINGLEFECTA</br>";
+				echo "<span class='header'>"._('Debugging Enabled, will not stop after first result')."</span></br>";
+				echo "</br>";
+				$time_start = microtime(true);
+				$callerid = $this->execute($_REQUEST['scheme'],array(
+					'callerid' => $_REQUEST['tel'],
+					'did' => '5555555555',
+					'calleridname' => 'CID Superfecta!',
+				),$_REQUEST['level']);
+				$time_end = microtime(true);
+				echo "</br>";
+				echo "<span class='header'>"._('Returned Result would be:')."</span>".$callerid."</br>";
+				echo "<span class='header'>".sprintf(_('result took %s seconds'),$time_end - $time_start)."</span>";
 				return true;
 			break;
 		}
@@ -261,6 +288,9 @@ class Superfecta implements \BMO {
 
 	public function ajaxHandler() {
 		switch($_REQUEST['command']) {
+			case "debug":
+				return false;
+			break;
 			case "sort":
 				$oper = $_POST['position'] == 'up' ? "-" : "+";
 				$sql = "UPDATE superfectaconfig SET value = ABS(value ".$oper." 11) WHERE source = ? AND field = 'order'";

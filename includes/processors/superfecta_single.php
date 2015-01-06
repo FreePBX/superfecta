@@ -49,6 +49,9 @@ class superfecta_single extends superfecta_base {
 				$source_class->set_TrunkInfo($this->trunk_info);
 
 				if (method_exists($source_class, 'get_caller_id')) {
+					if ($this->isDebug()) {
+						print '<i class="fa fa-arrow-right"></i> '._('Executing'). ' '. str_replace("_"," ",$data).'<br/>';
+					}
 					$caller_id = $source_class->get_caller_id($this->trunk_info['callerid'], $run_params);
 					$this->set_CacheFound($source_class->isCacheFound());
 					$this->setSpam($source_class->isSpam());
@@ -66,8 +69,6 @@ class superfecta_single extends superfecta_base {
 							$end_time_whole = $this->mctime_float();
 						}
 					}
-				} else {
-					$this->DebugPrint("Function 'get_caller_id' does not exist!");
 				}
 			} else {
 				$this->DebugPrint("Unable to find source '" . $source_name . "' skipping..");
@@ -75,9 +76,9 @@ class superfecta_single extends superfecta_base {
 
 			if ($this->isDebug()) {
 				if ($caller_id != '') {
-					print "'" . utf8_encode($caller_id) . "'<br>\nresult <img src='images/scrollup.gif'> took " . number_format(($this->mctime_float() - $start_time), 4) . " seconds.<br>\n<br>\n";
+					print "'" . utf8_encode($caller_id) . "'<br>\nresult <i class=\"fa fa-hand-o-up\"></i> took " . number_format(($this->mctime_float() - $start_time), 4) . " seconds.<br>\n<br>\n";
 				} else {
-					print "result <img src='images/scrollup.gif'> took " . number_format(($this->mctime_float() - $start_time), 4) . " seconds.<br>\n<br>\n";
+					print "result <i class=\"fa fa-hand-o-up\"></i> took " . number_format(($this->mctime_float() - $start_time), 4) . " seconds.<br>\n<br>\n";
 				}
 			} else if ($caller_id != '') {
 				break;
@@ -87,14 +88,16 @@ class superfecta_single extends superfecta_base {
 	}
 
 	function send_results($caller_id) {
-		$this->DebugPrint("Post CID retrieval processing.");
+		if ($this->isDebug()) {
+			print "<span class='header'>Post CID retrieval processing</span><br/>";
+		}
 
 		foreach ($this->scheme_params['sources'] as $source_name) {
 			// Run the source
 			$sql = "SELECT field,value FROM superfectaconfig WHERE source = '" . $this->scheme_name . "_" . $source_name . "'";
 			$run_param = $this->db->getAssoc($sql);
 			$source_file = $this->path_location . "/source-" . $source_name . ".module";
-			$class = "\\".$data;
+			$class = "\\".$source_name;
 			if (file_exists($source_name) && !class_exists($class)) {
 				include $source_name;
 			}
@@ -107,13 +110,17 @@ class superfecta_single extends superfecta_base {
 				$source_class->set_AsteriskManager($this->astman);
 				$source_class->set_TrunkInfo($this->trunk_info);
 				if (method_exists($source_class, 'post_processing')) {
+					if ($this->isDebug()) {
+						print '<i class="fa fa-arrow-right"></i> '._('Executing'). ' '. str_replace("_"," ",$source_name).'<br/>';
+					}
 					$source_class->post_processing($this->isCacheFound(), $this->winning, $caller_id, $run_param, $this->trunk_info['callerid']);
-				} else {
-					print "Method 'post_processing' doesn't exist<br\>\n";
 				}
 			} else {
 				$this->DebugPrint("Couldn't load " . $source_name . " for post processing");
 			}
+		}
+		if ($this->isDebug()) {
+			print "<span class='header'>Done</span><br/>";
 		}
 	}
 

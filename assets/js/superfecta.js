@@ -207,7 +207,68 @@ $(function() {
 			$(this).dialog( "close" );
 		}
 	});
+	$("#super-debug").click(function() {
+		$( "#debug-dialog" ).dialog( "open" );
+	});
+	$( "#debug-dialog" ).dialog({
+		autoOpen: false,
+		height: 600,
+		width: 650,
+		modal: true,
+		buttons: {
+			"Run This Scheme": function() {
+				runDebug(scheme);
+			},
+			"Run All Schemes": function() {
+				runDebug("ALL");
+			},
+			Cancel: function() {
+				$(this).dialog( "close" );
+			}
+		},
+		open: function() {
+			if($("#DID").val().trim() !== "") {
+				$('#debug-dialog .debug-window').css('height', '252px');
+				$("#didnumber").show();
+			} else {
+				$('#debug-dialog .debug-window').css('height','')
+				$("#didnumber").hide();
+			}
+		},
+		close: function() {
+			$(this).dialog( "close" );
+		}
+	});
 });
+
+function runDebug(scheme) {
+	if ($("#thenumber").val().trim() === "") {
+		alert("Please enter a valid phone number!");
+		$("#thenumber").focus();
+		return;
+	}
+	var urlStr = "ajax.php?module=superfecta&command=debug&scheme=" + encodeURIComponent(scheme) + "&level=" + $("#debug_level").val() + "&tel=" + $("#thenumber").val() + "&thedid=" + $("#thedid").val();
+	$('#debug-dialog .debug-window').html('Loading..<i class="fa fa-spinner fa-spin fa-2x">');
+	var xhr = new XMLHttpRequest(),
+	timer = null;
+	xhr.open('POST', urlStr, true);
+	xhr.send(null);
+	timer = window.setInterval(function() {
+		if (xhr.readyState == XMLHttpRequest.DONE) {
+			window.clearTimeout(timer);
+		}
+		if (xhr.responseText.length > 0) {
+			if ($('#debug-dialog .debug-window').html() != xhr.responseText) {
+				$('#debug-dialog .debug-window').html(xhr.responseText);
+				$("#debug-dialog .debug-window").prop({ scrollTop: $("#debug-dialog .debug-window").prop("scrollHeight") });
+			}
+		}
+		if (xhr.readyState == XMLHttpRequest.DONE) {
+			$("#debug-dialog .debug-window").css("overflow", "auto");
+			$("#debug-dialog .debug-window").prop({ scrollTop: $("#debug-dialog .debug-window").prop("scrollHeight") });
+		}
+	}, 100);
+}
 
 function sort_scheme() {
 	$("#schemeorder_list li.scheme i.fa-arrow-down").removeClass("hidden");

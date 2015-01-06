@@ -2,6 +2,7 @@
 var scheme = "<?php echo $scheme_data['name']?>";
 </script>
 <h3 class="name"><?php echo sprintf(_('Scheme Name: %s'), $scheme_data['name'])?> <i class="fa fa-wrench " id="configure"></i></h3>
+<h4 class="name" id="super-debug"><?php echo _('Debug/Test Run Scheme')?> <i class="fa fa-play"></i></h4>
 <div class="instructions">
 	<?php echo _('Add, Remove, Enable, Disable, Sort and Configure data sources as appropriate for your situation.')?>
 	<br/>
@@ -111,4 +112,25 @@ var scheme = "<?php echo $scheme_data['name']?>";
 			</div>
 		</div>
 	</form>
+</div>
+<div id="debug-dialog" title="<?php echo _('Debug/Test Run Scheme')?>">
+	<div class="form-group" id="didnumber">
+		<label><a href="javascript:return(false);" class="info"><?php echo _('DID Number')?><span><?php echo _('The DID to test this scheme against')?></span></a></label>
+		<input type="text" class="form-control" id="thedid" size="15" maxlength="20" name="thedid">
+	</div>
+	<div class="form-group">
+		<label><a href="javascript:return(false);" class="info"><?php echo _('Phone Number')?><span><?php echo _('Phone number to test this scheme against')?></span></a></label>
+		<input type="text" class="form-control" id="thenumber" size="15" maxlength="20" name="thenumber">
+	</div>
+	<div class="form-group">
+		<label><a href="javascript:return(false);" class="info"><?php echo _('Debug Level')?><span><?php echo _('Debug Level to display')?></span></a></label>
+		<select name="debug" id="debug_level" class="form-control">
+			<option value="0">NONE</option>
+			<option value="1" selected="">INFO</option>
+			<option value="2">WARN</option>
+			<option value="3">ALL</option>
+		</select>
+	</div>
+	<div class="debug-window">
+	</div>
 </div>

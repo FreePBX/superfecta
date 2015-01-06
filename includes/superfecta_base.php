@@ -145,14 +145,6 @@ class superfecta_base {
 		$this->cache_found = $bValue;
 	}
 
-	//public $thenumber_orig = (isset($_REQUEST['thenumber'])) ? trim($_REQUEST['thenumber']) : '';
-	//public $DID = (isset($_REQUEST['testdid'])) ? trim($_REQUEST['testdid']) : '';
-	//public $scheme = (isset($_REQUEST['scheme'])) ? trim($_REQUEST['scheme']) : '';
-
-	function post_processing($cache_found, $winning_source, $first_caller_id, $run_param, $thenumber) {
-		return($thenumber);
-	}
-
 	function get_caller_id($thenumber, $run_param=array()) {
 		$this->DebugPrint("Searching " . str_replace("_", " ", get_class($this)) . " ...");
 		//Is this the best way to do this?
