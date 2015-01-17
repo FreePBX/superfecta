@@ -68,14 +68,6 @@ class Superfecta implements \BMO {
 			$trunk_info[$key] = $value;
 		}
 
-		//Remove all invalid characters from number! (\D = Anything other than a digit)
-		//$trunk_info['callerid'] = preg_replace('/\D/i', '', $trunk_info['callerid']);
-		//$trunk_info['did'] = preg_replace('/\D/i', '', $trunk_info['did']);
-
-		//Remove leading +1-9 on numbers.
-		$trunk_info['callerid'] = trim(preg_replace('/^\+[1-9]/', '', $trunk_info['callerid']));
-		$trunk_info['calleridname'] = trim(preg_replace('/^\+[1-9]/', '', $trunk_info['calleridname']));
-
 		$this->out("CID Superfecta: Scheme is '" . $scheme . "'");
 
 		$this->out("CID Superfecta: The DID is: " . $trunk_info['extension']);
@@ -104,6 +96,11 @@ class Superfecta implements \BMO {
 		);
 
 		foreach ($schemes as $s) {
+			//reset these each time
+			$cnum = $trunk_info['callerid'];
+			$cnam = $trunk_info['calleridname'];
+			$did = $trunk_info['extension'];
+
 			$options['scheme_settings'] = $this->getScheme($s['name']);;
 			$options['module_parameters'] = $this->getSchemeAllModuleSettings($s['name']);
 
@@ -123,11 +120,11 @@ class Superfecta implements \BMO {
 
 			$superfecta->setDebug($debug);
 			$superfecta->setCLI(true);
-			$superfecta->setDID($trunk_info['did']);
+			$superfecta->setDID($did);
 			$superfecta->set_CurlTimeout($scheme_param['Curl_Timeout']);
 
 			// Determine if this is the correct DID, if this scheme is limited to a DID.
-			$rule_match = $superfecta->match_pattern_all((isset($options['scheme_settings']['DID'])) ? $options['scheme_settings']['DID'] : '', $trunk_info['did']);
+			$rule_match = $superfecta->match_pattern_all((isset($options['scheme_settings']['DID'])) ? $options['scheme_settings']['DID'] : '', $did);
 			if ($rule_match['number']) {
 				$this->out("Matched DID Rule: '" . $rule_match['pattern'] . "' with '" . $rule_match['number'] . "'");
 			} elseif ($rule_match['status']) {
@@ -136,10 +133,10 @@ class Superfecta implements \BMO {
 			}
 
 			// Determine if the CID matches any patterns defined for this scheme
-			$rule_match = $superfecta->match_pattern_all((isset($options['scheme_settings']['CID_rules'])) ? $options['scheme_settings']['CID_rules'] : '', $trunk_info['callerid']);
+			$rule_match = $superfecta->match_pattern_all((isset($options['scheme_settings']['CID_rules'])) ? $options['scheme_settings']['CID_rules'] : '', $cnum);
 			if ($rule_match['number']) {
 				$this->out("Matched CID Rule: '" . $rule_match['pattern'] . "' with '" . $rule_match['number'] . "'");
-				$trunk_info['callerid'] = $rule_match['number'];
+				$cnum = $rule_match['number'];
 			} elseif ($rule_match['status'] && $run_this_scheme) {
 				$this->out("No matching CID rules. Skipping scheme");
 				continue;
@@ -151,7 +148,7 @@ class Superfecta implements \BMO {
 			if ((isset($scheme_param['Prefix_URL'])) && (trim($scheme_param['Prefix_URL']) != '')) {
 				$start_time = $superfecta->mctime_float();
 
-				$superfecta->set_Prefix($superfecta->get_url_contents(str_replace("[thenumber]", $trunk_info['callerid'], $options['scheme_settings']['Prefix_URL'])));
+				$superfecta->set_Prefix($superfecta->get_url_contents(str_replace("[thenumber]", $cnum, $options['scheme_settings']['Prefix_URL'])));
 
 				if ($superfecta->prefix != '') {
 					$this->out("Prefix Url defined ... returned: " . $superfecta->get_Prefix());
@@ -171,7 +168,9 @@ class Superfecta implements \BMO {
 
 			$callerid = trim($callerid);
 
+			$found = false;
 			if (!empty($callerid)) {
+				$found = true;
 				//$first_caller_id = _utf8_decode($first_caller_id);
 				$callerid = trim(strip_tags($callerid));
 				if ($superfecta->isCharSetIA5()) {
@@ -195,7 +194,7 @@ class Superfecta implements \BMO {
 
 			// Display issues on phones and CDR with special characters
 			// convert CNAM to UTF-8 to fix
-			if (function_exists('mb_convert_encoding')) {
+			if ($found && function_exists('mb_convert_encoding')) {
 				$this->out("Converting result to UTF-8");
 				$callerid = mb_convert_encoding($callerid, "UTF-8");
 			}
@@ -209,8 +208,12 @@ class Superfecta implements \BMO {
 				//stop all processing at this point, the spam score is too high
 				return $callerid;
 			}
+			if(!empty($callerid)) {
+				return $callerid;
+			}
 		}
-		return $callerid;
+		//No callerid so I guess?
+		return $trunk_info['calleridname'];
 	}
 
 	public function getSpamScore() {
