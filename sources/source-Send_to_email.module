@@ -1,10 +1,13 @@
 <?php
 /*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
-Send_to_email dev notes:
-August 11, 2013		lgaetz - Initial migration
-August 12, 2013		support for multiple email address and debug output
-
-*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
+ * Dev notes:
+ *  
+ * Version History:
+ * 	2013-08-11		Initial migration
+ * 	2013-08-12		support for multiple email address and debug output
+ * 	2015-02-20		Added support for from: address
+ * 
+ *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
 
 class Send_to_Email extends superfecta_base {
 
@@ -30,7 +33,12 @@ class Send_to_Email extends superfecta_base {
 			'description' => 'If no CNAM is found, input a default name to use for the email notice, the user will receive an email with the number and this default name. Leave blank to send no email if no CNAM is found.',
 			'type' => 'text',
 			'default' => ''
-		)
+		),
+		'From_Address' => array(
+			'description' => 'Specify single email address that the notification appears to come from. Leave blank to use system default.',
+			'type' => 'text',
+			'default' => ''
+		),
     );
 
     function post_processing($cache_found, $winning_source, $first_caller_id, $run_param, $thenumber) {
@@ -54,12 +62,16 @@ class Send_to_Email extends superfecta_base {
 		$body = str_replace('[NUMBER]', $thenumber, $body);
 		$body = str_replace('[number]', $thenumber, $body);
 
+		if ($run_param['From_Address'])  {
+			$headers =  'From: '.$run_param['From_Address']."\r\n";
+		}
+
 		if ( $cnam != '' && $thenumber != '') {
 			$emails=explode(',',$run_param['Email_address']);
 			foreach ( $emails as $email ) {
 				$email=trim($email);
 				if ($email !='') {
-					mail ($email, $subject, $body);
+					mail ($email, $subject, $body, $headers);
 					$this->DebugPrint("Email sent to ".$email." ".$subject);
 				}
 			}
