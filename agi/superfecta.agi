@@ -9,7 +9,6 @@ require_once $agidir."/phpagi.php";
 
 $base_dir = dirname(dirname(__FILE__));
 $agi = new AGI();
-$agi->verbose("Starting up CID Superfecta");
 $scheme_return = $agi->get_variable("CIDSFSCHEME");
 
 if (($scheme_return['result']) && (trim(base64_decode($scheme_return['data'])) != '')) {
@@ -25,26 +24,26 @@ if ($scheme == 'ALL|ALL') {
 }
 
 if (!empty($agi->request['agi_callerid'])) {
-	$agi->verbose("CID Superfecta: Executing Scheme..");
+	$agi->verbose("Executing Scheme..");
 	$superfecta = FreePBX::Superfecta();
 	$superfecta->setAgi($agi);
 	$callerid = $superfecta->execute($sn[1], $agi->request);
 	$dest = $superfecta->getDest();
 	if(!empty($dest)) {
-		$agi->verbose("CID Superfecta: CID Determined to be: '" . trim($callerid) . "'");
-		$agi->verbose("CID Superfecta: SPAM Score was ".$superfecta->getSpamScore());
-		$agi->verbose("CID Superfecta: Sending call to ".$dest[0]);
+		$agi->verbose("CID Determined to be: '" . trim($callerid) . "'");
+		$agi->verbose("SPAM Score was ".$superfecta->getSpamScore());
+		$agi->verbose("Sending call to ".$dest[0]);
 		$agi->set_variable("CALLERID(name)", trim($callerid));
 		$agi->set_variable("lookupcid", trim($callerid));//because we could bounce back here
 		$agi->goto_dest($dest[0], $dest[1], $dest[2]);
 		exit();
 	}
 	if(!empty($callerid)) {
-		$agi->verbose("CID Superfecta: CID Determined to be: '" . trim($callerid) . "'");
-		$agi->verbose("CID Superfecta: Attempting to set lookupcid");
+		$agi->verbose("CID Determined to be: '" . trim($callerid) . "'");
+		$agi->verbose("Attempting to set lookupcid");
 		$agi->set_variable("lookupcid", trim($callerid));
 		exit();
 	}
 } else {
-	$agi->verbose("CID Superfecta: Not a valid number");
+	$agi->verbose("Not a valid number");
 }

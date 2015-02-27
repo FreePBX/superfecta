@@ -50,13 +50,17 @@ class Superfecta implements \BMO {
 	private function out($message) {
 		if(is_object($this->agi)) {
 			$this->agi->verbose($message);
+		} elseif (php_sapi_name() != "cli") {
+			echo "<span class='header'>".$message."</span><br/>";
+		} else {
+			echo $message."\n";
 		}
 	}
 
 	public function setAgi($agi) {
 		$this->agi = $agi;
 	}
-	public function execute($scheme='ALL', $request, $debug=0) {
+	public function execute($scheme='ALL', $request, $debug=0, $keepGoing=false) {
 		if(empty($scheme) || !is_array($request) || empty($request)) {
 			return '';
 		}
@@ -68,11 +72,10 @@ class Superfecta implements \BMO {
 			$trunk_info[$key] = $value;
 		}
 
-		$this->out("CID Superfecta: Scheme is '" . $scheme . "'");
-
-		$this->out("CID Superfecta: The DID is: " . $trunk_info['extension']);
-		$this->out("CID Superfecta: The CNUM is: " . $trunk_info['callerid']);
-		$this->out("CID Superfecta: The CNAME is: " . $trunk_info['calleridname']);
+		$this->out(sprintf(_("Scheme Asked is: %s"),$scheme));
+		$this->out(sprintf(_("The DID is: %s"),$trunk_info['extension']));
+		$this->out(sprintf(_("The CNUM is: %s"),$trunk_info['callerid']));
+		$this->out(sprintf(_("The CNAME is: %s"),$trunk_info['calleridname']));
 
 		//If ALL then run through all Schemes, else just the single one
 		if($scheme == 'ALL') {
@@ -96,11 +99,14 @@ class Superfecta implements \BMO {
 		);
 
 		foreach ($schemes as $s) {
+			$this->out("");
+			$this->out(sprintf(_("Starting scheme %s"),$s['name']));
 			//reset these each time
 			$cnum = $trunk_info['callerid'];
 			$cnam = $trunk_info['calleridname'];
 			$did = $trunk_info['extension'];
 
+			$options['scheme_name'] = "base_".$s['name'];
 			$options['scheme_settings'] = $this->getScheme($s['name']);;
 			$options['module_parameters'] = $this->getSchemeAllModuleSettings($s['name']);
 
@@ -121,24 +127,25 @@ class Superfecta implements \BMO {
 			$superfecta->setDebug($debug);
 			$superfecta->setCLI(true);
 			$superfecta->setDID($did);
-			$superfecta->set_CurlTimeout($scheme_param['Curl_Timeout']);
+			$superfecta->set_CurlTimeout($options['scheme_settings']['Curl_Timeout']);
 
 			// Determine if this is the correct DID, if this scheme is limited to a DID.
 			$rule_match = $superfecta->match_pattern_all((isset($options['scheme_settings']['DID'])) ? $options['scheme_settings']['DID'] : '', $did);
 			if ($rule_match['number']) {
-				$this->out("Matched DID Rule: '" . $rule_match['pattern'] . "' with '" . $rule_match['number'] . "'");
+				$this->out(sprintf(_("Matched DID Rule: %s with %s"),$rule_match['pattern'], $rule_match['number']));
 			} elseif ($rule_match['status']) {
-				$this->out("No matching DID rules. Skipping scheme");
+				$this->out(_("No matching DID rules. Skipping scheme"));
 				continue;
 			}
 
 			// Determine if the CID matches any patterns defined for this scheme
 			$rule_match = $superfecta->match_pattern_all((isset($options['scheme_settings']['CID_rules'])) ? $options['scheme_settings']['CID_rules'] : '', $cnum);
 			if ($rule_match['number']) {
-				$this->out("Matched CID Rule: '" . $rule_match['pattern'] . "' with '" . $rule_match['number'] . "'");
+				$this->out(sprintf(_("Matched CID Rule: %s with %s"),$rule_match['pattern'], $rule_match['number']));
 				$cnum = $rule_match['number'];
-			} elseif ($rule_match['status'] && $run_this_scheme) {
-				$this->out("No matching CID rules. Skipping scheme");
+				$this->out(sprintf(_("Changed CNUM to: %s"),$cnum));
+			} elseif ($rule_match['status']) {
+				$this->out(_("No matching CID rules. Skipping scheme"));
 				continue;
 			}
 
@@ -151,13 +158,14 @@ class Superfecta implements \BMO {
 				$superfecta->set_Prefix($superfecta->get_url_contents(str_replace("[thenumber]", $cnum, $options['scheme_settings']['Prefix_URL'])));
 
 				if ($superfecta->prefix != '') {
-					$this->out("Prefix Url defined ... returned: " . $superfecta->get_Prefix());
+					$this->out(sprintf(_("Prefix Url defined as: %s"),$superfecta->get_Prefix()));
 				} else {
-					$this->out("Prefix Url defined ... result was empty");
+					$this->out(_("Prefix Url defined but result was empty"));
 				}
-				$this->out("Prefix Url defined ... result took " . number_format((mctime_float() - $start_time), 4) . " seconds.");
+				$this->out(sprintf(_("Prefix Url result took %s seconds."),number_format((mctime_float() - $start_time), 4)));
 			}
 
+			$trunk_info['callerid'] = $cnum;
 			$superfecta->set_TrunkInfo($trunk_info);
 
 			if($this->agi === null) {
@@ -187,6 +195,7 @@ class Superfecta implements \BMO {
 			//Set Spam text
 			$spam_text = ($superfecta->isSpam()) ? $options['scheme_settings']['SPAM_Text'] : '';
 			if($superfecta->isSpam() && $options['scheme_settings']['SPAM_Text_Substitute'] == 'Y') {
+				dbug($options['scheme_settings']);
 				$callerid = $spam_text;
 			} else {
 				$callerid = $spam_text . " " . $superfecta->get_Prefix() . $callerid;
@@ -206,14 +215,34 @@ class Superfecta implements \BMO {
 				$parts = explode(",", $spam_dest);
 				$this->destination = $parts;
 				//stop all processing at this point, the spam score is too high
-				return $callerid;
+				if(!$keepGoing) {
+					$this->out(sprintf(_("Spam Call, Sending call to: %s"),$spam_dest));
+					return $callerid;
+				} else {
+					$this->out(sprintf(_("Call detected as spam, would send call to: %s"),$spam_dest));
+				}
 			}
 			if(!empty($callerid)) {
-				return $callerid;
+				if(!$keepGoing) {
+					$this->out(sprintf(_("Setting caller id to: %s"),$callerid));
+					return $callerid;
+				} else {
+					$this->out(sprintf(_("This scheme would set the caller id to: %s"),$callerid));
+				}
+			} else {
+				$this->out(_("No callerid found"));
 			}
 		}
-		//No callerid so I guess?
-		return $trunk_info['calleridname'];
+		if(empty($callerid) && !$keepGoing) {
+			//No callerid so I guess?
+			return $trunk_info['calleridname'];
+		} elseif(empty($callerid) && $keepGoing) {
+			return false;
+		} elseif(!empty($callerid) && $keepGoing) {
+			return $callerid;
+		}
+
+
 	}
 
 	public function getSpamScore() {
@@ -278,8 +307,9 @@ class Superfecta implements \BMO {
 				$callerid = $this->execute($_REQUEST['scheme'],array(
 					'callerid' => $_REQUEST['tel'],
 					'did' => '5555555555',
+					'extension' => '5555555555',
 					'calleridname' => 'CID Superfecta!',
-				),$_REQUEST['level']);
+				),$_REQUEST['level'],true);
 				$time_end = microtime(true);
 				echo "</br>";
 				echo "<span class='header'>"._('Returned Result would be:')."</span>".$callerid."</br>";
@@ -334,8 +364,9 @@ class Superfecta implements \BMO {
 				return array("status" => true, "redirect" => "config.php?display=superfecta&action=edit&scheme=".$scheme.'copy'.$int);
 			break;
 			case "update_scheme":
+
 				$data = array(
-					"enable_interceptor" => (isset($_POST['enable_interceptor']) && $_POST['enable_interceptor'] == 'Y') ? TRUE : FALSE,
+					"enable_interceptor" => $_POST['enable_interceptor'] == "on" ? TRUE : FALSE,
 					"scheme_name" => preg_replace('/\s/i', '_', preg_replace('/\+/i', '_', trim($_POST['scheme_name']))),
 					"scheme_name_orig" => $_POST['scheme_name_orig'],
 					"DID" => $_POST['DID'],
@@ -343,7 +374,7 @@ class Superfecta implements \BMO {
 					"Prefix_URL" => $_POST['Prefix_URL'],
 					"Curl_Timeout" => $_POST['Curl_Timeout'],
 					"SPAM_Text" => $_POST['SPAM_Text'],
-					"SPAM_Text_Substitute" => (isset($_POST['SPAM_Text_Substitute'])) ? $_POST['SPAM_Text_Substitute'] : 'N',
+					"SPAM_Text_Substitute" => $_POST['SPAM_Text_Substitute'] == "on" ? 'Y' : 'N',
 					"processor" => utf8_decode($_POST['processor']),
 					"multifecta_timeout" => utf8_decode($_POST['multifecta_timeout']),
 					"SPAM_threshold" => $_POST['SPAM_threshold'],
@@ -373,8 +404,7 @@ class Superfecta implements \BMO {
 				$already_has_order = false;
 				$sql = "SELECT source,ABS(value) FROM superfectaconfig WHERE field = 'order' ORDER BY ABS(value)";
 				$results = sql($sql, "getAll");
-				foreach($results as $val)
-				{
+				foreach($results as $val) {
 					if($val[0] == "base_".$scheme_name)
 					{
 						$already_has_order = true;
@@ -383,8 +413,7 @@ class Superfecta implements \BMO {
 					$highest_order = $val[1];
 				}
 
-				if(!$already_has_order)
-				{
+				if(!$already_has_order) {
 					$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES('base_".$scheme_name."','order',".($highest_order+1).")";
 					sql($sql);
 				}
@@ -595,14 +624,14 @@ class Superfecta implements \BMO {
 
 		$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES(?,?,?)";
 		$sth = $this->db->prepare($sql);
-		$sth->execute(array($scheme,'spam_interceptor',(!empty($data['enable_interceptor']) ? 'Y' : 'N')));
+		$sth->execute(array($scheme,'spam_interceptor',(!empty($data['enable_interceptor']) && $data['enable_interceptor'] == 'Y' ? 'Y' : 'N')));
 		$sth->execute(array($scheme,'spam_destination',$data['destination']));
 		$sth->execute(array($scheme,'Prefix_URL',$data['Prefix_URL']));
 		$sth->execute(array($scheme,'Curl_Timeout',$data['Curl_Timeout']));
 		$sth->execute(array($scheme,'processor',$data['processor']));
 		$sth->execute(array($scheme,'multifecta_timeout',$data['multifecta_timeout']));
 		$sth->execute(array($scheme,'SPAM_Text',$data['SPAM_Text']));
-		$sth->execute(array($scheme,'SPAM_Text_Substitute',(!empty($data['SPAM_Text_Substitute']) ? 'Y' : 'N')));
+		$sth->execute(array($scheme,'SPAM_Text_Substitute',(!empty($data['SPAM_Text_Substitute']) && $data['SPAM_Text_Substitute'] == 'Y' ? 'Y' : 'N')));
 		$sth->execute(array($scheme,'DID',$data['DID']));
 		$sth->execute(array($scheme,'CID_rules',$data['CID_rules']));
 		$sth->execute(array($scheme,'SPAM_threshold',$data['SPAM_threshold']));

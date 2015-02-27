@@ -95,11 +95,23 @@ var scheme = "<?php echo $scheme_data['name']?>";
 		</div>
 		<div class="form-group">
 			<label><a href="javascript:return(false);" class="info"><?php echo _('SPAM Text Substituted')?><span><?php echo _('When enabled, the text entered in "SPAM Text" (above) will replace the CID completely rather than pre-pending the CID value')?></span></a></label>
-			<input type="checkbox" class="form-control" name="SPAM_Text_Substitute" value="Y" <?php echo $scheme_data['SPAM_Text_Substitute'] ? 'checked' : ''?>>
+			<br/>
+			<span class="radioset">
+				<input type="radio" id="SPAM_Text_Substitute_on" name="SPAM_Text_Substitute" value="on" <?php echo $scheme_data['SPAM_Text_Substitute'] == 'Y' ? 'checked' : ''?>>
+				<label for="SPAM_Text_Substitute_on"><?php echo _("yes")?></label>
+				<input type="radio" id="SPAM_Text_Substitute_off" name="SPAM_Text_Substitute" value="off" <?php echo $scheme_data['SPAM_Text_Substitute'] == "Y" ? '' : 'checked'?>>
+				<label for="SPAM_Text_Substitute_off"><?php echo _("no")?></label>
+			</span>
 		</div>
 		<div class="form-group">
 			<label><a href="javascript:return(false);" class="info"><?php echo _('Enable SPAM Interception')?><span><?php echo _('When enabled, Spam calls can be diverted or terminated')?></span></a></label>
-			<input type="checkbox" class="form-control" id="enableInterceptor" name="enable_interceptor" value="Y" <?php echo $scheme_data['spam_interceptor'] ? 'checked' : ''?>>
+			<br/>
+			<span class="radioset">
+				<input type="radio" id="enableInterceptor_on" name="enable_interceptor" value="on" <?php echo $scheme_data['spam_interceptor'] ? 'checked' : ''?>>
+				<label for="enableInterceptor_on"><?php echo _("yes")?></label>
+				<input type="radio" id="enableInterceptor_off" name="enable_interceptor" value="off" <?php echo $scheme_data['spam_interceptor'] ? '' : 'checked'?>>
+				<label for="enableInterceptor_off"><?php echo _("no")?></label>
+			</span>
 		</div>
 		<div id="InterceptorVector">
 			<div class="form-group">

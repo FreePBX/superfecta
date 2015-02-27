@@ -1,4 +1,10 @@
+var processing = false;
 $("li.scheme i").click(function() {
+	if(processing) {
+		alert("A command is already processing, please wait");
+		return;
+	}
+	processing = true;
 	var type = $(this).data("type"), row = $(this).parents("li.scheme"), name = row.data("name"), $this = this;
 	switch (type) {
 		case "power":
@@ -7,36 +13,50 @@ $("li.scheme i").click(function() {
 					if (data.status) {
 						$($this).removeClass("fa-toggle-on").addClass("fa-toggle-off");
 					}
-				}, "json");
+				}, "json").always(function() {
+					processing = false;
+				});
 			} else {
 				$.post("ajax.php?module=superfecta&command=power&scheme=" + encodeURIComponent(name), {}, function(data) {
 					if (data.status) {
 						$($this).removeClass("fa-toggle-off").addClass("fa-toggle-on");
 					}
-				}, "json");
+				}, "json").always(function() {
+					processing = false;
+				});
 			}
 		break;
 		case "up":
+			row.fadeOut('slow');
 			$.post("ajax.php?module=superfecta&command=sort&scheme=" + encodeURIComponent(name), {position: "up"}, function(data) {
 				if (data.status) {
-					row.fadeOut('slow', function() {
-						row.insertBefore(row.prev());
-						row.fadeIn('slow');
-						sort_scheme();
-					})
+					row.insertBefore(row.prev());
+					row.fadeIn('slow');
+					sort_scheme();
+				} else {
+					row.fadeIn('slow');
 				}
-			}, "json");
+			}, "json").fail(function() {
+				row.fadeIn('slow');
+			}).always(function() {
+				processing = false;
+			});
 		break;
 		case "down":
+			row.fadeOut('slow');
 			$.post("ajax.php?module=superfecta&command=sort&scheme=" + encodeURIComponent(name), {position: "down"}, function(data) {
 				if (data.status) {
-					row.fadeOut('slow', function() {
-						row.insertAfter(row.next());
-						row.fadeIn('slow');
-						sort_scheme();
-					})
+					row.insertAfter(row.next());
+					row.fadeIn('slow');
+					sort_scheme();
+				} else {
+					row.fadeIn('slow');
 				}
-			}, "json");
+			}, "json").fail(function() {
+				row.fadeIn('slow');
+			}).always(function() {
+				processing = false;
+			});
 		break;
 		case "duplicate":
 			if (confirm("Are you sure you wish to duplicate this scheme?")) {
@@ -44,7 +64,11 @@ $("li.scheme i").click(function() {
 					if (data.status) {
 						document.location.href = data.redirect;
 					}
-				}, "json");
+				}, "json").always(function() {
+					processing = false;
+				});
+			} else {
+				processing = false;
 			}
 		break;
 		case "delete":
@@ -60,13 +84,22 @@ $("li.scheme i").click(function() {
 							});
 						}
 					}
-				}, "json");
+				}, "json").always(function() {
+					processing = false;
+				});
+			} else {
+				processing = false;
 			}
 		break;
 	}
 });
 
 $(".enabled input").click(function() {
+	if(processing) {
+		alert("A command is already processing, please wait");
+		return;
+	}
+	processing = true;
 	var val = $(this).val(), row = $(this).parents("tr"), parent_id = row.attr("id");
 	switch(val) {
 		case "on":
@@ -108,14 +141,14 @@ $(".source i").click(function() {
 				row.insertAfter(row.next());
 				row.fadeIn('slow');
 				source_order();
-			})
+			});
 		break;
 		case "up":
 			row.fadeOut('slow', function() {
 				row.insertBefore(row.prev());
 				row.fadeIn('slow');
 				source_order();
-			})
+			});
 		break;
 		case "configure":
 			$( '<div id="dialog-form" title="Configure ' + name + '">Loading...<i class="fa fa-spinner fa-spin"></i></div>' ).dialog({
@@ -143,8 +176,19 @@ $(".source i").click(function() {
 					$.post("ajax.php?module=superfecta&command=options&scheme=" + encodeURIComponent(scheme) + "&source=" + name, {}, function(data) {
 						if (data.status) {
 							$($this).html(data.html);
-							$("a.info").each(function(){$(this).after('<span class="help"><i class="fa fa-question-circle"></i><span>'+$(this).find('span').html()+'</span></span>');$(this).find('span').remove();$(this).replaceWith($(this).html())})
-							$(".help").on('mouseenter',function(){side=fpbx.conf.text_dir=='lrt'?'left':'right';var pos=$(this).offset();var offset=(200-pos.side)+"px";$(this).find("span").css(side,offset).stop(true,true).delay(500).animate({opacity:"show"},750);}).on('mouseleave',function(){$(this).find("span").stop(true,true).animate({opacity:"hide"},"fast");});
+							$("a.info").each(function(){
+								$(this).after('<span class="help"><i class="fa fa-question-circle"></i><span>' + $(this).find('span').html() + '</span></span>');
+								$(this).find('span').remove();
+								$(this).replaceWith($(this).html());
+							});
+							$(".help").on('mouseenter',function(){
+								side = (fpbx.conf.text_dir == 'lrt') ? 'left' : 'right';
+								var pos = $(this).offset();
+								var offset = (200 - pos.side) + "px";
+								$(this).find("span").css(side,offset).stop(true,true).delay(500).animate( { opacity: "show" },750);
+							}).on('mouseleave',function(){
+								$(this).find("span").stop(true,true).animate( { opacity: "hide" },"fast");
+							});
 						}
 					}, "json");
 				},
@@ -165,13 +209,13 @@ $(function() {
 			return false;
 		}
 	});
-	if ($("#enableInterceptor").is(":checked")) {
+	if ($("#enableInterceptor_on").is(":checked")) {
 		$("#InterceptorVector").show();
 	} else {
 		$("#InterceptorVector").hide();
 	}
-	$("#enableInterceptor").click(function() {
-		if ($(this).is(":checked")) {
+	$("#enableInterceptor_on, #enableInterceptor_off").click(function() {
+		if ($("#enableInterceptor_on").is(":checked")) {
 			$("#InterceptorVector").show();
 		} else {
 			$("#InterceptorVector").hide();
@@ -306,5 +350,7 @@ function source_order() {
 	});
 	$.post("ajax.php?module=superfecta&command=update_sources&scheme=" + encodeURIComponent(scheme), {data: source_order}, function(data) {
 
-	}, "json");
+	}, "json").always(function() {
+		processing = false;
+	});
 }

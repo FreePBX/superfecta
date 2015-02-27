@@ -72,9 +72,8 @@ class Who_Called extends superfecta_base {
 		// Trim number to 10 digits, lookup will succeed with 11 digits, but return nothing
 		$thenumber = substr($thenumber, -10);
 
-
 		// Perform spam score lookup if enabled
-		if ($run_param['Spam_Scoring'])  {
+		if (!empty($run_param['Spam_Scoring']))  {
 			$this->DebugPrint("Searching Who Called for number of user reports ... ");
 			$url = "http://whocalled.us/do?action=getScore&name=" . $run_param['Username'] . "&pass=" . $run_param['Password'] . "&phoneNumber=$thenumber&days=". $run_param['Report_Age'];
 			$value = $this->get_url_contents($url);
