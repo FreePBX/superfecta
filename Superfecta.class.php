@@ -43,10 +43,6 @@ class Superfecta implements \BMO {
 		return true;
 	}
 
-	public function myDialplanHooks() {
-		return true;
-	}
-
 	private function out($message) {
 		if(is_object($this->agi)) {
 			$this->agi->verbose($message);
