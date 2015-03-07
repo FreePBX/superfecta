@@ -43,6 +43,17 @@ class Superfecta implements \BMO {
 		return true;
 	}
 
+	/**
+	* Chown hook for freepbx fwconsole
+	*/
+	public function chownFreepbx() {
+		$files = array();
+		$files[] = array('type' => 'file',
+												'path' => __DIR__."/agi/superfecta.agi",
+												'perms' => 0755);
+		return $files;
+	}
+
 	private function out($message) {
 		if(is_object($this->agi)) {
 			$this->agi->verbose($message);
