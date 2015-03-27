@@ -1,41 +1,42 @@
 <?php
-
-/*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+/**
  * Developer Notes:
- * cidname.com does not share details of their API unless you sign up. During testing 
+ * cidname.com does not share details of their API unless you sign up. During testing
  * could not get dips using auth token to work due to https certificate issues. Dips by IP
  * work fine.
- *
  *
  * Version History
  *        2014-07-27   Initial commit by PIAF forum user BinaryTB
  *        2014-07-28   Added support for IP authentication, can't test token authentication
- *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
-
+ */
 class CidnameCom extends superfecta_base {
 
-	public $description = "https://www.cidname.com Formats accepted by the API are: 5554441212    15554441212    +5554441212    +15554441212";
+	public $description, $source_param;
 	public $version_requirement = "2.11";
-	public $source_param = array(
-		'Use_IP_Authentication' => array(
-				'description' => 'Enable to use IP authentication for CNAM dips.',
-				'type' => 'checkbox',
-		),
-		'Auth_Token' => array(
-				'description' => 'Auth Token from Cidname.com Dashboard, required if not using IP authentication.',
-				'type' => 'textarea',
-		),
-		'Ignore_Keywords' => array(
-				'description' => 'If this source provides CNAM including any of the keywords listed here, the CNAM will be ignored and other sources will be used to find the value.<br>Separate keywords with commas.',
-				'type' => 'textarea',
-				'default' => 'Unavailable, Wireless caller',
-		),
-	);
+
+	public function __construct() {
+		$this->description = "https://www.cidname.com "._("Formats accepted by the API are: 5554441212, 15554441212, +5554441212, +15554441212");
+		$this->source_param = array(
+			'Use_IP_Authentication' => array(
+					'description' => _('Enable to use IP authentication for CNAM dips.'),
+					'type' => 'checkbox',
+			),
+			'Auth_Token' => array(
+					'description' => _('Auth Token from Cidname.com Dashboard, required if not using IP authentication.'),
+					'type' => 'textarea',
+			),
+			'Ignore_Keywords' => array(
+					'description' => _('If this source provides CNAM including any of the keywords listed here, the CNAM will be ignored and other sources will be used to find the value.<br>Separate keywords with commas.'),
+					'type' => 'textarea',
+					'default' => 'Unavailable, Wireless caller',
+			),
+		);
+	}
 
 	function get_caller_id($thenumber, $run_param=array()) {
 
 		$caller_id = null;
-		$this->DebugPrint("Searching Cidname.com ... ");
+		$this->DebugPrint(sprintf(_("Searching %s..."),"Cidname.com"));
 		if ($run_param['Use_IP_Authentication'] == 'on') {
 			$url = 'http://dip.cidname.com/'. $thenumber . '/';
 		} else {
@@ -56,12 +57,12 @@ class CidnameCom extends superfecta_base {
 				$test_string = str_ireplace($key_words,'',$sname);
 				if($test_string == $sname) {
 					$caller_id = $sname;
-					$this->DebugPrint("CNAM determined good.");
+					$this->DebugPrint(_("CNAM determined good."));
 				} else {
-					$this->DebugPrint("CNAM contains flagged key words, returning nothing.");
+					$this->DebugPrint(_("CNAM contains flagged key words, returning nothing."));
 				}
 		} else {
-			$this->DebugPrint("CNAM not found.");
+			$this->DebugPrint(_("CNAM not found."));
 		}
 		return($caller_id);
 	}

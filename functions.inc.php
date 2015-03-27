@@ -47,7 +47,7 @@ function superfecta_hook_core($viewing_itemid, $target_menuid) {
 		$q->execute(array($info[0]));
 		$scheme = $q->fetchColumn();
 
-		$first = '<option value="ALL|ALL" {$selected}>ALL</option>';
+		$first = '<option value="ALL|ALL" {$selected}>'._('ALL').'</option>';
 		$has_selected = FALSE;
 		foreach ($schemes as $data) {
 			if ($scheme == $data['source']) {

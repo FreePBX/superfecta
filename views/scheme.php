@@ -137,10 +137,10 @@ var scheme = "<?php echo $scheme_data['name']?>";
 	<div class="form-group">
 		<label><a href="javascript:return(false);" class="info"><?php echo _('Debug Level')?><span><?php echo _('Debug Level to display')?></span></a></label>
 		<select name="debug" id="debug_level" class="form-control">
-			<option value="0">NONE</option>
-			<option value="1" selected="">INFO</option>
-			<option value="2">WARN</option>
-			<option value="3">ALL</option>
+			<option value="0"><?php echo _('NONE')?></option>
+			<option value="1" selected=""><?php echo _('INFO')?></option>
+			<option value="2"><?php echo _('WARN')?></option>
+			<option value="3"><?php echo _('ALL')?></option>
 		</select>
 	</div>
 	<div class="debug-window">

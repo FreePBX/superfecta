@@ -1,25 +1,31 @@
 <?php
-
+/**
+ * Uses Asterisk Phonebook to lookup numbers
+ */
 class Asterisk_Phonebook extends superfecta_base {
 
-    public $description = "Searches the built in Asterisk Phonebook for caller ID information. This is a very fast source of information.<br>If you are caching to the phonebook, this should be the first lookup source.";
-    public $version_requirement = "2.11";
+	public $description;
+	public $version_requirement = "2.11";
 
-    function get_caller_id($thenumber, $run_param=array()) {
-        $caller_id = null;
+	public function __construct() {
+		$this->description = _("Searches the built in Asterisk Phonebook for caller ID information. This is a very fast source of information.<br>If you are caching to the phonebook, this should be the first lookup source.");
+	}
 
-        $this->DebugPrint("Searching Asterisk Phonebook ... ");
+	function get_caller_id($thenumber, $run_param=array()) {
+		$caller_id = null;
 
-        $name = strip_tags($this->astman->database_get('cidname', $thenumber));
+		$this->DebugPrint("Searching Asterisk Phonebook ... ");
 
-        // If we found a match, return it
-        if (strlen($name) > 1) {
-            $caller_id = $name;
-        } else {
-            $this->DebugPrint("not found");
-        }
+		$name = strip_tags($this->astman->database_get('cidname', $thenumber));
 
-        return $caller_id;
-    }
+		// If we found a match, return it
+		if (strlen($name) > 1) {
+			$caller_id = $name;
+		} else {
+			$this->DebugPrint("not found");
+		}
+
+		return $caller_id;
+	}
 
 }

@@ -1,37 +1,43 @@
 <?php
-
+/**
+ * Canadian Residential 411 Lookup
+ */
 class Can411 extends superfecta_base {
 
-    public $description = "http://www.411.ca - These listings include business and residential data for Canada.";
-    public $version_requirement = "2.11";
+	public $description;
+	public $version_requirement = "2.11";
 
-    function get_caller_id($thenumber, $run_param=array()) {
-        $caller_id = null;
-        $npa = "";
-        $nxx = "";
-        $station = "";
+	public function __construct() {
+		$this->description = "http://www.411.ca - "._("These listings include business and residential data for Canada.");
+	}
 
-        if (!$this->IsValidNumber('CA', $thenumber, $npa, $nxx, $station)) {
-            $this->DebugPrint("Skipping Source - Non Canadian number: " . $thenumber);
-        } else {
-            $this->DebugPrint("Searching www.411.ca - ({$npa}) {$nxx}-{$station}...");
+	function get_caller_id($thenumber, $run_param=array()) {
+		$caller_id = null;
+		$npa = "";
+		$nxx = "";
+		$station = "";
 
-            // By default, there is no match
-            $name = "";
+		if (!$this->IsValidNumber('CA', $thenumber, $npa, $nxx, $station)) {
+			$this->DebugPrint(_("Skipping Source - Non Canadian number: ") . $thenumber);
+		} else {
+			$this->DebugPrint(sprintf(_("Searching www.411.ca - (%s) %s-%s..."),$npa,$nxx,$station));
 
-            $url = "http://411.ca/search/?q=$thenumber&st=reverse";    //working June 19, 2012
+			// By default, there is no match
+			$name = "";
 
-            $pattern = '/itemprop=\"name\">(.+?)<\/a>/i';   // working Jun 19, 2012
-            // Patterns to search for
-            $regexp = array(
-                $pattern,
-            );
+			$url = "http://411.ca/search/?q=$thenumber&st=reverse";    //working June 19, 2012
 
-            if ($this->SearchURL($url, $regexp, $match, NULL, TRUE)) {
-                $caller_id = $this->ExtractMatch($match);
-            }
-        }
-        return($caller_id);
-    }
+			$pattern = '/itemprop=\"name\">(.+?)<\/a>/i';   // working Jun 19, 2012
+			// Patterns to search for
+			$regexp = array(
+				$pattern,
+			);
+
+			if ($this->SearchURL($url, $regexp, $match, NULL, TRUE)) {
+				$caller_id = $this->ExtractMatch($match);
+			}
+		}
+		return($caller_id);
+	}
 
 }

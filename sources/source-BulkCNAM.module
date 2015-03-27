@@ -1,35 +1,41 @@
 <?php
-
+/**
+ * Uses Bulkcnam to lookup numbers
+ */
 class BulkCNAM extends superfecta_base {
 
-    public $description = "http://www.bulkcnam.com - This module provides lookups from the AsteriskCNAM.com lookup service.";
-    public $version_requirement = "2.11";
-    public $source_param = array(
-        'API_Key' => array(
-            'description' => 'API Key gotten from bulkcnam.com',
-            'type' => 'text'
-        )
-    );
+	public $description, $source_param;
+	public $version_requirement = "2.11";
 
-    function get_caller_id($thenumber, $run_param=array()) {
+	public function __construct() {
+		$this->description = "http://www.bulkcnam.com - "._("This module provides lookups from the AsteriskCNAM.com lookup service.");
+		$this->source_param = array(
+			'API_Key' => array(
+				'description' => sprintf(_('API Key gotten from %s'),"bulkcnam.com"),
+				'type' => 'text'
+			)
+		);
+	}
 
-        $caller_id = null;
+	function get_caller_id($thenumber, $run_param=array()) {
 
-        if (!$this->IsValidNumber(array('US', 'CA'), $thenumber)) {
-            $this->DebugPrint("Skipping Source - Not a valid US/CAN number: " . $thenumber);
-        } else {
-            $this->DebugPrint("Searching BulkCNAM ... ");
+		$caller_id = null;
 
-            $url = "http://cnam.bulkcnam.com/query-simple.php?id=" . $run_param['API_Key'] . "&did=$thenumber";
-            $sname = $this->get_url_contents($url);
+		if (!$this->IsValidNumber(array('US', 'CA'), $thenumber)) {
+			$this->DebugPrint(_("Skipping Source - Not a valid US/CAN number: ") . $thenumber);
+		} else {
+			$this->DebugPrint(_("Searching BulkCNAM..."));
 
-            if (strlen($sname) > 1) {
-                $caller_id = strip_tags($sname);
-            } else {
-                $this->DebugPrint("not found");
-            }
-        }
-        return($caller_id);
-    }
+			$url = "http://cnam.bulkcnam.com/query-simple.php?id=" . $run_param['API_Key'] . "&did=$thenumber";
+			$sname = $this->get_url_contents($url);
+
+			if (strlen($sname) > 1) {
+				$caller_id = strip_tags($sname);
+			} else {
+				$this->DebugPrint(_("Not Found"));
+			}
+		}
+		return($caller_id);
+	}
 
 }
