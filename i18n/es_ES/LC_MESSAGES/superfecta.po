@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-02-20 20:03-0500\n"
-"PO-Revision-Date: 2015-03-29 03:14+0200\n"
+"PO-Revision-Date: 2015-03-31 08:29+0200\n"
 "Last-Translator: Ernesto <ecasas@sangoma.com>\n"
 "Language-Team: Spanish "
 "<http://weblate.freepbx.org/projects/freepbx/superfecta/es_ES/>\n"
@@ -23,34 +23,36 @@ msgstr ""
 
 #: superfecta.i18n.php:4
 msgid "Admin"
-msgstr "Administrador"
+msgstr "Admininstrador"
 
 #: superfecta.i18n.php:3 superfecta.i18n.php:6
 msgid "CID Superfecta"
-msgstr ""
+msgstr "Superfecta CID"
 
 #: functions.inc.php:17
 msgid "Enable CID Superfecta"
-msgstr ""
+msgstr "Habilitar Superfecta CID"
 
 #: superfecta.i18n.php:5
 msgid ""
 "Provides simultaneous use of, and complete control over multiple caller id "
 "data sources."
 msgstr ""
+"Provee uso simultaneo de, y control completo sobe muchas fuentes de datos de "
+"Identificador de Llamada."
 
 #: functions.inc.php:20
 msgid "Scheme"
-msgstr ""
+msgstr "Esquema"
 
 #: functions.inc.php:20
 msgid "Setup Schemes in CID Superfecta section"
-msgstr ""
+msgstr "Configuración de Esquemas en Sección Superfecta CID"
 
 #: functions.inc.php:17
 msgid "Sources can be added/removed in CID Superfecta section"
-msgstr ""
+msgstr "Fuentes pueden ser agregadas/removidas en la sección Superfecta CID"
 
 #: functions.inc.php:15
 msgid "Superfecta CID Lookup"
-msgstr ""
+msgstr "Búsqueda CID Superfecta"
