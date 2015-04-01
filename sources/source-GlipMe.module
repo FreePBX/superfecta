@@ -8,15 +8,19 @@
 
 class GlipMe extends superfecta_base {
 
-    public $description = "Your GlipMe (www.glipme.com) private company address book";
+    public $description,$source_param;
     public $version_requirement = "2.11";
-    public $source_param = array(
+
+  public function __construct() {
+    $this->description = _("Your GlipMe (www.glipme.com) private company address book");
+    $this->source_param = array(
         'Security_key' => array(
-            'description' => 'Specify your GlipMe PBX security key',
+            'description' => _('Specify your GlipMe PBX security key'),
             'type' => 'text',
             'default' => ''
         )
     );
+  }
 
 	function get_caller_id($thenumber, $run_param=array()) {
 
@@ -25,15 +29,13 @@ class GlipMe extends superfecta_base {
 		$url = str_replace('[NUMBER]', $thenumber, $url);
 		//            $url = urlencode($url);
 
-		$this->DebugPrint("Sended to GlipMe key: ".$run_param['Security_key']);
-		
+		$this->DebugPrint(_("Sent GlipMe key").": ".$run_param['Security_key']);
+
 		$value = $this->get_url_contents($url);
 
-		$this->DebugPrint("GlipMe reported: {$value}");
+		$this->DebugPrint(_("GlipMe reported").": {$value}");
 		return ($value);
 
 	}
 
 }
-
-

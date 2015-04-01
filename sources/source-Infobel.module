@@ -3,8 +3,8 @@
 Developer Notes:
 TOS: http://www.infobel.com/en/world/legal.aspx
 TOS Date: unknown
-TOS summary by lgaetz: Limits are imposed on the total number of lookups per day, 5 per person, 100 per day for a company. 
-Usage limits would be up to the individual users, and is beyond superfecta control unless we build in a daily counter. 
+TOS summary by lgaetz: Limits are imposed on the total number of lookups per day, 5 per person, 100 per day for a company.
+Usage limits would be up to the individual users, and is beyond superfecta control unless we build in a daily counter.
 Superfecta usage looks to be okay, provided users are not reselling the data from this site which superfecta can't support without modification.
 
 Version History
@@ -14,22 +14,26 @@ Version History
 *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
 class Infobel extends superfecta_base {
 
-    public $description = "http://www.infobel.com - This source includes business and residential data for Belgium, Luxembourg, Denmark, Austria, Italy. Users may be subject to limits as imposed on by the Infobel terms of service. Use of this lookup source requires users to agree and conform with the TOS.";
+    public $description,$source_param;
     public $version_requirement = "2.11";
-    public $source_param = array(
-        'Default_Country' => array(
-            'description' => 'Default Country to search if the number is not presented in the international format',
-            'type' => 'select',
-			'option' => array(
-				'BE' => 'BE',
-				'IT' => 'IT',
-				'DK' => 'DK',
-				'LU' => 'LU',
-				'AU' => 'AU',
-			),
-            'default' => 'BE',
-        )
-    );
+
+    public function __construct() {
+      $this->description = "http://www.infobel.com - "._("This source includes business and residential data for Belgium, Luxembourg, Denmark, Austria, Italy. Users may be subject to limits as imposed on by the Infobel terms of service. Use of this lookup source requires users to agree and conform with the TOS.");
+      $this->source_param = array(
+          'Default_Country' => array(
+              'description' => _('Default Country to search if the number is not presented in the international format'),
+              'type' => 'select',
+  			'option' => array(
+  				'BE' => 'BE',
+  				'IT' => 'IT',
+  				'DK' => 'DK',
+  				'LU' => 'LU',
+  				'AU' => 'AU',
+  			),
+              'default' => 'BE',
+          )
+      );
+    }
 
     function get_caller_id($thenumber, $run_param=array()) {
         $caller_id = null;
@@ -37,7 +41,7 @@ class Infobel extends superfecta_base {
         $this->DebugPrint('Searching Infobel...');
 
         $Country = 'None';
-        //BE: 8 to 9 digits, IT: 8 to 11 digits, AU: 4 to 13 digits, DK: 8 digits, LU: 6 to 9 digits. 
+        //BE: 8 to 9 digits, IT: 8 to 11 digits, AU: 4 to 13 digits, DK: 8 digits, LU: 6 to 9 digits.
 
         $loc_number = $thenumber;
         $adddecode = false;
@@ -210,7 +214,7 @@ class Infobel extends superfecta_base {
             switch ($Country) {
                 case "FR" :
                 case "BE" :
-                case "IT" : 
+                case "IT" :
 		case "LU" :
                 case "DK":
                 case "AU":

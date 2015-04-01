@@ -12,28 +12,32 @@
  *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
 
 class FreePBX_User_Mgr extends superfecta_base {
-    public $description = "Look up name from the FreePBX User Management module";
+    public $description,$source_param;
     public $version_requirement = "2.11";
-    public $source_param = array(
+
+  public function __construct() {
+    $this->description = _("Look up name from the FreePBX User Management module");
+    $this->source_param = array(
 		'CNAM_Format' => array(
-			'description' => 'Select how returned CNAM is displayed',
+			'description' => _('Select how returned CNAM is displayed'),
 			'type' => 'select',
 			'option' => array(
-				'1' => 'First_name Last_name',
-				'2' => 'Last_name, First_name ',
+				'1' => _('First_name Last_name'),
+				'2' => _('Last_name, First_name'),
 			),
 			'default' => '1',
 		),
 		'Filter_Length' => array(
-				'description' => 'The number of rightmost digits to check for a match. Enter zero to disable this setting',
+				'description' => _('The number of rightmost digits to check for a match. Enter zero to disable this setting'),
 				'type' => 'number',
 				'default' => 10
 		)
 	);
+  }
 
 	function get_caller_id($thenumber, $run_param=array()) {
 
-		$this->DebugPrint("Searching FreePBX UCP ... ");
+		$this->DebugPrint(_("Searching FreePBX User Manager..."));
 
 		// Initialize variables
 		$caller_id = null;
@@ -79,7 +83,7 @@ class FreePBX_User_Mgr extends superfecta_base {
 		}
 
 		if ($caller_id == "") {
-			$this->DebugPrint("Not Found");
+			$this->DebugPrint(_("Not Found"));
 		}
 		return(trim($caller_id));
     }

@@ -1,10 +1,15 @@
 <?php
-
+/**
+ * 
+ */
 class GevondenCC_NL extends superfecta_base {
 
-	public $description = "http://www.gevonden.cc - This source includes business and residential data for The Netherlands";
+	public $description;
 	public $version_requirement = "2.11";
-	public $source_param = array();
+
+	public function __construct() {
+		$this->description = "http://www.gevonden.cc - "._("This source includes business and residential data for The Netherlands");
+	}
 
 	function get_caller_id($thenumber, $run_param=array()) {
 
@@ -52,7 +57,7 @@ class GevondenCC_NL extends superfecta_base {
 		}
 
 		// If we found a match, return it
-		if (strlen($name) > 1) 
+		if (strlen($name) > 1)
 		{
 			$caller_id = $name;
 		} else {

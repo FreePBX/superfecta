@@ -3,7 +3,7 @@
 /*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
 * Developer Notes:
 * There may be some users who would want this module to do post processing to insert name/number into FOP2 address book
-* Versions prior to 2013-12-20 would abandon the search if there were fewer digits than specified, disabled by 
+* Versions prior to 2013-12-20 would abandon the search if there were fewer digits than specified, disabled by
 
 * Version History:
 * 20xx-xx-xx	Initial migration to 2.11 platform
@@ -15,53 +15,57 @@
 *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
 
 class FOP2_Phonebook extends superfecta_base {
-	public $description = "Look up First Name, Last Name, Company Name in the FOP2 visual address book MySQL table";
+	public $description,$source_param;
 	public $version_requirement = "2.11";
-	public $source_param = array(
-		'Use_Native_FreePBX_Connection' => array(
-				'description' => '<b>This setting is recommended</b>. Database connection is automatically configured using native FreePBX connection to the `asterisk` MySQL database. If this setting does not work, disable and manually configure database access fields below.',
-				'type' => 'checkbox',
-				'default' => 'on',
-		),
-		'DB_Host' => array(
-				'description' => 'Host address of the FOP2 database. (localhost if the database is on the same server as FreePBX). Only required when the `Native FreePBX Connection` above is not enabled.',
-				'type' => 'text',
-				'default' => 'localhost',
-		),
-		'DB_Name' => array(
-				'description' => 'Database name of the FOP2 database. Only required when the `Native FreePBX Connection` above is not enabled.',
-				'type' => 'text',
-				'default' => 'fop2',
-		),
-		'DB_User' => array(
-				'description' => 'Username used to connect to the FOP2 database. Only required when the `Native FreePBX Connection` above is not enabled.',
-				'type' => 'text',
-				'default' => 'root',
-		),
-		'DB_Password' => array(
-				'description' => 'Password used to connect to the FOP2 database. Only required when the `Native FreePBX Connection` above is not enabled.',
-				'type' => 'password',
-				'default' => 'passw0rd',
-		),
-		'CNAM_Type' => array(
-			'description' => 'Select how returned CNAM is prioritized',
-			'type' => 'select',
-			'option' => array(
-				'1' => 'Company_name then First_name Last_name',
-				'2' => 'First_name Last_name then Company_name',
-				'3' => 'Last_name Company_name if both exist',
+
+	public function __construct() {
+		$this->description = _("Look up First Name, Last Name, Company Name in the FOP2 visual address book MySQL table");
+		$this->source_param = array(
+			'Use_Native_FreePBX_Connection' => array(
+					'description' => _('Database connection is automatically configured using native FreePBX connection to the `asterisk` MySQL database. If this setting does not work, disable and manually configure database access fields below.'),
+					'type' => 'checkbox',
+					'default' => 'on',
 			),
-			'default' => '1',
-		),
-		'Filter_Length' => array(
-				'description' => 'The number of rightmost digits to check for a match. Enter zero to disable this setting',
-				'type' => 'number',
-				'default' => 10
-		)
-	);
+			'DB_Host' => array(
+					'description' => _('Host address of the FOP2 database. (localhost if the database is on the same server as FreePBX). Only required when the `Native FreePBX Connection` above is not enabled.'),
+					'type' => 'text',
+					'default' => 'localhost',
+			),
+			'DB_Name' => array(
+					'description' => _('Database name of the FOP2 database. Only required when the `Native FreePBX Connection` above is not enabled.'),
+					'type' => 'text',
+					'default' => 'fop2',
+			),
+			'DB_User' => array(
+					'description' => _('Username used to connect to the FOP2 database. Only required when the `Native FreePBX Connection` above is not enabled.'),
+					'type' => 'text',
+					'default' => 'root',
+			),
+			'DB_Password' => array(
+					'description' => _('Password used to connect to the FOP2 database. Only required when the `Native FreePBX Connection` above is not enabled.'),
+					'type' => 'password',
+					'default' => 'passw0rd',
+			),
+			'CNAM_Type' => array(
+				'description' => _('Select how returned CNAM is prioritized'),
+				'type' => 'select',
+				'option' => array(
+					'1' => _('Company_name then First_name Last_name'),
+					'2' => _('First_name Last_name then Company_name'),
+					'3' => _('Last_name Company_name if both exist'),
+				),
+				'default' => '1',
+			),
+			'Filter_Length' => array(
+					'description' => _('The number of rightmost digits to check for a match. Enter zero to disable this setting'),
+					'type' => 'number',
+					'default' => 10
+			)
+		);
+	}
 
 	function get_caller_id($thenumber, $run_param=array()) {
-		$this->DebugPrint("Searching FOP2 ... ");
+		$this->DebugPrint(_("Searching FOP2..."));
 
 		// Initialize variables
 		$caller_id = null;
@@ -89,17 +93,18 @@ class FOP2_Phonebook extends superfecta_base {
 			$wquery_string = 'SELECT firstname, lastname, company FROM visual_phonebook WHERE (phone1 REGEXP :regex) OR (phone2 REGEXP :regex) ORDER BY id DESC';
 			//  Connect to database using user mysql settings
 			if(class_exists('PDO')) {
-				$this->DebugPrint("Connecting to Database with PDO driver....");
+				$this->DebugPrint(_("Connecting to Database with PDO driver..."));
 				try {
 					$dbh = new PDO('mysql:dbname='.$run_param['DB_Name'].';host='.$run_param['DB_Host'], $run_param['DB_User'], $run_param['DB_Password']);
 				} catch (PDOException $e) {
-					$this->DebugPrint('Connection failed: ' . $e->getMessage());
+					$this->DebugPrint(_('Connection failed').': ' . $e->getMessage());
 					return null;
 				}
 			} else {
-				$this->DebugPrint("PDO not present on system...Skipping");
+				$this->DebugPrint(_("PDO not present on system...Skipping"));
 				return null;
 			}
+			//TODO: Bad form.
 			$sth = $dbh->prepare("SET NAMES 'utf8'");
 			$sth->execute();
 
@@ -114,13 +119,13 @@ class FOP2_Phonebook extends superfecta_base {
 					$company_name = $wquery_row["company"];
 				}
 			} catch (PDOException $e) {
-				$this->DebugPrint('Connection failed: ' . $e->getMessage());
+				$this->DebugPrint(_('Connection failed').': ' . $e->getMessage());
 				return null;
 			}
 		} else {
 			global $db;
 			// search database using FreePBX settings
-			$this->DebugPrint("Connecting to Database with native FreePBX credentials ....");
+			$this->DebugPrint(_("Connecting to Database with native FreePBX credentials..."));
 			$wquery_string = "SELECT firstname, lastname, company FROM visual_phonebook WHERE (phone1 REGEXP '".$db->escapeSimple($regex)."') OR (phone2 REGEXP '".$db->escapeSimple($regex)."') ORDER BY id DESC";
 			$wquery_row = sql($wquery_string, "getAll", DB_FETCHMODE_ASSOC);
 			if (is_array($wquery_row)) {
@@ -161,7 +166,7 @@ class FOP2_Phonebook extends superfecta_base {
 		}
 
 		if ($caller_id == "") {
-			$this->DebugPrint("Not Found");
+			$this->DebugPrint(_("Not Found"));
 		}
 		return(trim($caller_id));
 	}
