@@ -2,7 +2,7 @@
 	<rawname>superfecta</rawname>
 	<repo>extended</repo>
 	<name>CID Superfecta</name>
-	<version>12.0.1</version>
+	<version>13.0.1alpha1</version>
 	<type>setup</type>
 	<category>Admin</category>
 	<publisher>POSSA</publisher>
@@ -47,7 +47,7 @@
 		</framework>
 	</hooks>
 	<supported>
-		<version>12.0</version>
+		<version>13.0</version>
 	</supported>
 	<md5sum>a71ce14e885b43669a50395c975c0df9</md5sum>
 	<location>release/2.11/superfecta-2.11.5.tgz</location>
