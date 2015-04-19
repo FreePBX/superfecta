@@ -24,27 +24,25 @@ class LocalTel_CH extends superfecta_base {
             $this->DebugPrint("Skipping Source - Not a valid Swiss number: {$thenumber}");
         } else {
             $this->DebugPrint("Searching Local.ch-Swiss ... ");
-
-			//Additions by Tobias Bossert info@swiss-fun.org 18.4.2015
-			$request = "http://tel.search.ch/api/?was=$thenumber";
-			$feed = implode(file($request));
-			if(!$xml = simplexml_load_string($feed)){
-				return($caller_id);
-			}
-			if(!$json = json_encode($xml)){
-				return($caller_id);
-			}
-			if(!$array = json_decode($json,TRUE)){
-				return($caller_id);
-			}else{
-				//Fix if there are multiple entrys
-				if(!$caller_id = $array['entry']['title']){
-					if(!$caller_id = $array['entry'][0]['title']){
-						$caller_id = null;
-						$this->DebugPrint('Could not parse xml-response from tel.search.ch');
-					}
-				}
-			}
+		$request = "http://tel.search.ch/api/?was=$thenumber";
+		$feed = implode(file($request));
+		if(!$xml = simplexml_load_string($feed)){
+			return($caller_id);
+		}
+		if(!$json = json_encode($xml)){
+			return($caller_id);
+		}
+		if(!$array = json_decode($json,TRUE)){
+			return($caller_id);
+		}else{
+	                //Fix if there are multiple entrys
+	        	if(!$caller_id = $array['entry']['title']){
+		        	if(!$caller_id = $array['entry'][0]['title']){
+				        $caller_id = null;
+				        $this->DebugPrint('Could not parse xml-response from tel.search.ch');
+			        }
+		        }
+	        }
         }
         return($caller_id);
     }
