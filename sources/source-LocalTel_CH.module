@@ -6,12 +6,14 @@ TOS date: December 15, 2009
 TOS summary by lgaetz: I have reviewed what is available on this page and can't see anything that prohibits or prevents superfecta from using this as a lookup source. date: 2014-01-06 
 
 Version History
+2015-04-19	Fixed bug if there are multiple results 
+2015-04-18	Changed method for the request (use tel.search.ch API)
 2012-xx-xx	Initial migration
 
 *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
 class LocalTel_CH extends superfecta_base {
 
-    public $description = "http://local.ch - 	These listings include business and residential data for Switzerland.";
+    public $description = "http://local.ch (tel.search.ch) - 	These listings include business and residential data for Switzerland.";
     public $version_requirement = "2.11";
 
     function get_caller_id($thenumber, $run_param=array()) {
@@ -23,12 +25,26 @@ class LocalTel_CH extends superfecta_base {
         } else {
             $this->DebugPrint("Searching Local.ch-Swiss ... ");
 
-            $url = "http://tel.search.ch/index.en.html?was=$thenumber";
-            $pattern = "/class=\"(?:fn|fn org)\">(.*)<\/a>/";
-
-            if ($this->SearchURL($url, $pattern, $match)) {
-                $caller_id = $this->ExtractMatch($match);
-            }
+			//Additions by Tobias Bossert info@swiss-fun.org 18.4.2015
+			$request = "http://tel.search.ch/api/?was=$thenumber";
+			$feed = implode(file($request));
+			if(!$xml = simplexml_load_string($feed)){
+				return($caller_id);
+			}
+			if(!$json = json_encode($xml)){
+				return($caller_id);
+			}
+			if(!$array = json_decode($json,TRUE)){
+				return($caller_id);
+			}else{
+				//Fix if there are multiple entrys
+				if(!$caller_id = $array['entry']['title']){
+					if(!$caller_id = $array['entry'][0]['title']){
+						$caller_id = null;
+						$this->DebugPrint('Could not parse xml-response from tel.search.ch');
+					}
+				}
+			}
         }
         return($caller_id);
     }
