@@ -1,6 +1,5 @@
 var processing = false;
-$(function() {
-
+$("#scheme-list").on("post-body.bs.table",function() {
 	$(".scheme-actions i").click(function() {
 		if(processing) {
 			alert("A command is already processing, please wait");
@@ -95,114 +94,116 @@ $(function() {
 			break;
 		}
 	});
+});
 
-	$(".enabled input").click(function() {
-		if(processing) {
-			alert("A command is already processing, please wait");
-			return;
-		}
-		processing = true;
-		var val = $(this).val(), row = $(this).parents("tr"), parent_id = row.attr("id");
-		switch(val) {
-			case "on":
-				$("#sources tr").each(function(index) {
-					var eid = $(this).attr("id"), $this = this;
-					if (($(this).attr("id") != "row_header") && !$("#" + eid + "_enabled_yes").is(":checked") && parent_id != eid) {
-						row.fadeOut("slow", function() {
-							row.insertBefore($($this));
-							row.fadeIn("slow");
-							source_order();
-						});
-						return false;
-					}
-				});
-			break;
-			case "off":
-				row.find(".fa-arrow-down").addClass("hidden");
-				row.find(".fa-arrow-up").addClass("hidden");
-				$("#sources tr").each(function(index) {
-					var eid = $(this).attr("id"), $this = this;
-					if (($(this).attr("id") != "row_header") && !$("#" + eid + "_enabled_yes").is(":checked") && parent_id != eid) {
-						row.fadeOut("slow", function() {
-							row.insertBefore($($this));
-							row.fadeIn("slow");
-							source_order();
-						});
-						return false;
-					}
-				});
-			break;
-		}
-	});
+$(".enabled input").click(function() {
+	if(processing) {
+		alert("A command is already processing, please wait");
+		return;
+	}
+	processing = true;
+	var val = $(this).val(), row = $(this).parents("tr"), parent_id = row.attr("id");
+	switch(val) {
+		case "on":
+			$("#sources tr").each(function(index) {
+				var eid = $(this).attr("id"), $this = this;
+				if (($(this).attr("id") != "row_header") && !$("#" + eid + "_enabled_yes").is(":checked") && parent_id != eid) {
+					row.fadeOut("slow", function() {
+						row.insertBefore($($this));
+						row.fadeIn("slow");
+						source_order();
+					});
+					return false;
+				}
+			});
+		break;
+		case "off":
+			row.find(".fa-arrow-down").addClass("hidden");
+			row.find(".fa-arrow-up").addClass("hidden");
+			$("#sources tr").each(function(index) {
+				var eid = $(this).attr("id"), $this = this;
+				if (($(this).attr("id") != "row_header") && !$("#" + eid + "_enabled_yes").is(":checked") && parent_id != eid) {
+					row.fadeOut("slow", function() {
+						row.insertBefore($($this));
+						row.fadeIn("slow");
+						source_order();
+					});
+					return false;
+				}
+			});
+		break;
+	}
+});
 
-	$(".source i").click(function() {
-		var type = $(this).data("type"), row = $(this).parents("tr"), name = row.data("name"), $this = this;
-		switch (type) {
-			case "down":
-				row.fadeOut('slow', function() {
-					row.insertAfter(row.next());
-					row.fadeIn('slow');
-					source_order();
-				});
-			break;
-			case "up":
-				row.fadeOut('slow', function() {
-					row.insertBefore(row.prev());
-					row.fadeIn('slow');
-					source_order();
-				});
-			break;
-			case "configure":
-				$( '<div id="dialog-form" title="Configure ' + name + '">Loading...<i class="fa fa-spinner fa-spin"></i></div>' ).dialog({
-					autoOpen: true,
-					height: 400,
-					width: 650,
-					modal: true,
-					buttons: {
-						Save: function() {
-							var $this = this;
-							$("#dialog-form form").ajaxSubmit({
-								success: function(responseText, statusText, xhr, $form) {
-									$($this).dialog( "close" );
-									$($this).remove();
-								}
-							});
-						},
-						Cancel: function() {
-							$(this).dialog( "close" );
-							$(this).remove();
-						}
-					},
-					open: function() {
+$(".source i").click(function() {
+	var type = $(this).data("type"), row = $(this).parents("tr"), name = row.data("name"), $this = this;
+	switch (type) {
+		case "down":
+			row.fadeOut('slow', function() {
+				row.insertAfter(row.next());
+				row.fadeIn('slow');
+				source_order();
+			});
+		break;
+		case "up":
+			row.fadeOut('slow', function() {
+				row.insertBefore(row.prev());
+				row.fadeIn('slow');
+				source_order();
+			});
+		break;
+		case "configure":
+			$( '<div id="dialog-form" title="Configure ' + name + '">Loading...<i class="fa fa-spinner fa-spin"></i></div>' ).dialog({
+				autoOpen: true,
+				height: 400,
+				width: 650,
+				modal: true,
+				buttons: {
+					Save: function() {
 						var $this = this;
-						$.post("ajax.php?module=superfecta&command=options&scheme=" + encodeURIComponent(scheme) + "&source=" + name, {}, function(data) {
-							if (data.status) {
-								$($this).html(data.html);
-								$("a.info").each(function(){
-									$(this).after('<span class="help"><i class="fa fa-question-circle"></i><span>' + $(this).find('span').html() + '</span></span>');
-									$(this).find('span').remove();
-									$(this).replaceWith($(this).html());
-								});
-								$(".help").on('mouseenter',function(){
-									side = (fpbx.conf.text_dir == 'lrt') ? 'left' : 'right';
-									var pos = $(this).offset();
-									var offset = (200 - pos.side) + "px";
-									$(this).find("span").css(side,offset).stop(true,true).delay(500).animate( { opacity: "show" },750);
-								}).on('mouseleave',function(){
-									$(this).find("span").stop(true,true).animate( { opacity: "hide" },"fast");
-								});
+						$("#dialog-form form").ajaxSubmit({
+							success: function(responseText, statusText, xhr, $form) {
+								$($this).dialog( "close" );
+								$($this).remove();
 							}
-						}, "json");
+						});
 					},
-					close: function() {
+					Cancel: function() {
 						$(this).dialog( "close" );
 						$(this).remove();
 					}
-				});
-			break;
-		}
-	});
+				},
+				open: function() {
+					var $this = this;
+					$.post("ajax.php?module=superfecta&command=options&scheme=" + encodeURIComponent(scheme) + "&source=" + name, {}, function(data) {
+						if (data.status) {
+							$($this).html(data.html);
+							$("a.info").each(function(){
+								$(this).after('<span class="help"><i class="fa fa-question-circle"></i><span>' + $(this).find('span').html() + '</span></span>');
+								$(this).find('span').remove();
+								$(this).replaceWith($(this).html());
+							});
+							$(".help").on('mouseenter',function(){
+								side = (fpbx.conf.text_dir == 'lrt') ? 'left' : 'right';
+								var pos = $(this).offset();
+								var offset = (200 - pos.side) + "px";
+								$(this).find("span").css(side,offset).stop(true,true).delay(500).animate( { opacity: "show" },750);
+							}).on('mouseleave',function(){
+								$(this).find("span").stop(true,true).animate( { opacity: "hide" },"fast");
+							});
+						}
+					}, "json");
+				},
+				close: function() {
+					$(this).dialog( "close" );
+					$(this).remove();
+				}
+			});
+		break;
+	}
+});
 
+$(function() {
 	$("form[name=new_scheme]").submit(function() {
 		if ($("input[name=scheme_name]").val().trim() === "") {
 			alert("Scheme Name can not be blank!");
