@@ -12,7 +12,7 @@ class GooglePlaces extends superfecta_base {
 
     public $description = "Google Places API Query (Powered by Google)";
     public $version_requirement = "2.11";
-    public $
+    //public $
 
     public function __construct() {
       $this->source_param = array(

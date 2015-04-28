@@ -175,10 +175,28 @@ switch($action) {
 		}
 	break;
 	default:
-		$middle = load_view(__DIR__.'/views/main.php');
+		$middle = load_view(__DIR__.'/views/main.php', array("schemes" => FreePBX::Superfecta()->getAllSchemes()));
 }
 
-$scheme_list = FreePBX::Superfecta()->getAllSchemes();
-show_view(__DIR__."/views/header.php", array("schemes" => $scheme_list));
-echo $middle;
-show_view(__DIR__.'/views/footer.php',array());
+$currentScheme = $_REQUEST['scheme'] ? $_REQUEST['scheme'] : '';
+$allSchemes = FreePBX::Superfecta()->getAllSchemes();
+
+//show_view(__DIR__."/views/header.php", array("schemes" => $scheme_list));
+//echo $middle;
+//show_view(__DIR__.'/views/footer.php',array());
+?>
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-sm-9">
+			<?php echo $middle?>
+		</div>
+		<div class="col-sm-3 hidden-xs bootnav">
+			<div class="list-group">
+				<a href="?display=superfecta" class="list-group-item"><i class="fa fa-list"></i> <?php echo _('List Schemes')?></a>
+				<?php foreach($allSchemes as $scheme) {?>
+					<a href="?display=superfecta&amp;action=edit&amp;scheme=<?php echo urlencode($scheme['name'])?>" class="list-group-item <?php echo ($currentScheme == $scheme['name']) ? 'active' : ''?>"><?php echo $scheme['name']?></a>
+				<?php } ?>
+			</div>
+		</div>
+	</div>
+</div>
