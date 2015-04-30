@@ -948,6 +948,21 @@ class superfecta_base {
                 }
                 break; // end AR
 
+            case 'RU': {
+                    //check for the correct 11 digits in RU phone numbers in international format.
+                    // country code + number
+                    if (strlen($thenumber) == 11) {
+                        if (substr($thenumber, 0, 1) != 7) {
+                            return false;
+                        }
+                    } elseif (strlen($thenumber) == 10) {
+                        $thenumber = '7'.$thenumber;
+                    } else {
+                        return false;
+                    }
+                }
+                break; // end RU
+
             default:
                 $this->DebugPrint("Unknown Country Code ${country} passed to IsValidNumber: ${country}");
                 $number_error = true;
