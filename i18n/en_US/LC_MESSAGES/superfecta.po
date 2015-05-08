@@ -1,0 +1,52 @@
+# This file is part of FreePBX.
+#
+# For licensing information, please see the file named LICENSE located in the module directory
+#
+# FreePBX language template for superfecta
+# Copyright (C) 2008-2015 Sangoma, Inc.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-02-20 20:03-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: superfecta.i18n.php:4
+msgid "Admin"
+msgstr ""
+
+#: superfecta.i18n.php:3 superfecta.i18n.php:6
+msgid "CID Superfecta"
+msgstr ""
+
+#: functions.inc.php:17
+msgid "Enable CID Superfecta"
+msgstr ""
+
+#: superfecta.i18n.php:5
+msgid ""
+"Provides simultaneous use of, and complete control over multiple caller id "
+"data sources."
+msgstr ""
+
+#: functions.inc.php:20
+msgid "Scheme"
+msgstr ""
+
+#: functions.inc.php:20
+msgid "Setup Schemes in CID Superfecta section"
+msgstr ""
+
+#: functions.inc.php:17
+msgid "Sources can be added/removed in CID Superfecta section"
+msgstr ""
+
+#: functions.inc.php:15
+msgid "Superfecta CID Lookup"
+msgstr ""
