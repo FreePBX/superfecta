@@ -12,12 +12,12 @@ class GoogleContacts extends superfecta_base {
                                 'default' => '',
                 ),
                 'Google_Code' => array(
-                                'description' => 'This is a one off code to authenticate superfecta to Google for you. How to set it: Once you\'ve set your ID (box above), and clicked submit to save it, you should click on debug (below). Further instructions will then be provided in the debug area below. Once you\'ve followed them, copy the code from the Google authentication page into here (replace the "XXX"), click submit, and click debug below, having put a test number in the field below.',
+                                'description' => 'This is a one off code to authenticate superfecta to Google for you. How to set it: Once you\'ve set your Google ID, and saved it, you must run a debug. Further instructions will then be provided in the debug output. Once you\'ve followed the link provided, copy the code from the Google authentication page into this field (replace the "XXX"). Save again and run another debug.',
                                 'type' => 'text',
                                 'default' => 'XXX',
                 ),
                 'Access_Token' => array(
-                                'description' => 'CHANGE AT YOUR PERIL. This is the day to day authorisation code for the requests. If it is blank, there is an authorisation issue.',
+                                'description' => 'CHANGE AT YOUR PERIL. This field will populate automatically after a successful authorization. It holds the day to day authorization code for the requests.',
                                 'type' => 'password',
                                 'default' => '',
                 ),
