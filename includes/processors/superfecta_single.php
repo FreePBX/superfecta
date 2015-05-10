@@ -68,6 +68,9 @@ class superfecta_single extends superfecta_base {
 						if ($this->isDebug()) {
 							$end_time_whole = $this->mctime_float();
 						}
+                                                else { // Stop as soon as we have a valid answer
+                                                    return($caller_id);
+                                                }
 					}
 				}
 			} else {
@@ -80,8 +83,6 @@ class superfecta_single extends superfecta_base {
 				} else {
 					print "result <i class=\"fa fa-hand-o-up\"></i> took " . number_format(($this->mctime_float() - $start_time), 4) . " seconds.<br>\n<br>\n";
 				}
-			} else if ($caller_id != '') {
-				break;
 			}
 		}
 		return($this->first_caller_id);
