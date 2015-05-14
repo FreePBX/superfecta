@@ -158,6 +158,14 @@ class superfecta_base {
 		return($settings);
 	}
 
+        function updateParameter($param_name, $new_value) {
+            $source  = str_replace("base_", "", $_REQUEST['scheme']) . "_" . get_class($this);
+            $sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES (?, ?, ?)";
+            $sth = $this->db->prepare($sql);
+            $sth->execute(array($source, $param_name, $new_value));
+            return true;
+        }
+
 	function out($message) {
 		if ($this->isDebug()) {
 			if (!$this->cli) {
