@@ -94,9 +94,9 @@ class superfecta_single extends superfecta_base {
 		}
 
 		foreach ($this->scheme_params['sources'] as $source_name) {
+			$run_param = !empty($this->source_params[$source_name]) ? $this->source_params[$source_name] : array();
+
 			// Run the source
-			$sql = "SELECT field,value FROM superfectaconfig WHERE source = '" . $this->scheme_name . "_" . $source_name . "'";
-			$run_param = $this->db->getAssoc($sql);
 			$source_file = $this->path_location . "/source-" . $source_name . ".module";
 			$class = "\\".$source_name;
 			if (file_exists($source_name) && !class_exists($class)) {
