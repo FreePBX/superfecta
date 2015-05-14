@@ -31,7 +31,6 @@ class GoogleContacts extends superfecta_base {
                                 'type' => 'internal',
                                 'default' => '',
                 ),
-                'Hello' => array('description' => 'Ho hum', 'type' => 'internal', 'default' => 'Unset'),
     );
 
     var $googleAuthManager;
