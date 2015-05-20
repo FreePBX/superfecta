@@ -713,4 +713,26 @@ class Superfecta implements \BMO {
 		}
 		return $return;
 	}
+
+	public function getActionBar($request) {
+		$buttons = array();
+		$request['action'] = !empty($request['action']) ? $request['action'] : "";
+		switch($request['action']) {
+			case 'add':
+				$buttons = array(
+					'reset' => array(
+						'name' => 'reset',
+						'id' => 'reset',
+						'value' => _('Reset')
+					),
+					'submit' => array(
+						'name' => 'submit',
+						'id' => 'submit',
+						'value' => _('Submit')
+					)
+				);
+			break;
+		}
+		return $buttons;
+	}
 }

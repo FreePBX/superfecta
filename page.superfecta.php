@@ -77,29 +77,7 @@ switch($action) {
 
 		$scheme = $new_name;
 	case "edit":
-		if(isset($_POST['submit'])) {
-			$scheme = $_POST['scheme_name'];
-			$type = $_POST['goto0'];
-			$res = FreePBX::Superfecta()->addScheme($scheme,array(
-				'DID' => $_POST['DID'],
-				'CID_rules' => $_POST['CID_rules'],
-				'Curl_Timeout' => $_POST['Curl_Timeout'],
-				'processor' => $_POST['processor'],
-				'multifecta_timeout' => $_POST['multifecta_timeout'],
-				'Prefix_URL' => $_POST['Prefix_URL'],
-				'SPAM_Text' => $_POST['SPAM_Text'],
-				'SPAM_Text_Substitute' => $_POST['SPAM_Text_Substitute'],
-				'enable_interceptor' => $_POST['enable_interceptor'],
-				'SPAM_threshold' => $_POST['SPAM_threshold'],
-				'destination' => (!empty($type) ? $_POST[$type.'0'] : '')
-			));
-			if(!$res['status']) {
-				$middle = $res['message'];
-				break;
-			}
-		} else {
-			$scheme = (isset($_REQUEST['scheme'])) ? $_REQUEST['scheme'] : '';
-		}
+		$scheme = (isset($_REQUEST['scheme'])) ? $_REQUEST['scheme'] : '';
 		$conf = FreePBX::Superfecta()->getScheme($scheme);
 		if(!empty($conf)) {
 			//Get list of processors
@@ -175,6 +153,23 @@ switch($action) {
 		}
 	break;
 	default:
+		if(isset($_POST['type'])) {
+			$scheme = $_POST['scheme_name'];
+			$type = $_POST['goto0'];
+			$res = FreePBX::Superfecta()->addScheme($scheme,array(
+				'DID' => $_POST['DID'],
+				'CID_rules' => $_POST['CID_rules'],
+				'Curl_Timeout' => $_POST['Curl_Timeout'],
+				'processor' => $_POST['processor'],
+				'multifecta_timeout' => $_POST['multifecta_timeout'],
+				'Prefix_URL' => $_POST['Prefix_URL'],
+				'SPAM_Text' => $_POST['SPAM_Text'],
+				'SPAM_Text_Substitute' => $_POST['SPAM_Text_Substitute'],
+				'enable_interceptor' => $_POST['enable_interceptor'],
+				'SPAM_threshold' => $_POST['SPAM_threshold'],
+				'destination' => (!empty($type) ? $_POST[$type.'0'] : '')
+			));
+		}
 		$middle = load_view(__DIR__.'/views/main.php', array("schemes" => FreePBX::Superfecta()->getAllSchemes()));
 }
 
@@ -192,10 +187,8 @@ $allSchemes = FreePBX::Superfecta()->getAllSchemes();
 		</div>
 		<div class="col-sm-3 hidden-xs bootnav">
 			<div class="list-group">
+				<a href="?display=superfecta&amp;action=add" class="list-group-item"><i class="fa fa-plus"></i> <?php echo _('Add Scheme')?></a>
 				<a href="?display=superfecta" class="list-group-item"><i class="fa fa-list"></i> <?php echo _('List Schemes')?></a>
-				<?php foreach($allSchemes as $scheme) {?>
-					<a href="?display=superfecta&amp;action=edit&amp;scheme=<?php echo urlencode($scheme['name'])?>" class="list-group-item <?php echo ($currentScheme == $scheme['name']) ? 'active' : ''?>"><?php echo $scheme['name']?></a>
-				<?php } ?>
 			</div>
 		</div>
 	</div>

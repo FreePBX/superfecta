@@ -79,10 +79,7 @@ $("#scheme-list").on("post-body.bs.table",function() {
 							if(typeof scheme !== "undefined" && scheme == name) {
 								document.location.href = "config.php?display=superfecta";
 							} else {
-								$($this).parents("li.scheme").fadeOut("slow", function() {
-									$(this).remove();
-									sort_scheme();
-								});
+								$('table').bootstrapTable('removeByUniqueId', name);
 							}
 						}
 					}, "json").always(function() {
@@ -203,88 +200,86 @@ $(".source i").click(function() {
 	}
 });
 
-$(function() {
-	$("form[name=new_scheme]").submit(function() {
-		if ($("input[name=scheme_name]").val().trim() === "") {
-			alert("Scheme Name can not be blank!");
-			$("input[name=scheme_name]").focus();
-			return false;
-		}
-	});
+$("form[name=new_scheme]").submit(function() {
+	if ($("input[name=scheme_name]").val().trim() === "") {
+		warnInvalid($("input[name=scheme_name]"),_("Scheme Name can not be blank!"));
+		return false;
+	}
+});
+
+if ($("#enableInterceptor_on").is(":checked")) {
+	$("#InterceptorVector").show();
+} else {
+	$("#InterceptorVector").hide();
+}
+$("#enableInterceptor_on, #enableInterceptor_off").click(function() {
 	if ($("#enableInterceptor_on").is(":checked")) {
 		$("#InterceptorVector").show();
 	} else {
 		$("#InterceptorVector").hide();
 	}
-	$("#enableInterceptor_on, #enableInterceptor_off").click(function() {
-		if ($("#enableInterceptor_on").is(":checked")) {
-			$("#InterceptorVector").show();
-		} else {
-			$("#InterceptorVector").hide();
-		}
-	});
-	$("#configure").click(function() {
-		$( "#scheme-dialog-form" ).dialog( "open" );
-	});
-	$( "#scheme-dialog-form" ).dialog({
-		autoOpen: false,
-		height: 500,
-		width: 650,
-		modal: true,
-		buttons: {
-			Save: function() {
-				var $this = this;
-				$("#scheme-dialog-form form").ajaxSubmit({
-					success: function(responseText, statusText, xhr, $form) {
-						if(responseText.status) {
-							if(responseText.redirect !== "") {
-								document.location.href = responseText.redirect;
-							}
-							$($this).dialog( "close" );
+});
+$("#configure").click(function() {
+	$( "#scheme-dialog-form" ).dialog( "open" );
+});
+$( "#scheme-dialog-form" ).dialog({
+	autoOpen: false,
+	height: 500,
+	width: 650,
+	modal: true,
+	buttons: {
+		Save: function() {
+			var $this = this;
+			$("#scheme-dialog-form form").ajaxSubmit({
+				success: function(responseText, statusText, xhr, $form) {
+					if(responseText.status) {
+						if(responseText.redirect !== "") {
+							document.location.href = responseText.redirect;
 						}
+						$($this).dialog( "close" );
 					}
-				});
-			},
-			Cancel: function() {
-				$(this).dialog( "close" );
-			}
+				}
+			});
 		},
-		close: function() {
+		Cancel: function() {
 			$(this).dialog( "close" );
 		}
-	});
-	$("#super-debug").click(function() {
-		$( "#debug-dialog" ).dialog( "open" );
-	});
-	$( "#debug-dialog" ).dialog({
-		autoOpen: false,
-		height: 600,
-		width: 650,
-		modal: true,
-		buttons: {
-			"Run This Scheme": function() {
-				runDebug(scheme);
-			},
-			"Run All Schemes": function() {
-				runDebug("ALL");
-			},
-			Cancel: function() {
-				$(this).dialog( "close" );
-			}
+	},
+	close: function() {
+		$(this).dialog( "close" );
+	}
+});
+$("#super-debug").click(function() {
+	$( "#debug-dialog" ).dialog( "open" );
+});
+$( "#debug-dialog" ).dialog({
+	autoOpen: false,
+	height: 600,
+	width: 650,
+	modal: true,
+	buttons: {
+		"Run This Scheme": function() {
+			runDebug(scheme);
 		},
-		open: function() {
-			if($("#DID").val().trim() !== "") {
-				$('#debug-dialog .debug-window').css('height', '252px');
-				$("#didnumber").show();
-			} else {
-				$('#debug-dialog .debug-window').css('height','')
-				$("#didnumber").hide();
-			}
+		"Run All Schemes": function() {
+			runDebug("ALL");
 		},
-		close: function() {
+		Cancel: function() {
 			$(this).dialog( "close" );
 		}
-	});
+	},
+	open: function() {
+		if($("#DID").val().trim() !== "") {
+			$('#debug-dialog .debug-window').css('height', '252px');
+			$("#didnumber").show();
+		} else {
+			$('#debug-dialog .debug-window').css('height','')
+			$("#didnumber").hide();
+		}
+	},
+	close: function() {
+		$(this).dialog( "close" );
+	}
 });
 
 function runDebug(scheme) {
