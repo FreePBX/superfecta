@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-05-20 11:04-0400\n"
+"POT-Creation-Date: 2015-05-20 15:57-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,12 +21,16 @@ msgstr ""
 msgid "ALL"
 msgstr ""
 
-#: views/main.php:15
+#: views/main.php:16
 msgid "Actions"
 msgstr ""
 
 #: views/header.php:3
 msgid "Add Caller ID Scheme"
+msgstr ""
+
+#: page.superfecta.php:190
+msgid "Add Scheme"
 msgstr ""
 
 #: views/scheme.php:7
@@ -35,11 +39,11 @@ msgid ""
 "for your situation."
 msgstr ""
 
-#: views/add_scheme.php:55 views/scheme.php:89
+#: views/add_scheme.php:149 views/scheme.php:89
 msgid "CID Prefix URL"
 msgstr ""
 
-#: views/add_scheme.php:16 views/scheme.php:50
+#: views/add_scheme.php:53 views/scheme.php:50
 msgid "CID Rules"
 msgstr ""
 
@@ -67,7 +71,7 @@ msgstr ""
 msgid "DID Number"
 msgstr ""
 
-#: views/add_scheme.php:12 views/scheme.php:46
+#: views/add_scheme.php:33 views/scheme.php:46
 msgid "DID Rules"
 msgstr ""
 
@@ -95,11 +99,15 @@ msgstr ""
 msgid "Debugging Enabled, will not stop after first result"
 msgstr ""
 
-#: views/add_scheme.php:3
+#: views/add_scheme.php:1
 msgid "Define Settings for a new Scheme"
 msgstr ""
 
-#: views/add_scheme.php:12 views/scheme.php:46
+#: views/add_scheme.php:23
+msgid "Define a new name for this scheme"
+msgstr ""
+
+#: views/add_scheme.php:43 views/scheme.php:46
 msgid ""
 "Define the expected DID Number if your trunk passes DID on incoming calls. "
 "<br><br>Leave this blank to match calls with any or no DID info.<br><br>This "
@@ -115,7 +123,7 @@ msgstr ""
 msgid "Edit Scheme"
 msgstr ""
 
-#: views/add_scheme.php:67 views/scheme.php:107
+#: views/add_scheme.php:216 views/scheme.php:107
 msgid "Enable SPAM Interception"
 msgstr ""
 
@@ -136,7 +144,7 @@ msgstr ""
 msgid "INFO"
 msgstr ""
 
-#: views/add_scheme.php:55 views/scheme.php:89
+#: views/add_scheme.php:159 views/scheme.php:89
 msgid ""
 "If you wish to prefix information on the caller id you can specify a url "
 "here where that prefix can be retrieved.<br>The data will not be parsed in "
@@ -145,38 +153,38 @@ msgid ""
 "will be replaced with the full 10 digit phone number when the URL is called"
 msgstr ""
 
-#: views/add_scheme.php:16
+#: views/add_scheme.php:63
 msgid ""
 "Incoming calls with CID matching the patterns specified here will use this "
 "CID Scheme. If this is left blank, this scheme will be used for any CID. It "
 "can be used to add or remove prefixes.<br>\n"
-"\t\t\t\t\t<strong>Many sources require a specific number of digits in the "
-"phone number. It is recommended that you use the patterns to remove excess "
-"country code data from incoming CID to increase the effectiveness of this "
-"module.</strong><br>\n"
-"\t\t\t\t\tNote that a pattern without a + or | (to add or remove a prefix) "
-"will not make any changes but will create a match. Only the first matched "
-"pattern will be executed and the remaining rules will not be acted on.<br /"
-"><br /><b>Rules:</b><br />\n"
-"\t\t\t\t\t<strong>X</strong>&nbsp;&nbsp;&nbsp; matches any digit from 0-"
+"\t\t\t\t\t\t\t<strong>Many sources require a specific number of digits in "
+"the phone number. It is recommended that you use the patterns to remove "
+"excess country code data from incoming CID to increase the effectiveness of "
+"this module.</strong><br>\n"
+"\t\t\t\t\t\t\tNote that a pattern without a + or | (to add or remove a "
+"prefix) will not make any changes but will create a match. Only the first "
+"matched pattern will be executed and the remaining rules will not be acted "
+"on.<br /><br /><b>Rules:</b><br />\n"
+"\t\t\t\t\t\t\t<strong>X</strong>&nbsp;&nbsp;&nbsp; matches any digit from 0-"
 "9<br />\n"
-"\t\t\t\t\t<strong>Z</strong>&nbsp;&nbsp;&nbsp; matches any digit from 1-"
+"\t\t\t\t\t\t\t<strong>Z</strong>&nbsp;&nbsp;&nbsp; matches any digit from 1-"
 "9<br />\n"
-"\t\t\t\t\t<strong>N</strong>&nbsp;&nbsp;&nbsp; matches any digit from 2-"
+"\t\t\t\t\t\t\t<strong>N</strong>&nbsp;&nbsp;&nbsp; matches any digit from 2-"
 "9<br />\n"
-"\t\t\t\t\t<strong>[1237-9]</strong>&nbsp;   matches any digit or letter in "
-"the brackets (in this example, 1,2,3,7,8,9)<br />\n"
-"\t\t\t\t\t<strong>.</strong>&nbsp;&nbsp;&nbsp; wildcard, matches one or more "
-"characters (not allowed before a | or +)<br />\n"
-"\t\t\t\t\t<strong>|</strong>&nbsp;&nbsp;&nbsp; removes a dialing prefix from "
-"the number (for example, 613|NXXXXXX would match when some one dialed "
+"\t\t\t\t\t\t\t<strong>[1237-9]</strong>&nbsp;   matches any digit or letter "
+"in the brackets (in this example, 1,2,3,7,8,9)<br />\n"
+"\t\t\t\t\t\t\t<strong>.</strong>&nbsp;&nbsp;&nbsp; wildcard, matches one or "
+"more characters (not allowed before a | or +)<br />\n"
+"\t\t\t\t\t\t\t<strong>|</strong>&nbsp;&nbsp;&nbsp; removes a dialing prefix "
+"from the number (for example, 613|NXXXXXX would match when some one dialed "
 "\"6135551234\" but would only pass \"5551234\" to the Superfecta look up.)"
 "<br><strong>+</strong>&nbsp;&nbsp;&nbsp; adds a dialing prefix to the number "
 "(for example, 1613+NXXXXXX would match when someone dialed \"5551234\" and "
 "would pass \"16135551234\" to the Superfecta look up.)<br /><br />\n"
-"\t\t\t\t\tYou can also use both + and |, for example: 01+0|1ZXXXXXXXXX would "
-"match \"016065551234\" and dial it as \"0116065551234\" Note that the order "
-"does not matter, eg. 0|01+1ZXXXXXXXXX does the same thing."
+"\t\t\t\t\t\t\tYou can also use both + and |, for example: 01+0|1ZXXXXXXXXX "
+"would match \"016065551234\" and dial it as \"0116065551234\" Note that the "
+"order does not matter, eg. 0|01+1ZXXXXXXXXX does the same thing."
 msgstr ""
 
 #: views/scheme.php:50
@@ -213,11 +221,11 @@ msgid ""
 "does not matter, eg. 0|01+1ZXXXXXXXXX does the same thing."
 msgstr ""
 
-#: page.superfecta.php:195
+#: page.superfecta.php:191
 msgid "List Schemes"
 msgstr ""
 
-#: views/add_scheme.php:31 views/scheme.php:65
+#: views/add_scheme.php:82 views/scheme.php:65
 msgid "Lookup Timeout"
 msgstr ""
 
@@ -231,7 +239,7 @@ msgstr ""
 msgid "Matched DID Rule: %s with %s"
 msgstr ""
 
-#: views/add_scheme.php:51 views/scheme.php:85
+#: views/add_scheme.php:129 views/scheme.php:85
 msgid "Multifecta Timeout"
 msgstr ""
 
@@ -239,15 +247,16 @@ msgstr ""
 msgid "NONE"
 msgstr ""
 
-#: views/main.php:14
+#: views/main.php:15
 msgid "Name"
 msgstr ""
 
-#: views/add_scheme.php:8
+#: views/add_scheme.php:13
 msgid "New Scheme Name"
 msgstr ""
 
-#: Superfecta.class.php:523 functions.inc.php:29 views/scheme.php:32
+#: Superfecta.class.php:523 functions.inc.php:29 views/add_scheme.php:197
+#: views/add_scheme.php:224 views/scheme.php:32
 msgid "No"
 msgstr ""
 
@@ -261,6 +270,10 @@ msgstr ""
 
 #: Superfecta.class.php:146
 msgid "No matching DID rules. Skipping scheme"
+msgstr ""
+
+#: views/main.php:14
+msgid "Order"
 msgstr ""
 
 #: views/scheme.php:134
@@ -285,19 +298,23 @@ msgstr ""
 msgid "Prefix Url result took %s seconds."
 msgstr ""
 
+#: Superfecta.class.php:726
+msgid "Reset"
+msgstr ""
+
 #: Superfecta.class.php:324
 msgid "Returned Result would be:"
 msgstr ""
 
-#: views/add_scheme.php:72 views/scheme.php:118
+#: views/add_scheme.php:244 views/scheme.php:118
 msgid "SPAM Send Threshold"
 msgstr ""
 
-#: views/add_scheme.php:59 views/scheme.php:93
+#: views/add_scheme.php:169 views/scheme.php:93
 msgid "SPAM Text"
 msgstr ""
 
-#: views/add_scheme.php:63 views/scheme.php:97
+#: views/add_scheme.php:189 views/scheme.php:97
 msgid "SPAM Text Substituted"
 msgstr ""
 
@@ -308,6 +325,10 @@ msgstr ""
 
 #: views/scheme.php:42
 msgid "Scheme Name"
+msgstr ""
+
+#: assets/js/superfecta.js:205
+msgid "Scheme Name can not be blank!"
 msgstr ""
 
 #: views/scheme.php:4
@@ -333,7 +354,7 @@ msgid ""
 "you want them used:"
 msgstr ""
 
-#: views/add_scheme.php:76 views/scheme.php:122
+#: views/add_scheme.php:266 views/scheme.php:122
 msgid "Send Spam Call To"
 msgstr ""
 
@@ -355,14 +376,14 @@ msgstr ""
 msgid "Spam Call, Sending call to: %s"
 msgstr ""
 
-#: views/add_scheme.php:51 views/scheme.php:85
+#: views/add_scheme.php:139 views/scheme.php:85
 msgid ""
 "Specify a timeout in seconds defining how long multifecta will obey the "
 "source priority. After this timeout, the first source to respond with a CNAM "
 "will be taken, until \"Lookup Timeout\" is reached"
 msgstr ""
 
-#: views/add_scheme.php:31 views/scheme.php:65
+#: views/add_scheme.php:92 views/scheme.php:65
 msgid ""
 "Specify a timeout in seconds for each source. If the source fails to return "
 "a result within the alloted time, the script will move on."
@@ -373,11 +394,11 @@ msgstr ""
 msgid "Starting scheme %s"
 msgstr ""
 
-#: views/add_scheme.php:80
+#: Superfecta.class.php:731
 msgid "Submit"
 msgstr ""
 
-#: views/add_scheme.php:36 views/scheme.php:70
+#: views/add_scheme.php:102 views/scheme.php:70
 msgid "Superfecta Processor"
 msgstr ""
 
@@ -412,7 +433,7 @@ msgstr ""
 msgid "The Scheme:"
 msgstr ""
 
-#: views/add_scheme.php:37 views/scheme.php:71
+#: views/add_scheme.php:116 views/scheme.php:71
 msgid "These are the types of Superfecta Processors"
 msgstr ""
 
@@ -426,7 +447,7 @@ msgid ""
 "This Project is hosted/maintained at %s Feel free to fork/help/complain."
 msgstr ""
 
-#: views/add_scheme.php:72 views/scheme.php:118
+#: views/add_scheme.php:256 views/scheme.php:118
 msgid ""
 "This is the threshold to send the call to the specified destination below"
 msgstr ""
@@ -436,13 +457,13 @@ msgstr ""
 msgid "This scheme would set the caller id to: %s"
 msgstr ""
 
-#: views/add_scheme.php:59 views/scheme.php:93
+#: views/add_scheme.php:179 views/scheme.php:93
 msgid ""
 "This text will be prepended to Caller ID information to help you identify "
 "calls as SPAM calls"
 msgstr ""
 
-#: page.superfecta.php:174
+#: page.superfecta.php:152
 msgid "Unknown Scheme"
 msgstr ""
 
@@ -454,17 +475,22 @@ msgstr ""
 msgid "What is CallerID Superfecta?"
 msgstr ""
 
-#: views/add_scheme.php:67 views/scheme.php:107
+#: views/add_scheme.php:233 views/scheme.php:107
 msgid "When enabled, Spam calls can be diverted or terminated"
 msgstr ""
 
-#: views/add_scheme.php:63 views/scheme.php:97
+#: views/add_scheme.php:206 views/scheme.php:97
 msgid ""
 "When enabled, the text entered in \"SPAM Text\" (above) will replace the CID "
 "completely rather than pre-pending the CID value"
 msgstr ""
 
-#: Superfecta.class.php:521 functions.inc.php:27 views/scheme.php:30
+#: views/add_scheme.php:276
+msgid "Where to send the call when it is detected as spam"
+msgstr ""
+
+#: Superfecta.class.php:521 functions.inc.php:27 views/add_scheme.php:195
+#: views/add_scheme.php:222 views/scheme.php:30
 msgid "Yes"
 msgstr ""
 
@@ -474,10 +500,6 @@ msgstr ""
 
 #: Superfecta.class.php:619
 msgid "You cannot rename a scheme the same thing as an existing scheme"
-msgstr ""
-
-#: views/add_scheme.php:4
-msgid "You will be able to edit the scheme on the next page"
 msgstr ""
 
 #: views/scheme.php:103 views/scheme.php:113
