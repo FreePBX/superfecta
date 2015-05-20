@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-31 22:24-0400\n"
+"POT-Creation-Date: 2015-05-20 11:04-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,6 +19,10 @@ msgstr ""
 
 #: functions.inc.php:50 views/scheme.php:143
 msgid "ALL"
+msgstr ""
+
+#: views/main.php:15
+msgid "Actions"
 msgstr ""
 
 #: views/header.php:3
@@ -31,10 +35,6 @@ msgid ""
 "for your situation."
 msgstr ""
 
-#: superfecta.i18n.php:6 superfecta.i18n.php:12
-msgid "Admin"
-msgstr ""
-
 #: views/add_scheme.php:55 views/scheme.php:89
 msgid "CID Prefix URL"
 msgstr ""
@@ -43,11 +43,7 @@ msgstr ""
 msgid "CID Rules"
 msgstr ""
 
-#: superfecta.i18n.php:4 superfecta.i18n.php:10
-msgid "CID Superfecta"
-msgstr ""
-
-#: Superfecta.class.php:229
+#: Superfecta.class.php:231
 #, php-format
 msgid "Call detected as spam, would send call to: %s"
 msgstr ""
@@ -56,13 +52,13 @@ msgstr ""
 msgid "Caller ID Superfecta"
 msgstr ""
 
-#: views/main.php:1
+#: views/main.php:8
 msgid ""
 "CallerID Superfecta for FreePBX is a utility program which adds incoming "
 "CallerID name lookups to your Asterisk system using multiple data sources"
 msgstr ""
 
-#: Superfecta.class.php:153
+#: Superfecta.class.php:155
 #, php-format
 msgid "Changed CNUM to: %s"
 msgstr ""
@@ -87,7 +83,7 @@ msgstr ""
 msgid "Debug Level to display"
 msgstr ""
 
-#: Superfecta.class.php:307
+#: Superfecta.class.php:309
 msgid "Debug is on and set at level:"
 msgstr ""
 
@@ -95,7 +91,7 @@ msgstr ""
 msgid "Debug/Test Run Scheme"
 msgstr ""
 
-#: Superfecta.class.php:311
+#: Superfecta.class.php:313
 msgid "Debugging Enabled, will not stop after first result"
 msgstr ""
 
@@ -132,7 +128,7 @@ msgid "Enabled"
 msgstr ""
 
 #: includes/processors/superfecta_single.php:53
-#: includes/processors/superfecta_single.php:114
+#: includes/processors/superfecta_single.php:115
 msgid "Executing"
 msgstr ""
 
@@ -217,16 +213,20 @@ msgid ""
 "does not matter, eg. 0|01+1ZXXXXXXXXX does the same thing."
 msgstr ""
 
+#: page.superfecta.php:195
+msgid "List Schemes"
+msgstr ""
+
 #: views/add_scheme.php:31 views/scheme.php:65
 msgid "Lookup Timeout"
 msgstr ""
 
-#: Superfecta.class.php:151
+#: Superfecta.class.php:153
 #, php-format
 msgid "Matched CID Rule: %s with %s"
 msgstr ""
 
-#: Superfecta.class.php:142
+#: Superfecta.class.php:144
 #, php-format
 msgid "Matched DID Rule: %s with %s"
 msgstr ""
@@ -239,23 +239,27 @@ msgstr ""
 msgid "NONE"
 msgstr ""
 
+#: views/main.php:14
+msgid "Name"
+msgstr ""
+
 #: views/add_scheme.php:8
 msgid "New Scheme Name"
 msgstr ""
 
-#: Superfecta.class.php:519 functions.inc.php:29 views/scheme.php:32
+#: Superfecta.class.php:523 functions.inc.php:29 views/scheme.php:32
 msgid "No"
 msgstr ""
 
-#: Superfecta.class.php:240
+#: Superfecta.class.php:242
 msgid "No callerid found"
 msgstr ""
 
-#: Superfecta.class.php:155
+#: Superfecta.class.php:157
 msgid "No matching CID rules. Skipping scheme"
 msgstr ""
 
-#: Superfecta.class.php:144
+#: Superfecta.class.php:146
 msgid "No matching DID rules. Skipping scheme"
 msgstr ""
 
@@ -267,27 +271,21 @@ msgstr ""
 msgid "Phone number to test this scheme against"
 msgstr ""
 
-#: Superfecta.class.php:168
+#: Superfecta.class.php:170
 #, php-format
 msgid "Prefix Url defined as: %s"
 msgstr ""
 
-#: Superfecta.class.php:170
+#: Superfecta.class.php:172
 msgid "Prefix Url defined but result was empty"
 msgstr ""
 
-#: Superfecta.class.php:172
+#: Superfecta.class.php:174
 #, php-format
 msgid "Prefix Url result took %s seconds."
 msgstr ""
 
-#: superfecta.i18n.php:8
-msgid ""
-"Provides simultaneous use of, and complete control over multiple caller id "
-"data sources."
-msgstr ""
-
-#: Superfecta.class.php:322
+#: Superfecta.class.php:324
 msgid "Returned Result would be:"
 msgstr ""
 
@@ -317,15 +315,15 @@ msgstr ""
 msgid "Scheme Name: %s"
 msgstr ""
 
-#: Superfecta.class.php:310
+#: Superfecta.class.php:312
 msgid "Scheme Type:"
 msgstr ""
 
-#: Superfecta.class.php:600
+#: Superfecta.class.php:604
 msgid "Scheme can not be empty!"
 msgstr ""
 
-#: Superfecta.class.php:395
+#: Superfecta.class.php:397
 msgid "Scheme names cannot be blank"
 msgstr ""
 
@@ -339,12 +337,12 @@ msgstr ""
 msgid "Send Spam Call To"
 msgstr ""
 
-#: Superfecta.class.php:234
+#: Superfecta.class.php:236
 #, php-format
 msgid "Setting caller id to: %s"
 msgstr ""
 
-#: functions.inc.php:87
+#: functions.inc.php:88
 msgid "Setup Schemes in CID Superfecta section"
 msgstr ""
 
@@ -352,7 +350,7 @@ msgstr ""
 msgid "Sources can be added/removed in CID Superfecta section"
 msgstr ""
 
-#: Superfecta.class.php:226
+#: Superfecta.class.php:228
 #, php-format
 msgid "Spam Call, Sending call to: %s"
 msgstr ""
@@ -370,7 +368,7 @@ msgid ""
 "a result within the alloted time, the script will move on."
 msgstr ""
 
-#: Superfecta.class.php:110
+#: Superfecta.class.php:112
 #, php-format
 msgid "Starting scheme %s"
 msgstr ""
@@ -383,7 +381,7 @@ msgstr ""
 msgid "Superfecta Processor"
 msgstr ""
 
-#: functions.inc.php:73
+#: functions.inc.php:74
 msgid "Superfecta Scheme"
 msgstr ""
 
@@ -406,11 +404,11 @@ msgstr ""
 msgid "The DID to test this scheme against"
 msgstr ""
 
-#: Superfecta.class.php:308
+#: Superfecta.class.php:310
 msgid "The Original Number:"
 msgstr ""
 
-#: Superfecta.class.php:309
+#: Superfecta.class.php:311
 msgid "The Scheme:"
 msgstr ""
 
@@ -433,7 +431,7 @@ msgid ""
 "This is the threshold to send the call to the specified destination below"
 msgstr ""
 
-#: Superfecta.class.php:237
+#: Superfecta.class.php:239
 #, php-format
 msgid "This scheme would set the caller id to: %s"
 msgstr ""
@@ -452,6 +450,10 @@ msgstr ""
 msgid "WARN"
 msgstr ""
 
+#: views/main.php:4
+msgid "What is CallerID Superfecta?"
+msgstr ""
+
 #: views/add_scheme.php:67 views/scheme.php:107
 msgid "When enabled, Spam calls can be diverted or terminated"
 msgstr ""
@@ -462,15 +464,15 @@ msgid ""
 "completely rather than pre-pending the CID value"
 msgstr ""
 
-#: Superfecta.class.php:517 functions.inc.php:27 views/scheme.php:30
+#: Superfecta.class.php:521 functions.inc.php:27 views/scheme.php:30
 msgid "Yes"
 msgstr ""
 
-#: Superfecta.class.php:604
+#: Superfecta.class.php:608
 msgid "You cannot create a scheme the same name as an existing scheme"
 msgstr ""
 
-#: Superfecta.class.php:615
+#: Superfecta.class.php:619
 msgid "You cannot rename a scheme the same thing as an existing scheme"
 msgstr ""
 
@@ -482,7 +484,7 @@ msgstr ""
 msgid "no"
 msgstr ""
 
-#: Superfecta.class.php:323
+#: Superfecta.class.php:325
 #, php-format
 msgid "result took %s seconds"
 msgstr ""
