@@ -19,9 +19,9 @@ class Can411 extends superfecta_base {
             // By default, there is no match
             $name = "";
 
-            $url = "https://411.ca/search/?q=$thenumber&st=reverse";    //working June 19, 2012
+            $url = "https://411.ca/search/?q=$thenumber&st=reverse";    //working May 20, 2015
 
-            $pattern = '/itemprop=\"name\">(.+?)<\/a>/i';   // working Jun 19, 2012
+            $pattern = '/itemprop=\"name\">(.+?)<\/a>/i';   // working May 20, 2015
             // Patterns to search for
             $regexp = array(
                 $pattern,
