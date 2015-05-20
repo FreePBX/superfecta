@@ -2,7 +2,7 @@
 
 class Can411 extends superfecta_base {
 
-    public $description = "http://www.411.ca - These listings include business and residential data for Canada.";
+    public $description = "https://www.411.ca - These listings include business and residential data for Canada.";
     public $version_requirement = "2.11";
 
     function get_caller_id($thenumber, $run_param=array()) {
@@ -19,7 +19,7 @@ class Can411 extends superfecta_base {
             // By default, there is no match
             $name = "";
 
-            $url = "http://411.ca/search/?q=$thenumber&st=reverse";    //working June 19, 2012
+            $url = "https://411.ca/search/?q=$thenumber&st=reverse";    //working June 19, 2012
 
             $pattern = '/itemprop=\"name\">(.+?)<\/a>/i';   // working Jun 19, 2012
             // Patterns to search for
