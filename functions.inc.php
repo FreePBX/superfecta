@@ -49,6 +49,7 @@ function superfecta_hook_core($viewing_itemid, $target_menuid) {
 
 		$first = '<option value="ALL|ALL" {$selected}>'._('ALL').'</option>';
 		$has_selected = FALSE;
+		$last = '';
 		foreach ($schemes as $data) {
 			if ($scheme == $data['source']) {
 				$selected = 'selected';
@@ -61,7 +62,7 @@ function superfecta_hook_core($viewing_itemid, $target_menuid) {
 		}
 		$selected = ($has_selected) ? 'selected' : '';
 		$first = str_replace('{$selected}', $selected, $first);
-		$opts .= $first . $last;
+		$opts = $first . $last;
 		$html .= '
 		<!--Scheme-->
 		<div class="element-container">
