@@ -95,9 +95,11 @@ class Superfecta implements \BMO {
 		include __DIR__ . '/includes/processors/superfecta_multi.php';
 		include __DIR__ . '/includes/processors/superfecta_single.php';
 
+
+
 		global $db, $amp_conf, $astman;
 		$options = array(
-			'db' => $db,
+			'db' => $this->db,
 			'amp_conf' => $amp_conf,
 			'astman' => $astman,
 			'debug' => 0,
@@ -460,10 +462,12 @@ class Superfecta implements \BMO {
 				$scheme = $_REQUEST['scheme'];
 				$source = $_REQUEST['source'];
 
+				$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES (?, ?, ?)";
+				$sth = $this->db->prepare($sql);
 				foreach($params as $key => $data) {
-					$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES (?, ?, ?)";
-					$sth = $this->db->prepare($sql);
-					$sth->execute(array($scheme . "_" . $source, $key, $_POST[$key]));
+                                        if (strcmp($data['type'], 'internal') != 0) {
+					        $sth->execute(array($scheme . "_" . $source, $key, $_POST[$key]));
+                                        }
 				}
 				return array("status" => true);
 			break;
