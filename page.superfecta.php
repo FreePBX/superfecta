@@ -178,7 +178,7 @@ switch($action) {
 		$middle = load_view(__DIR__.'/views/main.php', array("schemes" => FreePBX::Superfecta()->getAllSchemes()));
 }
 
-$currentScheme = $_REQUEST['scheme'] ? $_REQUEST['scheme'] : '';
+$currentScheme = !empty($_REQUEST['scheme']) ? $_REQUEST['scheme'] : '';
 $allSchemes = FreePBX::Superfecta()->getAllSchemes();
 
 //show_view(__DIR__."/views/header.php", array("schemes" => $scheme_list));

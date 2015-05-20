@@ -279,7 +279,7 @@ class Superfecta implements \BMO {
 				"name" => strtoupper($class_class->name),
 				"description" => $class_class->description,
 				"filename" => basename($filename),
-				"selected" => ($conf['processor'] == basename($filename)) ? TRUE : FALSE,
+				"selected" => false, //functionality seems strange here
 			);
 			unset($class_class);
 		}

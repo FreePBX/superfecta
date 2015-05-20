@@ -19,7 +19,7 @@
     <?php foreach($schemes as $scheme) {?>
       <tr class="scheme" id="<?php echo $scheme['name']?>" data-name="<?php echo $scheme['name']?>">
         <td>
-          <a href="https://github.com/wenzhixin/bootstrap-table"><?php echo $scheme['name']?></a>
+          <a href="?display=superfecta&amp;action=edit&amp;scheme=<?php echo $scheme['name']?>"><?php echo $scheme['name']?></a>
         </td>
         <td class="scheme-actions">
           <i class="fa fa-toggle-<?php echo $scheme['powered'] ? 'on' : 'off'?>" data-type="power"></i>
