@@ -13,7 +13,7 @@ if (! function_exists("outn")) {
 }
 
 // Set execute permissions for AGI script
-chmod(dirname(__FILE__) . '/superfecta.agi', 0755);
+chmod(dirname(__FILE__) . '/agi/superfecta.agi', 0755);
 
 //a list of the columns that need to be included in the table. Functions below will add and delete columns as necessary.
 $cols['source'] = "varchar(150) NOT NULL";

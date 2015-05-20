@@ -2,7 +2,7 @@
 	<rawname>superfecta</rawname>
 	<repo>extended</repo>
 	<name>CID Superfecta</name>
-	<version>13.0.1alpha2</version>
+	<version>13.0.1alpha3</version>
 	<type>setup</type>
 	<category>Admin</category>
 	<publisher>POSSA</publisher>
@@ -12,6 +12,7 @@
 		Provides simultaneous use of, and complete control over multiple caller id data sources.
 	</description>
 	<changelog>
+		*13.0.1alpha3* Errors during install
 		*13.0.1alpha2* Reskin and stylize. Remove multifecta for now.
 		*12.0.1* Updated interface. Performance enhancements
 		*2.11.16* Remove usage of really old installer methods for 2.8 and lower that no longer apply
