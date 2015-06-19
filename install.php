@@ -303,7 +303,7 @@ $dir_iterator = new RecursiveDirectoryIterator($amp_conf['AMPBIN']."/");
 $iterator = new RecursiveIteratorIterator($dir_iterator, RecursiveIteratorIterator::SELF_FIRST);
 foreach ($iterator as $filename) {
 	$path_parts = pathinfo($filename);
-	if(($path_parts['extension'] == "php") && is_link($filename)) {
+	if(!empty($path_parts['extension']) && ($path_parts['extension'] == "php") && is_link($filename)) {
 		$location = readlink($filename);
 		if(($location) && (dirname($location) == dirname(__FILE__)."/bin") && !file_exists($location)) {
 			out("Removing ".$filename);

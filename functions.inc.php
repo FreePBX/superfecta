@@ -98,8 +98,10 @@ function superfecta_hook_core($viewing_itemid, $target_menuid) {
 function superfecta_hookProcess_core($viewing_itemid, $request) {
 	$db = \FreePBX::Database();
 	// TODO: move sql to functions superfecta_did_(add, del, edit)
-	if (!isset($request['action']))
-	return;
+	if (!isset($request['action'])) {
+		return;
+	}
+	$result = '';
 	switch ($request['action']) {
 		case 'addIncoming':
 		if ($request['enable_superfecta'] == 'yes') {
