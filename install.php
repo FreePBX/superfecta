@@ -1,4 +1,7 @@
 <?php
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
+$fs = new Filesystem();
 
 if (! function_exists("out")) {
 	function out($text) {
@@ -13,8 +16,12 @@ if (! function_exists("outn")) {
 }
 
 // Set execute permissions for AGI script
-chmod(dirname(__FILE__) . '/agi/superfecta.agi', 0755);
-
+#@chmod(dirname(__FILE__) . '/agi/superfecta.agi', 0755);
+try {
+	$fs->chmod(__DIR__.'/agi/superfecta.agi', 0755);
+} catch (IOExceptionInterface $e) {
+	out(sprintf("Couldn't set permissions on %s please run fwconsole chown from the command line",__DIR__.'/agi/superfecta.agi'));
+}
 //a list of the columns that need to be included in the table. Functions below will add and delete columns as necessary.
 $cols['source'] = "varchar(150) NOT NULL";
 $cols['field'] = "varchar(150) NOT NULL";
@@ -234,6 +241,7 @@ if ($res->numRows() > 0) {
 	$sql = "SELECT value FROM superfectaconfig WHERE source = 'base' AND field = 'sources' LIMIT 1";
 	$res = $db->query($sql);
 	if (!DB::IsError($res)) {
+		$sources = array();
 		while ($row = $res->fetchRow(DB_FETCHMODE_ASSOC)) {
 			if ($row['value'] != '') {
 				$sources = explode(',', $row['value']);
@@ -292,6 +300,7 @@ if ((function_exists('cidlookup_add')) && (function_exists('cidlookup_edit'))) {
 
 $sql = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'superfecta_to_incoming' AND COLUMN_NAME = 'scheme'";
 $schemes = $db->getAll($sql, array(), DB_FETCHMODE_ASSOC);
+$schemes[0] = is_array($schemes[0])?$schemes[0]:array();
 if (!in_array('scheme', $schemes[0])) {
 	$sql = 'ALTER TABLE `superfecta_to_incoming` ADD `scheme` VARCHAR(50) NOT NULL;';
 	$db->query($sql);

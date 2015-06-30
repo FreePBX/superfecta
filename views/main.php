@@ -8,7 +8,16 @@
     <?php echo _('CallerID Superfecta for FreePBX is a utility program which adds incoming CallerID name lookups to your Asterisk system using multiple data sources')?>
   </div>
 </div>
-<table data-toggle="table" data-unique-id="_id" data-sort-name="stargazers_count" data-sort-order="desc" id="scheme-list">
+  <table id="scheme-list"
+         data-unique-id="_id"
+         data-cache="false"
+         data-cookie="true"
+         data-cookie-id-table="superfectaschemes"
+         data-maintain-selected="true"
+         data-toggle="table"
+         data-pagination="true"
+         data-search="true"
+         class="table table-striped">
   <thead>
     <tr>
       <th data-field="order" data-sortable="true"><?php echo _('Order')?></th>
