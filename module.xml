@@ -2,7 +2,7 @@
 	<rawname>superfecta</rawname>
 	<repo>extended</repo>
 	<name>CID Superfecta</name>
-	<version>13.0.2</version>
+	<version>13.0.3</version>
 	<type>setup</type>
 	<category>Admin</category>
 	<publisher>Sangoma Technologies Corporation</publisher>
@@ -12,6 +12,7 @@
 		Provides simultaneous use of, and complete control over multiple caller id data sources.
 	</description>
 	<changelog>
+		*13.0.3* FREEPBX-9587 CID Superfecta install fails
 		*13.0.2* Version bump Beta
 		*13.0.1alpha4* Fix adding scheme and other glitches in the matrix
 		*13.0.1alpha3* Errors during install
