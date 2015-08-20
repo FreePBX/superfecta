@@ -56,7 +56,10 @@ class GoogleContacts extends superfecta_base {
                                                            'scope'         => Google_Service_ReadContacts::SCOPE_CONTACTS_READONLY));
 
         // Get the previous Access Token, if any
-        $access_token_json = base64_decode($run_param['Access_Token']);
+        $access_token_json = NULL;
+        if (array_key_exists('Access_Token', $run_param)) {
+            $access_token_json = base64_decode($run_param['Access_Token']);
+        }
 
         // Have we got an fresh google code? If so use it.
         if ($this->newGoogleCodeHasBeenSent($run_param)) {
@@ -122,17 +125,8 @@ class GoogleContacts extends superfecta_base {
         $this->updateParameter("Access_Token", base64_encode($new_at_json));
     }
 
-    private function updateParameter($param_name, $new_value) {
-        $source  = str_replace("base_", "", $_REQUEST['scheme']);
-        $source .= "_";
-        $source .= "GoogleContacts";
-        $sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES ('".$source."', '".$param_name."', '".$new_value."')";
-        sql($sql);
-    }
-
-
     private function giveAuthLink() {
-        $this->DebugPrint("<h3>To set or reset authorisation</h3>Click the link in the next line, then copy the code google give into the box above, then click submit in the box above, and then use another test number to check all is working.<p>");
+        $this->DebugPrint("<h3>To set or reset authorisation</h3>Click the link in the next line, then copy the code google give into the second box on the settings area for Google Contacts. Then click submit in the settings, and then use another test number to check all is working.<p>");
         $this->DebugPrint("To start that process, <b>click <a target='_blank' href='".$this->googleAuthManager->codeGettingUrl()."'>here</a></b><p>.");
     }
 
