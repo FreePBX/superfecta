@@ -1,6 +1,6 @@
 <?php
 /**** **** **** **** **** **** **** **** **** **** **** **** **** **** **** **** 
- * XBMC Notification Module for CID Superfecta
+ * KODI Notification Module for CID Superfecta
  * 
  * 
  * Version history:
@@ -18,29 +18,30 @@
  *     2014-12-15	- Fixed RPC API : play/pause works for video + audio, Volume fixed
  * 					- Faster execution time
  * 					- Better Debug messages + cleaner code
+ *     2015-08-25  Changed XBMC to KODI (Official project name change)
  * 
  **** **** **** **** **** **** **** **** **** **** **** **** **** **** **** ****/
 
-class Send_to_XBMC extends superfecta_base {
+class Send_to_KODI extends superfecta_base {
 
-	public $description = "This source will send the CallerID number and CallerID name to XBMC hosts.";
+	public $description = "This source will send the CallerID number and CallerID name to KODI hosts.";
 	public $version_requirement = "2.11";
 	public $source_param = array(
 		'Hosts' => array(
-			'description' => 'Specify The IP(s) or host name(s) of the XMBC device(s). (ie: 192.168.0.155). Separate multiple host by commas (ie: tv.local,tv2.local,10.0.0.3 )',
+			'description' => 'Specify The IP(s) or host name(s) of the KODI device(s). (ie: 192.168.0.155). Separate multiple host by commas (ie: tv.local,tv2.local,10.0.0.3 )',
 			'type' => 'textarea'
 		),
 		'Port' => array(
-			'description' => 'Specify The PORT Defined On Your XMBC Installation. (Example: 8080)',
+			'description' => 'Specify The PORT Defined On Your KODI Installation. (Example: 8080)',
 			'type' => 'number',
 			'default' => '8080'
 		),
 		'UserName' => array(
-			'description' => 'Specify the user name defined in your XBMC installation, blank for none.',
+			'description' => 'Specify the user name defined in your KODI installation, blank for none.',
 			'type' => 'text'
 		),
 		'PassWord' => array(
-			'description' => 'Specify The Password Defined In Your XBMC Installation.  Blank For None.',
+			'description' => 'Specify The Password Defined In Your KODI Installation.  Blank For None.',
 			'type' => 'password'
 		),
 		'Mode' => array(
@@ -48,7 +49,7 @@ class Send_to_XBMC extends superfecta_base {
 			'type' => 'select',
 			'option' => array(
 				'old' => 'Old API : For XBMC until v11',
-				'json' => 'Json RPC: For XBMC v12 and up (Frodo)',
+				'json' => 'Json RPC: For XBMC v12(Frodo), KODI v13 and up.',
 			),
 			'default' => 'json',
 		),
@@ -66,7 +67,7 @@ class Send_to_XBMC extends superfecta_base {
 			'default' => '5',
 		),
 		'Format_Incoming_Number' => array(
-			'description' => 'Specify the way you want the number to be displayed on your XBMC',
+			'description' => 'Specify the way you want the number to be displayed on your KODI',
 			'type' => 'select',
 			'option' => array(
 				1 => '(132) 456-7890',
@@ -120,18 +121,18 @@ class Send_to_XBMC extends superfecta_base {
 
 			//make notification
 			if($first_caller_id){
-				$my_xbmc_title	=$first_caller_id;
-				$my_xbmc_mess	=$thenumberformated;
+				$my_kodi_title	=$first_caller_id;
+				$my_kodi_mess	=$thenumberformated;
 			}
 			else {
-				$my_xbmc_title	=$thenumberformated;
-				$my_xbmc_mess	=$my_anonymous_title;
+				$my_kodi_title	=$thenumberformated;
+				$my_kodi_mess	=$my_anonymous_title;
 			}
 
-			$my_xbmc_time = $run_param['Notification_Time']*1000;
-			$my_xbmc_icon = "DefaultActor.png";       // relative to /usr/share/xbmc/addons/skin.confluence/media or absolute, should this be a $source_param?
+			$my_kodi_time = $run_param['Notification_Time']*1000;
+			$my_kodi_icon = "DefaultActor.png";       // relative to /usr/share/kodi/addons/skin.confluence/media or absolute, should this be a $source_param?
 
-			$my_dharma_params.="$my_xbmc_title,$my_xbmc_mess,$my_xbmc_time,$my_xbmc_icon";
+			$my_dharma_params.="$my_kodi_title,$my_kodi_mess,$my_kodi_time,$my_kodi_icon";
 			$my_dharma_params = urlencode($my_dharma_params);
 
 			// hosts loop
@@ -149,28 +150,28 @@ class Send_to_XBMC extends superfecta_base {
 				// make url params
 				if($run_param['Mode']=='json'){
 
-					// Send the volume command. BTW if 'volume' is not casted to integer, it just DONT work with a cryptic debug message... 
-					// You XBMC team could do this better !!!!
-					$url1 = $url . $this->_myXbmcUrl('Application.SetVolume',array('volume'=>intval($run_param['Change_Volume'])));
+					// Send the volume command. BTW if 'volume' is not casted to integer, it just WONT work with a cryptic debug message... 
+					// You KODI team could do this better !!!!
+					$url1 = $url . $this->_myKodiUrl('Application.SetVolume',array('volume'=>intval($run_param['Change_Volume'])));
 					
 					// Toggle beween play and pause : Normally in play mode, it pause ; in stop mode, it wont play ; but in pause mode, it would play
 					
-					// XBMC team : Why cant you just expose a simple Pause command in the API, like it was before ! 
-					// the current API would require to first query Xxbmc to get its play state, then depending on this, send the corresponding the playid/action
+					// KODI team : Why cant you just expose a simple Pause command in the API, like it was before ! 
+					// the current API would require to first query KODI to get its play state, then depending on this, send the corresponding the playid/action
 					// This is definitively just complicated for nothing, and LONG (2 requests)
 					
-					$url2_video = $url . $this->_myXbmcUrl('Player.PlayPause',array('playerid'=>1));
-					$url2_audio = $url . $this->_myXbmcUrl('Player.PlayPause',array('playerid'=>0));
+					$url2_video = $url . $this->_myKodiUrl('Player.PlayPause',array('playerid'=>1));
+					$url2_audio = $url . $this->_myKodiUrl('Player.PlayPause',array('playerid'=>0));
 
 
 					// send Notification
 					$notification=array(
-						'title'			=>$my_xbmc_title,
-						'message'		=>$my_xbmc_mess,
-						'image'			=>$my_xbmc_icon,
-						'displaytime'	=>$my_xbmc_time
+						'title'			=>$my_kodi_title,
+						'message'		=>$my_kodi_mess,
+						'image'			=>$my_kodi_icon,
+						'displaytime'	=>$my_kodi_time
 					);
-					$url3 = $url . $this->_myXbmcUrl('GUI.ShowNotification',$notification);
+					$url3 = $url . $this->_myKodiUrl('GUI.ShowNotification',$notification);
 
 				}
 				else{
@@ -182,7 +183,7 @@ class Send_to_XBMC extends superfecta_base {
 				$time_host_started=$this->mctime_float();
 
 				//Send URLs and debug output
-				$this->DebugPrint("Sending XBMC command(s) To Host: $host",DEBUG_INFO);
+				$this->DebugPrint("Sending KODI command(s) To Host: $host",DEBUG_INFO);
 				if ($run_param['Change_Volume'] != ''){
 					$this->DebugPrint("	- Setting Volume on $host...",DEBUG_INFO);
 					$this->DebugPrint('<code>Volume URL: ' . $url1 . '</code>',DEBUG_ALL);
@@ -204,13 +205,13 @@ class Send_to_XBMC extends superfecta_base {
 				}
 				$this->DebugPrint(" --> Processed in ".$this->_GetExeTimeSince($time_host_started)."<br>\n" ,DEBUG_INFO);
 			}
-			$this->DebugPrint("Total time spent by module Send_To_XBMC : ".$this->_GetExeTimeSince($time_module_started) . " to notify all hosts.<br>\n" ,DEBUG_INFO);
+			$this->DebugPrint("Total time spent by module Send_To_KODI : ".$this->_GetExeTimeSince($time_module_started) . " to notify all hosts.<br>\n" ,DEBUG_INFO);
 		}
 	}
 
 
 	// -----------------------------------------------------------------------------------
-	private function _myXbmcUrl($method,$params){
+	private function _myKodiUrl($method,$params){
 		$request=array();
 		$request['jsonrpc']	="2.0";
 		$request['method']	="$method";
@@ -223,7 +224,7 @@ class Send_to_XBMC extends superfecta_base {
 	}
 
 	// -----------------------------------------------------------------------------------
-	// we just need to send a request to the API, not waiting to the answer
+	// we just need to send a request to the API, not wait for the answer.
 	private function _triggerUrlFasterThanRoadRunner($url,$timeout=0.001){
 		$opts = array(
 			'http'=>array(
