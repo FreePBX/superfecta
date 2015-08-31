@@ -16,6 +16,7 @@
  * 
  * Releases:
  * 
+ * 2015-08-31		Convert url to https
  * 2014-06-25		Added days parameter to allow old reports to be ignored for spam scoring
  * 2013-11-xx		Spam score lookup added back
  * 2012-07-xx		All automatic reporting and spam score lookup removed
@@ -76,7 +77,7 @@ class Who_Called extends superfecta_base {
 		// Perform spam score lookup if enabled
 		if ($run_param['Spam_Scoring'])  {
 			$this->DebugPrint("Searching Who Called for number of user reports ... ");
-			$url = "http://whocalled.us/do?action=getScore&name=" . $run_param['Username'] . "&pass=" . $run_param['Password'] . "&phoneNumber=$thenumber&days=". $run_param['Report_Age'];
+			$url = "https://whocalled.us/do?action=getScore&name=" . $run_param['Username'] . "&pass=" . $run_param['Password'] . "&phoneNumber=$thenumber&days=". $run_param['Report_Age'];
 			$value = $this->get_url_contents($url);
 			$variables = preg_split('/\&/i', $value);
 			$dataout = array();
@@ -105,7 +106,7 @@ class Who_Called extends superfecta_base {
 		// Perform CNAM lookup if enabled
 		if ($run_param['CNAM_Lookup'])  {
 			$this->DebugPrint("Searching Who Called for CNAM... ");
-			$url = "http://whocalled.us/do?action=getWho&name=" . $run_param['Username'] . "&pass=" . $run_param['Password'] . "&phoneNumber=$thenumber";
+			$url = "https://whocalled.us/do?action=getWho&name=" . $run_param['Username'] . "&pass=" . $run_param['Password'] . "&phoneNumber=$thenumber";
 			$value = $this->get_url_contents($url);
 			$variables = preg_split('/\&/i', $value);
 			$dataout = array();
