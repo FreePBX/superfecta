@@ -4,13 +4,16 @@
  * Developer Notes:
  *      The __contruct function needs work, it will not currently support multiple APIs in multiple schemes
  *      The API key must be saved before devices are available in the dropdown menu
- *      There is a decent PHP class for PushBullet https://github.com/ivkos/PushBullet-for-PHP, may be worth exploring this option
- *      The PushBullet service does not support foreign accented characters, empty notice gets pushed.
+ *      There is a decent PHP class for PushBullet https://github.com/ivkos/PushBullet-for-PHP, may be worth exploring this option      
  * 
  * Version History:
  *      2014-06-04  Initial commit, working but rough
  *      2014-06-07  Caches devices to flat file to prevent polling PushBullet for devices on every lookup
- * 
+ *	2015-08-31  Convert CNAME to UTF-8 before sending to PushBullet in order to support accented characters. - modified by Pierre Fagrell
+ *                  Add some debugging and remove double whitespaces
+ *                  Shorten text in order to fit in phone notification bar
+ *                  Add option to send to all devices or PushBullet channel
+ *	
  *** *** *** *** *** *** *** *** *** ***/
 
 
@@ -24,6 +27,23 @@ class Send_to_PushBullet extends superfecta_base {
 				'type' => 'text',
 				'default' => null
 		),
+                'Target_Type' => array(
+                                'description' => 'Choose where you want to send the notification',
+                                'type' => 'select',
+                                'option' => array(
+                                        1 => 'Single device selected below',
+                                        2 => 'All your devices',
+                                        3 => 'Channel entered below',
+				),
+		),
+
+                'Channel' => array(
+                                'description' => 'Enter tag of your existing pushbullet channel to use as target',
+                                'type' => 'text',
+                                'default' => null
+				
+		),
+
 		'Device' => array(
 				'description' => 'After entering and saving API key, select from registered devices',
 				'type' => 'select',
@@ -89,9 +109,20 @@ class Send_to_PushBullet extends superfecta_base {
 		curl_setopt($curl, CURLOPT_URL, $url);
 		curl_setopt($curl, CURLOPT_USERPWD, $run_param['API']);
 		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'POST');
-		$queryData['device_iden'] = $run_param['Device'];
+		
+		// If a single device is selected add the device tag. For all devices or channel leave it out
+		if ($run_param['Target_Type'] == 1) {
+			$queryData['device_iden'] = $run_param['Device'];
+		}
+
+		// If channel is selected add the channel tag
+		if ($run_param['Target_Type'] == 3) {
+			$queryData['channel_tag'] = $run_param['Channel'];
+		}
+
+
 		$queryData['type'] = 'note';
-		$queryData['title'] = "Incoming call from: ".$first_caller_id;
+		$queryData['title'] = "Call: ".$this->reformat_cname($first_caller_id);
 		$queryData['body']   = "From phone number: ".$thenumber;
 		$data = json_encode($queryData);
 		curl_setopt($curl, CURLOPT_HTTPHEADER, array(
@@ -103,5 +134,48 @@ class Send_to_PushBullet extends superfecta_base {
 		curl_setopt($curl, CURLOPT_HEADER, FALSE);
 		$response = curl_exec($curl);
 		curl_close($curl);
+		$this->DebugPrint("Complete curl array: \n");
+		print_r($queryData);
+				
 	}
+
+	function reformat_cname($content) {
+		$this->DebugPrint("Initial data: \n");
+		$this->DebugPrint("<pre>".$content."</pre>");
+
+		$this->DebugPrint("Converting to UTF-8: ");
+		$content = $this->utf_convert_string($content);
+
+		$this->DebugPrint("UTF-converted data: \n");
+                $this->DebugPrint("<pre>".$content."</pre>");
+
+		$this->DebugPrint("Removing double whitespace, result: \n");
+		$content = $this->remove_double_whitespace($content);
+		$this->DebugPrint("<pre>".$content."</pre>");
+
+		return $content;
+	}
+
+	function utf_convert_string($content) {
+	    if(!mb_check_encoding($content, 'UTF-8')
+	        OR !($content === mb_convert_encoding(mb_convert_encoding($content, 'UTF-32', 'UTF-8' ), 'UTF-8', 'UTF-32'))) {
+	
+	        $content = mb_convert_encoding($content, 'UTF-8');
+	
+	        if (mb_check_encoding($content, 'UTF-8')) {
+	            	$this->DebugPrint('Converted to UTF-8');
+	        } else {
+            		$this->DebugPrint('Could not convert to UTF-8');
+	        }
+	    }
+	    return $content; 
+	} 
+
+        function remove_double_whitespace($content) {
+            $content = preg_replace('/\s\s+/', ' ', $content);
+            
+            return $content;
+        }
+
+
 }
