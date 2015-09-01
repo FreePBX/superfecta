@@ -123,8 +123,8 @@ class SE_clearsearch_HE extends superfecta_base {
                                 }
                                 else
                                 {
-                                        $start = strpos($value, "class=\"result-bn  medium\">");
-                                        $value = substr($value,$start+30);
+                                        $start = strpos($value, "itemprop=\"name\">");
+                                        $value = substr($value,$start+16);
                                         $end = strpos($value, "</span>");
                                         $value = substr($value,0,$end);
 
