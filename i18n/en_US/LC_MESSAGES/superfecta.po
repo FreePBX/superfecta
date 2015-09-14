@@ -1,22 +1,3 @@
-# This file is part of FreePBX.
-#
-# For licensing information, please see the file named LICENSE located in the module directory
-#
-# FreePBX language template for superfecta
-# Copyright (C) 2008-2015 Sangoma, Inc.
-#
-msgid ""
-msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-07-01 14:27-0400\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-
 #: functions.inc.php:50 views/scheme.php:143
 msgid "ALL"
 msgstr ""
@@ -34,9 +15,7 @@ msgid "Add Scheme"
 msgstr ""
 
 #: views/scheme.php:7
-msgid ""
-"Add, Remove, Enable, Disable, Sort and Configure data sources as appropriate "
-"for your situation."
+msgid "Add, Remove, Enable, Disable, Sort and Configure data sources as appropriate for your situation."
 msgstr ""
 
 #: views/add_scheme.php:149 views/scheme.php:89
@@ -57,9 +36,7 @@ msgid "Caller ID Superfecta"
 msgstr ""
 
 #: views/main.php:8
-msgid ""
-"CallerID Superfecta for FreePBX is a utility program which adds incoming "
-"CallerID name lookups to your Asterisk system using multiple data sources"
+msgid "CallerID Superfecta for FreePBX is a utility program which adds incoming CallerID name lookups to your Asterisk system using multiple data sources"
 msgstr ""
 
 #: Superfecta.class.php:155
@@ -108,11 +85,7 @@ msgid "Define a new name for this scheme"
 msgstr ""
 
 #: views/add_scheme.php:43 views/scheme.php:46
-msgid ""
-"Define the expected DID Number if your trunk passes DID on incoming calls. "
-"<br><br>Leave this blank to match calls with any or no DID info.<br><br>This "
-"rule trys both absolute and pattern matching (eg \"_2[345]X\", to match a "
-"range of numbers). (The \"_\" underscore is optional.)"
+msgid "Define the expected DID Number if your trunk passes DID on incoming calls. <br><br>Leave this blank to match calls with any or no DID info.<br><br>This rule trys both absolute and pattern matching (eg \"_2[345]X\", to match a range of numbers). (The \"_\" underscore is optional.)"
 msgstr ""
 
 #: views/scheme.php:17
@@ -145,80 +118,35 @@ msgid "INFO"
 msgstr ""
 
 #: views/add_scheme.php:159 views/scheme.php:89
-msgid ""
-"If you wish to prefix information on the caller id you can specify a url "
-"here where that prefix can be retrieved.<br>The data will not be parsed in "
-"any way, and will be truncated to the first 10 characters.<br>Example URL: "
-"http://www.example.com/GetCID.php?phone_number=[thenumber]<br>[thenumber] "
-"will be replaced with the full 10 digit phone number when the URL is called"
+msgid "If you wish to prefix information on the caller id you can specify a url here where that prefix can be retrieved.<br>The data will not be parsed in any way, and will be truncated to the first 10 characters.<br>Example URL: http://www.example.com/GetCID.php?phone_number=[thenumber]<br>[thenumber] will be replaced with the full 10 digit phone number when the URL is called"
 msgstr ""
 
 #: views/add_scheme.php:63
 msgid ""
-"Incoming calls with CID matching the patterns specified here will use this "
-"CID Scheme. If this is left blank, this scheme will be used for any CID. It "
-"can be used to add or remove prefixes.<br>\n"
-"\t\t\t\t\t\t\t<strong>Many sources require a specific number of digits in "
-"the phone number. It is recommended that you use the patterns to remove "
-"excess country code data from incoming CID to increase the effectiveness of "
-"this module.</strong><br>\n"
-"\t\t\t\t\t\t\tNote that a pattern without a + or | (to add or remove a "
-"prefix) will not make any changes but will create a match. Only the first "
-"matched pattern will be executed and the remaining rules will not be acted "
-"on.<br /><br /><b>Rules:</b><br />\n"
-"\t\t\t\t\t\t\t<strong>X</strong>&nbsp;&nbsp;&nbsp; matches any digit from 0-"
-"9<br />\n"
-"\t\t\t\t\t\t\t<strong>Z</strong>&nbsp;&nbsp;&nbsp; matches any digit from 1-"
-"9<br />\n"
-"\t\t\t\t\t\t\t<strong>N</strong>&nbsp;&nbsp;&nbsp; matches any digit from 2-"
-"9<br />\n"
-"\t\t\t\t\t\t\t<strong>[1237-9]</strong>&nbsp;   matches any digit or letter "
-"in the brackets (in this example, 1,2,3,7,8,9)<br />\n"
-"\t\t\t\t\t\t\t<strong>.</strong>&nbsp;&nbsp;&nbsp; wildcard, matches one or "
-"more characters (not allowed before a | or +)<br />\n"
-"\t\t\t\t\t\t\t<strong>|</strong>&nbsp;&nbsp;&nbsp; removes a dialing prefix "
-"from the number (for example, 613|NXXXXXX would match when some one dialed "
-"\"6135551234\" but would only pass \"5551234\" to the Superfecta look up.)"
-"<br><strong>+</strong>&nbsp;&nbsp;&nbsp; adds a dialing prefix to the number "
-"(for example, 1613+NXXXXXX would match when someone dialed \"5551234\" and "
-"would pass \"16135551234\" to the Superfecta look up.)<br /><br />\n"
-"\t\t\t\t\t\t\tYou can also use both + and |, for example: 01+0|1ZXXXXXXXXX "
-"would match \"016065551234\" and dial it as \"0116065551234\" Note that the "
-"order does not matter, eg. 0|01+1ZXXXXXXXXX does the same thing."
+"Incoming calls with CID matching the patterns specified here will use this CID Scheme. If this is left blank, this scheme will be used for any CID. It can be used to add or remove prefixes.<br>\n"
+"\t\t\t\t\t\t\t<strong>Many sources require a specific number of digits in the phone number. It is recommended that you use the patterns to remove excess country code data from incoming CID to increase the effectiveness of this module.</strong><br>\n"
+"\t\t\t\t\t\t\tNote that a pattern without a + or | (to add or remove a prefix) will not make any changes but will create a match. Only the first matched pattern will be executed and the remaining rules will not be acted on.<br /><br /><b>Rules:</b><br />\n"
+"\t\t\t\t\t\t\t<strong>X</strong>&nbsp;&nbsp;&nbsp; matches any digit from 0-9<br />\n"
+"\t\t\t\t\t\t\t<strong>Z</strong>&nbsp;&nbsp;&nbsp; matches any digit from 1-9<br />\n"
+"\t\t\t\t\t\t\t<strong>N</strong>&nbsp;&nbsp;&nbsp; matches any digit from 2-9<br />\n"
+"\t\t\t\t\t\t\t<strong>[1237-9]</strong>&nbsp;   matches any digit or letter in the brackets (in this example, 1,2,3,7,8,9)<br />\n"
+"\t\t\t\t\t\t\t<strong>.</strong>&nbsp;&nbsp;&nbsp; wildcard, matches one or more characters (not allowed before a | or +)<br />\n"
+"\t\t\t\t\t\t\t<strong>|</strong>&nbsp;&nbsp;&nbsp; removes a dialing prefix from the number (for example, 613|NXXXXXX would match when some one dialed \"6135551234\" but would only pass \"5551234\" to the Superfecta look up.)<br><strong>+</strong>&nbsp;&nbsp;&nbsp; adds a dialing prefix to the number (for example, 1613+NXXXXXX would match when someone dialed \"5551234\" and would pass \"16135551234\" to the Superfecta look up.)<br /><br />\n"
+"\t\t\t\t\t\t\tYou can also use both + and |, for example: 01+0|1ZXXXXXXXXX would match \"016065551234\" and dial it as \"0116065551234\" Note that the order does not matter, eg. 0|01+1ZXXXXXXXXX does the same thing."
 msgstr ""
 
 #: views/scheme.php:50
 msgid ""
-"Incoming calls with CID matching the patterns specified here will use this "
-"CID Scheme. If this is left blank, this scheme will be used for any CID. It "
-"can be used to add or remove prefixes.<br>\n"
-"\t\t\t\t<strong>Many sources require a specific number of digits in the "
-"phone number. It is recommended that you use the patterns to remove excess "
-"country code data from incoming CID to increase the effectiveness of this "
-"module.</strong><br>\n"
-"\t\t\t\tNote that a pattern without a + or | (to add or remove a prefix) "
-"will not make any changes but will create a match. Only the first matched "
-"pattern will be executed and the remaining rules will not be acted on.<br /"
-"><br /><b>Rules:</b><br />\n"
-"\t\t\t\t<strong>X</strong>&nbsp;&nbsp;&nbsp; matches any digit from 0-9<br /"
-">\n"
-"\t\t\t\t<strong>Z</strong>&nbsp;&nbsp;&nbsp; matches any digit from 1-9<br /"
-">\n"
-"\t\t\t\t<strong>N</strong>&nbsp;&nbsp;&nbsp; matches any digit from 2-9<br /"
-">\n"
-"\t\t\t\t<strong>[1237-9]</strong>&nbsp;   matches any digit or letter in the "
-"brackets (in this example, 1,2,3,7,8,9)<br />\n"
-"\t\t\t\t<strong>.</strong>&nbsp;&nbsp;&nbsp; wildcard, matches one or more "
-"characters (not allowed before a | or +)<br />\n"
-"\t\t\t\t<strong>|</strong>&nbsp;&nbsp;&nbsp; removes a dialing prefix from "
-"the number (for example, 613|NXXXXXX would match when some one dialed "
-"\"6135551234\" but would only pass \"5551234\" to the Superfecta look up.)"
-"<br><strong>+</strong>&nbsp;&nbsp;&nbsp; adds a dialing prefix to the number "
-"(for example, 1613+NXXXXXX would match when someone dialed \"5551234\" and "
-"would pass \"16135551234\" to the Superfecta look up.)<br /><br />\n"
-"\t\t\t\tYou can also use both + and |, for example: 01+0|1ZXXXXXXXXX would "
-"match \"016065551234\" and dial it as \"0116065551234\" Note that the order "
-"does not matter, eg. 0|01+1ZXXXXXXXXX does the same thing."
+"Incoming calls with CID matching the patterns specified here will use this CID Scheme. If this is left blank, this scheme will be used for any CID. It can be used to add or remove prefixes.<br>\n"
+"\t\t\t\t<strong>Many sources require a specific number of digits in the phone number. It is recommended that you use the patterns to remove excess country code data from incoming CID to increase the effectiveness of this module.</strong><br>\n"
+"\t\t\t\tNote that a pattern without a + or | (to add or remove a prefix) will not make any changes but will create a match. Only the first matched pattern will be executed and the remaining rules will not be acted on.<br /><br /><b>Rules:</b><br />\n"
+"\t\t\t\t<strong>X</strong>&nbsp;&nbsp;&nbsp; matches any digit from 0-9<br />\n"
+"\t\t\t\t<strong>Z</strong>&nbsp;&nbsp;&nbsp; matches any digit from 1-9<br />\n"
+"\t\t\t\t<strong>N</strong>&nbsp;&nbsp;&nbsp; matches any digit from 2-9<br />\n"
+"\t\t\t\t<strong>[1237-9]</strong>&nbsp;   matches any digit or letter in the brackets (in this example, 1,2,3,7,8,9)<br />\n"
+"\t\t\t\t<strong>.</strong>&nbsp;&nbsp;&nbsp; wildcard, matches one or more characters (not allowed before a | or +)<br />\n"
+"\t\t\t\t<strong>|</strong>&nbsp;&nbsp;&nbsp; removes a dialing prefix from the number (for example, 613|NXXXXXX would match when some one dialed \"6135551234\" but would only pass \"5551234\" to the Superfecta look up.)<br><strong>+</strong>&nbsp;&nbsp;&nbsp; adds a dialing prefix to the number (for example, 1613+NXXXXXX would match when someone dialed \"5551234\" and would pass \"16135551234\" to the Superfecta look up.)<br /><br />\n"
+"\t\t\t\tYou can also use both + and |, for example: 01+0|1ZXXXXXXXXX would match \"016065551234\" and dial it as \"0116065551234\" Note that the order does not matter, eg. 0|01+1ZXXXXXXXXX does the same thing."
 msgstr ""
 
 #: page.superfecta.php:191
@@ -349,9 +277,7 @@ msgid "Scheme names cannot be blank"
 msgstr ""
 
 #: views/scheme.php:9
-msgid ""
-"Select which data source(s) to use for your lookups, and the order in which "
-"you want them used:"
+msgid "Select which data source(s) to use for your lookups, and the order in which you want them used:"
 msgstr ""
 
 #: views/add_scheme.php:266 views/scheme.php:122
@@ -377,16 +303,11 @@ msgid "Spam Call, Sending call to: %s"
 msgstr ""
 
 #: views/add_scheme.php:139 views/scheme.php:85
-msgid ""
-"Specify a timeout in seconds defining how long multifecta will obey the "
-"source priority. After this timeout, the first source to respond with a CNAM "
-"will be taken, until \"Lookup Timeout\" is reached"
+msgid "Specify a timeout in seconds defining how long multifecta will obey the source priority. After this timeout, the first source to respond with a CNAM will be taken, until \"Lookup Timeout\" is reached"
 msgstr ""
 
 #: views/add_scheme.php:92 views/scheme.php:65
-msgid ""
-"Specify a timeout in seconds for each source. If the source fails to return "
-"a result within the alloted time, the script will move on."
+msgid "Specify a timeout in seconds for each source. If the source fails to return a result within the alloted time, the script will move on."
 msgstr ""
 
 #: Superfecta.class.php:112
@@ -443,13 +364,11 @@ msgstr ""
 
 #: views/footer.php:2
 #, php-format
-msgid ""
-"This Project is hosted/maintained at %s Feel free to fork/help/complain."
+msgid "This Project is hosted/maintained at %s Feel free to fork/help/complain."
 msgstr ""
 
 #: views/add_scheme.php:256 views/scheme.php:118
-msgid ""
-"This is the threshold to send the call to the specified destination below"
+msgid "This is the threshold to send the call to the specified destination below"
 msgstr ""
 
 #: Superfecta.class.php:239
@@ -458,9 +377,7 @@ msgid "This scheme would set the caller id to: %s"
 msgstr ""
 
 #: views/add_scheme.php:179 views/scheme.php:93
-msgid ""
-"This text will be prepended to Caller ID information to help you identify "
-"calls as SPAM calls"
+msgid "This text will be prepended to Caller ID information to help you identify calls as SPAM calls"
 msgstr ""
 
 #: page.superfecta.php:152
@@ -480,9 +397,7 @@ msgid "When enabled, Spam calls can be diverted or terminated"
 msgstr ""
 
 #: views/add_scheme.php:206 views/scheme.php:97
-msgid ""
-"When enabled, the text entered in \"SPAM Text\" (above) will replace the CID "
-"completely rather than pre-pending the CID value"
+msgid "When enabled, the text entered in \"SPAM Text\" (above) will replace the CID completely rather than pre-pending the CID value"
 msgstr ""
 
 #: views/add_scheme.php:276
@@ -513,4 +428,28 @@ msgstr ""
 
 #: views/scheme.php:101 views/scheme.php:111
 msgid "yes"
+msgstr ""
+
+#: functions.inc.php:17
+msgid "Enable CID Superfecta"
+msgstr ""
+
+#: functions.inc.php:20
+msgid "Scheme"
+msgstr ""
+
+#: functions.inc.php:15
+msgid "Superfecta CID Lookup"
+msgstr ""
+
+#: superfecta.i18n.php:4
+msgid "Admin"
+msgstr ""
+
+#: superfecta.i18n.php:3 superfecta.i18n.php:6
+msgid "CID Superfecta"
+msgstr ""
+
+#: superfecta.i18n.php:5
+msgid "Provides simultaneous use of, and complete control over multiple caller id data sources."
 msgstr ""
