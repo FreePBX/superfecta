@@ -1224,7 +1224,7 @@ class superfecta_base {
 			if ($this->isDebug($level)) {
 				foreach ($v as $key => $data) {
 					//Get rid of useless HTML tags!
-					$v[$key] = is_array($data) ? array_map('htmlentities', $data) : htmlentities($data);
+					$v[$key] = is_array($data) ? array_map('htmlentities', $data) : htmlentities($data,ENT_COMPAT | ENT_HTML401, "UTF-8");
 				}
 				$this->out("<pre>");
 				var_dump($v);
@@ -1295,14 +1295,14 @@ class superfecta_base {
 			if (is_array($regexp)) {
 				// Look through each pattern to see if we find a match -- take the first match
 				foreach ($regexp as $pattern) {
-					$this->DebugPrint("Testing pattern=" . htmlentities($pattern), DEBUG_WARN);
+					$this->DebugPrint("Testing pattern=" . htmlentities($pattern,ENT_COMPAT | ENT_HTML401, "UTF-8"), DEBUG_WARN);
 					$result = preg_match($pattern, $value, $match);
 					if ($result) {
 						break;
 					}
 				}
 			} else {
-				$this->DebugPrint("Testing pattern=" . htmlentities($regexp), DEBUG_WARN);
+				$this->DebugPrint("Testing pattern=" . htmlentities($regexp,ENT_COMPAT | ENT_HTML401, "UTF-8"), DEBUG_WARN);
 				$result = preg_match($regexp, $value, $match);
 			}
 			$this->DebugPrint("Dumping Matches", DEBUG_WARN);
