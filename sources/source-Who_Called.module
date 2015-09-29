@@ -3,24 +3,25 @@
 /**** * **** * **** * **** * **** * **** * **** * **** * **** * **** * **** * **** * **** *
  * Developer notes:
  *
- * Who called API details here: http://whocalled.us/about
+ * Who called API details here: https://whocalled.us/about
  * Earlier versions of this module used the automatic report back to the whocalled site which resulted in
  * registering reports against numbers that were not spammers. All reporting functionality has been removed.
- * Developer consensus is not to support any type of automatic reporting. Not noted in the /about page is the
+ * Superfecta Developer consensus is not to support any type of automatic reporting. Not noted in the /about page is the
  * API parameter, "days" which can be used to limit how far back reports are counted when determining the spam score
  *
  * Terms of Service:
  *
- * Small amount of information is available from http://whocalled.us/about, but there are no terms of service.
+ * Small amount of information is available from https://whocalled.us/about, but there are no terms of service.
  * It is assumed that Superfecta usage is allowed.
  *
  * Releases:
  *
+ * 2015-08-15		Added additional debug output and changed user/pass to optional
+ * 2015-08-14		Changed URLS to https by Neil Townsend
  * 2015-08-13		Update URL
  * 2014-06-25		Added days parameter to allow old reports to be ignored for spam scoring
  * 2013-11-xx		Spam score lookup added back
  * 2012-07-xx		All automatic reporting and spam score lookup removed
- * 2011-07-xx		Initial migration to 2.11 platform
  *
  **** * **** * **** * **** * **** * **** * **** * **** * **** * **** * **** * **** * **** */
 
@@ -28,15 +29,15 @@
 
 class Who_Called extends superfecta_base {
 
-	public $description = "http://whocalled.us - Caller ID Name and SPAM report listings as provided by registered users of the whocalled service. This service requires authentication which is configured by clicking on this datasource.";
+	public $description = "https://whocalled.us - Caller ID Name and SPAM report listings as provided by the whocalled service. Authentication is optional, and is configured by clicking on this data source.";
 	public $version_requirement = "2.11";
 	public $source_param = array(
 		'Username' => array(
-			'description' => 'REQUIRED - your user account login name on the whocalled.us web site.',
+			'description' => 'OPTIONAL - your user account login name on the whocalled.us web site.',
 			'type' => 'text',
 		),
 		'Password' => array(
-			'description' => 'REQUIRED - your user account password on the whocalled.us web site.',
+			'description' => 'OPTIONAL - your user account password on the whocalled.us web site.',
 			'type' => 'password',
 		),
 		'CNAM_Lookup' => array(
@@ -50,7 +51,7 @@ class Who_Called extends superfecta_base {
 			'default' => 'checked',
 		),
 		'SPAM_Threshold' => array(
-			'description' => 'Minimum number of Who Called reports required to mark a call as spam. Low numbers could give false positives.',
+			'description' => 'Minimum number of Who Called reports required to mark a call as spam. Setting this number too low could give false positives.',
 			'type' => 'number',
 			'default' => '15',
 		),
@@ -64,19 +65,23 @@ class Who_Called extends superfecta_base {
 	function get_caller_id($thenumber, $run_param=array()) {
 		$debug = $this->debug;
 
-		// Abandon lookups if who called username or password is not set
-		if(empty($run_param['Username']) || empty($run_param['Password'])) {
-			$this->DebugPrint("Who Called username and/or password is not set!");
-			return '';
+		// username and password are optional, but it one is provided both must be
+		if($run_param['Username'] || $run_param['Password']) {
+			if(empty($run_param['Username']) || empty($run_param['Password'])) {
+				$this->DebugPrint("The whocalled username and password are optional, but if one is set, they both must be.");
+				return '';
+			}
 		}
 
-		// Trim number to 10 digits, lookup will succeed with 11 digits, but return nothing
+		// Site is for NANP numbers only, trim to 10 digits, lookup will succeed with 11 digits, but return nothing
 		$thenumber = substr($thenumber, -10);
 
+
 		// Perform spam score lookup if enabled
-		if (!empty($run_param['Spam_Scoring']))  {
+		if ($run_param['Spam_Scoring'])  {
 			$this->DebugPrint("Searching Who Called for number of user reports ... ");
 			$url = "https://whocalled.us/do?action=getScore&name=" . $run_param['Username'] . "&pass=" . $run_param['Password'] . "&phoneNumber=$thenumber&days=". $run_param['Report_Age'];
+			$this->DebugPrint("SPAM URL: ".$url,3);
 			$value = $this->get_url_contents($url);
 			$variables = preg_split('/\&/i', $value);
 			$dataout = array();
@@ -106,6 +111,7 @@ class Who_Called extends superfecta_base {
 		if ($run_param['CNAM_Lookup'])  {
 			$this->DebugPrint("Searching Who Called for CNAM... ");
 			$url = "https://whocalled.us/do?action=getWho&name=" . $run_param['Username'] . "&pass=" . $run_param['Password'] . "&phoneNumber=$thenumber";
+			$this->DebugPrint("NAME URL: ".$url,3);
 			$value = $this->get_url_contents($url);
 			$variables = preg_split('/\&/i', $value);
 			$dataout = array();
@@ -116,7 +122,7 @@ class Who_Called extends superfecta_base {
 			$variables = $dataout;
 			if ($variables['success'] == '1') {
 				if (!empty($variables['who'])) {
-					$caller_id = str_replace("+"," ",$variables['who']);
+					$caller_id = $variables['who'];
 				} else {
 					$this->DebugPrint("CNAM not found");
 				}
