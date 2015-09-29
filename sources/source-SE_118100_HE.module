@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 /*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
  * Developer Notes:
@@ -79,7 +79,7 @@
                         {
                                 $start = strpos($value, "nameBlock\">");
                                 $value = substr($value,$start+12);
-                                $end = strpos($value, "</span>");
+                                $end = strpos($value, "</a>");
                                 $value = substr($value,0,$end);
                         }
                         if (strlen($value) > 1)
