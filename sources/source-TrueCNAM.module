@@ -1,0 +1,83 @@
+<?php
+/**
+ * TrueCNAM module
+ * Service Details at http://truecnam.com/products
+ * Free Users get 2 lookups/minute 25/hour as of this note. Visit site for latest info
+ * Copyright (C) 2015 Sangoma Technologies
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * 06.04.2014 initial release by James Finstrom jfinstrom@sangoma.com
+ *
+ */
+ 
+class TrueCNAM extends superfecta_base{
+  public $description = "truecnam.com lookup module can pull CNAM, stored CNAM and spam score.";
+  public $version_requirement = "2.11";
+  public $source_param = array(
+    'APIKey' => array(
+      'description' => "API Key - Can be obtained after registering with truecnam.com",
+      'type' => 'text'
+    ),
+    'Password' => array(
+      'description' => "truecnam password",
+      'type' => 'password'
+    ),
+    'TrueSpam' => array(
+      'description' => 'Evaluate TrueSpam score',
+      'type' => 'checkbox',
+      'default' => 'checked'
+    ),
+    'TrueSpam_Threshold' => array(
+      'description' => "Maximum TrueSPAM score",
+      'type' => 'number',
+      'default' => '6'
+    )
+  );
+  function get_caller_id($thenumber, $run_param=array()) {
+    $debug = $this->debug;
+    if(empty($run_param['APIKey']) || empty($run_param['Password'])) {
+        $this->DebugPrint("TrueCNAM requires a registered account.");
+        return '';
+    }
+    if($run_param['TrueSPAM']){
+      $this->DebugPrint("TrueSpam enabled");
+      $resp_type = 'extended';
+    }else{
+      $this->DebugPrint("TrueSpam disabled");
+      $resp_type = 'basic';
+    }
+    $url = sprintf("https://api.truecnam.net/api/v1?username=%s&password=%s&resp_type=%s&resp_format=json&calling_number=%s&call_party=terminating",$run_param['APIKey'],$run_param['Password'],$resp_type,$thenumber);
+    $ret = $this->get_url_contents($url);
+    $data = json_decode($ret, true);
+    if($data['err']){
+     $this->DebugPrint("Lookup Error");
+      $this->DebugPrint($data['error_message']);
+    }
+    if($run_param['TrueSPAM']){
+      if($data['spam_score_match']){
+        $this->DebugPrint("TrueSpam Score availible");
+        if($data['spam_score'] > $run_param['TrueSpam_Threshold']){
+          $this->spam = true;
+        }else{
+          $this->spam = false;
+        }
+      }else{
+        $this->DebugPrint("TrueSpam Score not availible");
+        $this->spam = false;
+      }
+    }
+    return($data['name']);
+  }
+}

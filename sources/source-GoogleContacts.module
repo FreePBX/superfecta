@@ -1,0 +1,138 @@
+<?php
+
+class GoogleContacts extends superfecta_base {
+
+    public $description = "Use your personal google contacts list to provide Caller ID.<br><br>This data source requires Superfecta Module version 2.11 or higher.";
+    public $version_requirement = "2.11";
+
+    public $source_param = array(
+                'Google_ID' => array(
+                                'description' => 'Your Google ID, eg. fred@google.com',
+                                'type' => 'text',
+                                'default' => '',
+                ),
+                'Google_Code' => array(
+                                'description' => 'This is a one off code to authenticate superfecta to Google for you. How to set it: Once you\'ve set your ID (box above), and clicked submit to save it, you should click on debug (below). Further instructions will then be provided in the debug area below. Once you\'ve followed them, copy the code from the Google authentication page into here (replace the "XXX"), click submit, and click debug below, having put a test number in the field below.',
+                                'type' => 'text',
+                                'default' => 'XXX',
+                ),
+                'Access_Token' => array(
+                                'description' => 'CHANGE AT YOUR PERIL. This is the day to day authorisation code for the requests. If it is blank, there is an authorisation issue.',
+                                'type' => 'password',
+                                'default' => '',
+                ),
+                'Client_ID' => array(
+                                'description' => 'CHANGE ONLY IF YOU\'RE SURE: This is how Gogole CID Superfecta identifies itself to Google.',
+                                'type' => 'password',
+                                'default' => '548592751709-18v02det8n197dq7c2n3i05m0mqbl84a.apps.googleusercontent.com',
+                ),
+                'Client_Secret' => array(
+                                'description' => 'CHANGE ONLY IF YOU\'RE SURE: This is how Google CID Superfecta certifies itself with Google.',
+                                'type' => 'password',
+                                'default' => 'Xjoudw6lWCg2L4XARjZueGLR',
+                ),
+    );
+
+    var $googleAuthManager;
+    var $contactGetter;
+
+    function __construct() {
+        set_include_path(dirname(__FILE__)."/../includes/oauth-google/" . PATH_SEPARATOR . get_include_path());
+        require_once("GoogleAuthManager.php");
+        require_once("Google_Service_ReadContacts.php");
+
+        $this->googleAuthManager = new GoogleAuthManager();
+        $this->contactGetter = new Google_Service_ReadContacts($this->googleAuthManager);
+    }
+
+
+    function get_caller_id($thenumber, $run_param=array()) {
+        $this->DebugPrint("Searching Google Contacts for number: {$thenumber}");
+
+        // Set up the auth manager for this person.
+        $check = $this->googleAuthManager->configure(array('client_id'     => $run_param['Client_ID'],
+                                                           'client_secret' => $run_param['Client_Secret'],
+                                                           'user_id'       => $run_param['Google_ID'],
+                                                           'scope'         => Google_Service_ReadContacts::SCOPE_CONTACTS_READONLY));
+
+        // Get the previous Access Token, if any
+        $access_token_json = NULL;
+        if (array_key_exists('Access_Token', $run_param)) {
+            $access_token_json = base64_decode($run_param['Access_Token']);
+        }
+
+        // Have we got an fresh google code? If so use it.
+        if ($this->newGoogleCodeHasBeenSent($run_param)) {
+            $access_token_json = $this->googleAuthManager->configure(array('code' => $run_param['Google_Code']));
+            if ($access_token_json == null) {
+                $this->DebugPrint("Google Code did not result in authentication.");
+                $this->giveAuthLink();
+                $this->clearUsedOrFailedGoogleCode();
+                return null;
+            }
+
+            $this->updateAccessToken($access_token_json);
+            $this->clearUsedOrFailedgoogleCode();
+        }
+        // No code, so hopefully we have a previous access token, if not ...
+        else if (strlen($access_token_json) < 10) {
+            $this->DebugPrint("Access Token missing: authorisation is needed.");
+            $this->giveAuthLink();
+            return null;
+        }
+        // If we do have the previous access token
+        else {
+            $access_token_json_check = $this->googleAuthManager->configure(array('access_token_json' => $access_token_json));
+            // If the token has been updated, store the new one
+            if (strcmp($access_token_json_check, $access_token_json) != 0) $this->updateAccessToken($access_token_json_check);
+        }
+
+        // Final check that the Auth manager is happy
+        if ($this->googleAuthManager->needAuthentication()) {
+            $this->DebugPrint("For an unclear reason, authoristation is failing.");
+            $this->giveAuthLink();
+            return null;
+        }
+
+        // If we've got here, we can actually try and make the call
+        $results = $this->contactGetter->getContactsForNumberEnding($thenumber);
+
+        if ($results == null) return null;
+
+        if ($results['success'] === 'no') {
+            DebugPrint("Failed to get number: ".$results['data']);
+            return null;
+        }
+
+        $score = -1;
+        $name = null;
+        foreach ($results['data'] as $key => $info) {
+            $s = $info['score'];
+            if ($s > $score) {
+                $score = $s;
+                $name = $info['name'];
+            }
+        }
+
+        return $name;
+    }
+
+    private function clearUsedOrFailedGoogleCode() {
+        $this->updateParameter("Google_Code", "XXX");
+    }
+
+    private function updateAccessToken($new_at_json) {
+        $this->updateParameter("Access_Token", base64_encode($new_at_json));
+    }
+
+    private function giveAuthLink() {
+        $this->DebugPrint("<h3>To set or reset authorisation</h3>Click the link in the next line, then copy the code google give into the second box on the settings area for Google Contacts. Then click submit in the settings, and then use another test number to check all is working.<p>");
+        $this->DebugPrint("To start that process, <b>click <a target='_blank' href='".$this->googleAuthManager->codeGettingUrl()."'>here</a></b><p>.");
+    }
+
+    private function newGoogleCodeHasBeenSent($run_param) {
+        if (strcmp($run_param['Google_Code'], 'XXX') === 0) return false;
+        return true;
+    }
+
+}
