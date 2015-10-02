@@ -2,17 +2,17 @@
 
 class SE_missatsamtal_HE extends superfecta_base {
 
-    public $description = "http://missatsamtal.se - A datasource identifying telemarketers in Sweden.";
+    public $description = "http://missatsamtal.se - A datasource identifying telemarketers in Sweden. Version 20151001.";
     public $version_requirement = "2.11";
 
     public $source_param = array(
              'SPAM_Value' => array (
                'description' => 'Specify the number of listings required to mark a call as spam.',
                'type' => 'number',
-	       'default' => 3
+               'default' => 3
              ),
              'API_Key' => ARRAY (
-               'description' => 'API Key is not yet available from missatsamtal.se (not needed)',
+               'description' => 'API Key are required and available from www.missatsamtal.se',
                'type' => 'text'
              )
     );
@@ -21,36 +21,41 @@ class SE_missatsamtal_HE extends superfecta_base {
         $caller_id = null;
 
         $this->DebugPrint("Searching missatsamtal.se... ");
-        $url = "http://api.missatsamtal.se/?action=search&number=$thenumber&numberOfCompanies=1";
+
+
+        $url = "https://api.missatsamtal.se/?action=search&number=$thenumber&numberOfCompanies=1&key=".$run_param['API_Key']."";
         $value = $this->get_url_contents($url);
 
-	// $VALUE = NAMNET PA FORETAGET
-	// $spamcalls = antalet ganger som spamnumret ar listat
-	
-	$start = strpos($value, "comments");            // STARTPOS is position for the first char in "comments"
-
+        // $spamcalls = antalet ganger som spamnumret ar listat
+        $this->DebugPrint("DEBUG-START:".$value.":DEBUG-END\n");
+        $start = strpos($value, "comments");            // STARTPOS is position for the first char in "comments"
         $value = substr($value,$start+11);              // Skip text "comments"
-        $this->DebugPrint("NEWVAULE=".$value."\n");
-
         $end = strpos($value, "\"");                    // Look for next ["] indication the end of the number
         $spamcalls = substr($value,0,$end);             // Save result in $spamcalls
-	
-	$start = strpos($value, "name");
-        $value = substr($value,$start+7);               // Skip text "name"
 
+        // $value = Foretagsnamnet
+        $start = strpos($value, "name");
+        $value = substr($value,$start+7);               // Skip text "name"
         $end = strpos($value, "\"");                    // Look for next ["] indication the end of the name
         $value = substr($value,0,$end);                 // Save result in $value from startpost 0 to endpos $end
 
-	$SPAM_threshold = intval($spamcalls);
-        $this->DebugPrint("SPAMVALUE RECEIVED=".$SPAM_threshold."\n");
-	    
-        if ($value != "0" ) {
+        // Exchange strange characters
+        $swedish = array("\\u00e5", "\\u00e4", "\\u00f6","\\u00c5", "\\u00c4", "\\u00d6");
+        $ascii = array("aa", "ae", "oe","AA", "AE", "OE");
+        $value = str_replace($swedish, $ascii, $value);
+
+        // $SPAM_threshold = Sets the number of comments reported, used by superfecta
+        $SPAM_threshold = intval($spamcalls);
+        $this->DebugPrint("SPAMVALUE:".$SPAM_threshold."\n");
+
+        if ($SPAM_threshold != 0 & $SPAM_threshold >= $run_param['SPAM_Value']) {
             $this->spam = true;
             $this->DebugPrint(" determined to be SPAM");
         } else {
+            $this->spam = false;
             $this->DebugPrint("Not a SPAM caller");
-	    return("");
+            return("");
         }
-        return("SPAM:".$value);
+        return("NAME:".$value);
     }
 }
