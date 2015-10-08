@@ -1,3 +1,17 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-10-08 06:55+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: ENCODING\n"
+"X-Generator: Translate Toolkit 1.11.0\n"
+
 #: functions.inc.php:50 views/scheme.php:143
 msgid "ALL"
 msgstr ""
@@ -114,7 +128,7 @@ msgstr ""
 
 #: views/scheme.php:18
 msgid "Enabled"
-msgstr ""
+msgstr "开启"
 
 #: includes/processors/superfecta_single.php:53
 #: includes/processors/superfecta_single.php:115
@@ -281,7 +295,7 @@ msgstr ""
 
 #: Superfecta.class.php:726
 msgid "Reset"
-msgstr ""
+msgstr "重新设置"
 
 #: Superfecta.class.php:324
 msgid "Returned Result would be:"
