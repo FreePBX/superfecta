@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-08 06:55+0200\n"
-"PO-Revision-Date: 2015-10-19 14:56+0200\n"
+"PO-Revision-Date: 2015-11-09 14:27+0200\n"
 "Last-Translator: james <zhulizhong@gmail.com>\n"
 "Language-Team: Simplified Chinese "
 "<http://weblate.freepbx.org/projects/freepbx/superfecta/zh_CN/>\n"
@@ -20,7 +20,7 @@ msgstr ""
 
 #: views/main.php:25
 msgid "Actions"
-msgstr "命令"
+msgstr "操作"
 
 #: views/header.php:3
 msgid "Add Caller ID Scheme"
