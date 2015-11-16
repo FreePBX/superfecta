@@ -181,9 +181,9 @@ function superfecta_hookGet_config($engine) {
 					$exten = $exten . (empty($cidnum) ? "" : "/" . $cidnum); //if a CID num is defined, add it
 
 					//https://github.com/POSSA/Caller-ID-Superfecta/issues/144
-					$ext->splice($context, $exten, 'dest-ext', new ext_setvar('CIDSFSCHEME', base64_encode($scheme)));
-					$ext->splice($context, $exten, 'dest-ext', new ext_agi(dirname(__FILE__) . '/agi/superfecta.agi'));
-					$ext->splice($context, $exten, 'dest-ext', new ext_setvar('CALLERID(name)', '${lookupcid}'));
+					$ext->splice($context, $exten, 'did-cid-hook', new ext_setvar('CIDSFSCHEME', base64_encode($scheme)));
+					$ext->splice($context, $exten, 'did-cid-hook', new ext_agi(dirname(__FILE__) . '/agi/superfecta.agi'));
+					$ext->splice($context, $exten, 'did-cid-hook', new ext_setvar('CALLERID(name)', '${lookupcid}'));
 				}
 			}
 		}
