@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-08 06:55+0200\n"
-"PO-Revision-Date: 2015-11-12 12:42+0200\n"
+"PO-Revision-Date: 2015-11-17 12:22+0200\n"
 "Last-Translator: james <zhulizhong@gmail.com>\n"
 "Language-Team: Simplified Chinese "
 "<http://weblate.freepbx.org/projects/freepbx/superfecta/zh_CN/>\n"
@@ -130,7 +130,7 @@ msgstr ""
 
 #: views/scheme.php:18
 msgid "Enabled"
-msgstr "开启"
+msgstr "启用"
 
 #: includes/processors/superfecta_single.php:53
 #: includes/processors/superfecta_single.php:115
@@ -297,7 +297,7 @@ msgstr ""
 
 #: Superfecta.class.php:726
 msgid "Reset"
-msgstr "重新设置"
+msgstr "重置"
 
 #: Superfecta.class.php:324
 msgid "Returned Result would be:"
