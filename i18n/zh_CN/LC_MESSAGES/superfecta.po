@@ -1,10 +1,26 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-10-08 06:55+0200\n"
+"PO-Revision-Date: 2015-11-23 13:55+0200\n"
+"Last-Translator: james <zhulizhong@gmail.com>\n"
+"Language-Team: Simplified Chinese "
+"<http://weblate.freepbx.org/projects/freepbx/superfecta/zh_CN/>\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 2.2-dev\n"
+
 #: functions.inc.php:50 views/scheme.php:143
 msgid "ALL"
 msgstr ""
 
 #: views/main.php:25
 msgid "Actions"
-msgstr ""
+msgstr "操作"
 
 #: views/header.php:3
 msgid "Add Caller ID Scheme"
@@ -50,7 +66,7 @@ msgstr ""
 
 #: views/scheme.php:130
 msgid "DID Number"
-msgstr ""
+msgstr "DID号码"
 
 #: views/add_scheme.php:33 views/scheme.php:46
 msgid "DID Rules"
@@ -98,7 +114,7 @@ msgstr ""
 
 #: views/scheme.php:17
 msgid "Description"
-msgstr ""
+msgstr "描述"
 
 #: views/scheme.php:38
 msgid "Edit Scheme"
@@ -114,7 +130,7 @@ msgstr ""
 
 #: views/scheme.php:18
 msgid "Enabled"
-msgstr ""
+msgstr "启用"
 
 #: includes/processors/superfecta_single.php:53
 #: includes/processors/superfecta_single.php:115
@@ -230,7 +246,7 @@ msgstr ""
 
 #: views/main.php:24
 msgid "Name"
-msgstr ""
+msgstr "名称"
 
 #: views/add_scheme.php:13
 msgid "New Scheme Name"
@@ -281,7 +297,7 @@ msgstr ""
 
 #: Superfecta.class.php:726
 msgid "Reset"
-msgstr ""
+msgstr "重置"
 
 #: Superfecta.class.php:324
 msgid "Returned Result would be:"
@@ -377,7 +393,7 @@ msgstr ""
 
 #: Superfecta.class.php:731
 msgid "Submit"
-msgstr ""
+msgstr "提交"
 
 #: views/add_scheme.php:102 views/scheme.php:70
 msgid "Superfecta Processor"
@@ -473,7 +489,7 @@ msgstr ""
 #: Superfecta.class.php:521 functions.inc.php:27 views/add_scheme.php:195
 #: views/add_scheme.php:222 views/scheme.php:30
 msgid "Yes"
-msgstr ""
+msgstr "是"
 
 #: Superfecta.class.php:608
 msgid "You cannot create a scheme the same name as an existing scheme"
