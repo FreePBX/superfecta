@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-14 12:39-0700\n"
+"POT-Creation-Date: 2015-11-24 12:56-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -40,6 +40,11 @@ msgid ""
 "for your situation."
 msgstr ""
 
+#: superfecta.i18n.php:6
+#: superfecta.i18n.php:12
+msgid "Admin"
+msgstr ""
+
 #: views/add_scheme.php:149
 #: views/scheme.php:89
 msgid "CID Prefix URL"
@@ -48,6 +53,11 @@ msgstr ""
 #: views/add_scheme.php:53
 #: views/scheme.php:50
 msgid "CID Rules"
+msgstr ""
+
+#: superfecta.i18n.php:4
+#: superfecta.i18n.php:10
+msgid "CID Superfecta"
 msgstr ""
 
 #: Superfecta.class.php:231
@@ -309,6 +319,12 @@ msgstr ""
 #: Superfecta.class.php:174
 #, php-format
 msgid "Prefix Url result took %s seconds."
+msgstr ""
+
+#: superfecta.i18n.php:8
+msgid ""
+"Provides simultaneous use of, and complete control over multiple caller id "
+"data sources."
 msgstr ""
 
 #: Superfecta.class.php:726
