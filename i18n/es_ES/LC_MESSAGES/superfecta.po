@@ -129,7 +129,7 @@ msgstr ""
 
 #: views/scheme.php:17
 msgid "Description"
-msgstr ""
+msgstr "Descripción"
 
 #: views/scheme.php:38
 msgid "Edit Scheme"
