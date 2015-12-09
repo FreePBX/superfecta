@@ -81,7 +81,7 @@ msgstr ""
 
 #: views/scheme.php:130
 msgid "DID Number"
-msgstr ""
+msgstr "Número DID"
 
 #: views/add_scheme.php:33 views/scheme.php:46
 msgid "DID Rules"
