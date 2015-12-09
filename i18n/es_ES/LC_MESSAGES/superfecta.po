@@ -27,7 +27,7 @@ msgstr ""
 
 #: views/main.php:25
 msgid "Actions"
-msgstr ""
+msgstr "Acciones"
 
 #: views/header.php:3
 msgid "Add Caller ID Scheme"
@@ -320,7 +320,7 @@ msgstr ""
 
 #: Superfecta.class.php:726
 msgid "Reset"
-msgstr ""
+msgstr "Restaura"
 
 #: Superfecta.class.php:324
 msgid "Returned Result would be:"
