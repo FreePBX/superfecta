@@ -145,7 +145,7 @@ msgstr ""
 
 #: views/scheme.php:18
 msgid "Enabled"
-msgstr ""
+msgstr "Habilitado"
 
 #: includes/processors/superfecta_single.php:53
 #: includes/processors/superfecta_single.php:115
@@ -261,7 +261,7 @@ msgstr ""
 
 #: views/main.php:24
 msgid "Name"
-msgstr ""
+msgstr "Nombre"
 
 #: views/add_scheme.php:13
 msgid "New Scheme Name"
@@ -416,7 +416,7 @@ msgstr ""
 
 #: Superfecta.class.php:731
 msgid "Submit"
-msgstr ""
+msgstr "Enviar"
 
 #: views/add_scheme.php:102 views/scheme.php:70
 msgid "Superfecta Processor"
@@ -524,7 +524,7 @@ msgstr ""
 
 #: views/scheme.php:103 views/scheme.php:113
 msgid "no"
-msgstr ""
+msgstr "No"
 
 #: Superfecta.class.php:325
 #, php-format
@@ -533,7 +533,7 @@ msgstr ""
 
 #: views/scheme.php:101 views/scheme.php:111
 msgid "yes"
-msgstr ""
+msgstr "si"
 
 #~ msgid "Enable CID Superfecta"
 #~ msgstr "Habilitar Superfecta CID"
