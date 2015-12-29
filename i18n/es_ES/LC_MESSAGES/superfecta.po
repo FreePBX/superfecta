@@ -10,14 +10,14 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-24 12:56-0800\n"
-"PO-Revision-Date: 2015-03-31 08:29+0200\n"
+"PO-Revision-Date: 2015-12-29 08:25+0200\n"
 "Last-Translator: Ernesto <ecasas@sangoma.com>\n"
-"Language-Team: Spanish <http://weblate.freepbx.org/projects/freepbx/"
-"superfecta/es_ES/>\n"
+"Language-Team: Spanish "
+"<http://weblate.freepbx.org/projects/freepbx/superfecta/es_ES/>\n"
+"Language: es_ES\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: es_ES\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 2.2-dev\n"
 
@@ -320,7 +320,7 @@ msgstr ""
 
 #: Superfecta.class.php:726
 msgid "Reset"
-msgstr "Restaura"
+msgstr "Reiniciar"
 
 #: Superfecta.class.php:324
 msgid "Returned Result would be:"
@@ -512,7 +512,7 @@ msgstr ""
 #: Superfecta.class.php:521 functions.inc.php:27 views/add_scheme.php:195
 #: views/add_scheme.php:222 views/scheme.php:30
 msgid "Yes"
-msgstr "Sí"
+msgstr "Si"
 
 #: Superfecta.class.php:608
 msgid "You cannot create a scheme the same name as an existing scheme"
