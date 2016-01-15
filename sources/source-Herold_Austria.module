@@ -16,6 +16,7 @@
  * Version History:
  * 2014-06-28	Initial migration from 2.2.x
  * 2014-07-02	Add business lookups and change urls to mobile site
+ * 2016-01-15   Regex fix
  *
  *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
 
@@ -43,7 +44,8 @@ class Herold_Austria extends superfecta_base {
 		// regex patterns to search for
 		$regexp = array(
 //			'~<div class="result-wrap"><h2 class="fullw"><a href=".*?">(.+?)</a></h2>~',   // 2014-06-27 working for residential
-			'~<b>1.</b> <a onclick=".*?" href=".*?">(.+?)</a>    </h2>~',  // 2014-07-02 working for residential and business from mobi links
+//			'~<b>1.</b> <a onclick=".*?" href=".*?">(.+?)</a>    </h2>~',  // 2014-07-02 working for residential and business from mobi links
+			'~<a data-clickpos="name" href=".*?">(.+?)<\/a>~',  // 2016-01-15 working for residential and business from mobi links
 		);
 
 		// first search for Residential match
