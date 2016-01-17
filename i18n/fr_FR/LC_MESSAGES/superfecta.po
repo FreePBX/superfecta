@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-24 12:56-0800\n"
-"PO-Revision-Date: 2016-01-16 09:02+0200\n"
+"PO-Revision-Date: 2016-01-16 22:56+0200\n"
 "Last-Translator: Nicolas <forums@riendeau.org>\n"
 "Language-Team: French "
 "<http://weblate.freepbx.org/projects/freepbx/superfecta/fr_FR/>\n"
@@ -26,7 +26,6 @@ msgid "ALL"
 msgstr ""
 
 #: views/main.php:25
-#, fuzzy
 msgid "Actions"
 msgstr "Actions"
 
@@ -130,7 +129,7 @@ msgstr ""
 
 #: views/scheme.php:17
 msgid "Description"
-msgstr ""
+msgstr "Description"
 
 #: views/scheme.php:38
 msgid "Edit Scheme"
@@ -271,7 +270,7 @@ msgstr ""
 #: Superfecta.class.php:523 functions.inc.php:29 views/add_scheme.php:197
 #: views/add_scheme.php:224 views/scheme.php:32
 msgid "No"
-msgstr ""
+msgstr "Non"
 
 #: Superfecta.class.php:242
 msgid "No callerid found"
@@ -319,7 +318,7 @@ msgstr ""
 
 #: Superfecta.class.php:726
 msgid "Reset"
-msgstr ""
+msgstr "Remise à 0"
 
 #: Superfecta.class.php:324
 msgid "Returned Result would be:"
@@ -415,7 +414,7 @@ msgstr ""
 
 #: Superfecta.class.php:731
 msgid "Submit"
-msgstr ""
+msgstr "Soumettre"
 
 #: views/add_scheme.php:102 views/scheme.php:70
 msgid "Superfecta Processor"
