@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-24 12:56-0800\n"
-"PO-Revision-Date: 2016-01-24 06:28+0200\n"
+"PO-Revision-Date: 2016-01-30 08:44+0200\n"
 "Last-Translator: Nicolas <forums@riendeau.org>\n"
 "Language-Team: French "
 "<http://weblate.freepbx.org/projects/freepbx/superfecta/fr_FR/>\n"
@@ -81,7 +81,7 @@ msgstr ""
 
 #: views/scheme.php:130
 msgid "DID Number"
-msgstr ""
+msgstr "Numéro DID"
 
 #: views/add_scheme.php:33 views/scheme.php:46
 msgid "DID Rules"
