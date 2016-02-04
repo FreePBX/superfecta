@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-24 12:56-0800\n"
-"PO-Revision-Date: 2016-02-01 03:17+0200\n"
+"PO-Revision-Date: 2016-02-03 23:11+0200\n"
 "Last-Translator: Nicolas Riendeau <freepbx@riendeau.org>\n"
 "Language-Team: French "
 "<http://weblate.freepbx.org/projects/freepbx/superfecta/fr_FR/>\n"
@@ -23,7 +23,7 @@ msgstr ""
 
 #: functions.inc.php:50 views/scheme.php:143
 msgid "ALL"
-msgstr ""
+msgstr "TOUT(E)"
 
 #: views/main.php:25
 msgid "Actions"
@@ -85,15 +85,15 @@ msgstr "Numéro DID"
 
 #: views/add_scheme.php:33 views/scheme.php:46
 msgid "DID Rules"
-msgstr ""
+msgstr "Règles de DID"
 
 #: views/scheme.php:16
 msgid "Data Source Name"
-msgstr ""
+msgstr "Nom de la source de données"
 
 #: views/scheme.php:138
 msgid "Debug Level"
-msgstr ""
+msgstr "Niveau de débogage"
 
 #: views/scheme.php:138
 msgid "Debug Level to display"
@@ -101,7 +101,7 @@ msgstr ""
 
 #: Superfecta.class.php:309
 msgid "Debug is on and set at level:"
-msgstr ""
+msgstr "Le débogage est activé est est au niveau :"
 
 #: views/scheme.php:5 views/scheme.php:128
 msgid "Debug/Test Run Scheme"
@@ -150,11 +150,11 @@ msgstr "Activé"
 #: includes/processors/superfecta_single.php:53
 #: includes/processors/superfecta_single.php:115
 msgid "Executing"
-msgstr ""
+msgstr "En exécution"
 
 #: views/scheme.php:141
 msgid "INFO"
-msgstr ""
+msgstr "INFO"
 
 #: views/add_scheme.php:159 views/scheme.php:89
 msgid ""
@@ -257,7 +257,7 @@ msgstr ""
 
 #: views/scheme.php:140
 msgid "NONE"
-msgstr ""
+msgstr "AUCUN"
 
 #: views/main.php:24
 msgid "Name"
@@ -286,11 +286,11 @@ msgstr ""
 
 #: views/main.php:23
 msgid "Order"
-msgstr ""
+msgstr "Ordre"
 
 #: views/scheme.php:134
 msgid "Phone Number"
-msgstr ""
+msgstr "Numéro de téléphone"
 
 #: views/scheme.php:134
 msgid "Phone number to test this scheme against"
@@ -322,7 +322,7 @@ msgstr "Remise à 0"
 
 #: Superfecta.class.php:324
 msgid "Returned Result would be:"
-msgstr ""
+msgstr "Le résultat retourné serait :"
 
 #: views/add_scheme.php:244 views/scheme.php:118
 msgid "SPAM Send Threshold"
@@ -437,7 +437,7 @@ msgstr ""
 #: Superfecta.class.php:83
 #, php-format
 msgid "The DID is: %s"
-msgstr ""
+msgstr "Le DID est : %s"
 
 #: views/scheme.php:130
 msgid "The DID to test this scheme against"
@@ -445,7 +445,7 @@ msgstr ""
 
 #: Superfecta.class.php:310
 msgid "The Original Number:"
-msgstr ""
+msgstr "Le numéro original :"
 
 #: Superfecta.class.php:311
 msgid "The Scheme:"
@@ -457,7 +457,7 @@ msgstr ""
 
 #: views/footer.php:4
 msgid "This Module's wiki pages can be found here."
-msgstr ""
+msgstr "Les pages wiki de ce module sont disponible ici."
 
 #: views/footer.php:2
 #, php-format
@@ -487,7 +487,7 @@ msgstr ""
 
 #: views/scheme.php:142
 msgid "WARN"
-msgstr ""
+msgstr "AVERTISSEMENT"
 
 #: views/main.php:4
 msgid "What is CallerID Superfecta?"
@@ -522,13 +522,13 @@ msgstr ""
 
 #: views/scheme.php:103 views/scheme.php:113
 msgid "no"
-msgstr ""
+msgstr "non"
 
 #: Superfecta.class.php:325
 #, php-format
 msgid "result took %s seconds"
-msgstr ""
+msgstr "le résultat a pris %s secondes"
 
 #: views/scheme.php:101 views/scheme.php:111
 msgid "yes"
-msgstr ""
+msgstr "oui"
