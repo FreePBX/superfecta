@@ -21,7 +21,8 @@ class OpenCNAM extends superfecta_base {
     );
 
     function get_caller_id($thenumber, $run_param=array()) {
-
+        $run_param['Account_SID'] = isset($run_param['Account_SID'])?$run_param['Account_SID']:null;
+        $run_param['Auth_Token'] = isset($run_param['Auth_Token'])?$run_param['Auth_Token']:null;
         $caller_id = null;
         $this->DebugPrint("Searching OpenCNAM ... ");
 
