@@ -7,7 +7,7 @@
  *
  * Version History:-
  * 2014-08-04	Initial commit by lgaetz
- *
+ * 2016-02-29	Initial Initialize variables
  *
  *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
 
@@ -46,12 +46,8 @@ class FreePBX_User_Mgr extends superfecta_base {
 		$wquery_result = null;
 
 		// Set defaults in case user hasn't
-		if (!$run_param['CNAM_Format']) {
-			$run_param['CNAM_Format'] = 1;
-		}
-		if (!$run_param['Filter_Length']) {
-			$run_param['Filter_Length'] = 0;
-		}
+    $run_param['CNAM_Format'] = isset($run_param['CNAM_Format'])?$run_param['CNAM_Format']:'1';
+    $run_param['Filter_Length'] = isset($run_param['Filter_Length'])?!$run_param['Filter_Length']:'0';
 		//  trim incoming number to specified filter length
 		if ($run_param['Filter_Length'] != 0 && strlen($thenumber) > $run_param['Filter_Length']) {
 			$thenumber = substr($thenumber, (-1*$run_param['Filter_Length']));
@@ -70,9 +66,10 @@ class FreePBX_User_Mgr extends superfecta_base {
 //		$results = $db->getAll($wquery_string, DB_FETCHMODE_ASSOC);
 
 		$results = sql($wquery_string, "getAll", DB_FETCHMODE_ASSOC);  //probably need an error handler here
+    $first_name = $last_name = '';
 		if (is_array($results)) {
-			$last_name = $results[0]['lname'];
-			$first_name = $results[0]['fname'];
+			$last_name = isset($results[0]['lname'])?$results[0]['lname']:'';
+			$first_name = isset($results[0]['fname'])?$results[0]['lname']:'';
 		}
 
 		if ($run_param['CNAM_Format'] == 1) {
