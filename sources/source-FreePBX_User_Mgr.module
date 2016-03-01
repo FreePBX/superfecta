@@ -44,7 +44,7 @@ class FreePBX_User_Mgr extends superfecta_base {
 		$wquery = null;
 		$wquery_string = null;
 		$wquery_result = null;
-
+    $umtable = "userman_users";
 		// Set defaults in case user hasn't
     $run_param['CNAM_Format'] = isset($run_param['CNAM_Format'])?$run_param['CNAM_Format']:'1';
     $run_param['Filter_Length'] = isset($run_param['Filter_Length'])?!$run_param['Filter_Length']:'0';
@@ -58,19 +58,13 @@ class FreePBX_User_Mgr extends superfecta_base {
 			$wquery .=  substr($thenumber,$x,1)."[^0-9]*" ;
 		}
 		$wquery = $wquery.(substr($thenumber,-1))."([^0-9]+|$)'";
-
-		$wquery_string = 'SELECT `fname`, `lname` FROM `freepbx_users` WHERE (`cell` REGEXP '.$wquery.') OR (`work` REGEXP '.$wquery.') OR (`home` REGEXP '.$wquery.')ORDER BY id DESC';
-
-		// The following lines work, and perhaps may be preferable to search
-//		global $db;
-//		$results = $db->getAll($wquery_string, DB_FETCHMODE_ASSOC);
-
-		$results = sql($wquery_string, "getAll", DB_FETCHMODE_ASSOC);  //probably need an error handler here
-    $first_name = $last_name = '';
-		if (is_array($results)) {
-			$last_name = isset($results[0]['lname'])?$results[0]['lname']:'';
-			$first_name = isset($results[0]['fname'])?$results[0]['lname']:'';
-		}
+    $sql = 'SELECT fname,lname FROM '.$umtable.' WHERE (cell REGEXP '.$wquery.') OR (work REGEXP '.$wquery.') OR (home REGEXP '.$wquery.') ORDER BY id DESC';
+    $dbh = \FreePBX::Database();
+    $stmt = $dbh->prepare($sql);
+    $stmt->execute();
+    $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+    $last_name = isset($result['lname'])?$result['lname']:'';
+    $first_name = isset($result['fname'])?$result['fname']:'';
 
 		if ($run_param['CNAM_Format'] == 1) {
 			$caller_id = $first_name." ".$last_name;
