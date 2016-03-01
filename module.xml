@@ -2,7 +2,7 @@
 	<rawname>superfecta</rawname>
 	<repo>extended</repo>
 	<name>CID Superfecta</name>
-	<version>13.0.3.3</version>
+	<version>13.0.3.4</version>
 	<type>setup</type>
 	<category>Admin</category>
 	<publisher>Sangoma Technologies Corporation</publisher>
@@ -12,6 +12,7 @@
 		Provides simultaneous use of, and complete control over multiple caller id data sources.
 	</description>
 	<changelog>
+		*13.0.3.4* Remove en_US Translations
 		*13.0.3.3* FREEPBX-10774
 		*13.0.3.1* FREEPBX-10209 htmlentities need to use UTF-8
 		*13.0.3.1* Fix whocalled source
