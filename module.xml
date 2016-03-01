@@ -2,7 +2,7 @@
 	<rawname>superfecta</rawname>
 	<repo>extended</repo>
 	<name>CID Superfecta</name>
-	<version>13.0.3.5</version>
+	<version>13.0.3.6</version>
 	<type>setup</type>
 	<category>Admin</category>
 	<publisher>Sangoma Technologies Corporation</publisher>
@@ -12,6 +12,7 @@
 		Provides simultaneous use of, and complete control over multiple caller id data sources.
 	</description>
 	<changelog>
+		*13.0.3.6* FREEPBX-11714 Move SQL to PDO change table, Additional testing
 		*13.0.3.5* FREEPBX-11714 validate variables, fix whoops errors, FREEPBX-11712 validate variables, fix whoops errors
 		*13.0.3.4* Remove en_US Translations
 		*13.0.3.3* FREEPBX-10774
