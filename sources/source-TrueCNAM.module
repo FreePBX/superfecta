@@ -21,7 +21,7 @@
  * 06.04.2014 initial release by James Finstrom jfinstrom@sangoma.com
  *
  */
- 
+
 class TrueCNAM extends superfecta_base{
   public $description = "truecnam.com lookup module can pull CNAM, stored CNAM and spam score.";
   public $version_requirement = "2.11";
@@ -46,6 +46,11 @@ class TrueCNAM extends superfecta_base{
     )
   );
   function get_caller_id($thenumber, $run_param=array()) {
+    $run_param['APIKey'] = isset($run_param['APIKey'])?$run_param['APIKey']:'';
+    $run_param['Password'] = isset($run_param['Password'])?$run_param['Password']:'';
+    $run_param['TrueSpam'] = isset($run_param['TrueSpam'])?$run_param['TrueSpam']:'checked';
+    $run_param['TrueSpam_Threshold'] = isset($run_param['TrueSpam_Threshold'])?$run_param['TrueSpam_Threshold']:'6';
+
     $debug = $this->debug;
     if(empty($run_param['APIKey']) || empty($run_param['Password'])) {
         $this->DebugPrint("TrueCNAM requires a registered account.");
