@@ -20,7 +20,7 @@ class UK_0870_me extends superfecta_base {
         $name = "";
         $spam = "";
 
-        $this->DebugPrint("Searching 0870.me - {$this->thenumber} ... ");
+        $this->DebugPrint("Searching 0870.me - $thenumber ... ");
 
         // Search 0870.me
         $url = "http://0870.me/get/json/$thenumber";
