@@ -33,7 +33,8 @@ class PhoneSpamFilter_UK extends superfecta_base {
 				$this->DebugPrint(' value of ' . $value . ' returned ... ');
 
 				$score = $value;
-				if ($score > $run_param['SPAM_Threshold']) {
+				$threshold = array_key_exists('SPAM_Threshold', $run_param) ? $run_param['SPAM_Threshold'] : 0;
+				if ($score > $threshold) {
 					$this->spam = true;
 					$this->DebugPrint(" determined to be SPAM");
 				} else {
