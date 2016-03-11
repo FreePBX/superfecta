@@ -22,8 +22,9 @@ class Telepest_UK extends superfecta_base {
         $debug = $this->debug;
 
         $caller_id = null;
-
-        if (($run_param['Get_SPAM_Score'] == 'on') || ($run_param['Get_Caller_ID_Name'] == 'on')) {
+		$getSpam = array_key_exists('Get_SPAM_Score', $run_param) ? $run_param['Get_SPAM_Score'] : NULL;
+        $getName = array_key_exists('Get_Caller_ID_Name', $run_param) ? $run_param['Get_Caller_ID_Name'] : NULL;
+        if (($getSpam == 'on') || ($getName == 'on')) {
             if (!$this->IsValidNumber('UK', $thenumber)) {
                 $this->DebugPrint("Skipping Source - Non UK number: {$thenumber}");
             } else {
