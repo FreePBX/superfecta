@@ -428,7 +428,7 @@ class Superfecta implements \BMO {
 				}
 			break;
 			case "update_sources":
-				$sources = implode(",", $_REQUEST['data']);
+				$sources = isset($_REQUEST['data'])?implode(",", $_REQUEST['data']):'';
 				$sql = "REPLACE INTO superfectaconfig (value, source, field) VALUES(?, ?, 'sources')";
 				$sth = $this->db->prepare($sql);
 				$sth->execute(array($sources, 'base_'.$_REQUEST['scheme']));
