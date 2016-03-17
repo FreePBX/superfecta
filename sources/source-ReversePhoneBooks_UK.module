@@ -47,18 +47,18 @@ class ReversePhoneBooks_UK extends superfecta_base {
 					$score = $value;
 					$threshold = array_key_exists('SPAM_Threshold', $run_param) ? $run_param['SPAM_Threshold'] : 0;
 					if ($score > $threshold) {
-					if ($score > $run_param['SPAM_Threshold']) {
-						$this->spam = true;
-						$this->DebugPrint(" "._("determined to be SPAM"));
-					} else {
-						$this->DebugPrint(_("Not a SPAM caller"));
+						if ($score > $run_param['SPAM_Threshold']) {
+							$this->spam = true;
+							$this->DebugPrint(" "._("determined to be SPAM"));
+						} else {
+							$this->DebugPrint(_("Not a SPAM caller"));
+						}
 					}
-
 				}
+			} else {
+				$this->DebugPrint(_("not found"));
 			}
-			$this->DebugPrint(_("not found"));
 		}
-		return(NULL);
+		return null;
 	}
-
 }
