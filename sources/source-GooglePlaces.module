@@ -31,7 +31,7 @@ class GooglePlaces extends superfecta_base {
          'Privacy_Policy' => array (
               'description' => _('Google Maps API requires this module provide the this privacy policy'),
               'type' => 'info',
-              'default' => '<textarea readonly cols="40" rows="5">Privacy Policy and Terms of Use:
+              'default' => '<input type = "hidden" name="Privacy_Policy" value=""><textarea readonly cols="40" name = "Google_Agreements" rows="5">Privacy Policy and Terms of Use:
   To comply with the Google Maps TOS,
   this module must have a privacy policy
   and terms of use. This is the privacy

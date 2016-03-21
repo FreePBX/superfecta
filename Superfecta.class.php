@@ -204,7 +204,6 @@ class Superfecta implements \BMO {
 			//Set Spam text
 			$spam_text = ($superfecta->isSpam()) ? $options['scheme_settings']['SPAM_Text'] : '';
 			if($superfecta->isSpam() && $options['scheme_settings']['SPAM_Text_Substitute'] == 'Y') {
-				dbug($options['scheme_settings']);
 				$callerid = $spam_text;
 			} else {
 				$callerid = $spam_text . " " . $superfecta->get_Prefix() . $callerid;
@@ -461,7 +460,6 @@ class Superfecta implements \BMO {
 
 				$scheme = $_REQUEST['scheme'];
 				$source = $_REQUEST['source'];
-
 				$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES (?, ?, ?)";
 				$sth = $this->db->prepare($sql);
 				foreach($params as $key => $data) {
@@ -532,6 +530,9 @@ class Superfecta implements \BMO {
 							$value = isset($n_settings[$key]) ? $n_settings[$key] : $default;
 							$form_html .= '<label for="'.$key.'">'.str_replace("_", " ", $key).'</label><a class="info"><span>'.$data['description'].'</span></a>';
 							$form_html .= '<input type="number" class="form-control" name="'.$key.'" id="'.$key.'" value="'.$value.'" /></td>';
+						break;
+						case "info":
+							$form_html .= $default;
 						break;
 						case "select":
 							$value = isset($n_settings[$key]) ? $n_settings[$key] : $default;
