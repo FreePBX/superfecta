@@ -255,6 +255,7 @@ class superfecta_base {
 		curl_setopt($crl, CURLOPT_CONNECTTIMEOUT, $this->curl_timeout);
 		curl_setopt($crl, CURLOPT_FAILONERROR, true);
 		curl_setopt($crl, CURLOPT_TIMEOUT, $this->curl_timeout);
+		curl_setopt($crl, CURLOPT_FOLLOWLOCATION, true);
 		if ($cookie_file) {
 			curl_setopt($crl, CURLOPT_COOKIEJAR, $cookie_file);
 			curl_setopt($crl, CURLOPT_COOKIEFILE, $cookie_file);
