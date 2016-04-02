@@ -29,33 +29,28 @@ class Herold_Austria extends superfecta_base {
 		$this->description = "http://www.herold.at/ - "._("These listings include data for Austria.");
 	}
 
-	function get_caller_id($thenumber, $run_param=array()) {
-		$this->DebugPrint(_("Searching"). "http://www.herold.at/ ... ");
+        function get_caller_id($thenumber, $run_param=array()) {
+                $this->DebugPrint(_("Searching"). "http://www.herold.at/ ... ");
 
+                // Set the url we're searching for
+                $res_rul = "http://www.herold.mobi/telefonbuch/was_$thenumber/";                        // url for searching residential listings
+                $bus_url = "http://www.herold.mobi/gelbe-seiten/was_$thenumber/";                       // url for searching business listings
 
-		// Set the url we're searching for
-//		$url = "http://www.herold.at/telefonbuch/telefon_" . $thenumber . "/";		// valid as of 2014-06-27 for residential
-//		$url = "http://www.herold.mobi/suche/was_$thenumber/";						// 2014-07-02 mostly okay for both residential and business but gives occasional false name
+                // regex patterns to search for
+                $regexp = array(
+                        '~>(.*?)</a>            </h2>~',
+                );
 
-		$res_rul = "http://www.herold.mobi/telefonbuch/was_$thenumber/";			// url for searching residential listings
-		$bus_url = "http://www.herold.mobi/gelbe-seiten/was_$thenumber/";			// url for searching business listings
+                $caller_id="";
+                // first search for Residential match
+                if ($this->SearchURL($res_rul, $regexp, $match)) {
+                        $caller_id = $this->ExtractMatch($match);
+                }
 
-		// regex patterns to search for
-		$regexp = array(
-//			'~<div class="result-wrap"><h2 class="fullw"><a href=".*?">(.+?)</a></h2>~',   // 2014-06-27 working for residential
-			'~<b>1.</b> <a onclick=".*?" href=".*?">(.+?)</a>    </h2>~',  // 2014-07-02 working for residential and business from mobi links
-		);
-
-		// first search for Residential match
-		if ($this->SearchURL($res_rul, $regexp, $match)) {
-			$caller_id = $this->ExtractMatch($match);
-		}
-
-		// if no residential match found, search business
-		if (!$caller_id && $this->SearchURL($bus_url, $regexp, $match)) {
-			$caller_id = $this->ExtractMatch($match);
-		}
-		return($caller_id);
-	}
-
+                // if no residential match found, search business
+                if (!$caller_id && $this->SearchURL($bus_url, $regexp, $match)) {
+                        $caller_id = $this->ExtractMatch($match);
+                }
+                return($caller_id);
+        }
 }

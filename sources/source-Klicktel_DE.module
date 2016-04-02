@@ -26,7 +26,8 @@ class Klicktel_DE extends superfecta_base {
         $regexp = array(
 //          '/.html"><strong>(.*)<\/strong>/',    // old regex from ver 2.2.x not working
 //          '/<h4><a href="http:\/\/www.klicktel.de\/.*?">.*?\. (.*?)<\/a><\/h4>/',  // working 2014-01-09
-            '/<h3 itemprop="name"><a href="http:\/\/www.klicktel.de\/.*?" target="_self">.*?\. (.*?)<\/a><\/h3>/',  // working 2014-07-25
+//            '/<h3 itemprop="name"><a href="http:\/\/www.klicktel.de\/.*?" target="_self">.*?\. (.*?)<\/a><\/h3>/',  
+            '/<h1 itemprop="name" class="title">(.*?)<\/h1>/', // working 2016-04-01
         );
 
         if ($this->SearchURL($url, $regexp, $match, NULL, TRUE)) {
