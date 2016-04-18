@@ -56,7 +56,7 @@ class TrueCNAM extends superfecta_base{
         $this->DebugPrint("TrueCNAM requires a registered account.");
         return '';
     }
-    if($run_param['TrueSPAM']){
+    if($run_param['TrueSpam']){
       $this->DebugPrint("TrueSpam enabled");
       $resp_type = 'extended';
     }else{
@@ -70,7 +70,7 @@ class TrueCNAM extends superfecta_base{
      $this->DebugPrint("Lookup Error");
       $this->DebugPrint($data['error_message']);
     }
-    if($run_param['TrueSPAM']){
+    if($run_param['TrueSpam']){
       if($data['spam_score_match']){
         $this->DebugPrint("TrueSpam Score availible");
         if($data['spam_score'] > $run_param['TrueSpam_Threshold']){
