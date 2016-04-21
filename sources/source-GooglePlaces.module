@@ -82,7 +82,7 @@ class GooglePlaces extends superfecta_base {
         $p = xml_parser_create();
         xml_parse_into_struct($p, $xml, $vals, $index);
         xml_parser_free($p);
-        $caller_id = $vals[$index["NAME"][0]]["value"];
+        $caller_id = isset($vals[$index["NAME"][0]]["value"]) ? $vals[$index["NAME"][0]]["value"]:null;
         if (strpos($xml,"DENIED") !== false) {
             $this->DebugPrint("Invalid API Key!");
         }
