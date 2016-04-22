@@ -2,7 +2,7 @@
 	<rawname>superfecta</rawname>
 	<repo>extended</repo>
 	<name>CID Superfecta</name>
-	<version>13.0.3.11</version>
+	<version>13.0.3.12</version>
 	<type>setup</type>
 	<category>Admin</category>
 	<publisher>Sangoma Technologies Corporation</publisher>
@@ -12,6 +12,7 @@
 		Provides simultaneous use of, and complete control over multiple caller id data sources.
 	</description>
 	<changelog>
+		*13.0.3.12* Wild guess on fixing this issue for FREEPBX-11857
 		*13.0.3.11* FREEPBX-11857 FREEPBX-12003
 		*13.0.3.10* FREEPBX-11857 Add info field type
 		*13.0.3.9* Correct if statement
