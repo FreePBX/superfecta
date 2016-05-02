@@ -51,6 +51,7 @@ class Herold_Austria extends superfecta_base {
                 if (!$caller_id && $this->SearchURL($bus_url, $regexp, $match)) {
                         $caller_id = $this->ExtractMatch($match);
                 }
+								$caller_id = isset($caller_id)?$caller_id:'';
                 return($caller_id);
         }
 }
