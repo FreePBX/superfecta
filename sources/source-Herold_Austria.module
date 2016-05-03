@@ -4,8 +4,8 @@
  * Developer Notes:
  *
  * There are two separate URLS for reverse searching, one for yellowpages one for ppl:
- *  http://www.herold.at/en/telefonbuch/telefon_$thenumber    - people
- *  http://www.herold.at/en/gelbe-seiten/telefon_$thenumber   - business
+ *	http://www.herold.at/en/telefonbuch/telefon_$thenumber		- people
+ *	http://www.herold.at/en/gelbe-seiten/telefon_$thenumber	 - business
  * I could only get reverse searches to work for ppl
  *
  * herold.at Terms of Service:
@@ -16,6 +16,7 @@
  * Version History:
  * 2014-06-28	Initial migration from 2.2.x
  * 2014-07-02	Add business lookups and change urls to mobile site
+ * 2016-05-03	 Fix code for new Herold mobile site template / Rewrite Number if cid is not correctly given from trunk for herold.
  *
  *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
 
@@ -29,29 +30,32 @@ class Herold_Austria extends superfecta_base {
 		$this->description = "http://www.herold.at/ - "._("These listings include data for Austria.");
 	}
 
-        function get_caller_id($thenumber, $run_param=array()) {
-                $this->DebugPrint(_("Searching"). "http://www.herold.at/ ... ");
+	function get_caller_id($thenumber, $run_param=array()) {
+		$this->DebugPrint(_("Searching"). "http://www.herold.at/ ... ");
 
-                // Set the url we're searching for
-                $res_rul = "http://www.herold.mobi/telefonbuch/was_$thenumber/";                        // url for searching residential listings
-                $bus_url = "http://www.herold.mobi/gelbe-seiten/was_$thenumber/";                       // url for searching business listings
+		// Set the url we're searching for
+		$res_rul = "http://www.herold.mobi/telefonbuch/was_".$thenumber."/";												// url for searching residential listings
+		$bus_url = "http://www.herold.mobi/gelbe-seiten/was_".$thenumber."/";											 // url for searching business listings
+		//Maybe uncomment this when you get the number from your trunk with leading +
+		//$thenumber=trim($thenumber,' ');
+		//$thenumber="00" . $thenumber;
 
-                // regex patterns to search for
-                $regexp = array(
-                        '~>(.*?)</a>            </h2>~',
-                );
+		// regex patterns to search for
+		$regexp = array(
+			'~<a data-clickpos="name" href=".*?">(.+?)</a>~',
+		);
 
-                $caller_id="";
-                // first search for Residential match
-                if ($this->SearchURL($res_rul, $regexp, $match)) {
-                        $caller_id = $this->ExtractMatch($match);
-                }
+		$caller_id="";
+		// first search for Residential match
+		if ($this->SearchURL($res_rul, $regexp, $match)) {
+			$caller_id = $this->ExtractMatch($match);
+		}
 
-                // if no residential match found, search business
-                if (!$caller_id && $this->SearchURL($bus_url, $regexp, $match)) {
-                        $caller_id = $this->ExtractMatch($match);
-                }
-								$caller_id = isset($caller_id)?$caller_id:'';
-                return($caller_id);
-        }
+		// if no residential match found, search business
+		if (!$caller_id && $this->SearchURL($bus_url, $regexp, $match)) {
+			$caller_id = $this->ExtractMatch($match);
+		}
+		$caller_id = isset($caller_id)?$caller_id:'';
+		return($caller_id);
+	}
 }
