@@ -36,10 +36,10 @@ class Herold_Austria extends superfecta_base {
 		// Set the url we're searching for
 		$res_rul = "http://www.herold.mobi/telefonbuch/was_".$thenumber."/";												// url for searching residential listings
 		$bus_url = "http://www.herold.mobi/gelbe-seiten/was_".$thenumber."/";											 // url for searching business listings
-		//Maybe uncomment this when you get the number from your trunk with leading +
-		//$thenumber=trim($thenumber,' ');
-		//$thenumber="00" . $thenumber;
-
+		if(strpos($thenumber, '+') === 0){
+			$thenumber=trim($thenumber,'+ ');
+			$thenumber="00" . $thenumber;
+		}
 		// regex patterns to search for
 		$regexp = array(
 			'~<a data-clickpos="name" href=".*?">(.+?)</a>~',
