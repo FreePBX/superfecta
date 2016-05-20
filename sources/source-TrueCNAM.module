@@ -50,7 +50,7 @@ class TrueCNAM extends superfecta_base{
     $run_param['Password'] = isset($run_param['Password'])?$run_param['Password']:'';
     $run_param['TrueSpam'] = isset($run_param['TrueSpam'])?$run_param['TrueSpam']:'checked';
     $run_param['TrueSpam_Threshold'] = isset($run_param['TrueSpam_Threshold'])?$run_param['TrueSpam_Threshold']:'6';
-
+    $thenumber = urlencode($thenumber);
     $debug = $this->debug;
     if(empty($run_param['APIKey']) || empty($run_param['Password'])) {
         $this->DebugPrint("TrueCNAM requires a registered account.");
