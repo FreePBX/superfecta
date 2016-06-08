@@ -11,7 +11,7 @@ class FccComplaints extends superfecta_base {
 			'SPAM_Threshold' => array(
 				'description' => _('Specify the number of listings required to mark a call as spam.'),
 				'type' => 'number',
-				'default' => 1
+				'default' => 2
 			),
 			'API_KEY' => array(
 				'description' => _('Optional API token to allow throttling by app rather than IP'),
@@ -41,9 +41,9 @@ class FccComplaints extends superfecta_base {
 			$score = count($data);
 			if ($score >= $spamcount) {
 				$this->spam = true;
-				$this->DebugPrint(" "._("determined to be SPAM"));
+				$this->DebugPrint(" "._("$score reports found, determined to be SPAM. You can lower the spam threshold in settings."));
 			} else {
-				$this->DebugPrint(_("Not a SPAM caller"));
+				$this->DebugPrint(_("$score reports found, Not a SPAM caller. You can raise the spam threshold in settings."));
 			}
 		}
 
