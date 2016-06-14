@@ -72,14 +72,14 @@ class TrueCNAM extends superfecta_base{
     }
     if($run_param['TrueSpam']){
       if($data['spam_score_match']){
-        $this->DebugPrint("TrueSpam Score availible");
+        $this->DebugPrint("TrueSpam Score available");
         if($data['spam_score'] > $run_param['TrueSpam_Threshold']){
           $this->spam = true;
         }else{
           $this->spam = false;
         }
       }else{
-        $this->DebugPrint("TrueSpam Score not availible");
+        $this->DebugPrint("TrueSpam Score not available");
         $this->spam = false;
       }
     }
