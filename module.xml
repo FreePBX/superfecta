@@ -2,7 +2,7 @@
 	<rawname>superfecta</rawname>
 	<repo>extended</repo>
 	<name>CID Superfecta</name>
-	<version>13.0.3.14</version>
+	<version>13.0.3.15</version>
 	<type>setup</type>
 	<category>Admin</category>
 	<publisher>Sangoma Technologies Corporation</publisher>
@@ -12,6 +12,7 @@
 		Provides simultaneous use of, and complete control over multiple caller id data sources.
 	</description>
 	<changelog>
+		*13.0.3.15* FREEPBX-12534 Update npa lists for us and canada including toll free
 		*13.0.3.14* Add FCC module
 		*13.0.3.13* FREEPBX-12138 FREEPBX-11857 FREEPBX-12072 FREEPBX-12210 FREEPBX-12237
 		*13.0.3.12* Wild guess on fixing this issue for FREEPBX-11857
