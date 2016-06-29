@@ -12,7 +12,7 @@
 
 class Send_to_Pushover extends superfecta_base {
 
-	public $description = "Sends Caller ID Name and Number as a Pushover notice";
+	public $description = "Sends Caller ID Name and Number as a Pushover notification";
 	public $version_requirement = "2.11";
 	public $source_param = array(
 		'User_or_Group_Key' => array(
