@@ -29,6 +29,10 @@ class Send_to_Yo extends superfecta_base {
 
 	function post_processing($cache_found, $winning_source, $first_caller_id, $run_param, $thenumber) {
 		$this->DebugPrint("Sending Yo");
+	        if(($run_param['API_Token'] == null) || ($run_param['User'] == null)){
+        		$this->DebugPrint("Failed: Missing one or more required values");
+        		return;
+        	}
 		$curl = curl_init();
 		$user = strtolower($run_param['User']);
 		if ($user == 'all') {
