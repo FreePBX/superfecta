@@ -2,7 +2,7 @@
 	<rawname>superfecta</rawname>
 	<repo>extended</repo>
 	<name>CID Superfecta</name>
-	<version>13.0.3.16</version>
+	<version>13.0.3.17</version>
 	<type>setup</type>
 	<category>Admin</category>
 	<publisher>Sangoma Technologies Corporation</publisher>
@@ -12,6 +12,7 @@
 		Provides simultaneous use of, and complete control over multiple caller id data sources.
 	</description>
 	<changelog>
+		*13.0.3.17* Dont force myisam tables
 		*13.0.3.16* Add Send-To-Pushover and Send-To-Yo modules
 		*13.0.3.15* FREEPBX-12534 Update npa lists for us and canada including toll free
 		*13.0.3.14* Add FCC module
