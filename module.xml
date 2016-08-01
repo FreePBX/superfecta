@@ -2,7 +2,7 @@
 	<rawname>superfecta</rawname>
 	<repo>extended</repo>
 	<name>CID Superfecta</name>
-	<version>13.0.3.18</version>
+	<version>13.0.3.19</version>
 	<type>setup</type>
 	<category>Admin</category>
 	<publisher>Sangoma Technologies Corporation</publisher>
@@ -12,6 +12,7 @@
 		Provides simultaneous use of, and complete control over multiple caller id data sources.
 	</description>
 	<changelog>
+		*13.0.3.19* FREEPBX-12753 CID Superfecta: Trunk Provided returning 'CID Superfecta!' during debug/test
 		*13.0.3.18* FREEPBX-12644 Wrong pattern search on CID Superfecta for source source-Paginasblancas_AR.module
 		*13.0.3.17* Dont force myisam tables
 		*13.0.3.16* Add Send-To-Pushover and Send-To-Yo modules
