@@ -31,7 +31,7 @@ class Paginasblancas_AR extends superfecta_base {
 
 		$url = "http://www.paginasblancas.com.ar/telefono/".$thenumber;    //updated 2014-08-05
 		$pattern = array(
-			'/<a class="no-link" href="javascript:void.0.;">(.*?)<\/a>/',      //updated 2016-07-14 for residential
+			'/<a class="no-link"  href="javascript:void.0.;">(.*?)<\/a>/',      //updated 2016-07-14 for residential
 			'~<h3 class="m-results-business--name" itemprop="name">.*?<a  href=".*?">(.+?)</a>.*?</h3>~s',  // added 2014-07-11 for business
 		);
 
