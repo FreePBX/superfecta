@@ -1,0 +1,61 @@
+<?php
+/**
+ * Uses FreePBX Contact manager to lookup numbers;
+ */
+class FreePBX_Contactmanager extends superfecta_base {
+
+	public $description;
+	public $version_requirement = "2.11";
+	public $source_param = array(
+		'Return_Format' => array(
+				'description' => 'The format to return any found caller ID in.',
+				'type' => 'select',
+				'option' => array (
+					'1' => 'Display Name',
+					'2' => 'Company',
+					'3' => 'Last First',
+					'4' => 'First Last',
+				),
+				'default' => '4',
+		),
+	);
+
+	public function __construct() {
+		$this->description = _("Searches FreePBX Contact manager for name.");
+	}
+
+	function get_caller_id($thenumber, $run_param=array()) {
+		$caller_id = null;
+		$data = FreePBX::Contactmanager()->lookupByUserID(-1, $thenumber,"/\D/");
+		if(empty($data)){
+			return null;
+		}
+		$first = !empty($data['fname'])?$data['fname']:'';
+		$last = !empty($data['lname'])?$data['lname']:'';
+		$company = !empty($data['company'])?$data['company']:'Unknown';
+		$displayname = !empty($data['displayname'])?$data['displayname']:'Unknown';
+
+		if(empty($first) && empty($last)){
+		  $first = 'Unknown';
+		}
+		$format = isset($run_param['Return_Format'])?$run_param['Return_Format']:'4';
+		switch($format){
+		  case '1':
+		  $caller_id = $displayname;
+		  break;
+		  case '2':
+		  $caller_id = $company;
+		  break;
+		  case '3':
+		  $caller_id = $last .' ' .$first;
+		  break;
+		  case '4':
+		  default:
+		  $caller_id = $first .' ' .$last;
+		  break;
+		}
+
+		return $caller_id;
+	}
+
+}
