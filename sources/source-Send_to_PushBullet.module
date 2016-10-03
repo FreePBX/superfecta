@@ -44,35 +44,18 @@ class Send_to_PushBullet extends superfecta_base {
 
 		// can't figure out how to access $run_param from this function, this is a bad way to do this because it does not support mult schemes
 		global $db;
-		$cache_file = '.pushbullet_cache';
+		$this->cache_file = '.pushbullet_cache';
 
 		$sql = "SELECT `field`,`value` FROM `superfectaconfig` WHERE `source` LIKE '%PushBullet%'";
 		$run_param = $db->getAssoc($sql);
 
 		//tried using PHP class, but this just seems easier
 		if (isset($run_param['API']) && $run_param['Sync_Devices'] == 'on') {
-			$curl = curl_init();
-			$url = 'https://api.pushbullet.com/v2/devices?';
-			curl_setopt($curl, CURLOPT_URL, $url);
-			curl_setopt($curl, CURLOPT_USERPWD, $run_param['API']);
-			curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'GET');
-
-			curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
-			curl_setopt($curl, CURLOPT_HEADER, FALSE);
-			$response = curl_exec($curl);
-			curl_close($curl);
-
-
-
-			$content = serialize($response);
-			file_put_contents($cache_file, $content);
-
-			// add code here reset the sync_devices param back to off
+			$this->getDevices($run_param);
 		}
 
-		// load devices from cache
-		if(file_exists($cache_file)) {
-			$response = unserialize(file_get_contents($cache_file));
+		if(file_exists($this->cache_file)) {
+			$response = unserialize(file_get_contents($this->cache_file));
 			$devices = json_decode($response);
 			$bar = array();
 			foreach ($devices->devices as $foo) {
@@ -105,5 +88,21 @@ class Send_to_PushBullet extends superfecta_base {
 		curl_setopt($curl, CURLOPT_HEADER, FALSE);
 		$response = curl_exec($curl);
 		curl_close($curl);
+		return $response;
+	}
+	function getDevices($run_param){
+		$curl = curl_init();
+		$url = 'https://api.pushbullet.com/v2/devices?';
+		curl_setopt($curl, CURLOPT_URL, $url);
+		curl_setopt($curl, CURLOPT_USERPWD, $run_param['API']);
+		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'GET');
+
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
+		curl_setopt($curl, CURLOPT_HEADER, FALSE);
+		$response = curl_exec($curl);
+		curl_close($curl);
+		$content = serialize($response);
+		file_put_contents($this->cache_file, $content);
+		return $content;
 	}
 }

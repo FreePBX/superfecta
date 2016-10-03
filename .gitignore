@@ -1,3 +1,4 @@
 views/compiled/
 log
 .DS_Store
+utests/*.auth
