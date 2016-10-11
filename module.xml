@@ -2,7 +2,7 @@
 	<rawname>superfecta</rawname>
 	<repo>extended</repo>
 	<name>CID Superfecta</name>
-	<version>13.0.3.19.1</version>
+	<version>13.0.3.19.2</version>
 	<type>setup</type>
 	<category>Admin</category>
 	<publisher>Sangoma Technologies Corporation</publisher>
@@ -12,6 +12,7 @@
 		Provides simultaneous use of, and complete control over multiple caller id data sources.
 	</description>
 	<changelog>
+		*13.0.3.19.2* FREEPBX-13273 Remove extra mysql code that wasn't removed when sugarCRM module was moved to PDO
 		*13.0.3.19.1* FREEPBX-12921 whitespace in Paginasblancas AR source			
 		*13.0.3.19* FREEPBX-12753 CID Superfecta: Trunk Provided returning 'CID Superfecta!' during debug/test
 		*13.0.3.18* FREEPBX-12644 Wrong pattern search on CID Superfecta for source source-Paginasblancas_AR.module
