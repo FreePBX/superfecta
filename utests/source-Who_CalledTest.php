@@ -8,10 +8,9 @@
 class Who_CalledTest extends PHPUnit_Framework_TestCase{
 	protected static $o;
 	public static function setUpBeforeClass() {
-			include 'setuptests.php';
-			$webroot = FreePBX::Config()->get('AMPWEBROOT');
-			include $webroot.'/admin/modules/superfecta/includes/superfecta_base.php';
-			include $webroot.'/admin/modules/superfecta/sources/source-Who_Called.module';
+			include_once 'setuptests.php';
+			include_once dirname(__DIR__).'/includes/superfecta_base.php';
+			include dirname(__DIR__).'/sources/source-Who_Called.module';
 			self::$o = new Who_Called();
 	}
 	//Stuff before the test
