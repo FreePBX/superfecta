@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-04-04 16:42-0700\n"
-"PO-Revision-Date: 2016-12-10 21:30+0200\n"
+"PO-Revision-Date: 2016-12-10 22:04+0200\n"
 "Last-Translator: Alexander <alexander.schley@paranagua.pr.gov.br>\n"
 "Language-Team: Portuguese (Brazil) "
 "<http://weblate.freepbx.org/projects/freepbx/superfecta/pt_BR/>\n"
@@ -261,7 +261,7 @@ msgstr ""
 
 #: views/main.php:24
 msgid "Name"
-msgstr ""
+msgstr "Nome"
 
 #: views/add_scheme.php:13
 msgid "New Scheme Name"
