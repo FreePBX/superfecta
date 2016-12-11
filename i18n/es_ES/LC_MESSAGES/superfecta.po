@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-04-04 16:42-0700\n"
-"PO-Revision-Date: 2016-12-11 09:55+0200\n"
+"PO-Revision-Date: 2016-12-11 12:35+0200\n"
 "Last-Translator: Ernesto <ecasas@sangoma.com>\n"
 "Language-Team: Spanish "
 "<http://weblate.freepbx.org/projects/freepbx/superfecta/es_ES/>\n"
@@ -569,39 +569,45 @@ msgstr ""
 #: Superfecta.class.php:238
 #, php-format
 msgid "This scheme would set the caller id to: %s"
-msgstr ""
+msgstr "Este esquema establecería el identificador de llamada en: %s"
 
 #: views/add_scheme.php:179 views/scheme.php:93
 msgid ""
 "This text will be prepended to Caller ID information to help you identify "
 "calls as SPAM calls"
 msgstr ""
+"Este texto se adjuntará a la información del identificador de llamadas para "
+"ayudarle a identificar las llamadas como llamadas de SPAM"
 
 #: page.superfecta.php:152
 msgid "Unknown Scheme"
-msgstr ""
+msgstr "Esquema Desconocido"
 
 #: views/scheme.php:142
 msgid "WARN"
-msgstr ""
+msgstr "WARN"
 
 #: views/main.php:4
 msgid "What is CallerID Superfecta?"
-msgstr ""
+msgstr "¿Qué es CallerID Superfecta?"
 
 #: views/add_scheme.php:233 views/scheme.php:107
 msgid "When enabled, Spam calls can be diverted or terminated"
 msgstr ""
+"Cuando está habilitada, las llamadas de spam pueden ser desviadas o "
+"terminadas"
 
 #: views/add_scheme.php:206 views/scheme.php:97
 msgid ""
 "When enabled, the text entered in \"SPAM Text\" (above) will replace the CID "
 "completely rather than pre-pending the CID value"
 msgstr ""
+"Cuando está activado, el texto introducido en \"Texto de SPAM\" (arriba) "
+"reemplazará el CID completamente en lugar de anteponerlo al valor CID"
 
 #: views/add_scheme.php:276
 msgid "Where to send the call when it is detected as spam"
-msgstr ""
+msgstr "Dónde enviar la llamada cuando se detecta como spam"
 
 #: Superfecta.class.php:519 functions.inc.php:27 views/add_scheme.php:195
 #: views/add_scheme.php:222 views/scheme.php:30
@@ -610,11 +616,13 @@ msgstr "Si"
 
 #: Superfecta.class.php:609
 msgid "You cannot create a scheme the same name as an existing scheme"
-msgstr ""
+msgstr "No puede crear un esquema con el mismo nombre que un esquema existente"
 
 #: Superfecta.class.php:620
 msgid "You cannot rename a scheme the same thing as an existing scheme"
 msgstr ""
+"No se puede cambiar el nombre de un esquema a lo mismo que un esquema "
+"existente"
 
 #: views/scheme.php:103 views/scheme.php:113
 msgid "no"
@@ -623,7 +631,7 @@ msgstr "No"
 #: Superfecta.class.php:324
 #, php-format
 msgid "result took %s seconds"
-msgstr ""
+msgstr "El resultado tomó %s segundos"
 
 #: views/scheme.php:101 views/scheme.php:111
 msgid "yes"
