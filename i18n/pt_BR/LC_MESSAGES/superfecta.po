@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-04-04 16:42-0700\n"
-"PO-Revision-Date: 2016-12-12 04:43+0200\n"
+"PO-Revision-Date: 2016-12-12 21:40+0200\n"
 "Last-Translator: Alexander <alexander.schley@paranagua.pr.gov.br>\n"
 "Language-Team: Portuguese (Brazil) "
 "<http://weblate.freepbx.org/projects/freepbx/superfecta/pt_BR/>\n"
@@ -145,7 +145,7 @@ msgstr ""
 
 #: views/scheme.php:18
 msgid "Enabled"
-msgstr ""
+msgstr "Habilitado"
 
 #: includes/processors/superfecta_single.php:53
 #: includes/processors/superfecta_single.php:115
