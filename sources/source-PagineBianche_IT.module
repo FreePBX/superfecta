@@ -1,0 +1,21 @@
+<?php
+
+
+class PagineBianche_IT extends superfecta_base {
+
+	public $description = "Ricerca Italiana http://www.paginbianche.it/ <br>CID must include area code with the leading 0.";
+	public $version_requirement = "2.11";
+
+	function get_caller_id($thenumber, $run_param=array()) {
+
+		$this->DebugPrint("Searching www.paginbianche.it for number: $thenumber");
+
+		$url = "http://www.paginebianche.it/ricerca-da-numero?qs=".$thenumber;
+		$pattern = "/<h2 class\=\"rgs\"[^>]*>(.*)<\/h2>/";
+		if ($this->SearchURL($url, $pattern, $match)) {
+			$caller_id = $this->ExtractMatch($match);
+		}
+	return($caller_id);
+	}
+
+}
