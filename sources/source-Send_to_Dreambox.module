@@ -1,48 +1,83 @@
 <?php
+/**** **** **** **** **** **** **** **** **** **** **** **** **** **** **** **** 
+ *	Dreambox Notification Module for CID Superfecta
+ * 
+ * 
+ * Version history:
+ *	   2014-12-15	- Improve speed by just triggering the URL without waiting its content to be retrieved ; by Soif
+ *					- Show Incoming Line (DID)	; by Soif
+ *					- Fix Number Formatting		; by Soif
+ * 
+ **** **** **** **** **** **** **** **** **** **** **** **** **** **** **** ****/
 
 class Send_to_Dreambox extends superfecta_base {
 
-    public $description = "This source will send the number and the Caller ID to a dreambox.<br>Enter the URL to the destination dreambox in the format `http://url:port`.<br>This datasource should be one of the last data sources on your list, as it does not provide any data of its own, and can only send what information has been collected before it is run.";
-    public $version_requirement = "2.11";
-    public $source_param = array(
-        'URL_address' => array(
-            'description' => 'Specify the URL:Port to the dreambox installation. (Example: http://script.somewhere.com:80)',
-            'type' => 'text',
-            'default' => "http://url:80"
-        ),
-        'Display_Setting' => array(
-            'description' => 'Specify the way you want the number to be displayed on your dreambox',
-            'type' => 'select',
-            'option' => array(
-                1 => '(132) 456-7890',
-                2 => '132-456-7890',
-                3 => '12 34 56 78 90',
-                4 => 'No Formatting',
-            ),
-            'default' => 4
-        )
-    );
+	public $description = "This source will send the number and the Caller ID to a dreambox.<br>Enter the URL to the destination dreambox in the format `http://url:port`.<br>This datasource should be one of the last data sources on your list, as it does not provide any data of its own, and can only send what information has been collected before it is run.";
+	public $version_requirement = "2.11";
+	public $source_param = array(
+		'URL_address' => array(
+			'description' => 'URL:Port to the dreambox. (ie: http://dreambox.local:80)',
+			'type' => 'text',
+			'default' => "http://url:80"
+		),
+		'Display_Setting' => array(
+			'description' => 'The way you want the number to be displayed on your dreambox',
+			'type' => 'select',
+			'option' => array(
+				1 => '(132) 456-7890',
+				2 => '12 34 56 78 90',
+				3 => 'No Formatting',
+			),
+			'default' => 4
+		)
+	);
 
-    function post_processing($cache_found, $winning_source, $first_caller_id, $run_param, $thenumber) {
-        if ($run_param['URL_Address'] && $run_param['URL_Port'] != '') {
-            $thenumberformated = $thenumber;
-            switch ($run_param['Display_Setting']) {
-                case 1:
-                case 2:
-                case 3:
-                    $settings = $this->settings();
-                    $thenumberformated = $this->FormatNumber($thenumber, $settings["source_param"]['Format_Incomming_Number']['option'][$run_param['Format_Incomming_Number']]);
-                    break;
-            }
+	// -------------------------------------------------------------------------------------------------
+	function post_processing($cache_found, $winning_source, $first_caller_id, $run_param, $thenumber) {
+		if ($run_param['URL_address']) {
 
-            $cliddreambox = urlencode($first_caller_id . ',' . $thenumberformated);
-            $url = $run_param['URL_address'] . '/cgi-bin/message?message=' . $cliddreambox;
+			$thenumberformated	= $thenumber;
+			$the_did_formated	= $this->get_DID();
+			
+			switch ($run_param['Display_Setting']) {
+				case 1:
+					if (strlen($thenumber)==10){
+						$thenumberformated	='('.substr($thenumber,0,3).') '.substr($thenumber,3,3).'-'.substr($thenumber,6,4);
+					}	
+					if (strlen($the_did_formated)==10){
+						$the_did_formated	='('.substr($the_did_formated,0,3).') '.substr($the_did_formated,3,3).'-'.substr($the_did_formated,6,4);
+					}
+					break;
+				case 2:
+					if (strlen($thenumber)==10){
+						$thenumberformated=substr($thenumber,0,2).' '.substr($thenumber,2,2).' '.substr($thenumber,4,2).' '.substr($thenumber,6,2).' '.substr($thenumber,8,2);
+					}
+					if (strlen($the_did_formated)==10){
+						$the_did_formated	=substr($the_did_formated,0,2).' '.substr($the_did_formated,2,2).' '.substr($the_did_formated,4,2).' '.substr($the_did_formated,6,2).' '.substr($the_did_formated,8,2);
+					}	
+			}
 
-            $this->DebugPrint("Send to dreambox: " . $run_param['URL_address']);
-            $value = get_url_contents($url);
+			$cliddreambox = urlencode("Line: $the_did_formated\n\n". $first_caller_id . "\n" . $thenumberformated);
+			$url = $run_param['URL_address'] . '/cgi-bin/message?message=' . $cliddreambox;
 
-            return($thenumber);
-        }
-    }
+			$this->DebugPrint("Send to dreambox: " . $run_param['URL_address']."<br>");
+			$this->_triggerUrlFasterThanRoadRunner($url);
+
+			return($thenumber);
+		}
+	}
+
+
+	// -------------------------------------------------------------------------------------------------
+	// we just need to send a request to the CGI, not waiting to the answer
+	private function _triggerUrlFasterThanRoadRunner($url,$timeout=0.001){
+		$opts = array(
+			'http'=>array(
+				'timeout'=> $timeout,
+			)
+		);
+		$context = stream_context_create($opts);
+		return file_get_contents($url,false,$context);
+	}
 
 }
