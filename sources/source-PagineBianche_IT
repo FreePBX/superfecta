@@ -1,0 +1,27 @@
+<?php
+ 
+class PagineBianche_IT extends superfecta_base {
+ 
+    public $description = "http://www.paginebianche.it - These listings include data from the Italian PagineBianche.";
+    public $version_requirement = "2.11";
+ 
+    function get_caller_id($thenumber, $run_param=array()) {
+ 
+        $caller_id = null;
+ 
+        if (!$this->IsValidNumber('IT', $thenumber)) {
+            $this->DebugPrint("Skipping Source - Non Italian number: {$thenumber}");
+        } else {
+            $this->DebugPrint("Searching PagineBianche - {$thenumber} ... ");
+ 
+            $url = "http://www.paginebianche.it/ricerca-da-numero?qs=={$thenumber}";
+ 
+            if ($this->SearchURL($url, '=<h2.class\=\"rgs\"[^>]*>(.*)</h2>=siU', $match)) {
+                $caller_id = $this->ExtractMatch($match);
+            }
+        }
+ 
+        return($caller_id);
+    }
+ 
+}
