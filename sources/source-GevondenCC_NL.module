@@ -1,6 +1,6 @@
 <?php
 /**
- * 
+ *
  */
 class GevondenCC_NL extends superfecta_base {
 
@@ -16,7 +16,7 @@ class GevondenCC_NL extends superfecta_base {
 		$caller_id = null;
 		$name = "";
 
-		$this->DebugPrint("Searching gevonden.cc - {$this->thenumber} ... ");
+		$this->DebugPrint("Searching gevonden.cc - $thenumber ... ");
 
 		// Test for NL
 		$loc_number = $thenumber;
@@ -45,10 +45,12 @@ class GevondenCC_NL extends superfecta_base {
 
 			$expr = '=<title[^>]*>(.*)[0-9]{5,}</title>=siU';
 			preg_match_all($expr, $result, $name);
-			if (count($name[1]) > 0)
+			if (count($name) > 1 && count($name[1]) > 0)
 			{
 				$name = trim($name[1][0]);
 				$name = strip_tags($name);
+			} else {
+				$name = "";
 			}
 		}
 		else
