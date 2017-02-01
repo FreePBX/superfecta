@@ -9,15 +9,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-04 16:42-0700\n"
+"POT-Creation-Date: 2017-01-31 17:21-0800\n"
 "PO-Revision-Date: 2016-12-21 21:46+0200\n"
 "Last-Translator: Alexander <alexander.schley@paranagua.pr.gov.br>\n"
-"Language-Team: Portuguese (Brazil) "
-"<http://weblate.freepbx.org/projects/freepbx/superfecta/pt_BR/>\n"
-"Language: pt_BR\n"
+"Language-Team: Portuguese (Brazil) <http://weblate.freepbx.org/projects/"
+"freepbx/superfecta/pt_BR/>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: pt_BR\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 2.4\n"
 
@@ -45,7 +45,7 @@ msgstr ""
 "Adicionar, remover, ativar, desativar, classificar e configurar fontes de "
 "dados conforme for apropriado para sua situação."
 
-#: superfecta.i18n.php:6 superfecta.i18n.php:12
+#: superfecta.i18n.php:6
 msgid "Admin"
 msgstr "Administrador"
 
@@ -177,10 +177,9 @@ msgstr ""
 "Se você deseja prefixar informações sobre o identificador de chamada, você "
 "pode especificar uma URL aqui onde esse prefixo pode ser recuperado. <br> Os "
 "dados não serão analisados de forma alguma e serão truncados para os "
-"primeiros 10 caracteres. URL: "
-"http://www.exemplo.com/GetCID.php?phone_number=[numero] <br> [numero] será "
-"substituído pelo número de telefone completo de 10 dígitos quando a URL for "
-"chamada"
+"primeiros 10 caracteres. URL: http://www.exemplo.com/GetCID.php?phone_number="
+"[numero] <br> [numero] será substituído pelo número de telefone completo de "
+"10 dígitos quando a URL for chamada"
 
 #: views/add_scheme.php:63
 msgid ""
@@ -491,8 +490,8 @@ msgstr "As páginas wiki deste Módulo podem ser encontradas aqui."
 msgid ""
 "This Project is hosted/maintained at %s Feel free to fork/help/complain."
 msgstr ""
-"Este projeto é hospedado/mantido em %s Sinta-se livre para "
-"bifurcar/ajudar/reclamar."
+"Este projeto é hospedado/mantido em %s Sinta-se livre para bifurcar/ajudar/"
+"reclamar."
 
 #: views/add_scheme.php:256 views/scheme.php:118
 msgid ""
@@ -554,7 +553,8 @@ msgstr ""
 
 #: Superfecta.class.php:620
 msgid "You cannot rename a scheme the same thing as an existing scheme"
-msgstr "Você não pode renomear um esquema para o mesmo que um esquema existente"
+msgstr ""
+"Você não pode renomear um esquema para o mesmo que um esquema existente"
 
 #: views/scheme.php:103 views/scheme.php:113
 msgid "no"
