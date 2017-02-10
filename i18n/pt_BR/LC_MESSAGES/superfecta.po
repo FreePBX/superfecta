@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-04-04 16:42-0700\n"
-"PO-Revision-Date: 2016-12-21 21:46+0200\n"
-"Last-Translator: Alexander <alexander.schley@paranagua.pr.gov.br>\n"
+"PO-Revision-Date: 2017-02-09 23:11+0200\n"
+"Last-Translator: Kingvoice <suporte@kingvoice.com.br>\n"
 "Language-Team: Portuguese (Brazil) "
 "<http://weblate.freepbx.org/projects/freepbx/superfecta/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -337,7 +337,7 @@ msgstr ""
 
 #: Superfecta.class.php:727
 msgid "Reset"
-msgstr "Reiniciar"
+msgstr "Restabelecer"
 
 #: Superfecta.class.php:323
 msgid "Returned Result would be:"
