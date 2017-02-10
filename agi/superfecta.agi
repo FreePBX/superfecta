@@ -1,9 +1,7 @@
 #!/usr/bin/php -q
 <?php
 $restrict_mods = true;
-if (!@include_once(getenv('FREEPBX_CONF') ? getenv('FREEPBX_CONF') : '/etc/freepbx.conf')) {
-	include_once('/etc/asterisk/freepbx.conf');
-}
+include '/etc/freepbx.conf';
 $agidir = FreePBX::Config()->get('ASTAGIDIR');
 require_once $agidir."/phpagi.php";
 
