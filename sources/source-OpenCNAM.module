@@ -42,7 +42,7 @@ class OpenCNAM extends superfecta_base {
         if (strlen($sname) > 1) {
                 // convert list of ignore keywords into array
                 $key_words = array();
-                $temp_array = explode(',',(isset($run_param['Ignore_Keywords'])?$run_param['Ignore_Keywords']:$source_param['Ignore_Keywords']['default']));
+                $temp_array = explode(',',(isset($run_param['Ignore_Keywords'])?$run_param['Ignore_Keywords']:$this->source_param['Ignore_Keywords']['default']));
                 foreach($temp_array as $val) {
                     $key_words[] = trim($val);
                 }
