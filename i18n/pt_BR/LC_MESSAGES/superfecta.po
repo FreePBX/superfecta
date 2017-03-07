@@ -9,15 +9,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-04 16:42-0700\n"
+"POT-Creation-Date: 2017-01-31 17:21-0800\n"
 "PO-Revision-Date: 2017-02-14 17:03+0200\n"
 "Last-Translator: Kingvoice <suporte@kingvoice.com.br>\n"
-"Language-Team: Portuguese (Brazil) "
-"<http://weblate.freepbx.org/projects/freepbx/superfecta/pt_BR/>\n"
-"Language: pt_BR\n"
+"Language-Team: Portuguese (Brazil) <http://weblate.freepbx.org/projects/"
+"freepbx/superfecta/pt_BR/>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: pt_BR\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 2.4\n"
 
@@ -38,10 +38,14 @@ msgid "Add Scheme"
 msgstr "Adicionar Esquema"
 
 #: views/scheme.php:7
-msgid "Add, Remove, Enable, Disable, Sort and Configure data sources as appropriate for your situation."
-msgstr "Adicionar, remover, ativar, desativar, classificar e configurar fontes de dados conforme for apropriado para sua situação."
+msgid ""
+"Add, Remove, Enable, Disable, Sort and Configure data sources as appropriate "
+"for your situation."
+msgstr ""
+"Adicionar, remover, ativar, desativar, classificar e configurar fontes de "
+"dados conforme for apropriado para sua situação."
 
-#: superfecta.i18n.php:6 superfecta.i18n.php:12
+#: superfecta.i18n.php:6
 msgid "Admin"
 msgstr "Administrador"
 
@@ -67,8 +71,13 @@ msgid "Caller ID Superfecta"
 msgstr "ID Chamador Superfecta"
 
 #: views/main.php:8
-msgid "CallerID Superfecta for FreePBX is a utility program which adds incoming CallerID name lookups to your Asterisk system using multiple data sources"
-msgstr "ID Chamador Superfecta para FreePBX é um programa utilitário que adiciona chamadas de nome de ID Chamador de entrada para o seu sistema Asterisk usando várias fontes de dados"
+msgid ""
+"CallerID Superfecta for FreePBX is a utility program which adds incoming "
+"CallerID name lookups to your Asterisk system using multiple data sources"
+msgstr ""
+"ID Chamador Superfecta para FreePBX é um programa utilitário que adiciona "
+"chamadas de nome de ID Chamador de entrada para o seu sistema Asterisk "
+"usando várias fontes de dados"
 
 #: Superfecta.class.php:155
 #, php-format
@@ -116,8 +125,17 @@ msgid "Define a new name for this scheme"
 msgstr "Definir um novo nome para este esquema"
 
 #: views/add_scheme.php:43 views/scheme.php:46
-msgid "Define the expected DID Number if your trunk passes DID on incoming calls. <br><br>Leave this blank to match calls with any or no DID info.<br><br>This rule trys both absolute and pattern matching (eg \"_2[345]X\", to match a range of numbers). (The \"_\" underscore is optional.)"
-msgstr "Defina o número DID esperado se o seu tronco passar o DID em chamadas recebidas. <br><br> Deixar em branco para coincidir as chamadas com qualquer ou nenhuma informação DID. Esta regra efetua tentativas tanto de forma absoluta quanto de coincidência de padrões (por exemplo, \"_2[345]X\", para coincidir com um intervalo de números) . (O sublinhado \"_\" é opcional.)"
+msgid ""
+"Define the expected DID Number if your trunk passes DID on incoming calls. "
+"<br><br>Leave this blank to match calls with any or no DID info.<br><br>This "
+"rule trys both absolute and pattern matching (eg \"_2[345]X\", to match a "
+"range of numbers). (The \"_\" underscore is optional.)"
+msgstr ""
+"Defina o número DID esperado se o seu tronco passar o DID em chamadas "
+"recebidas. <br><br> Deixar em branco para coincidir as chamadas com qualquer "
+"ou nenhuma informação DID. Esta regra efetua tentativas tanto de forma "
+"absoluta quanto de coincidência de padrões (por exemplo, \"_2[345]X\", para "
+"coincidir com um intervalo de números) . (O sublinhado \"_\" é opcional.)"
 
 #: views/scheme.php:17
 msgid "Description"
@@ -149,35 +167,86 @@ msgid "INFO"
 msgstr "INFO"
 
 #: views/add_scheme.php:159 views/scheme.php:89
-msgid "If you wish to prefix information on the caller id you can specify a url here where that prefix can be retrieved.<br>The data will not be parsed in any way, and will be truncated to the first 10 characters.<br>Example URL: http://www.example.com/GetCID.php?phone_number=[thenumber]<br>[thenumber] will be replaced with the full 10 digit phone number when the URL is called"
-msgstr "Se você deseja prefixar informações sobre o identificador de chamada, você pode especificar uma URL aqui onde esse prefixo pode ser recuperado. <br> Os dados não serão analisados de forma alguma e serão truncados para os primeiros 10 caracteres. URL: http://www.exemplo.com/GetCID.php?phone_number=[numero] <br> [numero] será substituído pelo número de telefone completo de 10 dígitos quando a URL for chamada"
+msgid ""
+"If you wish to prefix information on the caller id you can specify a url "
+"here where that prefix can be retrieved.<br>The data will not be parsed in "
+"any way, and will be truncated to the first 10 characters.<br>Example URL: "
+"http://www.example.com/GetCID.php?phone_number=[thenumber]<br>[thenumber] "
+"will be replaced with the full 10 digit phone number when the URL is called"
+msgstr ""
+"Se você deseja prefixar informações sobre o identificador de chamada, você "
+"pode especificar uma URL aqui onde esse prefixo pode ser recuperado. <br> Os "
+"dados não serão analisados de forma alguma e serão truncados para os "
+"primeiros 10 caracteres. URL: http://www.exemplo.com/GetCID.php?phone_number="
+"[numero] <br> [numero] será substituído pelo número de telefone completo de "
+"10 dígitos quando a URL for chamada"
 
 #: views/add_scheme.php:63
 msgid ""
-"Incoming calls with CID matching the patterns specified here will use this CID Scheme. If this is left blank, this scheme will be used for any CID. It can be used to add or remove prefixes.<br>\n"
-"\t\t\t\t\t\t\t<strong>Many sources require a specific number of digits in the phone number. It is recommended that you use the patterns to remove excess country code data from incoming CID to increase the effectiveness of this module.</strong><br>\n"
-"\t\t\t\t\t\t\tNote that a pattern without a + or | (to add or remove a prefix) will not make any changes but will create a match. Only the first matched pattern will be executed and the remaining rules will not be acted on.<br /><br /><b>Rules:</b><br />\n"
-"\t\t\t\t\t\t\t<strong>X</strong>&nbsp;&nbsp;&nbsp; matches any digit from 0-9<br />\n"
-"\t\t\t\t\t\t\t<strong>Z</strong>&nbsp;&nbsp;&nbsp; matches any digit from 1-9<br />\n"
-"\t\t\t\t\t\t\t<strong>N</strong>&nbsp;&nbsp;&nbsp; matches any digit from 2-9<br />\n"
-"\t\t\t\t\t\t\t<strong>[1237-9]</strong>&nbsp;   matches any digit or letter in the brackets (in this example, 1,2,3,7,8,9)<br />\n"
-"\t\t\t\t\t\t\t<strong>.</strong>&nbsp;&nbsp;&nbsp; wildcard, matches one or more characters (not allowed before a | or +)<br />\n"
-"\t\t\t\t\t\t\t<strong>|</strong>&nbsp;&nbsp;&nbsp; removes a dialing prefix from the number (for example, 613|NXXXXXX would match when some one dialed \"6135551234\" but would only pass \"5551234\" to the Superfecta look up.)<br><strong>+</strong>&nbsp;&nbsp;&nbsp; adds a dialing prefix to the number (for example, 1613+NXXXXXX would match when someone dialed \"5551234\" and would pass \"16135551234\" to the Superfecta look up.)<br /><br />\n"
-"\t\t\t\t\t\t\tYou can also use both + and |, for example: 01+0|1ZXXXXXXXXX would match \"016065551234\" and dial it as \"0116065551234\" Note that the order does not matter, eg. 0|01+1ZXXXXXXXXX does the same thing."
+"Incoming calls with CID matching the patterns specified here will use this "
+"CID Scheme. If this is left blank, this scheme will be used for any CID. It "
+"can be used to add or remove prefixes.<br>\n"
+"\t\t\t\t\t\t\t<strong>Many sources require a specific number of digits in "
+"the phone number. It is recommended that you use the patterns to remove "
+"excess country code data from incoming CID to increase the effectiveness of "
+"this module.</strong><br>\n"
+"\t\t\t\t\t\t\tNote that a pattern without a + or | (to add or remove a "
+"prefix) will not make any changes but will create a match. Only the first "
+"matched pattern will be executed and the remaining rules will not be acted "
+"on.<br /><br /><b>Rules:</b><br />\n"
+"\t\t\t\t\t\t\t<strong>X</strong>&nbsp;&nbsp;&nbsp; matches any digit from 0-"
+"9<br />\n"
+"\t\t\t\t\t\t\t<strong>Z</strong>&nbsp;&nbsp;&nbsp; matches any digit from 1-"
+"9<br />\n"
+"\t\t\t\t\t\t\t<strong>N</strong>&nbsp;&nbsp;&nbsp; matches any digit from 2-"
+"9<br />\n"
+"\t\t\t\t\t\t\t<strong>[1237-9]</strong>&nbsp;   matches any digit or letter "
+"in the brackets (in this example, 1,2,3,7,8,9)<br />\n"
+"\t\t\t\t\t\t\t<strong>.</strong>&nbsp;&nbsp;&nbsp; wildcard, matches one or "
+"more characters (not allowed before a | or +)<br />\n"
+"\t\t\t\t\t\t\t<strong>|</strong>&nbsp;&nbsp;&nbsp; removes a dialing prefix "
+"from the number (for example, 613|NXXXXXX would match when some one dialed "
+"\"6135551234\" but would only pass \"5551234\" to the Superfecta look up.)"
+"<br><strong>+</strong>&nbsp;&nbsp;&nbsp; adds a dialing prefix to the number "
+"(for example, 1613+NXXXXXX would match when someone dialed \"5551234\" and "
+"would pass \"16135551234\" to the Superfecta look up.)<br /><br />\n"
+"\t\t\t\t\t\t\tYou can also use both + and |, for example: 01+0|1ZXXXXXXXXX "
+"would match \"016065551234\" and dial it as \"0116065551234\" Note that the "
+"order does not matter, eg. 0|01+1ZXXXXXXXXX does the same thing."
 msgstr ""
 
 #: views/scheme.php:50
 msgid ""
-"Incoming calls with CID matching the patterns specified here will use this CID Scheme. If this is left blank, this scheme will be used for any CID. It can be used to add or remove prefixes.<br>\n"
-"\t\t\t\t<strong>Many sources require a specific number of digits in the phone number. It is recommended that you use the patterns to remove excess country code data from incoming CID to increase the effectiveness of this module.</strong><br>\n"
-"\t\t\t\tNote that a pattern without a + or | (to add or remove a prefix) will not make any changes but will create a match. Only the first matched pattern will be executed and the remaining rules will not be acted on.<br /><br /><b>Rules:</b><br />\n"
-"\t\t\t\t<strong>X</strong>&nbsp;&nbsp;&nbsp; matches any digit from 0-9<br />\n"
-"\t\t\t\t<strong>Z</strong>&nbsp;&nbsp;&nbsp; matches any digit from 1-9<br />\n"
-"\t\t\t\t<strong>N</strong>&nbsp;&nbsp;&nbsp; matches any digit from 2-9<br />\n"
-"\t\t\t\t<strong>[1237-9]</strong>&nbsp;   matches any digit or letter in the brackets (in this example, 1,2,3,7,8,9)<br />\n"
-"\t\t\t\t<strong>.</strong>&nbsp;&nbsp;&nbsp; wildcard, matches one or more characters (not allowed before a | or +)<br />\n"
-"\t\t\t\t<strong>|</strong>&nbsp;&nbsp;&nbsp; removes a dialing prefix from the number (for example, 613|NXXXXXX would match when some one dialed \"6135551234\" but would only pass \"5551234\" to the Superfecta look up.)<br><strong>+</strong>&nbsp;&nbsp;&nbsp; adds a dialing prefix to the number (for example, 1613+NXXXXXX would match when someone dialed \"5551234\" and would pass \"16135551234\" to the Superfecta look up.)<br /><br />\n"
-"\t\t\t\tYou can also use both + and |, for example: 01+0|1ZXXXXXXXXX would match \"016065551234\" and dial it as \"0116065551234\" Note that the order does not matter, eg. 0|01+1ZXXXXXXXXX does the same thing."
+"Incoming calls with CID matching the patterns specified here will use this "
+"CID Scheme. If this is left blank, this scheme will be used for any CID. It "
+"can be used to add or remove prefixes.<br>\n"
+"\t\t\t\t<strong>Many sources require a specific number of digits in the "
+"phone number. It is recommended that you use the patterns to remove excess "
+"country code data from incoming CID to increase the effectiveness of this "
+"module.</strong><br>\n"
+"\t\t\t\tNote that a pattern without a + or | (to add or remove a prefix) "
+"will not make any changes but will create a match. Only the first matched "
+"pattern will be executed and the remaining rules will not be acted on.<br /"
+"><br /><b>Rules:</b><br />\n"
+"\t\t\t\t<strong>X</strong>&nbsp;&nbsp;&nbsp; matches any digit from 0-9<br /"
+">\n"
+"\t\t\t\t<strong>Z</strong>&nbsp;&nbsp;&nbsp; matches any digit from 1-9<br /"
+">\n"
+"\t\t\t\t<strong>N</strong>&nbsp;&nbsp;&nbsp; matches any digit from 2-9<br /"
+">\n"
+"\t\t\t\t<strong>[1237-9]</strong>&nbsp;   matches any digit or letter in the "
+"brackets (in this example, 1,2,3,7,8,9)<br />\n"
+"\t\t\t\t<strong>.</strong>&nbsp;&nbsp;&nbsp; wildcard, matches one or more "
+"characters (not allowed before a | or +)<br />\n"
+"\t\t\t\t<strong>|</strong>&nbsp;&nbsp;&nbsp; removes a dialing prefix from "
+"the number (for example, 613|NXXXXXX would match when some one dialed "
+"\"6135551234\" but would only pass \"5551234\" to the Superfecta look up.)"
+"<br><strong>+</strong>&nbsp;&nbsp;&nbsp; adds a dialing prefix to the number "
+"(for example, 1613+NXXXXXX would match when someone dialed \"5551234\" and "
+"would pass \"16135551234\" to the Superfecta look up.)<br /><br />\n"
+"\t\t\t\tYou can also use both + and |, for example: 01+0|1ZXXXXXXXXX would "
+"match \"016065551234\" and dial it as \"0116065551234\" Note that the order "
+"does not matter, eg. 0|01+1ZXXXXXXXXX does the same thing."
 msgstr ""
 
 #: page.superfecta.php:191
@@ -258,8 +327,12 @@ msgid "Prefix Url result took %s seconds."
 msgstr "O resultado do URL do prefixo levou %s segundos."
 
 #: superfecta.i18n.php:8
-msgid "Provides simultaneous use of, and complete control over multiple caller id data sources."
-msgstr "Fornece o uso simultâneo e o controle completo sobre várias fontes de dados de identificação de chamadas."
+msgid ""
+"Provides simultaneous use of, and complete control over multiple caller id "
+"data sources."
+msgstr ""
+"Fornece o uso simultâneo e o controle completo sobre várias fontes de dados "
+"de identificação de chamadas."
 
 #: Superfecta.class.php:727
 msgid "Reset"
@@ -312,8 +385,12 @@ msgid "Scheme names cannot be blank"
 msgstr "Os nomes dos esquemas não podem ficar em branco"
 
 #: views/scheme.php:9
-msgid "Select which data source(s) to use for your lookups, and the order in which you want them used:"
-msgstr "Selecione a(s) fonte(s) de dados a serem usadas para suas pesquisas e a ordem em que você deseja que elas sejam usadas:"
+msgid ""
+"Select which data source(s) to use for your lookups, and the order in which "
+"you want them used:"
+msgstr ""
+"Selecione a(s) fonte(s) de dados a serem usadas para suas pesquisas e a "
+"ordem em que você deseja que elas sejam usadas:"
 
 #: views/add_scheme.php:266 views/scheme.php:122
 msgid "Send Spam Call To"
@@ -338,12 +415,23 @@ msgid "Spam Call, Sending call to: %s"
 msgstr "Chamada de spam. Enviando chamada para: %s"
 
 #: views/add_scheme.php:139 views/scheme.php:85
-msgid "Specify a timeout in seconds defining how long multifecta will obey the source priority. After this timeout, the first source to respond with a CNAM will be taken, until \"Lookup Timeout\" is reached"
-msgstr "Especifique um tempo limite em segundos, definindo o tempo que a multifecta obedecerá à prioridade da fonte. Após este tempo limite, a primeira fonte a responder com um CNAM será tomada, até que \"Tempo de Espera de Pesquisa\" seja atingida"
+msgid ""
+"Specify a timeout in seconds defining how long multifecta will obey the "
+"source priority. After this timeout, the first source to respond with a CNAM "
+"will be taken, until \"Lookup Timeout\" is reached"
+msgstr ""
+"Especifique um tempo limite em segundos, definindo o tempo que a multifecta "
+"obedecerá à prioridade da fonte. Após este tempo limite, a primeira fonte a "
+"responder com um CNAM será tomada, até que \"Tempo de Espera de Pesquisa\" "
+"seja atingida"
 
 #: views/add_scheme.php:92 views/scheme.php:65
-msgid "Specify a timeout in seconds for each source. If the source fails to return a result within the alloted time, the script will move on."
-msgstr "Especifique um tempo limite em segundos para cada fonte. Se a origem não retornar um resultado dentro do tempo atribuído, o script seguirá."
+msgid ""
+"Specify a timeout in seconds for each source. If the source fails to return "
+"a result within the alloted time, the script will move on."
+msgstr ""
+"Especifique um tempo limite em segundos para cada fonte. Se a origem não "
+"retornar um resultado dentro do tempo atribuído, o script seguirá."
 
 #: Superfecta.class.php:112
 #, php-format
@@ -399,12 +487,17 @@ msgstr "As páginas wiki deste Módulo podem ser encontradas aqui."
 
 #: views/footer.php:2
 #, php-format
-msgid "This Project is hosted/maintained at %s Feel free to fork/help/complain."
-msgstr "Este projeto é hospedado/mantido em %s Sinta-se livre para bifurcar/ajudar/reclamar."
+msgid ""
+"This Project is hosted/maintained at %s Feel free to fork/help/complain."
+msgstr ""
+"Este projeto é hospedado/mantido em %s Sinta-se livre para bifurcar/ajudar/"
+"reclamar."
 
 #: views/add_scheme.php:256 views/scheme.php:118
-msgid "This is the threshold to send the call to the specified destination below"
-msgstr "Este é o limite para enviar a chamada para o destino especificado abaixo"
+msgid ""
+"This is the threshold to send the call to the specified destination below"
+msgstr ""
+"Este é o limite para enviar a chamada para o destino especificado abaixo"
 
 #: Superfecta.class.php:238
 #, php-format
@@ -412,8 +505,12 @@ msgid "This scheme would set the caller id to: %s"
 msgstr "Esse esquema configuraria o identificador de chamadas para: %s"
 
 #: views/add_scheme.php:179 views/scheme.php:93
-msgid "This text will be prepended to Caller ID information to help you identify calls as SPAM calls"
-msgstr "Este texto será adicionado previamente às informações de ID Chamador para ajudá-lo a identificar chamadas como as chamadas SPAM"
+msgid ""
+"This text will be prepended to Caller ID information to help you identify "
+"calls as SPAM calls"
+msgstr ""
+"Este texto será adicionado previamente às informações de ID Chamador para "
+"ajudá-lo a identificar chamadas como as chamadas SPAM"
 
 #: page.superfecta.php:152
 msgid "Unknown Scheme"
@@ -429,11 +526,16 @@ msgstr "O que é ID Chamador Superfecta?"
 
 #: views/add_scheme.php:233 views/scheme.php:107
 msgid "When enabled, Spam calls can be diverted or terminated"
-msgstr "Quando habilitado, as chamadas de Spam podem ser desviadas ou encerradas"
+msgstr ""
+"Quando habilitado, as chamadas de Spam podem ser desviadas ou encerradas"
 
 #: views/add_scheme.php:206 views/scheme.php:97
-msgid "When enabled, the text entered in \"SPAM Text\" (above) will replace the CID completely rather than pre-pending the CID value"
-msgstr "Quando habilitado, o texto inserido em \"Texto de SPAM\" (acima) substituirá o CID completamente em vez de prefixar o valor de CID"
+msgid ""
+"When enabled, the text entered in \"SPAM Text\" (above) will replace the CID "
+"completely rather than pre-pending the CID value"
+msgstr ""
+"Quando habilitado, o texto inserido em \"Texto de SPAM\" (acima) substituirá "
+"o CID completamente em vez de prefixar o valor de CID"
 
 #: views/add_scheme.php:276
 msgid "Where to send the call when it is detected as spam"
@@ -446,11 +548,13 @@ msgstr "Sim"
 
 #: Superfecta.class.php:609
 msgid "You cannot create a scheme the same name as an existing scheme"
-msgstr "Não é possível criar um esquema com o mesmo nome de um esquema existente"
+msgstr ""
+"Não é possível criar um esquema com o mesmo nome de um esquema existente"
 
 #: Superfecta.class.php:620
 msgid "You cannot rename a scheme the same thing as an existing scheme"
-msgstr "Você não pode renomear um esquema para o mesmo que um esquema existente"
+msgstr ""
+"Você não pode renomear um esquema para o mesmo que um esquema existente"
 
 #: views/scheme.php:103 views/scheme.php:113
 msgid "no"
