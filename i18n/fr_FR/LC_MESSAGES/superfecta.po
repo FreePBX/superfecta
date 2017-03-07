@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-01-31 17:21-0800\n"
-"PO-Revision-Date: 2017-03-05 21:30+0200\n"
-"Last-Translator: Francis <fbinet@solist.ca>\n"
+"PO-Revision-Date: 2017-03-07 09:15+0200\n"
+"Last-Translator: Nicolas <freepbx@riendeau.org>\n"
 "Language-Team: French "
 "<http://weblate.freepbx.org/projects/freepbx/superfecta/fr_FR/>\n"
 "Language: fr_FR\n"
@@ -318,7 +318,7 @@ msgstr ""
 
 #: Superfecta.class.php:727
 msgid "Reset"
-msgstr "Remise à zéro"
+msgstr "Réinitialiser"
 
 #: Superfecta.class.php:323
 msgid "Returned Result would be:"
@@ -414,7 +414,7 @@ msgstr ""
 
 #: Superfecta.class.php:732
 msgid "Submit"
-msgstr "Envoyer"
+msgstr "Soumettre"
 
 #: views/add_scheme.php:102 views/scheme.php:70
 msgid "Superfecta Processor"
