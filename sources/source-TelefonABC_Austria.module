@@ -1,0 +1,53 @@
+<?php
+
+/*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+ * Developer Notes:
+ *
+ * This TelefonABC Source is looking up for persons and some companys. Officially this module supports only Persons lookup but sometimes there alre also companys in the results.
+ *
+ * TelefonABC.at Terms of Service:
+ * http://www.telefonabc.at/agb.aspx
+ * TelefonABC.at TOS do not explicitly prohibit automated lookups
+ * It is not allowed to save the looked up data into a Database and it is prohibited to use the Data for commercial use and adverts.
+ *
+ * Version History:
+ * 2017-03-21	Initial Module for TelefonABC.at
+ *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
+
+class TelefonABC_Austria extends superfecta_base {
+
+	public $description;
+	public $version_requirement = "2.11";
+
+	public function __construct() {
+		$this->description = "http://www.telefonabc.at - "._("These listings include data for TelefonABC in Austria.");
+	}
+
+	function get_caller_id($thenumber, $run_param=array()) {
+		$this->DebugPrint(_("Searching"). "http://www.telefonabc.at ... ");
+
+		if (substr($thenumber, 0, 1) ==! '0') {
+			$thenumber=trim($thenumber,' ');
+			$thenumber="00" . $thenumber;
+		}
+		if (substr($thenumber, 0, 2) === '00') {
+			$thenumber=trim($thenumber,' ');
+		}
+
+		// Set the url we're searching for
+		$res_rul = "http://www.telefonabc.at/result.aspx?what=".$thenumber."&where=&exact=False&firstname=&lastname=&appendix=&branch=&p=0&sid=&did=&cc=";// url for searching persons
+
+		// regex patterns to search for
+		$regexp = array(
+		'#<h3 itemprop="name" class="card-heading pull-left">(.+?)</h3>#s',
+			);
+		// search for persons match
+		if ($this->SearchURL($res_rul, $regexp, $match)) {
+			$caller_id = $this->ExtractMatch($match);
+		}
+		$caller_id = isset($caller_id)?$caller_id:'';
+
+		return($caller_id);
+	}
+
+}
