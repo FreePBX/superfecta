@@ -1,0 +1,57 @@
+<?php
+/**** **** **** **** **** **** **** **** **** **** **** **** **** **** **** **** 
+ * Developer Notes:
+ * 
+ * 
+ * 
+ * 
+ * Version history:
+ *     2016-06-29  first version for 13 by drmessano
+ * 
+ **** **** **** **** **** **** **** **** **** **** **** **** **** **** **** ****/
+
+class Send_to_Yo extends superfecta_base {
+
+	public $description = "Sends Caller Number as a Yo notification";
+	public $version_requirement = "2.11";
+	public $source_param = array(
+		'API_Token' => array(
+				'description' => 'Enter User or App API Key https://dashboard.justyo.co',
+				'type' => 'text',
+				'default' => null
+		),
+		'User' => array(
+				'description' => 'Enter a specific Username or \'all\' to Yo all subscribers',
+				'type' => 'text',
+				'default' => 'all'
+		),
+	);
+
+	function post_processing($cache_found, $winning_source, $first_caller_id, $run_param, $thenumber) {
+		$this->DebugPrint("Sending Yo");
+	        if(($run_param['API_Token'] == null) || ($run_param['User'] == null)){
+        		$this->DebugPrint("Failed: Missing one or more required values");
+        		return;
+        	}
+		$curl = curl_init();
+		$user = strtolower($run_param['User']);
+		if ($user == 'all') {
+			$url = 'https://api.justyo.co/yoall/';
+		} else {
+			$url = 'https://api.justyo.co/yo/';
+		}
+		curl_setopt($curl, CURLOPT_URL, $url);
+		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'POST');
+		$queryData['api_token'] = $run_param['API_Token'];
+		if ($user != 'all') {
+		$queryData['username'] = $run_param['User'];
+		}
+		$queryData['text'] = "Call from: ".$thenumber;
+		curl_setopt($curl, CURLOPT_POSTFIELDS, $queryData);
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
+		curl_setopt($curl, CURLOPT_HEADER, FALSE);
+		curl_setopt($curl, CURLOPT_SAFE_UPLOAD, TRUE);
+		$response = curl_exec($curl);
+		curl_close($curl);
+	}
+}

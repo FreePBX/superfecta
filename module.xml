@@ -2,7 +2,7 @@
 	<rawname>superfecta</rawname>
 	<repo>extended</repo>
 	<name>CID Superfecta</name>
-	<version>13.0.3.12</version>
+	<version>13.0.3.22</version>
 	<type>setup</type>
 	<category>Admin</category>
 	<publisher>Sangoma Technologies Corporation</publisher>
@@ -12,6 +12,18 @@
 		Provides simultaneous use of, and complete control over multiple caller id data sources.
 	</description>
 	<changelog>
+		*13.0.3.22* FREEPBX-14183 Registered OpenCNAM fails
+		*13.0.3.21* FREEPBX-13449 Fix GevondenCC
+		*13.0.3.20* FREEPBX-12238 Add source module to allow CID Superfecta to Query Contact Manager
+		*13.0.3.19.2* FREEPBX-13273 Remove extra mysql code that wasn't removed when sugarCRM module was moved to PDO
+		*13.0.3.19.1* FREEPBX-12921 whitespace in Paginasblancas AR source			
+		*13.0.3.19* FREEPBX-12753 CID Superfecta: Trunk Provided returning 'CID Superfecta!' during debug/test
+		*13.0.3.18* FREEPBX-12644 Wrong pattern search on CID Superfecta for source source-Paginasblancas_AR.module
+		*13.0.3.17* Dont force myisam tables
+		*13.0.3.16* Add Send-To-Pushover and Send-To-Yo modules
+		*13.0.3.15* FREEPBX-12534 Update npa lists for us and canada including toll free
+		*13.0.3.14* Add FCC module
+		*13.0.3.13* FREEPBX-12138 FREEPBX-11857 FREEPBX-12072 FREEPBX-12210 FREEPBX-12237
 		*13.0.3.12* Wild guess on fixing this issue for FREEPBX-11857
 		*13.0.3.11* FREEPBX-11857 FREEPBX-12003
 		*13.0.3.10* FREEPBX-11857 Add info field type
@@ -29,27 +41,6 @@
 		*13.0.1alpha4* Fix adding scheme and other glitches in the matrix
 		*13.0.1alpha3* Errors during install
 		*13.0.1alpha2* Reskin and stylize. Remove multifecta for now.
-		*12.0.1* Updated interface. Performance enhancements
-		*2.11.16* Remove usage of really old installer methods for 2.8 and lower that no longer apply
-		*2.11.15* https://github.com/POSSA/Caller-ID-Superfecta/commits/release/2.11
-		*2.11.14* Bad module name fix
-		*2.11.13* Numerous changes
-		*2.11.12* Update all sweden sources and some improvements and database fixes
-		*2.11.11* Use new abstracted functions if exist
-		*2.11.10* Resolve class confliction in FreePBX 12
-		*2.11.9* XBMC Updates
-		*2.11.8* Fixes crash with improperly named class
-		*2.11.7* Added source Gevonden.CC for Dutch numbers and fixes listed on github
-		*2.11.6* Numerous Updates from GitHub
-		*2.11.5* Remove stage unexpected character..
-		*2.11.4* Sources updates and error clean up
-		*2.11.3* Added paginasblancas.ar and sugarcm
-		*2.11.2* Added in PDO Database search, Regular Expressions Search, FOP2 Phonebook search, Abandon Lookup, Trunk Provided Updates, also fixed descriptions in source items
-		*2.11.1* Added in a bunch of sources: Send To Growl, Send To URL, OpenCNAM, TAB Reloaded, CallWithUs, Send to MythTV and Asteridex
-		*2.11.0beta4* Remove dangling symlinks. Remove all illegal sources (against TOS)
-		*2.11.0beta2*	Fix sources versioning
-		*2.11.0beta1.2* fix xml
-		*2.11.0beta1.1* import into online repo
 	</changelog>
 	<menuitems>
 		<superfecta>CID Superfecta</superfecta>

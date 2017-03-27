@@ -1,7 +1,15 @@
 <?php
 /* Dev notes
-2013-11-02 migrated to 2.11 platform by lgaetz
-*/
+ * 2013-11-02 migrated to 2.11 platform by lgaetz
+ * Search reverseaustralia.com
+ * Developer docs: http://www.reverseaustralia.com/developer/
+ * Current Limits (per 24 hours) as of 05/10/2016
+ * Caller ID Extended Lookup: 20
+ * Caller ID Simple Lookup: 40
+ * API SUPPORT support@reverseaustralia.com
+ * Test Number: 0262195555 Caller id
+ * Test Number: 0280905401 Spam example shows return of score 32
+ */
 
 class ReverseAustralia_AU extends superfecta_base {
 
@@ -25,25 +33,24 @@ class ReverseAustralia_AU extends superfecta_base {
 	}
 
 	function get_caller_id($thenumber, $run_param=array()) {
+		$run_param['API_Key'] = isset($run_param['API_Key'])?$run_param['API_Key']:false;
+		$run_param['Spam_Threshold'] = isset($run_param['Spam_Threshold'])?$run_param['Spam_Threshold']:40;
+		$thenumber = urlencode($thenumber);
+		$caller_id = null;
+		$name = "";
+		$spam = "";
 
 		if (!$run_param['API_Key']) {
 			$this->DebugPrint(_("A valid API Key is required to use this lookup source"));
 		} else {
-			$caller_id = null;
-			$name = "";
-			$spam = "";
 
-			$this->DebugPrint("Searching reverseaustralia.com - {$this->thenumber} ... ");
+			$this->DebugPrint("Searching reverseaustralia.com - {$thenumber} ... ");
 
 			if ($run_param['Spam_Threshold'])  {
 				$spam = "&spamthreshold=".$run_param['Spam_Threshold'];
-			} else {
-				$spam = "";
 			}
 
-			// Search reverseaustralia.com.  URL taken from
-			// http://www.reverseaustralia.com/developer/callerid.html for suggested format for PBX lookup
-			$url = "http://api.reverseaustralia.com/cidlookup.php?format=json&key={$run_param['API_Key']}&q=$thenumber".$spam;
+			$url = 'http://api.reverseaustralia.com/cidlookup.php?format=json&key='.$run_param['API_Key'].'&q='.$thenumber.$spam;
 			// $this->DebugPrint($url);   // for debug
 
 			$value = $this->get_url_contents($url);
@@ -55,7 +62,7 @@ class ReverseAustralia_AU extends superfecta_base {
 					//record not found
 				}
 			} else {
-				$name = $result['name'];
+				$name = isset($result['name'])?$result['name']:'';
 			}
 
 			// If we found a match, return it

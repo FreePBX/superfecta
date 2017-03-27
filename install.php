@@ -44,7 +44,7 @@ $sql = "CREATE TABLE IF NOT EXISTS superfectacache (
 	callerid VARCHAR(45) NOT NULL,
 	dateentered DATETIME NOT NULL,
 	PRIMARY KEY (number)
-) ENGINE = MyISAM";
+)";
 $check = $db->query($sql);
 if (DB::IsError($check)) {
 	die_freepbx("Can not create superfectacache table: " . $check->getMessage() . "<br>");
@@ -57,7 +57,7 @@ $sql = "CREATE TABLE IF NOT EXISTS superfecta_to_incoming (
 		cidnum VARCHAR(50) DEFAULT NULL,
 		PRIMARY KEY  (`superfecta_to_incoming_id`),
 		UNIQUE KEY `extn` (`extension`,`cidnum`)
-	) ENGINE=MYISAM";
+	)";
 $check = $db->query($sql);
 if (DB::IsError($check)) {
 	die_freepbx("Can not create superfecta_to_incoming table: " . $check->getMessage() . "<br>");
@@ -77,7 +77,7 @@ $sql = "CREATE TABLE IF NOT EXISTS superfecta_mf (
 	spam_child_id BIGINT(20) DEFAULT NULL,
 	PRIMARY KEY (superfecta_mf_id),
 	KEY start_time (timestamp_start)
-) ENGINE=MYISAM";
+)";
 $check = $db->query($sql);
 if (DB::IsError($check)) {
 	die_freepbx("Can not create superfecta_mf table: " . $check->getMessage() . "<br>");
@@ -100,7 +100,7 @@ $sql = "CREATE TABLE IF NOT EXISTS superfecta_mf_child (
 	PRIMARY KEY  (superfecta_mf_child_id),
 	KEY start_time (timestamp_start),
 	KEY superfecta_mf_id (superfecta_mf_id)
-) ENGINE=MYISAM";
+)";
 $check = $db->query($sql);
 if (DB::IsError($check)) {
 	die_freepbx("Can not create superfecta_mf_child table: " . $check->getMessage() . "<br>");

@@ -1,0 +1,63 @@
+<?php
+
+class FccComplaints extends superfecta_base {
+
+	public $description, $source_param;
+	public $version_requirement = "2.11";
+
+	public function __construct() {
+		$this->description = "https://opendata.fcc.gov - "._("This module checks for complaints to the fcc against a given phone number");
+		$this->source_param = array(
+			'SPAM_Threshold' => array(
+				'description' => _('Specify the number of listings required to mark a call as spam.'),
+				'type' => 'number',
+				'default' => 2
+			),
+			'API_KEY' => array(
+				'description' => _('Optional API token to allow throttling by app rather than IP'),
+				'type' => 'text',
+				'default' => ''
+			),
+			'Whitelist' => array(
+				'description' => _('Whitelist of numbers to consider neverspam. One per line in the format NPA-NPX-XXXX'),
+				'type' => 'textarea',
+				'default' => ''
+			)
+		);
+	}
+
+	function get_caller_id($thenumber, $run_param=array()) {
+		$apikey = isset($run_param['API_KEY'])?$run_param['API_KEY']:'';
+		$spamcount = isset($run_param['SPAM_Threshold'])?$run_param['SPAM_Threshold']:1;
+		$whitelist = isset($run_param['Whitelist'])?explode("\n",trim($run_param['Whitelist'])):array();
+		$caller_id = null;
+		//http://stackoverflow.com/a/10741461 phone number normalization
+		$thenumber = preg_replace('~.*(\d{3})[^\d]{0,7}(\d{3})[^\d]{0,7}(\d{4}).*~', '$1-$2-$3', $thenumber);
+		if (!$this->IsValidNumber("US,CA", $thenumber)) {
+			$this->DebugPrint(_("Skipping Source - Non US/CAN number").": {$thenumber}");
+		} else {
+			$this->DebugPrint(_("Searching FCC Data source..."));
+			if(in_array($thenumber, $whitelist)){
+					$this->DebugPrint(sprintf(_("The number %s is in the whitelist, skipping"),$thenumber));
+				$this->spam = false;
+				return $caller_id;
+			}
+			$url = "https://opendata.fcc.gov/resource/sr6c-syda.json?caller_id_number=".$thenumber;
+			if(!empty($apikey)){
+				$url .= '&$$app_token='.$apikey;
+			}
+			$value = $this->get_url_contents($url);
+			$data = json_decode($value,true);
+			$score = count($data);
+			if ($score >= $spamcount) {
+				$this->spam = true;
+				$this->DebugPrint(" "._("$score reports found, determined to be SPAM. You can lower the spam threshold in settings."));
+			} else {
+				$this->DebugPrint(_("$score reports found, Not a SPAM caller. You can raise the spam threshold in settings."));
+			}
+		}
+
+		return($caller_id);
+	}
+
+}

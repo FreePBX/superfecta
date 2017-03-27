@@ -1,0 +1,79 @@
+<?php
+/**** **** **** **** **** **** **** **** **** **** **** **** **** **** **** **** 
+ * Developer Notes:
+ * 
+ * 
+ * 
+ * 
+ * Version history:
+ *     2016-06-29  first version for 13 by drmessano
+ * 
+ **** **** **** **** **** **** **** **** **** **** **** **** **** **** **** ****/
+
+class Send_to_Pushover extends superfecta_base {
+
+	public $description = "Sends Caller ID Name and Number as a Pushover notification";
+	public $version_requirement = "2.11";
+	public $source_param = array(
+		'User_or_Group_Key' => array(
+				'description' => 'Enter User or Group API Key available from https://pushover.net',
+				'type' => 'text',
+				'default' => null
+		),
+		'App_Token' => array(
+				'description' => 'Enter App API Token/Key available from https://pushover.net/apps',
+				'type' => 'text',
+				'default' => null
+		),
+		'Device' => array(
+				'description' => '(Optional) Enter Device(s) available from https://pushover.net',
+				'type' => 'text',
+				'default' => null
+		),
+		'Priority' => array(
+				'description' => 'Set Message Priority. See: https://pushover.net/api#priority',
+				'type' => 'select',
+					'option' => array(
+						'-2' => 'Lowest (-2)',
+						'-1' => 'Low (-1)',
+						'0' => 'Normal (0)',
+						'1' => 'High (1)',
+						'2' => 'Emergency (2)',
+						),
+				'default' => '0'
+		),
+		'Title' => array(
+				'description' => 'Set Message Title',
+				'type' => 'text',
+				'default' => 'Incoming call'
+		),
+	);
+
+	function post_processing($cache_found, $winning_source, $first_caller_id, $run_param, $thenumber) {
+		$this->DebugPrint("Pushing notification to Pushover");
+	        if(($run_param['User_or_Group_Key'] == null) || ($run_param['App_Token'] == null)){
+        		$this->DebugPrint("Failed: Missing one or more required values");
+        		return;
+	        }
+		$curl = curl_init();
+		$url = 'https://api.pushover.net/1/messages.json';
+		curl_setopt($curl, CURLOPT_URL, $url);
+		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'POST');
+		$queryData['user'] = $run_param['User_or_Group_Key'];
+		$queryData['token'] = $run_param['App_Token'];
+                if($run_param['Device']){
+                        $queryData['device'] = $run_param['Device'];
+                }
+                $queryData['priority'] = $run_param['Priority'];
+                if($run_param['Title']){
+                        $queryData['title'] = $run_param['Title'];
+                }
+		$queryData['message'] = "Incoming call from: ".$first_caller_id."\r"."From phone number: ".$thenumber;
+		curl_setopt($curl, CURLOPT_POSTFIELDS, $queryData);
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
+		curl_setopt($curl, CURLOPT_HEADER, FALSE);
+		curl_setopt($curl, CURLOPT_SAFE_UPLOAD, TRUE);
+		$response = curl_exec($curl);
+		curl_close($curl);
+	}
+}

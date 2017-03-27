@@ -24,10 +24,12 @@ class OpenCNAM extends superfecta_base {
         $run_param['Account_SID'] = isset($run_param['Account_SID'])?$run_param['Account_SID']:null;
         $run_param['Auth_Token'] = isset($run_param['Auth_Token'])?$run_param['Auth_Token']:null;
         $caller_id = null;
+        $thenumber = urlencode($thenumber);
         $this->DebugPrint("Searching OpenCNAM ... ");
 
         if ($run_param['Account_SID'] == null or $run_param['Auth_Token'] == null) {
             // Hobbyist Tier URL (limited to 60 cached lookups per hour)
+            $this->DebugPrint("OpenCNAM Called without credentials. If this source is not working this is probably why");
             $url = "https://api.opencnam.com/v3/phone/" . $thenumber . "?format=pbx";
         }
         else {
@@ -40,7 +42,7 @@ class OpenCNAM extends superfecta_base {
         if (strlen($sname) > 1) {
                 // convert list of ignore keywords into array
                 $key_words = array();
-                $temp_array = explode(',',(isset($run_param['Ignore_Keywords'])?$run_param['Ignore_Keywords']:$source_param['Ignore_Keywords']['default']));
+                $temp_array = explode(',',(isset($run_param['Ignore_Keywords'])?$run_param['Ignore_Keywords']:$this->source_param['Ignore_Keywords']['default']));
                 foreach($temp_array as $val) {
                     $key_words[] = trim($val);
                 }

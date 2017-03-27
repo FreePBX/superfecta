@@ -1,0 +1,54 @@
+<?php
+/**
+ * Twilio CNAM module
+ * API Details: https://www.twilio.com/lookup
+ * Copyright (C) 2016 Sangoma Technologies
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.	If not, see <http://www.gnu.org/licenses/>.
+ *
+ * 04.28.2016 initial release by James Finstrom jfinstrom@sangoma.com
+ *
+ */
+
+class Twilio extends superfecta_base{
+	public $description = "Twilio Cnam Lookup";
+	public $version_requirement = "2.11";
+	public $source_param = array(
+		'AccountSid' => array(
+			'description' => "AccountSID - Can be obtained from https://www.twilio.com/user/account/messaging/dev-tools/api-keys",
+			'type' => 'text'
+		),
+		'AuthToken' => array(
+			'description' => "AuthToken - Can be obtained from https://www.twilio.com/user/account/messaging/dev-tools/api-keys",
+			'type' => 'text'
+		)
+	);
+	function get_caller_id($thenumber, $run_param=array()) {
+		$run_param['AccountSid'] = isset($run_param['AccountSid'])?$run_param['AccountSid']:'';
+		$run_param['AuthToken'] = isset($run_param['AuthToken'])?$run_param['AuthToken']:'';
+		$debug = $this->debug;
+		if(empty($run_param['AccountSid']) || empty($run_param['AuthToken'])) {
+				$this->DebugPrint("Twilio requires a registered account.");
+				return '';
+		}
+		$url = sprintf("https://%s:%s@lookups.twilio.com/v1/PhoneNumbers/%s?Type=caller-name",$run_param['AccountSid'],$run_param['AuthToken'],$thenumber);
+		$ret = $this->get_url_contents($url);
+		$data = json_decode($ret, true);
+		if(isset($data['status']) && $data['status'] == 404){
+			$this->DebugPrint("Lookup Error");
+			$this->DebugPrint($data['message']);
+		}
+		return($data['caller_name']['caller_name']);
+	}
+}
