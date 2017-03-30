@@ -29,7 +29,7 @@ class Abandon_lookup extends superfecta_base {
 		if ($run_param['Artificial_CNAM'] == NULL) {
 			$run_param['Artificial_CNAM'] = $this->source_param['Artificial_CNAM']['default'];
 		}
-		if ($run_param['Use_CID'] == 'on') {
+		if (isset($run_param['Use_CID']) && $run_param['Use_CID'] == 'on') {
 			$run_param['Artificial_CNAM'] = $thenumber;
 		}
 

@@ -16,7 +16,7 @@ class GevondenCC_NL extends superfecta_base {
 		$caller_id = null;
 		$name = "";
 
-		$this->DebugPrint("Searching gevonden.cc - {$this->thenumber} ... ");
+		$this->DebugPrint("Searching gevonden.cc - {$thenumber} ... ");
 
 		// Test for NL
 		$loc_number = $thenumber;
@@ -57,7 +57,7 @@ class GevondenCC_NL extends superfecta_base {
 		}
 
 		// If we found a match, return it
-		if (strlen($name) > 1)
+		if (is_string($name) && strlen($name) > 1)
 		{
 			$caller_id = $name;
 		} else {
