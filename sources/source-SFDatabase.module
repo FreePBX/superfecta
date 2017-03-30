@@ -12,6 +12,8 @@ Version History:
 
 2014-0-21:	Added additional placeholder for :pernumber, which puts % around thenubmer in the query
 			Finaly fixed bug that prevented quotes in query
+			
+2016-06-29:	Add the ability to define a port for the database
 
 *** *** *** *** *** *** *** *** *** ***/
 
@@ -33,6 +35,11 @@ class SFDatabase extends superfecta_base {
                 'description' => 'Host address of the database. (localhost if the database is on the same server as FreePBX)',
                 'type' => 'text',
 				'default' => 'localhost'
+        ),
+        'DB_Port' => array(
+                'description' => 'Port of the database. (3306 by default)',
+                'type' => 'number',
+				'default' => '3306'
         ),
         'DB_Name' => array(
                 'description' => 'Name of database',
@@ -78,7 +85,7 @@ class SFDatabase extends superfecta_base {
 	        	$this->DebugPrint("Connecting to database....");
 		
 			try {
-			    $dbh = new PDO($run_param['DB_Driver'].':dbname='.$run_param['DB_Name'].';host='.$run_param['DB_Host'], $run_param['DB_User'], $run_param['DB_Password']);
+			    $dbh = new PDO($run_param['DB_Driver'].':dbname='.$run_param['DB_Name'].';host='.$run_param['DB_Host'].';port='.$run_param['DB_Port'], $run_param['DB_User'], $run_param['DB_Password']);
 			} catch (PDOException $e) {
 			    $this->DebugPrint('Connection failed: ' . $e->getMessage());
 			    return null;
@@ -137,7 +144,7 @@ class SFDatabase extends superfecta_base {
 			$this->DebugPrint("Connecting to database....");
 		
 			try {
-			    $dbh = new PDO($run_param['DB_Driver'].':dbname='.$run_param['DB_Name'].';host='.$run_param['DB_Host'], $run_param['DB_User'], $run_param['DB_Password']);
+			    $dbh = new PDO($run_param['DB_Driver'].':dbname='.$run_param['DB_Name'].';host='.$run_param['DB_Host'].';port='.$run_param['DB_Port'], $run_param['DB_User'], $run_param['DB_Password']);
 			} catch (PDOException $e) {
 			    $this->DebugPrint('Connection failed: ' . $e->getMessage());
 			    return null;
