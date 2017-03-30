@@ -1,0 +1,53 @@
+<?php
+
+/*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+ * Developer Notes:
+ *
+ * This DasTelefonBuch_Germany Source is looking up for persons companys.
+ *
+ * dastelefonbuch.de Terms of Service:
+ * https://www.dastelefonbuch.de/Datenschutz
+ * dastelefonbuch.de TOS do not explicitly prohibit automated lookups
+ * dastelefonbuch.de manages Reverse Number lookups for their customers. Number Search works for all Customers, which dont contradict for this service.
+ *
+ * Version History:
+ * 2017-03-21	Initial Module for DasTelefonBuch_Germany
+ *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
+
+class DasTelefonBuch_Germany extends superfecta_base {
+
+	public $description;
+	public $version_requirement = "2.11";
+
+	public function __construct() {
+		$this->description = "https://www.dastelefonbuch.de - "._("These listings include data for dastelefonbuch in Germany.");
+	}
+
+	function get_caller_id($thenumber, $run_param=array()) {
+		$this->DebugPrint(_("Searching"). "https://www.dastelefonbuch.de ... ");
+
+		if (substr($thenumber, 0, 1) ==! '0') {
+			$thenumber=trim($thenumber,' ');
+			$thenumber="00" . $thenumber;
+		}
+		if (substr($thenumber, 0, 2) === '00') {
+			$thenumber=trim($thenumber,' ');
+		}
+		
+		// Set the url we're searching for
+		$res_rul = "https://www.dastelefonbuch.de/Suche/" . $thenumber;// url for searching persons
+
+		// regex patterns to search for
+		$regexp = array(
+		'~<div class="name" title="(.+?)">~',
+			);
+		// search for persons match
+		if ($this->SearchURL($res_rul, $regexp, $match)) {
+			$caller_id = $this->ExtractMatch($match);
+		}
+		$caller_id = isset($caller_id)?$caller_id:'';
+
+		return($caller_id);
+	}
+
+}

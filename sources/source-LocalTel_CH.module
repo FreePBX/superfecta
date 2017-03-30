@@ -6,6 +6,7 @@ TOS date: December 15, 2009
 TOS summary by lgaetz: I have reviewed what is available on this page and can't see anything that prohibits or prevents superfecta from using this as a lookup source. date: 2014-01-06 
 
 Version History
+2016-04-18  	Updated parse method (compatiple php 5.6), formatted code and did a bit of commentary
 2015-04-19	Fixed bug if there are multiple results 
 2015-04-18	Changed method for the request (use tel.search.ch API)
 2012-xx-xx	Initial migration
@@ -16,34 +17,74 @@ class LocalTel_CH extends superfecta_base {
     public $description = "http://local.ch (tel.search.ch) - 	These listings include business and residential data for Switzerland.";
     public $version_requirement = "2.11";
 
-    function get_caller_id($thenumber, $run_param=array()) {
-
+    function get_caller_id($thenumber, $run_param=array())
+    {
+        //Define vars
         $caller_id = null;
-
-        if ((!$this->IsValidNumber('CH', $thenumber))) {
+        
+        //Check the number format
+        if ((!$this->IsValidNumber('CH', $thenumber))) 
+        {
             $this->DebugPrint("Skipping Source - Not a valid Swiss number: {$thenumber}");
-        } else {
+        } 
+        else 
+        {
             $this->DebugPrint("Searching Local.ch-Swiss ... ");
-		$request = "http://tel.search.ch/api/?was=$thenumber";
-		$feed = implode(file($request));
-		if(!$xml = simplexml_load_string($feed)){
-			return($caller_id);
-		}
-		if(!$json = json_encode($xml)){
-			return($caller_id);
-		}
-		if(!$array = json_decode($json,TRUE)){
-			return($caller_id);
-		}else{
-	                //Fix if there are multiple entrys
-	        	if(!$caller_id = $array['entry']['title']){
-		        	if(!$caller_id = $array['entry'][0]['title']){
-				        $caller_id = null;
-				        $this->DebugPrint('Could not parse xml-response from tel.search.ch');
-			        }
-		        }
-	        }
+            $request = "http://tel.search.ch/api/?was=$thenumber";
+            $feed = implode(file($request));
+            //Load XML
+            if(!$xml = simplexml_load_string($feed))
+            {
+                $this->DebugPrint("not found (xml error)");
+                return($caller_id);
+            }
+            //Parse to json
+            if(!$json = json_encode($xml))
+            {
+                $this->DebugPrint("not found (json encode error)");
+                return($caller_id);
+            }
+            if(!$array = json_decode($json,TRUE))
+            {
+                $this->DebugPrint("not found (json decode error)");
+                return($caller_id);
+            }
+            else
+            {
+                //Check if a result has been found
+                if(array_key_exists('entry', $array))
+                {
+                    //Check if there are multiple results
+                    if(isset($array['entry'][0]))
+                    {
+                        $this->DebugPrint("Multiple results found, I took the first one");
+                        //Set callerid
+                        if(!$caller_id = $array['entry'][0]['title'])
+                        {
+                            $this->DebugPrint('Could not parse xml-response from tel.search.ch');
+                            $caller_id = null;
+                        }
+                    }
+                    else
+                    {
+                        //Single result, set callerid
+                        $this->DebugPrint("Entry found, try to set callerid:");
+                        if(!$caller_id = $array['entry']['title'])
+                        {
+                            $this->DebugPrint('Could not parse xml-response from tel.search.ch');
+                            $caller_id = null;
+                        }
+                    }
+                }
+                else
+                {
+                    //Return empty Callerid
+                    $this->DebugPrint("not found");
+                    return $caller_id = null;
+                }
+            }
         }
+        //Return Callerid (success)
         return($caller_id);
     }
 

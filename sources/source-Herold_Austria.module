@@ -17,7 +17,7 @@
  * 2014-06-28	Initial migration from 2.2.x
  * 2014-07-02	Add business lookups and change urls to mobile site
  * 2016-05-03	Rewrite Numbers correct for Herold and change Query for new Mobile Web Template
- *
+ * 2017-03-20	Again Herold has a new Theme. We need to change the regexp again
  *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
 
 class Herold_Austria extends superfecta_base {
@@ -26,11 +26,11 @@ class Herold_Austria extends superfecta_base {
 	public $version_requirement = "2.11";
 
 	public function __construct() {
-		$this->description = "http://www.herold.at/ - "._("These listings include data for Austria.");
+		$this->description = "https://www.herold.at/ - "._("These listings include data for Austria.");
 	}
 
 	function get_caller_id($thenumber, $run_param=array()) {
-		$this->DebugPrint(_("Searching"). "http://www.herold.at/ ... ");
+		$this->DebugPrint(_("Searching"). "https://www.herold.at/ ... ");
 
 		if (substr($thenumber, 0, 1) ==! '0') {
 			$thenumber=trim($thenumber,' ');
@@ -41,12 +41,12 @@ class Herold_Austria extends superfecta_base {
 		}
 
 		// Set the url we're searching for
-		$res_rul = "http://www.herold.mobi/telefonbuch/was_".$thenumber."/";// url for searching residential listings
-		$bus_url = "http://www.herold.mobi/gelbe-seiten/was_".$thenumber."/";// url for searching business listings
+		$res_rul = "https://www.herold.at/telefonbuch/was_".$thenumber."/";// url for searching residential listings
+		$bus_url = "https://www.herold.at/gelbe-seiten/was_".$thenumber."/";// url for searching business listings
 
 		// regex patterns to search for
 		$regexp = array(
-			'~<a data-clickpos="name" href=".*?">(.+?)</a>~',
+			'~<h2><a href=".*?" data-clickpos="name"><span itemprop="name">(.+?)</span>~',
 		);
 
 		// first search for Residential match
@@ -63,4 +63,12 @@ class Herold_Austria extends superfecta_base {
 		return($caller_id);
 	}
 
+}
+
+                // if no residential match found, search business
+                if (!$caller_id && $this->SearchURL($bus_url, $regexp, $match)) {
+                        $caller_id = $this->ExtractMatch($match);
+                }
+                return($caller_id);
+        }
 }
