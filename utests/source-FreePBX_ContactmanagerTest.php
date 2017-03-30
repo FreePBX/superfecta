@@ -15,7 +15,6 @@ class FreePBX_ContactmanagerTest extends PHPUnit_Framework_TestCase{
 	protected static $randcompany;
 
 	public static function setUpBeforeClass() {
-			include_once 'setuptests.php';
 			include_once dirname(__DIR__).'/includes/superfecta_base.php';
 			include dirname(__DIR__).'/sources/source-FreePBX_Contactmanager.module';
 			self::$o = new FreePBX_Contactmanager();
