@@ -15,6 +15,6 @@ class Herold_AustriaTest extends PHPUnit_Framework_TestCase{
 
 	public function testCnam(){
 		$cnam = self::$o->get_caller_id('+437252799');
-		$this->assertEquals("Mitterhuemer Unternehmensgruppe", $cnam, "The lookup returned an unexpected result for +437252799");
+		$this->assertEquals("Mitterhuemer MENSCH | ENERGIE | TECHNIK", $cnam, "The lookup returned an unexpected result for +437252799");
 	}
 }
