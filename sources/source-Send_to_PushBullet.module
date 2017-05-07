@@ -76,9 +76,9 @@ class Send_to_PushBullet extends superfecta_base {
 			$devices = json_decode($response);
 			$bar = array();
 			foreach ($devices->devices as $foo) {
-				$bar1 = $foo->nickname;
-				$bar2 = $foo->iden;
-				$bar[$bar2]=$bar1;
+				if (isset($foo->iden) && isset($foo->nickname)) {
+					$bar[$foo->iden] = $foo->nickname;
+				}
 			}
 			$this->source_param['Device']['option'] = $bar;
 		}
