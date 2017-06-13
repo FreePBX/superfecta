@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-05-03 20:17-0400\n"
-"PO-Revision-Date: 2017-06-10 21:36+0200\n"
+"PO-Revision-Date: 2017-06-13 15:34+0200\n"
 "Last-Translator: Peter Trinh <ftek@ymail.com>\n"
 "Language-Team: Vietnamese "
 "<http://weblate.freepbx.org/projects/freepbx/superfecta/vi/>\n"
@@ -414,7 +414,7 @@ msgstr ""
 
 #: Superfecta.class.php:733
 msgid "Submit"
-msgstr ""
+msgstr "Gửi đi"
 
 #: views/add_scheme.php:102 views/scheme.php:70
 msgid "Superfecta Processor"
