@@ -2,7 +2,7 @@
 	<rawname>superfecta</rawname>
 	<repo>extended</repo>
 	<name>CID Superfecta</name>
-	<version>13.0.4</version>
+	<version>14.0.1</version>
 	<type>setup</type>
 	<category>Admin</category>
 	<publisher>Sangoma Technologies Corporation</publisher>
@@ -12,36 +12,7 @@
 		Provides simultaneous use of, and complete control over multiple caller id data sources.
 	</description>
 	<changelog>
-		*13.0.4* FREEPBX-13970 FREEPBX-14399 FREEPBX-14396 FREEPBX-14400
-		*13.0.3.22* FREEPBX-14183 Registered OpenCNAM fails
-		*13.0.3.21* FREEPBX-13449 Fix GevondenCC
-		*13.0.3.20* FREEPBX-12238 Add source module to allow CID Superfecta to Query Contact Manager
-		*13.0.3.19.2* FREEPBX-13273 Remove extra mysql code that wasn't removed when sugarCRM module was moved to PDO
-		*13.0.3.19.1* FREEPBX-12921 whitespace in Paginasblancas AR source			
-		*13.0.3.19* FREEPBX-12753 CID Superfecta: Trunk Provided returning 'CID Superfecta!' during debug/test
-		*13.0.3.18* FREEPBX-12644 Wrong pattern search on CID Superfecta for source source-Paginasblancas_AR.module
-		*13.0.3.17* Dont force myisam tables
-		*13.0.3.16* Add Send-To-Pushover and Send-To-Yo modules
-		*13.0.3.15* FREEPBX-12534 Update npa lists for us and canada including toll free
-		*13.0.3.14* Add FCC module
-		*13.0.3.13* FREEPBX-12138 FREEPBX-11857 FREEPBX-12072 FREEPBX-12210 FREEPBX-12237
-		*13.0.3.12* Wild guess on fixing this issue for FREEPBX-11857
-		*13.0.3.11* FREEPBX-11857 FREEPBX-12003
-		*13.0.3.10* FREEPBX-11857 Add info field type
-		*13.0.3.9* Correct if statement
-		*13.0.3.8* FREEPBX-11856
-		*13.0.3.7* FREEPBX-11726 FREEPBX-11760
-		*13.0.3.6* FREEPBX-11714 Move SQL to PDO change table, Additional testing
-		*13.0.3.5* FREEPBX-11714 validate variables, fix whoops errors, FREEPBX-11712 validate variables, fix whoops errors
-		*13.0.3.4* Remove en_US Translations
-		*13.0.3.3* FREEPBX-10774
-		*13.0.3.1* FREEPBX-10209 htmlentities need to use UTF-8
-		*13.0.3.1* Fix whocalled source
-		*13.0.3* FREEPBX-9587 CID Superfecta install fails
-		*13.0.2* Version bump Beta
-		*13.0.1alpha4* Fix adding scheme and other glitches in the matrix
-		*13.0.1alpha3* Errors during install
-		*13.0.1alpha2* Reskin and stylize. Remove multifecta for now.
+		*14.0.1* Forked from 13.0.4
 	</changelog>
 	<menuitems>
 		<superfecta>CID Superfecta</superfecta>
@@ -57,7 +28,7 @@
 		</framework>
 	</hooks>
 	<supported>
-		<version>13.0</version>
+		<version>14.0</version>
 	</supported>
 	<md5sum>a71ce14e885b43669a50395c975c0df9</md5sum>
 	<location>release/2.11/superfecta-2.11.5.tgz</location>
