@@ -1063,7 +1063,13 @@ class superfecta_base {
 			$goodStr = strip_tags($goodStr);
 			//convert HTML entities
 			$goodStr = strtr($goodStr, array_flip(get_html_translation_table(HTML_ENTITIES)));
-			preg_replace("/&#(\d+);/me", "chr('$1')", $goodStr);
+			$goodStr = preg_replace_callback(
+				"/&#(\d+);/m",
+				function($matches) {
+					return chr($matches[1]);
+				},
+				$goodStr
+			);
 			//wordwrap
 			$goodStr = wordwrap($goodStr);
 			//make sure there are no more than 3 linebreaks in a row and trim whitespace
