@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-05-03 20:17-0400\n"
-"PO-Revision-Date: 2017-07-01 11:00+0200\n"
+"PO-Revision-Date: 2017-07-04 13:50+0200\n"
 "Last-Translator: PETER <ftek@ymail.com>\n"
 "Language-Team: Vietnamese "
 "<http://weblate.freepbx.org/projects/freepbx/superfecta/vi/>\n"
@@ -145,7 +145,7 @@ msgstr ""
 
 #: views/scheme.php:18
 msgid "Enabled"
-msgstr "Được kích hoạt"
+msgstr "Đã bật"
 
 #: includes/processors/superfecta_single.php:53
 #: includes/processors/superfecta_single.php:115
