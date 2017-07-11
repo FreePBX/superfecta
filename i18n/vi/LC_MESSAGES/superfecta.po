@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-05-03 20:17-0400\n"
-"PO-Revision-Date: 2017-07-11 09:14+0200\n"
+"PO-Revision-Date: 2017-07-11 14:01+0200\n"
 "Last-Translator: PETER <ftek@ymail.com>\n"
 "Language-Team: Vietnamese "
 "<http://weblate.freepbx.org/projects/freepbx/superfecta/vi/>\n"
@@ -261,7 +261,7 @@ msgstr ""
 
 #: views/main.php:24
 msgid "Name"
-msgstr "tên"
+msgstr "Tên"
 
 #: views/add_scheme.php:13
 msgid "New Scheme Name"
