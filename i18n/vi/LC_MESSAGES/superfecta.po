@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-05-03 20:17-0400\n"
-"PO-Revision-Date: 2017-07-14 09:01+0200\n"
+"PO-Revision-Date: 2017-07-14 14:26+0200\n"
 "Last-Translator: PETER <ftek@ymail.com>\n"
 "Language-Team: Vietnamese "
 "<http://weblate.freepbx.org/projects/freepbx/superfecta/vi/>\n"
@@ -23,7 +23,7 @@ msgstr ""
 
 #: functions.inc.php:50 views/scheme.php:143
 msgid "ALL"
-msgstr ""
+msgstr "TẤT CẢ"
 
 #: views/main.php:25
 msgid "Actions"
@@ -31,17 +31,19 @@ msgstr "Các thao tác"
 
 #: views/header.php:3
 msgid "Add Caller ID Scheme"
-msgstr ""
+msgstr "Thêm biểu đồ Caller ID"
 
 #: page.superfecta.php:190
 msgid "Add Scheme"
-msgstr ""
+msgstr "Thêm Biểu đồ"
 
 #: views/scheme.php:7
 msgid ""
 "Add, Remove, Enable, Disable, Sort and Configure data sources as appropriate "
 "for your situation."
 msgstr ""
+"Thêm, xóa, kích hoạt, vô hiệu, sắp xếp và cấu hình các nguồn dữ liệu phù hợp "
+"với hoàn cảnh của bạn."
 
 #: superfecta.i18n.php:6
 msgid "Admin"
@@ -49,11 +51,11 @@ msgstr "Quản trị viên"
 
 #: views/add_scheme.php:149 views/scheme.php:89
 msgid "CID Prefix URL"
-msgstr ""
+msgstr "CID Prefix URL"
 
 #: views/add_scheme.php:53 views/scheme.php:50
 msgid "CID Rules"
-msgstr ""
+msgstr "Nguyên tắc của CID"
 
 #: superfecta.i18n.php:4 superfecta.i18n.php:10
 msgid "CID Superfecta"
