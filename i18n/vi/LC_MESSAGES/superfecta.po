@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-05-03 20:17-0400\n"
-"PO-Revision-Date: 2017-07-14 14:26+0200\n"
+"PO-Revision-Date: 2017-07-15 21:59+0200\n"
 "Last-Translator: PETER <ftek@ymail.com>\n"
 "Language-Team: Vietnamese "
 "<http://weblate.freepbx.org/projects/freepbx/superfecta/vi/>\n"
@@ -59,67 +59,72 @@ msgstr "Nguyên tắc của CID"
 
 #: superfecta.i18n.php:4 superfecta.i18n.php:10
 msgid "CID Superfecta"
-msgstr ""
+msgstr "CID Superfecta"
 
 #: Superfecta.class.php:231
 #, php-format
 msgid "Call detected as spam, would send call to: %s"
-msgstr ""
+msgstr "Các cuộc gọi được phát hiện là cuộc gọi spam, sẽ được gửi tới: %s"
 
 #: views/header.php:16
 msgid "Caller ID Superfecta"
-msgstr ""
+msgstr "Chương trình tiện ích Caller ID Superfecta"
 
 #: views/main.php:8
 msgid ""
 "CallerID Superfecta for FreePBX is a utility program which adds incoming "
 "CallerID name lookups to your Asterisk system using multiple data sources"
 msgstr ""
+"CallerID Superfecta là một chương trình tiện ích bổ sung thêm các tra cứu "
+"tên CallerID trên hệ thống Asterisk của bạn bằng cách sử dụng nhiều nguồn dữ "
+"liệu"
 
 #: Superfecta.class.php:155
 #, php-format
 msgid "Changed CNUM to: %s"
-msgstr ""
+msgstr "CNUM được thay đổi thành: %s"
 
 #: views/scheme.php:130
 msgid "DID Number"
-msgstr ""
+msgstr "Số DID"
 
 #: views/add_scheme.php:33 views/scheme.php:46
 msgid "DID Rules"
-msgstr ""
+msgstr "Các nguyê tắc DID"
 
 #: views/scheme.php:16
 msgid "Data Source Name"
-msgstr ""
+msgstr "Tên nguồn dữ liệu"
 
 #: views/scheme.php:138
 msgid "Debug Level"
-msgstr ""
+msgstr "Cấp độ gỡ lỗi (Debug Level)"
 
 #: views/scheme.php:138
 msgid "Debug Level to display"
-msgstr ""
+msgstr "Debug Level để hiển thị"
 
 #: Superfecta.class.php:309
 msgid "Debug is on and set at level:"
-msgstr ""
+msgstr "Debug đang bật và cài đặt tại cấp độ:"
 
 #: views/scheme.php:5 views/scheme.php:128
 msgid "Debug/Test Run Scheme"
-msgstr ""
+msgstr "Biểu đồ Debug/ Chạy thử nghiệm"
 
 #: Superfecta.class.php:313
 msgid "Debugging Enabled, will not stop after first result"
 msgstr ""
+"Đã kích hoạt tính năng gỡ lỗi, và nó sẽ không dừng sau khi có được kết quả "
+"đầu tiên"
 
 #: views/add_scheme.php:1
 msgid "Define Settings for a new Scheme"
-msgstr ""
+msgstr "Xác định các cài đặt cho Biểu đồ mới"
 
 #: views/add_scheme.php:23
 msgid "Define a new name for this scheme"
-msgstr ""
+msgstr "Xác định một tên mới mới biểu đồ này"
 
 #: views/add_scheme.php:43 views/scheme.php:46
 msgid ""
@@ -135,15 +140,15 @@ msgstr "Mô tả"
 
 #: views/scheme.php:38
 msgid "Edit Scheme"
-msgstr ""
+msgstr "Chỉnh sửa biểu đồ"
 
 #: views/add_scheme.php:216 views/scheme.php:107
 msgid "Enable SPAM Interception"
-msgstr ""
+msgstr "Kích hoạt tính năng ngăn chặn SPAM"
 
 #: functions.inc.php:22
 msgid "Enable Superfecta Lookup"
-msgstr ""
+msgstr "Kích hoạt tính năng tra cứu Superfecta"
 
 #: views/scheme.php:18
 msgid "Enabled"
