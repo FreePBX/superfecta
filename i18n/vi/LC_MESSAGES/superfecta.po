@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-05-03 20:17-0400\n"
-"PO-Revision-Date: 2017-07-21 09:58+0200\n"
+"PO-Revision-Date: 2017-07-21 10:13+0200\n"
 "Last-Translator: PETER <ftek@ymail.com>\n"
 "Language-Team: Vietnamese "
 "<http://weblate.freepbx.org/projects/freepbx/superfecta/vi/>\n"
@@ -542,48 +542,54 @@ msgstr "Không tìm thấy các trang wiki của mô đun ở đây."
 msgid ""
 "This Project is hosted/maintained at %s Feel free to fork/help/complain."
 msgstr ""
+"Dự án này được lưu trữ/duy trì tại %s, Bạn có thể thoải mái phàn hồi khi cần "
+"giúp đỡ hay muốn khiếu nại."
 
 #: views/add_scheme.php:256 views/scheme.php:118
 msgid ""
 "This is the threshold to send the call to the specified destination below"
-msgstr ""
+msgstr "Đây là ngưỡng để gửi cuộc gọi tới điểm đích được chỉ định dưới đây"
 
 #: Superfecta.class.php:239
 #, php-format
 msgid "This scheme would set the caller id to: %s"
-msgstr ""
+msgstr "Lược đồ này sẽ cài đặt caller Id là; %s"
 
 #: views/add_scheme.php:179 views/scheme.php:93
 msgid ""
 "This text will be prepended to Caller ID information to help you identify "
 "calls as SPAM calls"
 msgstr ""
+"Đoạn văn bản này sẽ được đính trước các thông tin của Caller Id nhằm giúp "
+"bạn nhận dạng các cuộc gọi được xem là SPAM"
 
 #: page.superfecta.php:152
 msgid "Unknown Scheme"
-msgstr ""
+msgstr "Lược đồ không xác định"
 
 #: views/scheme.php:142
 msgid "WARN"
-msgstr ""
+msgstr "CẢNH BÁO"
 
 #: views/main.php:4
 msgid "What is CallerID Superfecta?"
-msgstr ""
+msgstr "CallerID Superfecta là gì?"
 
 #: views/add_scheme.php:233 views/scheme.php:107
 msgid "When enabled, Spam calls can be diverted or terminated"
-msgstr ""
+msgstr "Khi được kích hoạt, các cuộc gọi Spam sẽ được chuyển hướng hoặc bị ngắt"
 
 #: views/add_scheme.php:206 views/scheme.php:97
 msgid ""
 "When enabled, the text entered in \"SPAM Text\" (above) will replace the CID "
 "completely rather than pre-pending the CID value"
 msgstr ""
+"Khi được kích hoạt, thay vì chèn trước giá trị CID, đoạn văn bản đã nhập "
+"trong \"SPAM Text\"  ( ở trên) sẽ thay thế hoàn toàn CID"
 
 #: views/add_scheme.php:276
 msgid "Where to send the call when it is detected as spam"
-msgstr ""
+msgstr "Nơi để gửi cuộc gọi đến đó khi cuộc gọi này bị phát hiện là Spam"
 
 #: Superfecta.class.php:520 functions.inc.php:27 views/add_scheme.php:195
 #: views/add_scheme.php:222 views/scheme.php:30
@@ -592,21 +598,21 @@ msgstr "Có"
 
 #: Superfecta.class.php:610
 msgid "You cannot create a scheme the same name as an existing scheme"
-msgstr ""
+msgstr "Bạn không thể tạo một lược đồ có cùng ten với lược đồ hiện có"
 
 #: Superfecta.class.php:621
 msgid "You cannot rename a scheme the same thing as an existing scheme"
-msgstr ""
+msgstr "Bạn không thể đổi tên một lược đồ cùng tên với lược đồ hiện có"
 
 #: views/scheme.php:103 views/scheme.php:113
 msgid "no"
-msgstr ""
+msgstr "không"
 
 #: Superfecta.class.php:325
 #, php-format
 msgid "result took %s seconds"
-msgstr ""
+msgstr "Kết quả sẽ mất %s giây"
 
 #: views/scheme.php:101 views/scheme.php:111
 msgid "yes"
-msgstr ""
+msgstr "có"
