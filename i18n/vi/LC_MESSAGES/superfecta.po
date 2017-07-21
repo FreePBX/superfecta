@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-05-03 20:17-0400\n"
-"PO-Revision-Date: 2017-07-21 10:13+0200\n"
+"PO-Revision-Date: 2017-07-21 10:16+0200\n"
 "Last-Translator: PETER <ftek@ymail.com>\n"
 "Language-Team: Vietnamese "
 "<http://weblate.freepbx.org/projects/freepbx/superfecta/vi/>\n"
@@ -27,7 +27,7 @@ msgstr "TẤT CẢ"
 
 #: views/main.php:25
 msgid "Actions"
-msgstr "Thao tác"
+msgstr "Các Thao tác"
 
 #: views/header.php:3
 msgid "Add Caller ID Scheme"
@@ -51,7 +51,7 @@ msgstr "Quản trị viên"
 
 #: views/add_scheme.php:149 views/scheme.php:89
 msgid "CID Prefix URL"
-msgstr "CID Prefix URL"
+msgstr "CID Prefix URL ( Caller ID Prefix URL)"
 
 #: views/add_scheme.php:53 views/scheme.php:50
 msgid "CID Rules"
@@ -59,7 +59,7 @@ msgstr "Nguyên tắc của CID"
 
 #: superfecta.i18n.php:4 superfecta.i18n.php:10
 msgid "CID Superfecta"
-msgstr "CID Superfecta"
+msgstr "CID Superfecta ( Claler ID Superfecta)"
 
 #: Superfecta.class.php:231
 #, php-format
