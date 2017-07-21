@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-05-03 20:17-0400\n"
-"PO-Revision-Date: 2017-07-20 10:19+0200\n"
+"PO-Revision-Date: 2017-07-21 09:58+0200\n"
 "Last-Translator: PETER <ftek@ymail.com>\n"
 "Language-Team: Vietnamese "
 "<http://weblate.freepbx.org/projects/freepbx/superfecta/vi/>\n"
@@ -442,28 +442,30 @@ msgid ""
 "Select which data source(s) to use for your lookups, and the order in which "
 "you want them used:"
 msgstr ""
+"Chọn nguồn dữ liệu cho việc tra cứu của bạn, và thứ tự mà bạn muốn các nguồn "
+"dữ liệu được sử dụng trong đó:"
 
 #: views/add_scheme.php:266 views/scheme.php:122
 msgid "Send Spam Call To"
-msgstr ""
+msgstr "Gửi cuộc gọi Spam tới"
 
 #: Superfecta.class.php:236
 #, php-format
 msgid "Setting caller id to: %s"
-msgstr ""
+msgstr "Cài đặt caller id về: %s"
 
 #: functions.inc.php:88
 msgid "Setup Schemes in CID Superfecta section"
-msgstr ""
+msgstr "Thiết lâp các lược đồ ( Schemes) trong phần CID Superfecta"
 
 #: functions.inc.php:37
 msgid "Sources can be added/removed in CID Superfecta section"
-msgstr ""
+msgstr "Các nguồn có thể được thêm/ lược bỏ trong phần CID Superfecta"
 
 #: Superfecta.class.php:228
 #, php-format
 msgid "Spam Call, Sending call to: %s"
-msgstr ""
+msgstr "Cuộc gọi Spam, gửi cuộc gọi tới: %s"
 
 #: views/add_scheme.php:139 views/scheme.php:85
 msgid ""
@@ -471,17 +473,22 @@ msgid ""
 "source priority. After this timeout, the first source to respond with a CNAM "
 "will be taken, until \"Lookup Timeout\" is reached"
 msgstr ""
+"Chỉ định khoảng thời gian chờ tính theo giấy để xác định multifecta sẽ tuân "
+"theo các nguồn ưu tiên trong bao lâu. Sau thời gian chờ này, nguồn đầu tiên "
+"sẽ thực hiện trả lời với một CNAM, cho đến khi đạt được  \"Lookup Timeout\""
 
 #: views/add_scheme.php:92 views/scheme.php:65
 msgid ""
 "Specify a timeout in seconds for each source. If the source fails to return "
 "a result within the alloted time, the script will move on."
 msgstr ""
+"Chỉ định thời gian chờ tính bừng giây cho mỗi nguồn. Nếu nguồn không thể trả "
+"lại một kết quả trong vòng thời gian được chỉ định, kịch bản sẽ tiếp tục."
 
 #: Superfecta.class.php:112
 #, php-format
 msgid "Starting scheme %s"
-msgstr ""
+msgstr "Đang khởi động lược đồ %s"
 
 #: Superfecta.class.php:733
 msgid "Submit"
@@ -489,46 +496,46 @@ msgstr "Gửi đi"
 
 #: views/add_scheme.php:102 views/scheme.php:70
 msgid "Superfecta Processor"
-msgstr ""
+msgstr "Bộ xử lý Superfecta"
 
 #: functions.inc.php:74
 msgid "Superfecta Scheme"
-msgstr ""
+msgstr "Lược đồ Superfecta"
 
 #: Superfecta.class.php:85
 #, php-format
 msgid "The CNAME is: %s"
-msgstr ""
+msgstr "CNAME là: %s"
 
 #: Superfecta.class.php:84
 #, php-format
 msgid "The CNUM is: %s"
-msgstr ""
+msgstr "CNUM là: %s"
 
 #: Superfecta.class.php:83
 #, php-format
 msgid "The DID is: %s"
-msgstr ""
+msgstr "DID là: %s"
 
 #: views/scheme.php:130
 msgid "The DID to test this scheme against"
-msgstr ""
+msgstr "DID để kiểm tra lược đồ này"
 
 #: Superfecta.class.php:310
 msgid "The Original Number:"
-msgstr ""
+msgstr "Số điện thoại gốc:"
 
 #: Superfecta.class.php:311
 msgid "The Scheme:"
-msgstr ""
+msgstr "Lược đồ:"
 
 #: views/add_scheme.php:116 views/scheme.php:71
 msgid "These are the types of Superfecta Processors"
-msgstr ""
+msgstr "Có nhiều kiểu cho bộ xử lý Superfecta"
 
 #: views/footer.php:4
 msgid "This Module's wiki pages can be found here."
-msgstr ""
+msgstr "Không tìm thấy các trang wiki của mô đun ở đây."
 
 #: views/footer.php:2
 #, php-format
