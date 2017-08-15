@@ -45,7 +45,7 @@
 		*13.0.1alpha2* Reskin and stylize. Remove multifecta for now.
 	</changelog>
 	<menuitems>
-		<superfecta>CID Superfecta</superfecta>
+		<superfecta needsenginedb="yes">CID Superfecta</superfecta>
 	</menuitems>
 	<info>https://github.com/POSSA/Caller-ID-Superfecta/wiki</info>
 	<depends>
