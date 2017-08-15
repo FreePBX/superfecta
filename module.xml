@@ -15,7 +15,7 @@
 		*14.0.1* Forked from 13.0.4
 	</changelog>
 	<menuitems>
-		<superfecta>CID Superfecta</superfecta>
+		<superfecta needsenginedb="yes">CID Superfecta</superfecta>
 	</menuitems>
 	<info>https://github.com/POSSA/Caller-ID-Superfecta/wiki</info>
 	<depends>
