@@ -22,6 +22,8 @@ class LocalTel_CH extends superfecta_base {
         //Define vars
         $caller_id = null;
 
+	$thenumber = str_replace(' ', "00", $thenumber);
+
         //Check the number format
         if ((!$this->IsValidNumber('CH', $thenumber)))
         {
@@ -55,12 +57,13 @@ class LocalTel_CH extends superfecta_base {
                 if(array_key_exists('entry', $array))
                 {
                     //Check if there are multiple results
-                    if(isset($array['entry'][0]))
+                    if(isset($array['entry'][1]))
                     {
                         $this->DebugPrint("Multiple results found, I took the first one");
                         //Set callerid
-                        if(empty($array['entry'][0]['title']) || !$caller_id = $array['entry'][0]['title'])
+                        if(empty($array['entry'][1]['title']) || !$caller_id = $array['entry'][1]['title'])
                         {
+			    $this->DebugPrint(var_export($array) . " /M " );
                             $this->DebugPrint('Could not parse xml-response from tel.search.ch');
                             $caller_id = null;
                         }
@@ -69,8 +72,9 @@ class LocalTel_CH extends superfecta_base {
                     {
                         //Single result, set callerid
                         $this->DebugPrint("Entry found, try to set callerid:");
-                        if(empty($array['entry'][0]['title']) || !$caller_id = $array['entry'][0]['title'])
+                        if(empty($array['entry']['title']) || !$caller_id = $array['entry']['title'])
                         {
+			    $this->DebugPrint(var_export($array) . " /S " );
                             $this->DebugPrint('Could not parse xml-response from tel.search.ch');
                             $caller_id = null;
                         }
@@ -79,6 +83,7 @@ class LocalTel_CH extends superfecta_base {
                 else
                 {
                     //Return empty Callerid
+			    $this->DebugPrint(var_export($array) . " / " );
                     $this->DebugPrint("not found");
                     return $caller_id = null;
                 }
