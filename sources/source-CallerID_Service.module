@@ -56,7 +56,7 @@ class CallerID_Service extends superfecta_base {
 			$st_unavail = strstr($sname, "UNAVAILABLE");
 
 			// give up if any errors
-			if($st_error || $st_unkown || $st_unavail) {
+			if($st_error || $st_unknown || $st_unavail) {
 				$this->DebugPrint(_("Error in Lookup."));
 				return;
 			}
