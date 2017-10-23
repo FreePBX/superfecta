@@ -1,0 +1,111 @@
+<?php
+/*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+ * Developer Notes:
+ *        TOS for this site here: 
+ *        https://who-called.co.uk/Terms-of-Service
+ *        dated 6th November 2014, there is no language that prohibits automated lookups
+ *        The user is obligated to only use the service for personal use and obligated to add
+ *        businesess phone numbers
+ * 
+ *
+ * Version History
+ *        2017-10-21   Initial commit by lgaetz
+ *        2017-10-21   Added some basic spam logic
+ *        2017-10-23   change to only load url once, eliminate date retrieve
+ *
+ *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
+
+ class WhoCalled_UK extends superfecta_base {
+
+	public $description = "https://who-called.co.uk - A datasource devoted to identifying telemarketers. These listings are provided by other users of this service.";
+	public $version_requirement = "2.11";
+	public $source_param = array(
+		'Comment_Number_Threshold' => array(
+			'description' => 'Minimum number of comments required to trust the rating. Set to zero to disable and trust all ratings.',
+			'type' => 'number',
+			'default' => '3'
+		),
+		'Search_Number_Threshold' => array(
+			'description' => 'Minimum number of searches required to trust the rating. Set to zero to disable and trust all ratings.',
+			'type' => 'number',
+			'default' => '0'
+		),
+	);
+
+	function get_caller_id($thenumber, $run_param=array()) {
+
+		// initialize variables,if user has not set anything set user params to their defaults
+		if (!isset($run_param['Comment_Number_Threshold'])){
+			$run_param['Comment_Number_Threshold'] = '3';
+		}
+		if (!isset($run_param['Search_Number_Threshold'])){
+			$run_param['Search_Number_Threshold'] =  '0';
+		}
+		
+		// load page for number
+		$url = "https://who-called.co.uk/Number/$thenumber";    // working 2017-10-21
+		$this->DebugPrint("Searching $url ... ");
+		$value = $this->get_url_contents($url);
+	
+		// find average rate 
+		$pattern = '~<div class="textColumn">Average rate:</div>.*?<div class="dataColumn">(.+?)</div>~s';   // working 2017-10-21
+		$matches = null;
+		$foo=preg_match($pattern,$value,$matches);
+		if (isset($matches[1])) {
+			$average_rate = trim($matches[1]);
+			$this->DebugPrint("Average Rate: ".$average_rate);
+		}
+		
+		// find number of searches
+		$pattern = '~<div class="textColumn">Number of searches:</div>.*?<div class="dataColumn">(.+?)</div>~s';   // working 2017-10-21
+		$matches = null;
+		$foo=preg_match($pattern,$value,$matches);
+		if (isset($matches[1])) {
+			$number_of_searches = trim($matches[1]);
+			$this->DebugPrint("Number of Searches: ".$number_of_searches);
+		}
+
+		// find number of comments
+		$pattern = '~<div class="textColumn">Number of comments:</div>.*?<div class="dataColumn">(.+?)</div>~s';  // working 2017-10-21
+		$matches = null;
+		$foo=preg_match($pattern,$value,$matches);
+		if (isset($matches[1])) {
+			$number_of_comments = trim($matches[1]);
+			$this->DebugPrint("Number of Comments: ".$number_of_comments);
+		}
+
+		// site returns a rate text string, dangerous, harassing, unknown, neutral, safe
+		switch (strtolower($average_rate)) {
+			case "dangerous":
+				if($number_of_searches < $run_param['Search_Number_Threshold'] || $number_of_comments < $run_param['Comment_Number_Threshold']) {
+					$this->DebugPrint("Number flagged as Dangerous, but comment/search threshold not met");
+				} else {
+					$this->DebugPrint("Number flagged as Dangerous, comment/search threshold met, setting call as SPAM");
+					$this->spam = true;
+				}
+				break;
+			case "harassing":
+				if($number_of_searches < $run_param['Search_Number_Threshold'] || $number_of_comments < $run_param['Comment_Number_Threshold']) {
+					$this->DebugPrint("Number flagged as Harassing, but comment/search threshold not met");
+				} else {
+					$this->DebugPrint("Number flagged as Harassing, comment/search threshold met, setting call as SPAM");
+					$this->spam = true;
+				}
+				break;
+			case "unknown":
+				$this->DebugPrint("Number flagged as Unknown, doing nothing");
+				break;
+			case "neutral":
+				$this->DebugPrint("Number flagged as Neutral, doing nothing");
+				break;
+			case "safe":
+				$this->DebugPrint("Number flagged as Safe, doing nothing");
+				break;
+			default:
+				$this->DebugPrint("Site returned unexpected rate of ".$average_rate);
+				break;
+		}
+
+	}
+
+}
