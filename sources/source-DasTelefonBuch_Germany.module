@@ -12,6 +12,7 @@
  *
  * Version History:
  * 2017-03-21	Initial Module for DasTelefonBuch_Germany
+ * 2017-11-09	If the Caller ID is 'unknown', 'anonymous' or empty then skip the check
  *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
 
 class DasTelefonBuch_Germany extends superfecta_base {
@@ -26,6 +27,9 @@ class DasTelefonBuch_Germany extends superfecta_base {
 	function get_caller_id($thenumber, $run_param=array()) {
 		$this->DebugPrint(_("Searching"). "https://www.dastelefonbuch.de ... ");
 
+		
+		if($thenumber !== 'anonymous' && $thenumber !== 'unknown' && $thenumber !== ''){
+			
 		if (substr($thenumber, 0, 1) ==! '0') {
 			$thenumber=trim($thenumber,' ');
 			$thenumber="00" . $thenumber;
@@ -33,6 +37,7 @@ class DasTelefonBuch_Germany extends superfecta_base {
 		if (substr($thenumber, 0, 2) === '00') {
 			$thenumber=trim($thenumber,' ');
 		}
+
 		
 		// Set the url we're searching for
 		$res_rul = "https://www.dastelefonbuch.de/Suche/" . $thenumber;// url for searching persons
@@ -49,5 +54,5 @@ class DasTelefonBuch_Germany extends superfecta_base {
 
 		return($caller_id);
 	}
-
+	}
 }
