@@ -12,6 +12,7 @@
  *
  * Version History:
  * 2017-03-21	Initial Module for TelefonABC.at
+ * 2017-11-09	If the Caller ID is 'unknown', 'anonymous' or empty then skip the check
  *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
 
 class TelefonABC_Austria extends superfecta_base {
@@ -26,6 +27,8 @@ class TelefonABC_Austria extends superfecta_base {
 	function get_caller_id($thenumber, $run_param=array()) {
 		$this->DebugPrint(_("Searching"). "http://www.telefonabc.at ... ");
 
+		if($thenumber !== 'anonymous' && $thenumber !== 'unknown' && $thenumber !== ''){
+		
 		if (substr($thenumber, 0, 1) ==! '0') {
 			$thenumber=trim($thenumber,' ');
 			$thenumber="00" . $thenumber;
@@ -49,5 +52,5 @@ class TelefonABC_Austria extends superfecta_base {
 
 		return($caller_id);
 	}
-
+	}
 }
