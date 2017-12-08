@@ -18,6 +18,7 @@
  * 2014-07-02	Add business lookups and change urls to mobile site
  * 2016-05-03	Rewrite Numbers correct for Herold and change Query for new Mobile Web Template
  * 2017-03-20	Again Herold has a new Theme. We need to change the regexp again
+ * 2017-11-09	If the Caller ID is 'unknown', 'anonymous' or empty then skip the check
  *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
 
 class Herold_Austria extends superfecta_base {
@@ -31,6 +32,8 @@ class Herold_Austria extends superfecta_base {
 
 	function get_caller_id($thenumber, $run_param=array()) {
 		$this->DebugPrint(_("Searching"). "https://www.herold.at/ ... ");
+		
+		if($thenumber !== 'anonymous' && $thenumber !== 'unknown' && $thenumber !== ''){
 
 		if (substr($thenumber, 0, 1) ==! '0') {
 			$thenumber=trim($thenumber,' ');
@@ -59,7 +62,10 @@ class Herold_Austria extends superfecta_base {
 			$caller_id = $this->ExtractMatch($match);
 		}
 		$caller_id = isset($caller_id)?$caller_id:'';
+		
+
 
 		return($caller_id);
+	}
 	}
 }

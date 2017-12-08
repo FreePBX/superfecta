@@ -3,126 +3,128 @@
 # For licensing information, please see the file named LICENSE located in the module directory
 #
 # FreePBX language template for superfecta
-# Copyright (C) 2008-2015 Sangoma, Inc.
+# Copyright (C) 2008-2017 Sangoma Technologies, Inc.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-12-08 18:29-0500\n"
-"PO-Revision-Date: 2016-12-11 12:35+0200\n"
-"Last-Translator: Ernesto <ecasas@sangoma.com>\n"
-"Language-Team: Spanish <http://weblate.freepbx.org/projects/freepbx/"
-"superfecta/es_ES/>\n"
-"Language: es_ES\n"
+"PO-Revision-Date: 2017-08-03 10:42+0200\n"
+"Last-Translator: PETER <ftek@ymail.com>\n"
+"Language-Team: Vietnamese <http://weblate.freepbx.org/projects/freepbx/"
+"superfecta/vi/>\n"
+"Language: vi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 2.4\n"
 
 #: functions.inc.php:50 views/scheme.php:143
 msgid "ALL"
-msgstr "TODO"
+msgstr "TẤT CẢ"
 
 #: views/main.php:25
 msgid "Actions"
-msgstr "Acciones"
+msgstr "Các thao tác"
 
 #: views/header.php:3
 msgid "Add Caller ID Scheme"
-msgstr "Agregar Esquema de Caller ID"
+msgstr "Thêm biểu đồ Caller ID"
 
 #: page.superfecta.php:190
 msgid "Add Scheme"
-msgstr "Agregar Esquema"
+msgstr "Thêm Biểu đồ"
 
 #: views/scheme.php:7
 msgid ""
 "Add, Remove, Enable, Disable, Sort and Configure data sources as appropriate "
 "for your situation."
 msgstr ""
-"Agregar, Eliminar, Habilitar, Deshabilitar, Ordenar y Configurar fuentes de "
-"datos según corresponda a su situación."
+"Thêm, xóa, kích hoạt, vô hiệu, sắp xếp và cấu hình các nguồn dữ liệu phù hợp "
+"với hoàn cảnh của bạn."
 
 #: superfecta.i18n.php:6
 msgid "Admin"
-msgstr "Administ"
+msgstr "Quản trị viên"
 
 #: views/add_scheme.php:149 views/scheme.php:89
 msgid "CID Prefix URL"
-msgstr "Prefijo CID URL"
+msgstr "CID Prefix URL ( Caller ID Prefix URL)"
 
 #: views/add_scheme.php:53 views/scheme.php:50
 msgid "CID Rules"
-msgstr "Reglas CID"
+msgstr "Nguyên tắc của CID"
 
 #: superfecta.i18n.php:4 superfecta.i18n.php:10
 msgid "CID Superfecta"
-msgstr "Superfecta CID"
+msgstr "CID Superfecta ( Claler ID Superfecta)"
 
 #: Superfecta.class.php:231
 #, php-format
 msgid "Call detected as spam, would send call to: %s"
-msgstr "Llamada detectada como spam, se enviaría la llamada a: %s"
+msgstr "Các cuộc gọi được phát hiện là cuộc gọi spam, sẽ được gửi tới: %s"
 
 #: views/header.php:16
 msgid "Caller ID Superfecta"
-msgstr "Caller ID Superfecta"
+msgstr "Chương trình tiện ích Caller ID Superfecta"
 
 #: views/main.php:8
 msgid ""
 "CallerID Superfecta for FreePBX is a utility program which adds incoming "
 "CallerID name lookups to your Asterisk system using multiple data sources"
 msgstr ""
-"CallerID Superfecta para FreePBX es un programa de utilidad que agrega "
-"llamadas de nombre CallerID entrantes a su sistema Asterisk usando múltiples "
-"fuentes de datos"
+"CallerID Superfecta là một chương trình tiện ích bổ sung thêm các tra cứu "
+"tên CallerID trên hệ thống Asterisk của bạn bằng cách sử dụng nhiều nguồn dữ "
+"liệu"
 
 #: Superfecta.class.php:155
 #, php-format
 msgid "Changed CNUM to: %s"
-msgstr "Cambiado CNUM a: %s"
+msgstr "CNUM được thay đổi thành: %s"
 
 #: views/scheme.php:130
 msgid "DID Number"
-msgstr "Número DID"
+msgstr "Số DID"
 
 #: views/add_scheme.php:33 views/scheme.php:46
 msgid "DID Rules"
-msgstr "Reglas DID"
+msgstr "Các nguyê tắc DID"
 
 #: views/scheme.php:16
 msgid "Data Source Name"
-msgstr "Nombre Fuente de Datos"
+msgstr "Tên nguồn dữ liệu"
 
 #: views/scheme.php:138
 msgid "Debug Level"
-msgstr "Nivel de Debug"
+msgstr "Cấp độ gỡ lỗi (Debug Level)"
 
 #: views/scheme.php:138
 msgid "Debug Level to display"
-msgstr "Nivel de Debug a desplegar"
+msgstr "Debug Level để hiển thị"
 
 #: Superfecta.class.php:309
 msgid "Debug is on and set at level:"
-msgstr "La depuración está activada y establecida a nivel:"
+msgstr "Debug đang bật và cài đặt tại cấp độ:"
 
 #: views/scheme.php:5 views/scheme.php:128
 msgid "Debug/Test Run Scheme"
-msgstr "Esquema de ejecución de depuración/prueba"
+msgstr "Biểu đồ Debug/ Chạy thử nghiệm"
 
 #: Superfecta.class.php:313
 msgid "Debugging Enabled, will not stop after first result"
-msgstr "Depuración habilitada, no se detendrá después del primer resultado"
+msgstr ""
+"Đã kích hoạt tính năng gỡ lỗi, và nó sẽ không dừng sau khi có được kết quả "
+"đầu tiên"
 
 #: views/add_scheme.php:1
 msgid "Define Settings for a new Scheme"
-msgstr "Definir ajustes para un nuevo esquema"
+msgstr "Xác định các cài đặt cho Biểu đồ mới"
 
 #: views/add_scheme.php:23
 msgid "Define a new name for this scheme"
-msgstr "Definir un nuevo nombre para este esquema"
+msgstr "Xác định một tên mới mới biểu đồ này"
 
 #: views/add_scheme.php:43 views/scheme.php:46
 msgid ""
@@ -131,36 +133,35 @@ msgid ""
 "rule trys both absolute and pattern matching (eg \"_2[345]X\", to match a "
 "range of numbers). (The \"_\" underscore is optional.)"
 msgstr ""
-"Defina el número DID esperado si su troncal pasa DID en las llamadas "
-"entrantes. <br><br> Deja este espacio en blanco para hacer coincidir las "
-"llamadas con Cualquiera o ningún DID. Esta regla establece coincidencia "
-"absoluta y de patrón (por ejemplo, \"_2 [345] X\" para coincidir con un "
-"rango de números) . (El subrayado \"_\" es opcional.)"
+"Xác định số DID dự kiến nếu trung kế đi qua DID trên các cuộc gọi đến. <br> "
+"<br> Để trống để khớp với các cuộc gọi khi có hay không có bất kỳ thông tin "
+"DID nào.<br> <br> Quy tắc này cố gắng làm khớp absolute với pattern (ví dụ "
+"\"_2 [345] X\", để khớp với một dãy số) . (Gạch dưới \"_\" là tùy chọn.)"
 
 #: views/scheme.php:17
 msgid "Description"
-msgstr "Descripción"
+msgstr "Mô tả"
 
 #: views/scheme.php:38
 msgid "Edit Scheme"
-msgstr "Editar Esquema"
+msgstr "Chỉnh sửa biểu đồ"
 
 #: views/add_scheme.php:216 views/scheme.php:107
 msgid "Enable SPAM Interception"
-msgstr "Habilitar la intercepción de SPAM"
+msgstr "Kích hoạt tính năng ngăn chặn SPAM"
 
 #: functions.inc.php:22
 msgid "Enable Superfecta Lookup"
-msgstr "Habilitar búsqueda de superfecta"
+msgstr "Kích hoạt tính năng tra cứu Superfecta"
 
 #: views/scheme.php:18
 msgid "Enabled"
-msgstr "Habilitado"
+msgstr "Đã kích hoạt"
 
 #: includes/processors/superfecta_single.php:53
 #: includes/processors/superfecta_single.php:115
 msgid "Executing"
-msgstr "Ejecutando"
+msgstr "Đang thực thi"
 
 #: views/scheme.php:141
 msgid "INFO"
@@ -174,12 +175,11 @@ msgid ""
 "http://www.example.com/GetCID.php?phone_number=[thenumber]<br>[thenumber] "
 "will be replaced with the full 10 digit phone number when the URL is called"
 msgstr ""
-"Si desea prefijar información sobre el identificador de llamadas, puede "
-"especificar aquí un URL donde pueda recuperarse ese prefijo. <br> Los datos "
-"no se analizarán de ninguna manera y se truncarán en los primeros 10 "
-"caracteres. <br> Ejemplo URL: http://www.example.com/GetCID.php?"
-"phone_number=[número] <br> [thenumber] se reemplazará con el número de "
-"teléfono completo de 10 dígitos cuando se llame la URL"
+"Nếu bạn muốn prefix (thêm thông tin vào đầu) Caller ID, bạn có thể chỉ định "
+"một url ở đây nơi tiền tố đó được truy xuất.<br>Dữ liệu sẽ không được phân "
+"tích dưới mọi hình thức và sẽ bị cắt ngắn đến 10 ký tự đầu tiên. Ví dụ URL: "
+"http://www.example.com/GetCID.php?phone_number=[thenumber]<br>[thenumber]  "
+"sẽ được thay thế bằng số điện thoại đầy đủ 10 chữ số khi URL được gọi"
 
 #: views/add_scheme.php:63
 msgid ""
@@ -215,38 +215,33 @@ msgid ""
 "would match \"016065551234\" and dial it as \"0116065551234\" Note that the "
 "order does not matter, eg. 0|01+1ZXXXXXXXXX does the same thing."
 msgstr ""
-"Las llamadas entrantes con CID que coincidan con los patrones especificados "
-"aquí usarán este esquema CID. Si se deja en blanco, este esquema se "
-"utilizará para cualquier CID. Se puede utilizar para añadir o eliminar "
-"prefijos. <br>\n"
-"\t\t\t\t\t\t\t<strong> Muchas fuentes requieren un número específico de "
-"dígitos en el número de teléfono. Se recomienda utilizar los patrones para "
-"eliminar el exceso de datos de código de país del CID entrante para aumentar "
-"la eficacia de este módulo. </strong> <br>\n"
-"\t\t\t\t\t\t\tTenga en cuenta que un patrón sin + o | (Para añadir o "
-"eliminar un prefijo) no realizará ningún cambio, sino que creará una "
-"coincidencia. Sólo se ejecutará el primer patrón coincidente y no se "
-"aplicarán las reglas restantes. <br/> <br/> <b> Reglas: </b> <br/>\n"
-"\t\t\t\t\t\t\t<strong> X </strong>&nbsp;&nbsp;&nbsp;Coincide con cualquier "
-"dígito de 0-9 <br/>\n"
-"\t\t\t\t\t\t\t<strong> Z </strong>&nbsp;&nbsp;&nbsp;Coincide con cualquier "
-"dígito de 1-9 <br/>\n"
-"\t\t\t\t\t\t\t<strong> N </strong>&nbsp;&nbsp;&nbsp;Coincide con cualquier "
-"dígito de 2-9 <br/>\n"
-"\t\t\t\t\t\t\t<strong> [1237-9] </strong>&nbsp; Coincide con cualquier "
-"dígito o letra entre paréntesis (en este ejemplo, 1,2,3,7,8,9) <br/>\n"
-"\t\t\t\t\t\t\t<strong>. </Strong>&nbsp;&nbsp;&nbsp; Comodín, coincide con "
-"uno o más caracteres (no se permite antes de un | o +) <br/>\n"
-"\t\t\t\t\t\t\t<strong> | </strong>&nbsp;& bsp;&nbsp; Elimina un prefijo de "
-"marcación del número (por ejemplo, 613 | NXXXXXX coincidiría cuando alguien "
-"marcó \"6135551234\" pero sólo pasaría \"5551234\" a la búsqueda de "
-"Superfecta.) <strong> + </strong>&nbsp;&Nbsp;&nbsp; Agrega un prefijo de "
-"marcado al número (por ejemplo, 1613 + NXXXXXX coincidiría cuando alguien "
-"marcó \"5551234\" y pasaría \"16135551234\" a la Superfecta.) <br/><br/>\n"
-"\t\t\t\t\t\t\tTambién puede usar + y |, por ejemplo: 01 + 0 | 1ZXXXXXXXXX "
-"coincidiría con \"016065551234\" y lo marcaría como \"0116065551234\" Tenga "
-"en cuenta que el orden no importa, por ejemplo. 0 | 01 + 1ZXXXXXXXXX hace lo "
-"mismo."
+"Các cuộc gọi đến với CID khớp với các mẫu ( pattern) được chỉ định ở đây sẽ "
+"sử dụng lược đồ CID này (CID Scheme). Nếu bỏ trống, lược đồ này sẽ được sử "
+"dụng cho bất kỳ CID nào. Có thể sử dụng để thêm hoặc xoá các tiền tố.<br>\n"
+"<Strong> Nhiều nguồn yêu cầu số chữ số cụ thể cho số điện thoại. Chúng tôi "
+"khuyên bạn nên sử dụng các pattern để xóa dữ liệu mã quốc gia bị thừa  từ "
+"CID đến để tăng tính hiệu quả của mô-đun này. </strong><br>\n"
+"Lưu ý rằng một pattern không có a + hoặc | (Để thêm hoặc xoá một tiền tố) sẽ "
+"không thực hiện bất kỳ thay đổi nào nhưng sẽ tạo ra một sự tương hợp. Chỉ có "
+"pattern đã khớp đầu tiên sẽ được thực thi và các rule còn lại sẽ không được "
+"thực hiện. <br /><br /><b>Rules:</b><br />\n"
+"<Strong>X</strong>&nbsp;&nbsp;&nbsp; Khớp bất kỳ số nào từ 0-9 <br />\n"
+"<Strong>Z</strong>&nbsp;&nbsp;&nbsp; Khớp bất kỳ chữ số nào từ 1-9 <br />\n"
+"<Strong>N</strong>&nbsp;&nbsp;&nbsp; Khớp với bất kỳ chữ số nào từ 2-9 <br /"
+">\n"
+"<Strong>[1237-9]</strong>&nbsp; Khớp với bất kỳ chữ số hoặc chữ cái nào "
+"trong dấu ngoặc (trong ví dụ này là 1,2,3,7,8,9) <br />\n"
+"<Strong>.</Strong>&nbsp;&nbsp;&nbsp; Ký tự đại diện, khớp với một hoặc nhiều "
+"ký tự (không được phép trước một | hoặc +) <br />\n"
+"<Strong>|</strong>&nbsp;& nbsp;& nbsp; Loại bỏ một tiền tố quay số (dialing "
+"prefix) từ số điện thoại ( (ví dụ: 613 | NXXXXXX sẽ khớp khi ai đó quay số "
+"\"6135551234\" nhưng \"5551234\" sẽ là để tra cứu Superfecta).<br><strong>+</"
+"strong>&nbsp;&nbsp;&nbsp; Thêm tiền tố quay số vào số điện thoại (ví dụ: "
+"1613 + NXXXXXX sẽ khớp khi ai đó quay số \"5551234\" và \"16135551234\" sẽ "
+"là để tra cứu Superfecta.)<br /><br />\n"
+"Bạn cũng có thể sử dụng cả + và |, ví dụ: 01 + 0 | 1ZXXXXXXXXX sẽ khớp với "
+"\"016065551234\" và quay số đó là \"0116065551234\" Lưu ý rằng thứ tự không "
+"quan trọng, ví dụ: 0 | 01 + 1ZXXXXXXXXX cũng làm như vậy."
 
 #: views/scheme.php:50
 msgid ""
@@ -282,203 +277,197 @@ msgid ""
 "match \"016065551234\" and dial it as \"0116065551234\" Note that the order "
 "does not matter, eg. 0|01+1ZXXXXXXXXX does the same thing."
 msgstr ""
-"Las llamadas entrantes con CID que coincidan con los patrones especificados "
-"aquí usarán este esquema CID. Si se deja en blanco, este esquema se "
-"utilizará para cualquier CID. Se puede utilizar para añadir o eliminar "
-"prefijos. <br>\n"
-"\t\t\t\t<strong> Muchas fuentes requieren un número específico de dígitos en "
-"el número de teléfono. Se recomienda utilizar los patrones para eliminar el "
-"exceso de datos de código de país del CID entrante para aumentar la eficacia "
-"de este módulo. </strong> <br>\n"
-"\t\t\t\tTenga en cuenta que un patrón sin + o | (Para añadir o eliminar un "
-"prefijo) no realizará ningún cambio, sino que creará una coincidencia. Sólo "
-"se ejecutará el primer patrón coincidente y no se aplicarán las reglas "
-"restantes. <br/> <br/> <b> Reglas: </b> <br/>\n"
-"\t\t\t\t<strong> X </strong>&nbsp;&nbsp;&nbsp; Coincide con cualquier dígito "
-"de 0-9 <br/>\n"
-"\t\t\t\t<strong> Z </strong>&nbsp;&nbsp;&nbsp; Coincide con cualquier dígito "
-"de 1-9 <br/>\n"
-"\t\t\t\t<strong> N </strong>&nbsp;&nbsp;&nbsp; Coincide con cualquier dígito "
-"de 2-9 <br/>\n"
-"\t\t\t\t<strong> [1237-9] </strong>&nbsp;Coincide con cualquier dígito o "
-"letra entre paréntesis (en este ejemplo, 1,2,3,7,8,9) <br/>\n"
-"\t\t\t\t<strong>. </strong>&nbsp;&nbsp;&nbsp; Comodín, coincide con uno o "
-"más caracteres (no se permite antes de un | o +) <br/>\n"
-"\t\t\t\t<strong> | </strong>&nbsp;&nbsp;&nbsp; Elimina un prefijo de "
-"marcación del número (por ejemplo, 613 | NXXXXXX coincidiría cuando alguien "
-"marcó \"6135551234\" pero sólo pasaría \"5551234\" a la búsqueda de "
-"Superfecta.) <strong> + </strong>&nbsp;&Nbsp;& nbsp; Agrega un prefijo de "
-"marcado al número (por ejemplo, 1613 + NXXXXXX coincidiría cuando alguien "
-"marcó \"5551234\" y pasaría \"16135551234\" a la Superfecta.) <b/> <br/>\n"
-"\t\t\t\tTambién puede usar + y |, por ejemplo: 01 + 0 | 1ZXXXXXXXXX "
-"coincidiría con \"016065551234\" y lo marcaría como \"0116065551234\" Tenga "
-"en cuenta que el orden no importa, por ejemplo. 0 | 01 + 1ZXXXXXXXXX hace lo "
-"mismo."
+"Các cuộc gọi đến với CID khớp với các mẫu ( pattern) được chỉ định ở đây sẽ "
+"sử dụng lược đồ CID này (CID Scheme). Nếu bỏ trống, lược đồ này sẽ được sử "
+"dụng cho bất kỳ CID nào. Có thể sử dụng để thêm hoặc xoá các tiền tố.<br>\n"
+"<Strong> Nhiều nguồn yêu cầu số chữ số cụ thể cho số điện thoại. Chúng tôi "
+"khuyên bạn nên sử dụng các pattern để xóa dữ liệu mã quốc gia bị thừa  từ "
+"CID đến để tăng tính hiệu quả của mô-đun này. </strong><br>\n"
+"Lưu ý rằng một pattern không có a + hoặc | (Để thêm hoặc xoá một tiền tố) sẽ "
+"không thực hiện bất kỳ thay đổi nào nhưng sẽ tạo ra một sự tương khớp. Chỉ "
+"có pattern đã khớp đầu tiên sẽ được thực thi và các rule còn lại sẽ không "
+"được thực hiện. <br /><br /><b>Rules:</b><br />\n"
+"<Strong>X</strong>&nbsp;&nbsp;&nbsp; Khớp bất kỳ số nào từ 0-9 <br />\n"
+"<Strong>Z</strong>&nbsp;&nbsp;&nbsp; Khớp bất kỳ chữ số nào từ 1-9 <br />\n"
+"<Strong>N</strong>&nbsp;&nbsp;&nbsp; Khớp với bất kỳ chữ số nào từ 2-9 <br /"
+">\n"
+"<Strong>[1237-9]</strong>&nbsp; Khớp với bất kỳ chữ số hoặc chữ cái nào "
+"trong dấu ngoặc (trong ví dụ này là 1,2,3,7,8,9) <br />\n"
+"<Strong>.</Strong>&nbsp;&nbsp;&nbsp; Ký tự đại diện, khớp với một hoặc nhiều "
+"ký tự (không được phép trước một | hoặc +) <br />\n"
+"<Strong>|</strong>&nbsp;& nbsp;& nbsp; Loại bỏ một tiền tố quay số (dialing "
+"prefix) từ số điện thoại ( (ví dụ: 613 | NXXXXXX sẽ khớp khi ai đó quay số "
+"\"6135551234\" nhưng \"5551234\" sẽ là để tra cứu Superfecta).<br><strong>+</"
+"strong>&nbsp;&nbsp;&nbsp; Thêm tiền tố quay số vào số điện thoại (ví dụ: "
+"1613 + NXXXXXX sẽ khớp khi ai đó quay số \"5551234\" và \"16135551234\" sẽ "
+"là để tra cứu Superfecta.)<br /><br />\n"
+"Bạn cũng có thể sử dụng cả + và |, ví dụ: 01 + 0 | 1ZXXXXXXXXX sẽ khớp với "
+"\"016065551234\" và quay số đó là \"0116065551234\" Lưu ý rằng thứ tự không "
+"quan trọng, ví dụ: 0 | 01 + 1ZXXXXXXXXX cũng làm như vậy."
 
 #: page.superfecta.php:191
 msgid "List Schemes"
-msgstr "Listar Esquemas"
+msgstr "Danh sách các lược đồ"
 
 #: views/add_scheme.php:82 views/scheme.php:65
 msgid "Lookup Timeout"
-msgstr "Tiempo de espera de búsqueda"
+msgstr "Tra cứu thời gian chờ (Timeout)"
 
 #: Superfecta.class.php:153
 #, php-format
 msgid "Matched CID Rule: %s with %s"
-msgstr "Regla CID coincidente: %s con %s"
+msgstr "Rule CID đã tương khớp: %s với %s"
 
 #: Superfecta.class.php:144
 #, php-format
 msgid "Matched DID Rule: %s with %s"
-msgstr "Regla DID coincidente: %s con %s"
+msgstr "Rule DID đã tương khớp: %s với %s"
 
 #: views/add_scheme.php:129 views/scheme.php:85
 msgid "Multifecta Timeout"
-msgstr "Tiempo de espera Multifecta"
+msgstr "Thời gian chờ Multifecta"
 
 #: views/scheme.php:140
 msgid "NONE"
-msgstr "NADA"
+msgstr "NONE"
 
 #: views/main.php:24
 msgid "Name"
-msgstr "Nombre"
+msgstr "Tên"
 
 #: views/add_scheme.php:13
 msgid "New Scheme Name"
-msgstr "Nombre Nuevo Esquema"
+msgstr "Tên của lược đồ mới"
 
 #: Superfecta.class.php:522 functions.inc.php:29 views/add_scheme.php:197
 #: views/add_scheme.php:224 views/scheme.php:32
 msgid "No"
-msgstr "No"
+msgstr "Không"
 
 #: Superfecta.class.php:242
 msgid "No callerid found"
-msgstr "No se encontró callerid"
+msgstr "Không tìm thấy callerid nào"
 
 #: Superfecta.class.php:157
 msgid "No matching CID rules. Skipping scheme"
-msgstr "No hay reglas de CID coincidentes. Saltando Esquema"
+msgstr "Không có rule CID nào tương khớp. Bỏ qua lược đồ"
 
 #: Superfecta.class.php:146
 msgid "No matching DID rules. Skipping scheme"
-msgstr "No hay reglas DID coincidentes. Saltando Esquema"
+msgstr "Không có rule CID nào tương khớp. Bỏ qua lược đồ"
 
 #: views/main.php:23
 msgid "Order"
-msgstr "Orden"
+msgstr "Thứ tự"
 
 #: views/scheme.php:134
 msgid "Phone Number"
-msgstr "Numero Teléfono"
+msgstr "Số điện thoại"
 
 #: views/scheme.php:134
 msgid "Phone number to test this scheme against"
-msgstr "Número de teléfono para probar contra este esquema"
+msgstr "Số điện thoại để kiểm tra lược đồ này"
 
 #: Superfecta.class.php:170
 #, php-format
 msgid "Prefix Url defined as: %s"
-msgstr "Prefijo Url definido como: %s"
+msgstr "Tiên tố Url được xác định là: %s"
 
 #: Superfecta.class.php:172
 msgid "Prefix Url defined but result was empty"
-msgstr "Prefijo Url definido pero el resultado estaba vacío"
+msgstr "Thêm tiền tố cho Url được xác định như kết quả trống"
 
 #: Superfecta.class.php:174
 #, php-format
 msgid "Prefix Url result took %s seconds."
-msgstr "El resultado del prefijo Url tomó %s segundos."
+msgstr "Thêm tiền tố cho kết quả Url mất %s giây."
 
 #: superfecta.i18n.php:8
 msgid ""
 "Provides simultaneous use of, and complete control over multiple caller id "
 "data sources."
 msgstr ""
-"Provee uso simultaneo de, y control completo sobe muchas fuentes de datos de "
-"Identificador de Llamada."
+"Cung cấp sử dụng động thời, và điều khiển toàn bộ nguồn dữ liệu Caller id."
 
 #: Superfecta.class.php:728
 msgid "Reset"
-msgstr "Reinicio"
+msgstr "Cài đặt lại"
 
 #: Superfecta.class.php:324
 msgid "Returned Result would be:"
-msgstr "El resultado devuelto sería:"
+msgstr "Kết quả được trả lại là:"
 
 #: views/add_scheme.php:244 views/scheme.php:118
 msgid "SPAM Send Threshold"
-msgstr "Umbral de envío de SPAM"
+msgstr "Ngưỡng gửi SPAM"
 
 #: views/add_scheme.php:169 views/scheme.php:93
 msgid "SPAM Text"
-msgstr "Prueba SPAM"
+msgstr "Đoạn văn bản SPAM"
 
 #: views/add_scheme.php:189 views/scheme.php:97
 msgid "SPAM Text Substituted"
-msgstr "Texto de SPAM Sustituido"
+msgstr "Đoạn văn bản SPAM thay thế"
 
 #: Superfecta.class.php:82
 #, php-format
 msgid "Scheme Asked is: %s"
-msgstr "El esquema solicitado es: %s"
+msgstr "Lược đồ được yêu cầu là: %s"
 
 #: views/scheme.php:42
 msgid "Scheme Name"
-msgstr "Nombre Esquema"
+msgstr "Tên lược đồ"
 
 #: assets/js/superfecta.js:205
 msgid "Scheme Name can not be blank!"
-msgstr "Nombre del Esquema no puede ser blanco!"
+msgstr "Tên lược đồ không được để trống!"
 
 #: views/scheme.php:4
 #, php-format
 msgid "Scheme Name: %s"
-msgstr "Nombre Esquema: %s"
+msgstr "Tên lược đồ: %s"
 
 #: Superfecta.class.php:312
 msgid "Scheme Type:"
-msgstr "Tipo de Esquema:"
+msgstr "Kiểu lược đồ:"
 
 #: Superfecta.class.php:606
 msgid "Scheme can not be empty!"
-msgstr "Esquema no puede estar vacío!"
+msgstr "Lược đồ không được để trống!"
 
 #: Superfecta.class.php:397
 msgid "Scheme names cannot be blank"
-msgstr "Nombres de Esquema no pueden estar en blanco"
+msgstr "Tên của lược đồ không được để trống"
 
 #: views/scheme.php:9
 msgid ""
 "Select which data source(s) to use for your lookups, and the order in which "
 "you want them used:"
 msgstr ""
-"Seleccione las fuentes de datos que se utilizarán para las búsquedas y el "
-"orden en que desea que se utilicen:"
+"Chọn nguồn dữ liệu cho việc tra cứu của bạn, và thứ tự mà bạn muốn các nguồn "
+"dữ liệu được sử dụng trong đó:"
 
 #: views/add_scheme.php:266 views/scheme.php:122
 msgid "Send Spam Call To"
-msgstr "Enviar llamada Spam a"
+msgstr "Gửi cuộc gọi Spam tới"
 
 #: Superfecta.class.php:236
 #, php-format
 msgid "Setting caller id to: %s"
-msgstr "Configuración del identificador de llamada en: %s"
+msgstr "Cài đặt caller id về: %s"
 
 #: functions.inc.php:88
 msgid "Setup Schemes in CID Superfecta section"
-msgstr "Configuración de Esquemas en Sección Superfecta CID"
+msgstr "Thiết lâp các lược đồ ( Schemes) trong phần CID Superfecta"
 
 #: functions.inc.php:37
 msgid "Sources can be added/removed in CID Superfecta section"
-msgstr "Fuentes pueden ser agregadas/removidas en la sección Superfecta CID"
+msgstr "Các nguồn có thể được thêm/ lược bỏ trong phần CID Superfecta"
 
 #: Superfecta.class.php:228
 #, php-format
 msgid "Spam Call, Sending call to: %s"
-msgstr "Llamada de spam, Enviando llamada a: %s"
+msgstr "Cuộc gọi Spam, gửi cuộc gọi tới: %s"
 
 #: views/add_scheme.php:139 views/scheme.php:85
 msgid ""
@@ -486,163 +475,147 @@ msgid ""
 "source priority. After this timeout, the first source to respond with a CNAM "
 "will be taken, until \"Lookup Timeout\" is reached"
 msgstr ""
-"Especifique un tiempo de espera en segundos para definir cuándo multifecta "
-"obedecerá la prioridad de la fuente. Después de este tiempo de espera, se "
-"tomará la primera fuente para responder con un CNAM, hasta que se alcance "
-"\"Tiempo de espera de búsqueda\""
+"Chỉ định khoảng thời gian chờ tính theo giấy để xác định multifecta sẽ tuân "
+"theo các nguồn ưu tiên trong bao lâu. Sau thời gian chờ này, nguồn đầu tiên "
+"sẽ thực hiện trả lời với một CNAM, cho đến khi đạt được  \"Lookup Timeout\""
 
 #: views/add_scheme.php:92 views/scheme.php:65
 msgid ""
 "Specify a timeout in seconds for each source. If the source fails to return "
 "a result within the alloted time, the script will move on."
 msgstr ""
-"Especifique un tiempo de espera en segundos para cada fuente. Si la fuente "
-"no devuelve un resultado dentro del tiempo asignado, el script continuara "
-"adelante."
+"Chỉ định thời gian chờ tính bừng giây cho mỗi nguồn. Nếu nguồn không thể trả "
+"lại một kết quả trong vòng thời gian được chỉ định, kịch bản sẽ tiếp tục."
 
 #: Superfecta.class.php:112
 #, php-format
 msgid "Starting scheme %s"
-msgstr "Esquema de inicio %s"
+msgstr "Đang khởi động lược đồ %s"
 
 #: Superfecta.class.php:733
 msgid "Submit"
-msgstr "Enviar"
+msgstr "Gửi đi"
 
 #: views/add_scheme.php:102 views/scheme.php:70
 msgid "Superfecta Processor"
-msgstr "Procesador Superfecta"
+msgstr "Bộ xử lý Superfecta"
 
 #: functions.inc.php:74
 msgid "Superfecta Scheme"
-msgstr "Esquema Superfecta"
+msgstr "Lược đồ Superfecta"
 
 #: Superfecta.class.php:85
 #, php-format
 msgid "The CNAME is: %s"
-msgstr "El CNAME es: %s"
+msgstr "CNAME là: %s"
 
 #: Superfecta.class.php:84
 #, php-format
 msgid "The CNUM is: %s"
-msgstr "El CNUM es: %s"
+msgstr "CNUM là: %s"
 
 #: Superfecta.class.php:83
 #, php-format
 msgid "The DID is: %s"
-msgstr "El SIS es: %s"
+msgstr "DID là: %s"
 
 #: views/scheme.php:130
 msgid "The DID to test this scheme against"
-msgstr "El DID para probar este esquema"
+msgstr "DID để kiểm tra lược đồ này"
 
 #: Superfecta.class.php:310
 msgid "The Original Number:"
-msgstr "El Numero Original:"
+msgstr "Số điện thoại gốc:"
 
 #: Superfecta.class.php:311
 msgid "The Scheme:"
-msgstr "El Esquema:"
+msgstr "Lược đồ:"
 
 #: views/add_scheme.php:116 views/scheme.php:71
 msgid "These are the types of Superfecta Processors"
-msgstr "Estos son los tipos de procesadores Superfecta"
+msgstr "Có nhiều kiểu cho bộ xử lý Superfecta"
 
 #: views/footer.php:4
 msgid "This Module's wiki pages can be found here."
-msgstr "Las páginas wiki de este Módulo se pueden encontrar aquí."
+msgstr "Không tìm thấy các trang wiki của mô đun ở đây."
 
 #: views/footer.php:2
 #, php-format
 msgid ""
 "This Project is hosted/maintained at %s Feel free to fork/help/complain."
 msgstr ""
-"Este proyecto se aloja/se mantiene en %s Siéntase libre de bifurcar/ ayudar/"
-"quejarse."
+"Dự án này được lưu trữ/duy trì tại %s, Bạn có thể thoải mái phàn hồi khi cần "
+"giúp đỡ hay muốn khiếu nại."
 
 #: views/add_scheme.php:256 views/scheme.php:118
 msgid ""
 "This is the threshold to send the call to the specified destination below"
-msgstr ""
-"Este es el umbral para enviar la llamada al destino especificado a "
-"continuación"
+msgstr "Đây là ngưỡng để gửi cuộc gọi tới điểm đích được chỉ định dưới đây"
 
 #: Superfecta.class.php:239
 #, php-format
 msgid "This scheme would set the caller id to: %s"
-msgstr "Este esquema establecería el identificador de llamada en: %s"
+msgstr "Lược đồ này sẽ cài đặt caller Id là; %s"
 
 #: views/add_scheme.php:179 views/scheme.php:93
 msgid ""
 "This text will be prepended to Caller ID information to help you identify "
 "calls as SPAM calls"
 msgstr ""
-"Este texto se adjuntará a la información del identificador de llamadas para "
-"ayudarle a identificar las llamadas como llamadas de SPAM"
+"Đoạn văn bản này sẽ được đính trước các thông tin của Caller Id nhằm giúp "
+"bạn nhận dạng các cuộc gọi được xem là SPAM"
 
 #: page.superfecta.php:152
 msgid "Unknown Scheme"
-msgstr "Esquema Desconocido"
+msgstr "Lược đồ không xác định"
 
 #: views/scheme.php:142
 msgid "WARN"
-msgstr "WARN"
+msgstr "CẢNH BÁO"
 
 #: views/main.php:4
 msgid "What is CallerID Superfecta?"
-msgstr "¿Qué es CallerID Superfecta?"
+msgstr "CallerID Superfecta là gì?"
 
 #: views/add_scheme.php:233 views/scheme.php:107
 msgid "When enabled, Spam calls can be diverted or terminated"
 msgstr ""
-"Cuando está habilitada, las llamadas de spam pueden ser desviadas o "
-"terminadas"
+"Khi được kích hoạt, các cuộc gọi Spam sẽ được chuyển hướng hoặc bị ngắt"
 
 #: views/add_scheme.php:206 views/scheme.php:97
 msgid ""
 "When enabled, the text entered in \"SPAM Text\" (above) will replace the CID "
 "completely rather than pre-pending the CID value"
 msgstr ""
-"Cuando está activado, el texto introducido en \"Texto de SPAM\" (arriba) "
-"reemplazará el CID completamente en lugar de anteponerlo al valor CID"
+"Khi được kích hoạt, thay vì chèn trước giá trị CID, đoạn văn bản đã nhập "
+"trong \"SPAM Text\"  ( ở trên) sẽ thay thế hoàn toàn CID"
 
 #: views/add_scheme.php:276
 msgid "Where to send the call when it is detected as spam"
-msgstr "Dónde enviar la llamada cuando se detecta como spam"
+msgstr "Nơi để gửi cuộc gọi đến đó khi cuộc gọi này bị phát hiện là Spam"
 
 #: Superfecta.class.php:520 functions.inc.php:27 views/add_scheme.php:195
 #: views/add_scheme.php:222 views/scheme.php:30
 msgid "Yes"
-msgstr "Si"
+msgstr "Có"
 
 #: Superfecta.class.php:610
 msgid "You cannot create a scheme the same name as an existing scheme"
-msgstr "No puede crear un esquema con el mismo nombre que un esquema existente"
+msgstr "Bạn không thể tạo một lược đồ có cùng ten với lược đồ hiện có"
 
 #: Superfecta.class.php:621
 msgid "You cannot rename a scheme the same thing as an existing scheme"
-msgstr ""
-"No se puede cambiar el nombre de un esquema a lo mismo que un esquema "
-"existente"
+msgstr "Bạn không thể đổi tên một lược đồ cùng tên với lược đồ hiện có"
 
 #: views/scheme.php:103 views/scheme.php:113
 msgid "no"
-msgstr "No"
+msgstr "không"
 
 #: Superfecta.class.php:325
 #, php-format
 msgid "result took %s seconds"
-msgstr "El resultado tomó %s segundos"
+msgstr "Kết quả sẽ mất %s giây"
 
 #: views/scheme.php:101 views/scheme.php:111
 msgid "yes"
-msgstr "si"
-
-#~ msgid "Enable CID Superfecta"
-#~ msgstr "Habilitar Superfecta CID"
-
-#~ msgid "Scheme"
-#~ msgstr "Esquema"
-
-#~ msgid "Superfecta CID Lookup"
-#~ msgstr "Búsqueda CID Superfecta"
+msgstr "Có"
