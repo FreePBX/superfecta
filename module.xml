@@ -2,7 +2,7 @@
 	<rawname>superfecta</rawname>
 	<repo>extended</repo>
 	<name>CID Superfecta</name>
-	<version>13.0.4.4</version>
+	<version>13.0.4.5</version>
 	<type>setup</type>
 	<category>Admin</category>
 	<publisher>Sangoma Technologies Corporation</publisher>
@@ -12,6 +12,7 @@
 		Provides simultaneous use of, and complete control over multiple caller id data sources.
 	</description>
 	<changelog>
+		*13.0.4.5* DasTelefonBuch fixes 
 		*13.0.4.4* source-TelefonABC_Austria.module online editiert mit Bitbucket 
 		*13.0.4.3* If the Caller ID is 'unknown', 'anonymous' or empty then skip the check 
 		*13.0.4.2* FREEPBX-15972 fix issues in local.ch
