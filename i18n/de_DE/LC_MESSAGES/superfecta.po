@@ -10,14 +10,16 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-12-08 18:29-0500\n"
-"PO-Revision-Date: 2017-12-08 18:29-0500\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
-"Language: \n"
+"PO-Revision-Date: 2018-01-30 23:16+0200\n"
+"Last-Translator: tranlsated <noemi@translated.net>\n"
+"Language-Team: German "
+"<http://weblate.freepbx.org/projects/freepbx/superfecta/de_DE/>\n"
+"Language: de_DE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 2.4\n"
 
 #: functions.inc.php:50 views/scheme.php:143
 msgid "ALL"
@@ -25,7 +27,7 @@ msgstr ""
 
 #: views/main.php:25
 msgid "Actions"
-msgstr ""
+msgstr "Aktionen"
 
 #: views/header.php:3
 msgid "Add Caller ID Scheme"
