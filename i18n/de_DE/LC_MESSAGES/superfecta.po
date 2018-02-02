@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-12-08 18:29-0500\n"
-"PO-Revision-Date: 2018-01-30 23:16+0200\n"
+"PO-Revision-Date: 2018-02-02 06:44+0200\n"
 "Last-Translator: tranlsated <noemi@translated.net>\n"
 "Language-Team: German "
 "<http://weblate.freepbx.org/projects/freepbx/superfecta/de_DE/>\n"
@@ -270,7 +270,7 @@ msgstr ""
 #: Superfecta.class.php:522 functions.inc.php:29 views/add_scheme.php:197
 #: views/add_scheme.php:224 views/scheme.php:32
 msgid "No"
-msgstr ""
+msgstr "Nein"
 
 #: Superfecta.class.php:242
 msgid "No callerid found"
