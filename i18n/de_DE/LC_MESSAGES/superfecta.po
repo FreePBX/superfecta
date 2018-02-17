@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-12-08 18:29-0500\n"
-"PO-Revision-Date: 2018-02-16 18:06+0200\n"
+"PO-Revision-Date: 2018-02-16 20:01+0200\n"
 "Last-Translator: Nils <Nils@heckenkamp.info>\n"
 "Language-Team: German "
 "<http://weblate.freepbx.org/projects/freepbx/superfecta/de_DE/>\n"
@@ -45,7 +45,7 @@ msgstr ""
 
 #: superfecta.i18n.php:6
 msgid "Admin"
-msgstr "Admin"
+msgstr "Administrator"
 
 #: views/add_scheme.php:149 views/scheme.php:89
 msgid "CID Prefix URL"
@@ -261,7 +261,7 @@ msgstr ""
 
 #: views/main.php:24
 msgid "Name"
-msgstr ""
+msgstr "Name"
 
 #: views/add_scheme.php:13
 msgid "New Scheme Name"
@@ -414,7 +414,7 @@ msgstr ""
 
 #: Superfecta.class.php:733
 msgid "Submit"
-msgstr "Bestätigen"
+msgstr "Absenden"
 
 #: views/add_scheme.php:102 views/scheme.php:70
 msgid "Superfecta Processor"
