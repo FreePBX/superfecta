@@ -12,16 +12,18 @@
  * Terms of Service:
  *
  * Small amount of information is available from https://whocalled.us/about, but there are no terms of service.
- * It is assumed that Superfecta usage is allowed.
+ * It is assumed that Superfecta usage is allowed. Update on 2018-04-15, this page no longer exists, no TOS of any
+ * type are to be found.
  *
  * Releases:
  *
- * 2015-08-15		Added additional debug output and changed user/pass to optional
- * 2015-08-14		Changed URLS to https by Neil Townsend
- * 2015-08-13		Update URL
- * 2014-06-25		Added days parameter to allow old reports to be ignored for spam scoring
- * 2013-11-xx		Spam score lookup added back
  * 2012-07-xx		All automatic reporting and spam score lookup removed
+ * 2013-11-xx		Spam score lookup added back
+ * 2014-06-25		Added days parameter to allow old reports to be ignored for spam scoring
+ * 2015-08-13		Update URL
+ * 2015-08-14		Changed URLS to https by Neil Townsend
+ * 2015-08-15		Added additional debug output and changed user/pass to optional
+ * 2018-04-15       Added URL decode 
  *
  **** * **** * **** * **** * **** * **** * **** * **** * **** * **** * **** * **** * **** */
 
@@ -122,14 +124,14 @@ class Who_Called extends superfecta_base {
 			$variables = $dataout;
 			if ($variables['success'] == '1') {
 				if (!empty($variables['who'])) {
-					$caller_id = $variables['who'];
+					$caller_id = urldecode($variables['who']);
+					return($caller_id);
 				} else {
 					$this->DebugPrint("CNAM not found");
 				}
 			} else {
 				$this->DebugPrint("Error Returned: " . $variables['errorMsg']);
 			}
-			return($caller_id);
 		}
 	}
 }
