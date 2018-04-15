@@ -12,6 +12,7 @@
  *        2017-10-21   Initial commit by lgaetz
  *        2017-10-21   Added some basic spam logic
  *        2017-10-23   change to only load url once, eliminate date retrieve
+ *        2018-04-15   bug fix, don't assume $average_rate has a value
  *
  *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
 
@@ -63,6 +64,8 @@
 		if (isset($matches[1])) {
 			$number_of_searches = trim($matches[1]);
 			$this->DebugPrint("Number of Searches: ".$number_of_searches);
+		} else {
+			$number_of_searches = 0;
 		}
 
 		// find number of comments
@@ -72,40 +75,43 @@
 		if (isset($matches[1])) {
 			$number_of_comments = trim($matches[1]);
 			$this->DebugPrint("Number of Comments: ".$number_of_comments);
+		} else {
+			$number_of_comments = 0;
 		}
 
-		// site returns a rate text string, dangerous, harassing, unknown, neutral, safe
-		switch (strtolower($average_rate)) {
-			case "dangerous":
-				if($number_of_searches < $run_param['Search_Number_Threshold'] || $number_of_comments < $run_param['Comment_Number_Threshold']) {
-					$this->DebugPrint("Number flagged as Dangerous, but comment/search threshold not met");
-				} else {
-					$this->DebugPrint("Number flagged as Dangerous, comment/search threshold met, setting call as SPAM");
-					$this->spam = true;
-				}
-				break;
-			case "harassing":
-				if($number_of_searches < $run_param['Search_Number_Threshold'] || $number_of_comments < $run_param['Comment_Number_Threshold']) {
-					$this->DebugPrint("Number flagged as Harassing, but comment/search threshold not met");
-				} else {
-					$this->DebugPrint("Number flagged as Harassing, comment/search threshold met, setting call as SPAM");
-					$this->spam = true;
-				}
-				break;
-			case "unknown":
-				$this->DebugPrint("Number flagged as Unknown, doing nothing");
-				break;
-			case "neutral":
-				$this->DebugPrint("Number flagged as Neutral, doing nothing");
-				break;
-			case "safe":
-				$this->DebugPrint("Number flagged as Safe, doing nothing");
-				break;
-			default:
-				$this->DebugPrint("Site returned unexpected rate of ".$average_rate);
-				break;
+		// site should return a rate text string, dangerous, harassing, unknown, neutral, safe
+		if (isset ($average_rate)) {
+			switch (strtolower($average_rate)) {
+				case "dangerous":
+					if($number_of_searches < $run_param['Search_Number_Threshold'] || $number_of_comments < $run_param['Comment_Number_Threshold']) {
+						$this->DebugPrint("Number flagged as Dangerous, but comment/search threshold not met");
+					} else {
+						$this->DebugPrint("Number flagged as Dangerous, comment/search threshold met, setting call as SPAM");
+						$this->spam = true;
+					}
+					break;
+				case "harassing":
+					if($number_of_searches < $run_param['Search_Number_Threshold'] || $number_of_comments < $run_param['Comment_Number_Threshold']) {
+						$this->DebugPrint("Number flagged as Harassing, but comment/search threshold not met");
+					} else {
+						$this->DebugPrint("Number flagged as Harassing, comment/search threshold met, setting call as SPAM");
+						$this->spam = true;
+					}
+					break;
+				case "unknown":
+					$this->DebugPrint("Number flagged as Unknown, doing nothing");
+					break;
+				case "neutral":
+					$this->DebugPrint("Number flagged as Neutral, doing nothing");
+					break;
+				case "safe":
+					$this->DebugPrint("Number flagged as Safe, doing nothing");
+					break;
+				default:
+					$this->DebugPrint("Site returned unexpected rate of ".$average_rate.", doing nothing");
+					break;
+			}
 		}
-
 	}
 
 }
