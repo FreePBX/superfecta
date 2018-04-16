@@ -25,7 +25,7 @@ class UKPhoneInfo_UK extends superfecta_base {
             $this->DebugPrint("Skipping Source - Non UK number: {$thenumber}");
         } else {
             $this->DebugPrint('Searching UKPhoneInfo ...');
-            $url = "http://www.ukphoneinfo.com/search?q={$thenumber}";
+            $url = "https://www.ukphoneinfo.com/search?q={$thenumber}";
             if ($this->SearchURL($url, "=<h2[^>]*>(.*)</h2>=siU", $match)) {
                 $caller_id = $this->ExtractMatch($match);
             }
