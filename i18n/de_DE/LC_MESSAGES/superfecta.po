@@ -3,31 +3,31 @@
 # For licensing information, please see the file named LICENSE located in the module directory
 #
 # FreePBX language template for superfecta
-# Copyright (C) 2008-2015 Sangoma, Inc.
+# Copyright (C) 2008-2017 Sangoma Technologies, Inc.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-03 20:17-0400\n"
-"PO-Revision-Date: 2017-12-11 22:57+0200\n"
-"Last-Translator: JCattan <jeremie@famillecattan.com>\n"
-"Language-Team: French "
-"<http://weblate.freepbx.org/projects/freepbx/superfecta/fr_FR/>\n"
-"Language: fr_FR\n"
+"POT-Creation-Date: 2017-12-08 18:29-0500\n"
+"PO-Revision-Date: 2018-02-16 20:01+0200\n"
+"Last-Translator: Nils <Nils@heckenkamp.info>\n"
+"Language-Team: German "
+"<http://weblate.freepbx.org/projects/freepbx/superfecta/de_DE/>\n"
+"Language: de_DE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 2.4\n"
 
 #: functions.inc.php:50 views/scheme.php:143
 msgid "ALL"
-msgstr "TOUT(E)"
+msgstr ""
 
 #: views/main.php:25
 msgid "Actions"
-msgstr "Actions"
+msgstr "Aktionen"
 
 #: views/header.php:3
 msgid "Add Caller ID Scheme"
@@ -45,7 +45,7 @@ msgstr ""
 
 #: superfecta.i18n.php:6
 msgid "Admin"
-msgstr "Admin"
+msgstr "Administrator"
 
 #: views/add_scheme.php:149 views/scheme.php:89
 msgid "CID Prefix URL"
@@ -81,19 +81,19 @@ msgstr ""
 
 #: views/scheme.php:130
 msgid "DID Number"
-msgstr "Numéro SDA"
+msgstr ""
 
 #: views/add_scheme.php:33 views/scheme.php:46
 msgid "DID Rules"
-msgstr "Règles de DID"
+msgstr ""
 
 #: views/scheme.php:16
 msgid "Data Source Name"
-msgstr "Nom de la source de données"
+msgstr ""
 
 #: views/scheme.php:138
 msgid "Debug Level"
-msgstr "Niveau de débogage"
+msgstr ""
 
 #: views/scheme.php:138
 msgid "Debug Level to display"
@@ -101,7 +101,7 @@ msgstr ""
 
 #: Superfecta.class.php:309
 msgid "Debug is on and set at level:"
-msgstr "Le débogage est activé est est au niveau :"
+msgstr ""
 
 #: views/scheme.php:5 views/scheme.php:128
 msgid "Debug/Test Run Scheme"
@@ -129,7 +129,7 @@ msgstr ""
 
 #: views/scheme.php:17
 msgid "Description"
-msgstr "Description"
+msgstr "Beschreibung"
 
 #: views/scheme.php:38
 msgid "Edit Scheme"
@@ -145,16 +145,16 @@ msgstr ""
 
 #: views/scheme.php:18
 msgid "Enabled"
-msgstr "Activer"
+msgstr "Aktiviert"
 
 #: includes/processors/superfecta_single.php:53
 #: includes/processors/superfecta_single.php:115
 msgid "Executing"
-msgstr "En exécution"
+msgstr ""
 
 #: views/scheme.php:141
 msgid "INFO"
-msgstr "INFO"
+msgstr ""
 
 #: views/add_scheme.php:159 views/scheme.php:89
 msgid ""
@@ -257,11 +257,11 @@ msgstr ""
 
 #: views/scheme.php:140
 msgid "NONE"
-msgstr "AUCUN"
+msgstr ""
 
 #: views/main.php:24
 msgid "Name"
-msgstr "Nom"
+msgstr "Name"
 
 #: views/add_scheme.php:13
 msgid "New Scheme Name"
@@ -270,7 +270,7 @@ msgstr ""
 #: Superfecta.class.php:522 functions.inc.php:29 views/add_scheme.php:197
 #: views/add_scheme.php:224 views/scheme.php:32
 msgid "No"
-msgstr "Non"
+msgstr "Nein"
 
 #: Superfecta.class.php:242
 msgid "No callerid found"
@@ -286,11 +286,11 @@ msgstr ""
 
 #: views/main.php:23
 msgid "Order"
-msgstr "Ordre"
+msgstr ""
 
 #: views/scheme.php:134
 msgid "Phone Number"
-msgstr "Numéro de téléphone"
+msgstr ""
 
 #: views/scheme.php:134
 msgid "Phone number to test this scheme against"
@@ -318,11 +318,11 @@ msgstr ""
 
 #: Superfecta.class.php:728
 msgid "Reset"
-msgstr "Reset"
+msgstr "Zurücksetzen"
 
 #: Superfecta.class.php:324
 msgid "Returned Result would be:"
-msgstr "Le résultat retourné serait :"
+msgstr ""
 
 #: views/add_scheme.php:244 views/scheme.php:118
 msgid "SPAM Send Threshold"
@@ -414,7 +414,7 @@ msgstr ""
 
 #: Superfecta.class.php:733
 msgid "Submit"
-msgstr "Envoyer"
+msgstr "Absenden"
 
 #: views/add_scheme.php:102 views/scheme.php:70
 msgid "Superfecta Processor"
@@ -437,7 +437,7 @@ msgstr ""
 #: Superfecta.class.php:83
 #, php-format
 msgid "The DID is: %s"
-msgstr "Le DID est : %s"
+msgstr ""
 
 #: views/scheme.php:130
 msgid "The DID to test this scheme against"
@@ -445,7 +445,7 @@ msgstr ""
 
 #: Superfecta.class.php:310
 msgid "The Original Number:"
-msgstr "Le numéro original :"
+msgstr ""
 
 #: Superfecta.class.php:311
 msgid "The Scheme:"
@@ -457,7 +457,7 @@ msgstr ""
 
 #: views/footer.php:4
 msgid "This Module's wiki pages can be found here."
-msgstr "Les pages wiki de ce module sont disponible ici."
+msgstr ""
 
 #: views/footer.php:2
 #, php-format
@@ -487,7 +487,7 @@ msgstr ""
 
 #: views/scheme.php:142
 msgid "WARN"
-msgstr "AVERTISSEMENT"
+msgstr ""
 
 #: views/main.php:4
 msgid "What is CallerID Superfecta?"
@@ -510,7 +510,7 @@ msgstr ""
 #: Superfecta.class.php:520 functions.inc.php:27 views/add_scheme.php:195
 #: views/add_scheme.php:222 views/scheme.php:30
 msgid "Yes"
-msgstr "Oui"
+msgstr "Ja"
 
 #: Superfecta.class.php:610
 msgid "You cannot create a scheme the same name as an existing scheme"
@@ -522,13 +522,13 @@ msgstr ""
 
 #: views/scheme.php:103 views/scheme.php:113
 msgid "no"
-msgstr "non"
+msgstr ""
 
 #: Superfecta.class.php:325
 #, php-format
 msgid "result took %s seconds"
-msgstr "le résultat a pris %s secondes"
+msgstr ""
 
 #: views/scheme.php:101 views/scheme.php:111
 msgid "yes"
-msgstr "oui"
+msgstr ""
