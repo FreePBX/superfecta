@@ -48,6 +48,8 @@ class superfecta_single extends superfecta_base {
 				$source_class->set_AsteriskManager($this->astman);
 				$source_class->set_TrunkInfo($this->trunk_info);
 
+				$run_params = $source_class->getRunParams($run_params);
+
 				if (method_exists($source_class, 'get_caller_id')) {
 					if ($this->isDebug()) {
 						print '<i class="fa fa-arrow-right"></i> '._('Executing'). ' '. str_replace("_"," ",$data).'<br/>';
@@ -110,6 +112,9 @@ class superfecta_single extends superfecta_base {
 				$source_class->set_DB($this->db);
 				$source_class->set_AsteriskManager($this->astman);
 				$source_class->set_TrunkInfo($this->trunk_info);
+
+				$run_param = $source_class->getRunParams($run_param);
+
 				if (method_exists($source_class, 'post_processing')) {
 					if ($this->isDebug()) {
 						print '<i class="fa fa-arrow-right"></i> '._('Executing'). ' '. str_replace("_"," ",$source_name).'<br/>';
