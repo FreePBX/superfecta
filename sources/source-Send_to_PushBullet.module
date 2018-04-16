@@ -10,6 +10,7 @@
  * Version History:
  *      2014-06-04  Initial commit, working but rough
  *      2014-06-07  Caches devices to flat file to prevent polling PushBullet for devices on every lookup
+ *      2016-10-02  Fix issue with API returning non-active devices
  *
  *** *** *** *** *** *** *** *** *** ***/
 
@@ -76,9 +77,11 @@ class Send_to_PushBullet extends superfecta_base {
 			$devices = json_decode($response);
 			$bar = array();
 			foreach ($devices->devices as $foo) {
-				$bar1 = $foo->nickname;
-				$bar2 = $foo->iden;
-				$bar[$bar2]=$bar1;
+				if ($foo->active == "1") {
+					$bar1 = $foo->nickname;
+					$bar2 = $foo->iden;
+					$bar[$bar2]=$bar1;
+				}
 			}
 			$this->source_param['Device']['option'] = $bar;
 		}
