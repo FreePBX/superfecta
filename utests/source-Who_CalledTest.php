@@ -14,7 +14,7 @@ class Who_CalledTest extends PHPUnit_Framework_TestCase{
 	}
 
 	public function testCnam(){
-		$cnam = self::$o->get_caller_id('6305424316',array('CNAM_Lookup' => true));
+		$cnam = self::$o->get_caller_id('6305424316',self::$o->getRunParams(array('CNAM_Lookup' => true)));
 		$this->assertEquals("Schaumburg%2C+IL", $cnam, "The lookup returned an unexpected result for 6305434316");
 	}
 }
