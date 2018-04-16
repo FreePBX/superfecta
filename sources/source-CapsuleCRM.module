@@ -1,0 +1,67 @@
+<?php
+/*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+ * CapsuleCRM Caller ID Module for Superfecta
+ * Performs lookups towards CapsuleCRM's RESTful API.
+ *
+ * Enter your API key and password from the web interface.
+ * Code borrowed from BulkCNAM module and other modules.
+ *
+ * Written by Stian Eklund
+ * 9-Nov-2015
+ *
+ *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
+
+class CapsuleCRM extends superfecta_base {
+
+  public $description = "CapsuleCRM CallerID lookup";
+  public $version_requirement = "2.11";
+  public $source_param = array(
+    'Organization' => array(
+		'description' => 'CapsuleCRM organization name',
+		'type' => 'text',
+  ),
+  'API_Key' => array(
+    'description' => 'CapsuleCRM API Key',
+    'type' => 'password',
+  ),
+);
+
+function get_caller_id($thenumber, $run_param=array()) {
+  $caller_id = null;
+  $name = "";
+  $spam = "";
+  $companyname = $run_param['Organization'];
+  $apitoken = $run_param['API_Key'];
+
+// Query CapsuleCRM
+$this->DebugPrint("Searching CapsuleCRM  {$this->thenumber} ... ");
+$url = "https://$apitoken:x@$companyname.capsulecrm.com/api/party?q=$thenumber";
+
+$ch = curl_init();
+curl_setopt ($ch, CURLOPT_URL, $url);
+curl_setopt ($ch, CURLOPT_RETURNTRANSFER, 1);
+curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+curl_setopt($ch, CURLOPT_HTTPHEADER, array('Accept: application/json')); // Lets Capsule know we want JSON, default output is XML
+$value = htmlspecialchars_decode(curl_exec($ch));
+curl_close($ch);
+
+$result = (array)json_decode($value,true);
+// $this->DebugPrint($url);   // for debug
+// $this->DebugPrint($result); // print results
+
+if (isset($result['parties']['person']['firstName']) . ($result['parties']['person']['lastName'])); {
+  if ($result['parties']['person']['firstName'] == 'Not Found') {
+  } else {
+    $name = trim($result['parties']['person']['firstName'] .  ' ' . $result['parties']['person']['lastName']);
+  }
+}
+
+// Return the number if match found.
+if (strlen($name) > 1) {
+  $caller_id = $name;
+} else {
+  $this->DebugPrint("not found");
+}
+return($caller_id);
+}
+}
