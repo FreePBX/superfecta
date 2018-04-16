@@ -222,7 +222,7 @@ foreach ($scheme_name_array as $list) {
             $superfecta->set_Prefix($superfecta->get_url_contents(str_replace("[thenumber]", $trunk_info['callerid'], $scheme_param['Prefix_URL'])));
 
             $superfecta->outn("Prefix Url defined ...");
-            if ($superfecta->prefix != '') {
+            if ($superfecta->get_Prefix() != '') {
                 $superfecta->outn("returned: " . $superfecta->get_Prefix());
             } else {
                 $superfecta->outn("result was empty");
