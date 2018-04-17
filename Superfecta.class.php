@@ -214,7 +214,7 @@ class Superfecta implements \BMO {
 			if($superfecta->isSpam() && $options['scheme_settings']['SPAM_Text_Substitute'] == 'Y') {
 				$callerid = $spam_text;
 			} else {
-				$callerid = $spam_text . " " . $superfecta->get_Prefix() . $callerid;
+				$callerid = trim($spam_text . " " . $superfecta->get_Prefix() . $callerid);
 			}
 
 			//Set Spam Destination

@@ -9,11 +9,14 @@
  * Version History:
  *      2014-06-04  Initial commit, working but rough
  *      2014-06-07  Caches devices to flat file to prevent polling PushBullet for devices on every lookup
+ *      2016-10-02  Fix issue with API returning non-active devices
  *      2018-03-09  Convert CNAME to UTF-8 before sending to PushBullet in order to support accented characters. - modified by Pierre Fagrell
  *                  Add some debugging and remove double whitespaces
  *                  Shorten text in order to fit in phone notification bar
  *                  Add option to send to all devices or PushBullet channel
- *					Remodel so it is possible to have multiple schemes with different PushBullet config
+ *        					Remodel so it is possible to have multiple schemes with different PushBullet config
+ *      
+ *
  *** *** *** *** *** *** *** *** *** ***/
 
 
