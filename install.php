@@ -333,3 +333,12 @@ if ( !DB::IsError($res) && $res->numRows() != 0 ) {
 	$sql = "DELETE FROM cidlookup WHERE description = 'Caller ID Superfecta'";
 	$res = $db->query($sql);
 }
+
+// remove spurious superfecta cache entries caused by previous versions of Trunk Provided module:
+$sql = "select * from superfectacache where `callerid` like 'CID Superfecta!'";
+$res = $db->query($sql);
+if ( !DB::IsError($res) && $res->numRows() != 0 ) {
+	echo "Cleaning up Superfecta Cache pollution from Trunk Provided module.</p>";
+	$sql = "DELETE FROM superfectacache where `callerid` like 'CID Superfecta!'";
+	$res = $db->query($sql);
+}

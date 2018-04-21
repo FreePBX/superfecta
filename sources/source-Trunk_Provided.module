@@ -20,6 +20,11 @@ class Trunk_Provided extends superfecta_base {
 
     function get_caller_id($thenumber, $run_param=array()) {
 		$this->DebugPrint("Looking for Trunk Provided Caller ID ... ");
+		// Don't do anything when in debug test mode
+		if ($this->debug) {
+			$this->DebugPrint("We're in Debug/Test mode, this module only runs on live calls.");
+			return null;
+		}
 		$key_words = array();
 		$temp_array = explode(',', (isset($run_param['Ignore_Keywords']) ? $run_param['Ignore_Keywords'] : $this->source_param['Ignore_Keywords']['default']));
 		foreach ($temp_array as $val) {
