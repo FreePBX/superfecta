@@ -231,7 +231,7 @@ class Superfecta implements \BMO {
 					$this->out(sprintf(_("Call detected as spam, would send call to: %s"),$spam_dest));
 				}
 			}
-			if(!empty($callerid)) {
+			if(!empty(trim($callerid))) {
 				if(!$keepGoing) {
 					$this->out(sprintf(_("Setting caller id to: %s"),$callerid));
 					return $callerid;
