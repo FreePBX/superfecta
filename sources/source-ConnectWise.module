@@ -199,10 +199,10 @@ EOT;
 		
 		if(strlen($wresult_caller_name) > 0) {
 			$caller_id = $run_param['CNAM_prefix'].trim(strip_tags($wresult_caller_name));
+			return $run_param['CNAM_prefix'].$caller_id;
 		}
-		else if($debug) {
+		else {
 			$this->DebugPrint("Not found in ConneceWise");
 		}
-		return $run_param['CNAM_prefix'].$caller_id;
 	}
 }
