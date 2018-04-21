@@ -139,7 +139,7 @@ class Send_to_XBMC extends superfecta_base {
 			$my_xbmc_time = $run_param['Notification_Time']*1000;
 			$my_xbmc_icon = "DefaultActor.png";       // relative to /usr/share/xbmc/addons/skin.confluence/media or absolute, should this be a $source_param?
 
-			$my_dharma_params.="$my_xbmc_title,$my_xbmc_mess,$my_xbmc_time,$my_xbmc_icon";
+			$my_dharma_params ="$my_xbmc_title,$my_xbmc_mess,$my_xbmc_time,$my_xbmc_icon";
 			$my_dharma_params = urlencode($my_dharma_params);
 
 			// hosts loop
