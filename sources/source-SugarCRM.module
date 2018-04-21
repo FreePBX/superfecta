@@ -96,6 +96,7 @@ class SugarCRM extends superfecta_base {
 			}
 		} else {
 			$this->DebugPrint("PDO not present on system...Skipping");
+			return;
 		}
 
 		// keep only the filter_length rightmost digits
