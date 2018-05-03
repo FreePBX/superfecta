@@ -15,7 +15,6 @@ class TelefonABC_AustriaTest extends PHPUnit_Framework_TestCase{
 
 	public function testCnam(){
 		$cnam = self::$o->get_caller_id('+43727727729');
-		//$this->assertEquals("Mayr                Barbara", $cnam, "The lookup returned an unexpected result for +43727727729");
-		$this->assertEquals("", $cnam, "The lookup returned an unexpected result for +43727727729");
+		$this->assertEquals("Mayr                Barbara", $cnam, "The lookup returned an unexpected result for +43727727729");
 	}
 }
