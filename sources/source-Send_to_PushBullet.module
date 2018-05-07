@@ -4,13 +4,18 @@
  * Developer Notes:
  *      The __contruct function needs work, it will not currently support multiple APIs in multiple schemes
  *      The API key must be saved before devices are available in the dropdown menu
- *      There is a decent PHP class for PushBullet https://github.com/ivkos/PushBullet-for-PHP, may be worth exploring this option
- *      The PushBullet service does not support foreign accented characters, empty notice gets pushed.
- *
+ *      There is a decent PHP class for PushBullet https://github.com/ivkos/PushBullet-for-PHP, may be worth exploring this option      
+ * 
  * Version History:
  *      2014-06-04  Initial commit, working but rough
  *      2014-06-07  Caches devices to flat file to prevent polling PushBullet for devices on every lookup
  *      2016-10-02  Fix issue with API returning non-active devices
+ *      2018-03-09  Convert CNAME to UTF-8 before sending to PushBullet in order to support accented characters. - modified by Pierre Fagrell
+ *                  Add some debugging and remove double whitespaces
+ *                  Shorten text in order to fit in phone notification bar
+ *                  Add option to send to all devices or PushBullet channel
+ *        					Remodel so it is possible to have multiple schemes with different PushBullet config
+ *      
  *
  *** *** *** *** *** *** *** *** *** ***/
 
@@ -25,66 +30,32 @@ class Send_to_PushBullet extends superfecta_base {
 				'type' => 'text',
 				'default' => null
 		),
-		'Device' => array(
-				'description' => 'After entering and saving API key, select from registered devices',
-				'type' => 'select',
-				'option' => array(
-					'none' => 'none',
+                'Target_Type' => array(
+                                'description' => 'Choose where you want to send the notification',
+                                'type' => 'select',
+                                'option' => array(
+                                        1 => 'Single device selected below',
+                                        2 => 'All your devices',
+                                        3 => 'Channel entered below',
 				),
 		),
-		'Sync_Devices' => array(
-			'description' => 'Once API is set, enabling this option will load devices from the PushBullet account.',
-			'type' => 'checkbox',
-			'default' => 'off'
+
+                'Channel' => array(
+                                'description' => 'Enter tag of your existing pushbullet channel to use as target',
+                                'type' => 'text',
+                                'default' => null
+				
 		),
+
+                'Device' => array(
+                                'description' => 'Enter id of your device to use as a target. You can see find the id in the url if you click on your device at pushbullet.com',
+                                'type' => 'text',
+                                'default' => null
+
+                ),
 	);
 
 	function __construct() {
-		// This function takes the user supplied API to query PushBullet for a list of registered devices. It then builds an array
-		// for a drop down menu to allow user to send the note to a device.
-
-		// can't figure out how to access $run_param from this function, this is a bad way to do this because it does not support mult schemes
-		global $db;
-		$cache_file = '.pushbullet_cache';
-
-		$sql = "SELECT `field`,`value` FROM `superfectaconfig` WHERE `source` LIKE '%PushBullet%'";
-		$run_param = $db->getAssoc($sql);
-
-		//tried using PHP class, but this just seems easier
-		if (isset($run_param['API']) && $run_param['Sync_Devices'] == 'on') {
-			$curl = curl_init();
-			$url = 'https://api.pushbullet.com/v2/devices?';
-			curl_setopt($curl, CURLOPT_URL, $url);
-			curl_setopt($curl, CURLOPT_USERPWD, $run_param['API']);
-			curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'GET');
-
-			curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
-			curl_setopt($curl, CURLOPT_HEADER, FALSE);
-			$response = curl_exec($curl);
-			curl_close($curl);
-
-
-
-			$content = serialize($response);
-			file_put_contents($cache_file, $content);
-
-			// add code here reset the sync_devices param back to off
-		}
-
-		// load devices from cache
-		if(file_exists($cache_file)) {
-			$response = unserialize(file_get_contents($cache_file));
-			$devices = json_decode($response);
-			$bar = array();
-			foreach ($devices->devices as $foo) {
-				if ($foo->active == "1") {
-					$bar1 = $foo->nickname;
-					$bar2 = $foo->iden;
-					$bar[$bar2]=$bar1;
-				}
-			}
-			$this->source_param['Device']['option'] = $bar;
-		}
 	}
 
 	function post_processing($cache_found, $winning_source, $first_caller_id, $run_param, $thenumber) {
@@ -94,10 +65,25 @@ class Send_to_PushBullet extends superfecta_base {
 		curl_setopt($curl, CURLOPT_URL, $url);
 		curl_setopt($curl, CURLOPT_USERPWD, $run_param['API']);
 		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'POST');
-		$queryData['device_iden'] = $run_param['Device'];
+                curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+                        sprintf('Authorization: %s',$run_param['API']),
+                        'User-Agent: User-Agent: curl/7.33.0',
+                        )
+                );
+		
+		// If a single device is selected add the device tag. For all devices or channel leave it out
+		if ($run_param['Target_Type'] == 1) {
+			$queryData['device_iden'] = $run_param['Device'];
+		}
+
+		// If channel is selected add the channel tag
+		if ($run_param['Target_Type'] == 3) {
+			$queryData['channel_tag'] = $run_param['Channel'];
+		}
+
 		$queryData['type'] = 'note';
-		$queryData['title'] = "Incoming call from: ".$first_caller_id;
-		$queryData['body']   = "From phone number: ".$thenumber;
+		$queryData['title'] = "Call: ".$this->reformat_cname($first_caller_id);
+		$queryData['body']   = "Nr: ".$thenumber;
 		$data = json_encode($queryData);
 		curl_setopt($curl, CURLOPT_HTTPHEADER, array(
 			'Content-Type: application/json',
@@ -109,4 +95,43 @@ class Send_to_PushBullet extends superfecta_base {
 		$response = curl_exec($curl);
 		curl_close($curl);
 	}
+
+	function reformat_cname($content) {
+		$this->DebugPrint("Initial data: \n");
+		$this->DebugPrint("<pre>".$content."</pre>");
+
+		$content = $this->utf_convert_string($content);
+		$this->DebugPrint("Data after converting to UTF-8: \n");
+        $this->DebugPrint("<pre>".$content."</pre>");
+
+		$this->DebugPrint("Removing double whitespace, result: \n");
+		$content = $this->remove_double_whitespace($content);
+		$this->DebugPrint("<pre>".$content."</pre>");
+
+		return $content;
+	}
+
+	function utf_convert_string($content) {
+        if (!function_exists('mb_check_encoding')) {
+			$this->DebugPrint('mb_string not installed, cannot convert to UTF-8 for Pushbullet accented characters');
+			$content = preg_replace('/[\x00-\x1F\x7F-\xFF]/', '', $content); //Remove any characters that are not 7-bit ASCII
+			return $content;
+        } else {
+			if(!mb_check_encoding($content, 'UTF-8')
+	        OR !($content === mb_convert_encoding(mb_convert_encoding($content, 'UTF-32', 'UTF-8' ), 'UTF-8', 'UTF-32'))) {
+			
+				$content = mb_convert_encoding($content, 'UTF-8');
+	
+	            if (!mb_check_encoding($content, 'UTF-8')) {
+	            	$this->DebugPrint('Could not convert to UTF-8');
+	            }
+	    	}
+			return $content; 
+	    }
+	} 
+
+    function remove_double_whitespace($content) {
+		$content = preg_replace('/\s\s+/', ' ', $content);
+        return $content;
+    }
 }
