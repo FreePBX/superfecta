@@ -11,6 +11,7 @@
  *    v0.1.3: Initial migration to 2.11 by lgaetz
  *    2014-08-22  Added user param to set the API version in the URL
  *    2015-05-01  Add field for user supplied CNAM prefix
+ *    2018-06-30  Fix for bug FREEPBX-17727
 ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****/
 
 class ConnectWise extends superfecta_base {
@@ -200,7 +201,7 @@ EOT;
 		if(strlen($wresult_caller_name) > 0) {
 			$caller_id = $run_param['CNAM_prefix'].trim(strip_tags($wresult_caller_name));
 		}
-		else if($debug) {
+		else {
 			$this->DebugPrint("Not found in ConneceWise");
 		}
 		return $run_param['CNAM_prefix'].$caller_id;
