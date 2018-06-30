@@ -160,7 +160,7 @@ class OpenEMR extends superfecta_base {
 			$caller_id = trim($value);
 			return $caller_id;
 		}
-		else if($debug) {
+		else {
 			$this->DebugPrint("not found");
 		}
 	}
