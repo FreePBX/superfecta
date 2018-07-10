@@ -204,15 +204,6 @@ function superfecta_did_get($did) {
 }
 
 function superfecta_did_list($id=false) {
-	$sql = "
-	SELECT superfecta_to_incoming_id, a.extension extension, a.cidnum cidnum, pricid, scheme FROM superfecta_to_incoming a
-	INNER JOIN incoming b
-	ON a.extension = b.extension AND a.cidnum = b.cidnum
-	";
-	if ($id !== false && ctype_digit($id)) {
-		$sql .= " WHERE superfecta_to_incoming_id = '" . q($id) . "'";
-	}
-
-	$results = sql($sql, "getAll", DB_FETCHMODE_ASSOC);
-	return is_array($results) ? $results : array();
+    FreePBX::Modules()->deprecatedFunction();
+    return FreePBX::Superfecta()->didList($id);
 }

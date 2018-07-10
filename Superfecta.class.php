@@ -4,7 +4,10 @@
 //	Copyright 2013 POSSA Working Group
 //
 namespace FreePBX\modules;
-class Superfecta implements \BMO {
+use BMO;
+use FreePBX_Helpers;
+use PDO;
+class Superfecta extends FreePBX_Helpers implements BMO {
 	private $schemeDefaults = array(
 		'Curl_Timeout' => 3,
 		'SPAM_Text' => 'SPAM',
@@ -23,12 +26,26 @@ class Superfecta implements \BMO {
 	private $spamCount = 0;
 	private $destination = null;
 	private $agi = null;
-	public function __construct($freepbx) {
-		$this->freepbx = $freepbx;
-		$this->db = $freepbx->Database;
-	}
-	public function install() {
 
+	public function install() {
+		$sql = "SELECT * FROM superfectaconfig LIMIT 1;";
+		$res = $this->FreePBX->Database->query($sql);
+		if ($res->rowCount() != 1) {
+			$defaults = [
+				[':source' => 'base_Default', ':field' => 'order', ':value' => '0'],
+				[':source' => 'base_Default', ':field' => 'Curl_Timeout', ':value' => '3'],
+				[':source' => 'base_Default', ':field' => 'SPAM_Text', ':value' => 'SPAM'],
+				[':source' => 'base_Default', ':field' => 'sources', ':value' => 'Asterisk_Phonebook,Superfecta_Cache,Trunk_Provided,Telco_Data'],
+				[':source' => 'Trunk_Provided', ':field' => 'Ignore_Keywords', ':value' => 'unknown, wireless, toll free, unlisted'],
+				[':source' => 'Superfecta_Cache', ':field' => 'Cache_Timeout', ':value' => '120'],
+				[':source' => 'PhoneSpamFilter', ':field' => 'SPAM_Threshold', ':value' => '5'],
+			];
+			$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES(:source, :field, :value)";
+			$stmt = $this->FreePBX->Database->prepare($sql);
+			foreach ($defaults as $default) {
+				$stmt->execute($default);
+			}
+		}
 	}
 	public function uninstall() {
 
@@ -47,11 +64,13 @@ class Superfecta implements \BMO {
 	* Chown hook for freepbx fwconsole
 	*/
 	public function chownFreepbx() {
-		$files = array();
-		$files[] = array('type' => 'file',
-												'path' => __DIR__."/agi/superfecta.agi",
-												'perms' => 0755);
-		return $files;
+		return [
+			[
+				'type' => 'file',
+				'path' => __DIR__."/agi/superfecta.agi",
+				'perms' => 0755,
+			],
+		];
 	}
 
 	private function out($message) {
@@ -99,7 +118,7 @@ class Superfecta implements \BMO {
 
 		global $db, $amp_conf, $astman;
 		$options = array(
-			'db' => $this->db,
+			'db' => $this->FreePBX->Database,
 			'amp_conf' => $amp_conf,
 			'astman' => $astman,
 			'debug' => 0,
@@ -116,7 +135,7 @@ class Superfecta implements \BMO {
 			$did = $trunk_info['extension'];
 
 			$options['scheme_name'] = "base_".$s['name'];
-			$options['scheme_settings'] = $this->getScheme($s['name']);;
+			$options['scheme_settings'] = $this->getScheme($s['name']);
 			$options['module_parameters'] = $this->getSchemeAllModuleSettings($s['name']);
 
 			switch ($options['scheme_settings']) {
@@ -299,7 +318,8 @@ class Superfecta implements \BMO {
 			case "sort":
 			case "debug":
 				return true;
-			break;
+			default:
+				return false;
 		}
 	}
 
@@ -324,7 +344,6 @@ class Superfecta implements \BMO {
 				echo "<span class='header'>"._('Returned Result would be:')."</span>".$callerid."</br>";
 				echo "<span class='header'>".sprintf(_('result took %s seconds'),$time_end - $time_start)."</span>";
 				return true;
-			break;
 		}
 	}
 
@@ -332,26 +351,24 @@ class Superfecta implements \BMO {
 		switch($_REQUEST['command']) {
 			case "debug":
 				return false;
-			break;
 			case "sort":
 				$oper = $_POST['position'] == 'up' ? "-" : "+";
 				$sql = "UPDATE superfectaconfig SET value = ABS(value ".$oper." 11) WHERE source = ? AND field = 'order'";
-				$sth = $this->db->prepare($sql);
+				$sth = $this->FreePBX->Database->prepare($sql);
 				$sth->execute(array('base_'.$_REQUEST['scheme']));
 				$this->reorderSchemes();
 				return array("status" => true);
-			break;
 			case "copy":
 				$scheme = $_REQUEST['scheme'];
 				$int = rand(1,10);
 
 				/** GET SCHEME CONFIGS **/
 				$sql = "SELECT * FROM superfectaconfig WHERE source = ?";
-				$sth = $this->db->prepare($sql);
+				$sth = $this->FreePBX->Database->prepare($sql);
 				$sth->execute(array('base_'.$scheme));
-				$options = $sth->fetchAll(\PDO::FETCH_ASSOC);
+				$options = $sth->fetchAll(PDO::FETCH_ASSOC);
 				$sql = "INSERT INTO superfectaconfig (source, field, value) VALUES (?,?,?)";
-				$sth = $this->db->prepare($sql);
+				$sth = $this->FreePBX->Database->prepare($sql);
 				foreach($options as $option) {
 					$source = preg_replace('/^base_'.$scheme.'/','base_'.$scheme.'copy'.$int,$option['source']);
 					$sth->execute(array($source,$option['field'],$option['value']));
@@ -359,11 +376,11 @@ class Superfecta implements \BMO {
 
 				/** GET MODULE CONFIGS **/
 				$sql = "SELECT * FROM superfectaconfig WHERE source LIKE ?";
-				$sth = $this->db->prepare($sql);
+				$sth = $this->FreePBX->Database->prepare($sql);
 				$sth->execute(array($scheme.'\_%'));
-				$options = $sth->fetchAll(\PDO::FETCH_ASSOC);
+				$options = $sth->fetchAll(PDO::FETCH_ASSOC);
 				$sql = "INSERT INTO superfectaconfig (source, field, value) VALUES (?,?,?)";
-				$sth = $this->db->prepare($sql);
+				$sth = $this->FreePBX->Database->prepare($sql);
 				foreach($options as $option) {
 					$source = preg_replace('/^'.$scheme.'_/','base_'.$scheme.'copy'.$int.'_',$option['source']);
 					$sth->execute(array($source,$option['field'],$option['value']));
@@ -371,11 +388,10 @@ class Superfecta implements \BMO {
 
 				$this->reorderSchemes();
 				return array("status" => true, "redirect" => "config.php?display=superfecta&action=edit&scheme=".$scheme.'copy'.$int);
-			break;
 			case "update_scheme":
 
 				$data = array(
-					"enable_interceptor" => $_POST['enable_interceptor'] == "on" ? TRUE : FALSE,
+					"enable_interceptor" => $_POST['enable_interceptor'] == "on",
 					"scheme_name" => preg_replace('/\s/i', '_', preg_replace('/\+/i', '_', trim($_POST['scheme_name']))),
 					"scheme_name_orig" => $_POST['scheme_name_orig'],
 					"DID" => $_POST['DID'],
@@ -430,25 +446,22 @@ class Superfecta implements \BMO {
 			case "update_sources":
 				$sources = isset($_REQUEST['data'])?implode(",", $_REQUEST['data']):'';
 				$sql = "REPLACE INTO superfectaconfig (value, source, field) VALUES(?, ?, 'sources')";
-				$sth = $this->db->prepare($sql);
+				$sth = $this->FreePBX->Database->prepare($sql);
 				$sth->execute(array($sources, 'base_'.$_REQUEST['scheme']));
 				return array("success" => true);
-			break;
 			case "power":
 				$data = preg_replace('/^scheme_/i', '', $_REQUEST['scheme']);
 				$sql = "UPDATE superfectaconfig SET value = (value * -1) WHERE field = 'order' AND source = ?";
-				$sth = $this->db->prepare($sql);
+				$sth = $this->FreePBX->Database->prepare($sql);
 				$sth->execute(array('base_'.$data));
 				return array("status" => true);
-			break;
 			case "delete":
 				$sql = "DELETE FROM superfectaconfig WHERE source LIKE ?";
-				$sth = $this->db->prepare($sql);
+				$sth = $this->FreePBX->Database->prepare($sql);
 				$sth->execute(array('base_'.$_REQUEST['scheme']));
 				$sth->execute(array('base_'.$_REQUEST['scheme'].'\_%'));
 				$this->reorderSchemes();
 				return array("status" => true);
-			break;
 			case "save_options":
 				include(__DIR__."/includes/superfecta_base.php");
 				$path = __DIR__;
@@ -462,23 +475,22 @@ class Superfecta implements \BMO {
 				$scheme = $_REQUEST['scheme'];
 				$source = $_REQUEST['source'];
 				$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES (?, ?, ?)";
-				$sth = $this->db->prepare($sql);
+				$sth = $this->FreePBX->Database->prepare($sql);
 				foreach($params as $key => $data) {
-                                        if (strcmp($data['type'], 'internal') != 0) {
-					        $sth->execute(array($scheme . "_" . $source, $key, $_POST[$key]));
-                                        }
+										if (strcmp($data['type'], 'internal') != 0) {
+							$sth->execute(array($scheme . "_" . $source, $key, $_POST[$key]));
+										}
 				}
 				return array("status" => true);
-			break;
 			case "options":
 				include(__DIR__."/includes/superfecta_base.php");
 				$scheme = $_REQUEST['scheme'];
 				$source = $_REQUEST['source'];
 
 				$sql = "SELECT field, value FROM superfectaconfig WHERE source = ?";
-				$sth = $this->db->prepare($sql);
+				$sth = $this->FreePBX->Database->prepare($sql);
 				$sth->execute(array($scheme . "_" . $source));
-				$n_settings = $sth->fetchAll(\PDO::FETCH_KEY_PAIR);
+				$n_settings = $sth->fetchAll(PDO::FETCH_KEY_PAIR);
 
 				$path = __DIR__;
 
@@ -492,7 +504,6 @@ class Superfecta implements \BMO {
 				$form_html = '<form id="form_options_'.$_REQUEST['source'].'" action="ajax.php?module=superfecta&command=save_options&scheme='.urlencode($scheme).'&source='.$source.'" method="post">';
 				foreach($params as $key => $data) {
 					$form_html .= '<div class="form-group">';
-					$show = TRUE;
 					$default = isset($data['default']) ? $data['default'] : '';
 					switch($data['type']) {
 						case "text":
@@ -545,24 +556,25 @@ class Superfecta implements \BMO {
 							}
 							$form_html .= "</select>";
 						break;
+						default:
+						break;
 					}
 					$form_html .= '</div>';
 				}
 
 				return array("status" => true, "title" => str_replace('_', ' ', $_REQUEST['source']), "html" => $form_html);
-			break;
 		}
 	}
 
 	public function reorderSchemes() {
 		$sql = "SELECT * FROM superfectaconfig WHERE field = 'order' ORDER BY CONVERT(value, SIGNED INTEGER)";
 		$start = 1;
-		$sth = $this->db->prepare($sql);
+		$sth = $this->FreePBX->Database->prepare($sql);
 		$sth->execute();
-		$results = $sth->fetchAll(\PDO::FETCH_ASSOC);
+		$results = $sth->fetchAll(PDO::FETCH_ASSOC);
 		foreach($results as $result) {
 			$sql = "UPDATE superfectaconfig SET value = ? WHERE source = ? AND field = 'order'";
-			$sth = $this->db->prepare($sql);
+			$sth = $this->FreePBX->Database->prepare($sql);
 			$sth->execute(array($start*10, $result['source']));
 			$start++;
 		}
@@ -582,9 +594,9 @@ class Superfecta implements \BMO {
 
 	public function getAllSchemes() {
 		$sql = "SELECT source as scheme, value as powered FROM superfectaconfig WHERE source LIKE 'base\_%' AND field = 'order' ORDER BY ABS(CONVERT(value, SIGNED INTEGER))";
-		$sth = $this->db->prepare($sql);
+		$sth = $this->FreePBX->Database->prepare($sql);
 		$sth->execute();
-		$results = $sth->fetchAll(\PDO::FETCH_ASSOC);
+		$results = $sth->fetchAll(PDO::FETCH_ASSOC);
 
 		$i = 1;
 		$scheme_list = array();
@@ -592,10 +604,10 @@ class Superfecta implements \BMO {
 		foreach ($results as $data) {
 			$scheme_list[$i] = $data;
 			$scheme_list[$i]['name'] = substr($data['scheme'], 5);
-			$scheme_list[$i]['showdown'] = $i == $total ? FALSE : TRUE;
-			$scheme_list[$i]['showup'] = $i == 1 ? FALSE : TRUE;
-			$scheme_list[$i]['showdelete'] = TRUE;
-			$scheme_list[$i]['powered'] = $data['powered'] < 0 ? FALSE : TRUE;
+			$scheme_list[$i]['showdown'] = $i == $total;
+			$scheme_list[$i]['showup'] = $i == 1;
+			$scheme_list[$i]['showdelete'] = true;
+			$scheme_list[$i]['powered'] = $data['powered'] < 0;
 			$i++;
 		}
 		return $scheme_list;
@@ -621,12 +633,12 @@ class Superfecta implements \BMO {
 				return array("status" => false, "message" => _("You cannot rename a scheme the same thing as an existing scheme"));
 			} else {
 				$sql = "UPDATE superfectaconfig SET source = REPLACE(source, ?, ?) WHERE source LIKE ?";
-				$sth = $this->db->prepare($sql);
+				$sth = $this->FreePBX->Database->prepare($sql);
 				$sth->execute(array('base_'.$scheme, 'base_'.$data['scheme_name'], 'base_'.$scheme));
 				$sth->execute(array('base_'.$scheme.'_', 'base_'.$data['scheme_name'].'_', 'base_'.$scheme.'\_%'));
 
 				$sql = "UPDATE superfecta_to_incoming SET scheme = ? WHERE scheme = ?";
-				$sth = $this->db->prepare($sql);
+				$sth = $this->FreePBX->Database->prepare($sql);
 				$sth->execute(array('base_'.$data['scheme_name'], 'base_'.$scheme));
 
 				$scheme = 'base_'.$data['scheme_name'];
@@ -636,7 +648,7 @@ class Superfecta implements \BMO {
 		}
 
 		$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES(?,?,?)";
-		$sth = $this->db->prepare($sql);
+		$sth = $this->FreePBX->Database->prepare($sql);
 		$sth->execute(array($scheme,'spam_interceptor',(!empty($data['enable_interceptor']) && $data['enable_interceptor'] == 'Y' ? 'Y' : 'N')));
 		$sth->execute(array($scheme,'spam_destination',$data['destination']));
 		$sth->execute(array($scheme,'Prefix_URL',$data['Prefix_URL']));
@@ -659,9 +671,9 @@ class Superfecta implements \BMO {
 		$scheme = preg_replace('/^base_/','',$scheme);
 		//set some default values for creating a new scheme
 		$sql = "SELECT field, value FROM superfectaconfig WHERE source = ?";
-		$sth = $this->db->prepare($sql);
+		$sth = $this->FreePBX->Database->prepare($sql);
 		$sth->execute(array('base_'.$scheme));
-		$return = $sth->fetchAll(\PDO::FETCH_KEY_PAIR);
+		$return = $sth->fetchAll(PDO::FETCH_KEY_PAIR);
 
 		if(empty($return)) {
 			return false;
@@ -672,7 +684,7 @@ class Superfecta implements \BMO {
 				if(!isset($return[$key])) {
 					$return[$key] = $key;
 				} else {
-					$return[$key] = ($return[$key] == 'Y') ? true : false;
+					$return[$key] = ($return[$key] == 'Y');
 				}
 			} else {
 				$return[$key] = !isset($return[$key]) ? $value : $return[$key];
@@ -686,9 +698,9 @@ class Superfecta implements \BMO {
 
 	public function getSchemeAllModuleSettings($scheme) {
 		$sql = "SELECT source, field, value FROM superfectaconfig WHERE source LIKE ?";
-		$sth = $this->db->prepare($sql);
+		$sth = $this->FreePBX->Database->prepare($sql);
 		$sth->execute(array($scheme.'\_%'));
-		$results = $sth->fetchAll(\PDO::FETCH_ASSOC);
+		$results = $sth->fetchAll(PDO::FETCH_ASSOC);
 		$return = array();
 		foreach($results as $result) {
 			$result['source'] = preg_replace('/^'.$scheme.'_/i','',$result['source']);
@@ -702,9 +714,9 @@ class Superfecta implements \BMO {
 
 	public function getSchemeModuleSettings($scheme, $module) {
 		$sql = "SELECT source, field, value FROM superfectaconfig WHERE source LIKE ?";
-		$sth = $this->db->prepare($sql);
+		$sth = $this->FreePBX->Database->prepare($sql);
 		$sth->execute(array($scheme.'\_'.$module.'\_%'));
-		$results = $sth->fetchAll(\PDO::FETCH_ASSOC);
+		$results = $sth->fetchAll(PDO::FETCH_ASSOC);
 		$return = array();
 		foreach($results as $result) {
 			$result['source'] = preg_replace('/^'.$scheme.'_/i','',$result['source']);
@@ -736,5 +748,59 @@ class Superfecta implements \BMO {
 			break;
 		}
 		return $buttons;
+	}
+
+	public function didList($id = false){
+		$sql = "SELECT superfecta_to_incoming_id, a.extension extension, a.cidnum cidnum, pricid, scheme FROM superfecta_to_incoming a
+			INNER JOIN incoming b
+			ON a.extension = b.extension AND a.cidnum = b.cidnum
+		";
+		$vars = [];
+		if ($id !== false && ctype_digit($id)) {
+			$sql .= " WHERE superfecta_to_incoming_id = :id";
+			$vars = [':id' => $id];
+		}
+		$stmt = $this->FreePBX->Database->prepare($sql);
+		$stmt->execute($vars);
+		$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		return is_array($results) ? $results : array();
+	}
+	
+	public function dumpConfigs(){
+		return [
+			'configs' => $this->FreePBX->Database->query('SELECT * FROM superfectaconfig')->fetchAll(PDO::FETCH_ASSOC),
+			'cache' => $this->FreePBX->Database->query('SELECT * FROM superfectacache')->fetchAll(PDO::FETCH_ASSOC),
+			'incoming' => $this->FreePBX->Database->query('SELECT * FROM superfecta_to_incoming')->fetchAll(PDO::FETCH_ASSOC),
+			'mf' => $this->FreePBX->Database->query('SELECT * FROM superfecta_mf_child')->fetchAll(PDO::FETCH_ASSOC),
+			'mf_child' => $this->FreePBX->Database->query('SELECT * FROM superfecta_mf_child')->fetchAll(PDO::FETCH_ASSOC),
+		];
+	}
+	public function loadConfigs($configs){
+		foreach ($configs as $type => $data) {
+			$sql = false;
+			if($type === 'configs'){
+				$sql = "REPLACE INTO superfectaconfig (source, config, value) VALUES (:source, :config, :value)";
+			}
+			if($type === 'cache'){
+				$sql = "REPLACE INTO superfectacache (number, callerid, dateentered) VALUES (:number, :callerid, :dateentered)";
+			}
+			if($type === 'incoming'){
+				$sql = "REPLACE INTO superfeca_to_incoming (superfecta_to_incoming_id, extension, cidnum, scheme) VALUES (:superfecta_to_incoming_id, :extension, :cidnum, :scheme)";
+			}
+			if($type === 'mf'){
+				$sql = 'REPLACE INTO superfecta_mf (superfecta_mf_id, timestamp_start, timestamp_end, scheme, cidnum, extension, prefix, debug, winning_child_id, spam_child_id) 
+				VALUES (:superfecta_mf_id, :timestamp_start, :timestamp_end, :scheme, :cidnum, :extension, :prefix, :debug, :winning_child_id, :spam_child_id)';
+			}
+			if($type === 'mf_child'){
+				$sql = "REPLACE INTO superfecta_mf_child (superfecta_mf_child_id,  superfecta_mf_id,  priority,  source,  timestamp_start,  timestamp_cnam,  timestamp_end,  spam,  spam_text,  cnam,  cached,  debug_result,  error_result)
+				 VALUES (:superfecta_mf_child_id, :superfecta_mf_id, :priority, :source, :timestamp_start, :timestamp_cnam, :timestamp_end, :spam, :spam_text, :cnam, :cached, :debug_result, :error_result)";	
+			}
+		}
+		if($sql !== false){
+			$stmt = $this->FreePBX->Database->prepare($sql);
+			foreach ($data as $item) {
+				$stmt->execute($item);
+			}	
+		}
 	}
 }
