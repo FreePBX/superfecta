@@ -3,13 +3,13 @@
 # For licensing information, please see the file named LICENSE located in the module directory
 #
 # FreePBX language template for superfecta
-# Copyright (C) 2008-2017 Sangoma Technologies, Inc.
+# Copyright (C) 2008-2018 Sangoma Technologies, Inc.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-12-08 18:29-0500\n"
+"POT-Creation-Date: 2018-04-16 15:18-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -152,8 +152,8 @@ msgstr ""
 msgid "Enabled"
 msgstr ""
 
-#: includes/processors/superfecta_single.php:53
-#: includes/processors/superfecta_single.php:115
+#: includes/processors/superfecta_single.php:55
+#: includes/processors/superfecta_single.php:120
 msgid "Executing"
 msgstr ""
 

@@ -19,7 +19,7 @@ class superfecta_multi extends superfecta_base {
 	        $this->path_location = $options['path_location'];
 	        $this->multifecta_id = $options['multifecta_id'];
 	        $this->source = $options['source'];
-	        $this->trunk_info = $options['trunk_info'];  
+	        $this->trunk_info = $options['trunk_info'];
 	        //Check if we are a multifecta child, if so, get our variables from our child record
 	        $this->multi_type = $this->multifecta_id ? 'CHILD' : 'PARENT';
 
@@ -64,10 +64,10 @@ class superfecta_multi extends superfecta_base {
     }
 
     function run_parent() {
-	
+
 		global $db;
 		global $amp_conf;
-		
+
         // We are a multifecta parent
         $multifecta_start_time = $this->mctime_float();
         // Clean up multifecta records that are over 10 minutes old
@@ -82,11 +82,11 @@ class superfecta_multi extends superfecta_base {
 
         // Prepare for launching children.
         $query = "INSERT INTO superfecta_mf (
-				timestamp_start, 
-				scheme, 
-				cidnum, 
-				extension, 
-				prefix, 
+				timestamp_start,
+				scheme,
+				cidnum,
+				extension,
+				prefix,
 				debug
 			) VALUES (
 				" . $this->db->quoteSmart($multifecta_start_time) . ",
@@ -101,7 +101,7 @@ class superfecta_multi extends superfecta_base {
         if (DB::IsError($res2)) {
             $this->DebugDie("Unable to create parent record: " . $res2->getMessage());
         }
-        // (jkiel - 01/04/2011) Get id of the parent record 
+        // (jkiel - 01/04/2011) Get id of the parent record
         // (jkiel - 01/04/2011) [Insert complaints on Pear DB not supporting a last_insert_id method here]
         // (jkiel - 01/04/2011) What is the point of an abstraction layer when you are forced to bypass it?!?!?
 		// instead of complaining, just fix it
@@ -145,7 +145,7 @@ class superfecta_multi extends superfecta_base {
                 $trunk_info = base64_encode(serialize($this->trunk_info));
                 if ($this->isDebug()) {
                     $this->DebugPrint("Spawning child " . $superfecta_mf_child_id . ":" . $data);
-                    exec('/usr/bin/php '.$amp_conf['AMPWEBROOT'].'/admin/modules/superfecta/includes/callerid.php -s ' . $this->scheme_name . ' -d ' . $this->getDebug() . ' -m ' . $superfecta_mf_child_id . ' -t ' . $trunk_info . ' -r ' . $data . ' > log-' . $superfecta_mf_child_id . '.log 2>&1 &');                    
+                    exec('/usr/bin/php '.$amp_conf['AMPWEBROOT'].'/admin/modules/superfecta/includes/callerid.php -s ' . $this->scheme_name . ' -d ' . $this->getDebug() . ' -m ' . $superfecta_mf_child_id . ' -t ' . $trunk_info . ' -r ' . $data . ' > log-' . $superfecta_mf_child_id . '.log 2>&1 &');
                 } else {
                     exec('/usr/bin/php '.$amp_conf['AMPWEBROOT'].'/admin/modules/superfecta/includes/callerid.php -s ' . $this->scheme_name . ' -m ' . $superfecta_mf_child_id . ' -t ' . $trunk_info . ' -r ' . $data . ' > /dev/null 2>&1 &');
                 }
@@ -303,7 +303,9 @@ class superfecta_multi extends superfecta_base {
             $source_class->set_DB($this->db);
             $source_class->set_AsteriskManager($this->astman);
             $source_class->set_TrunkInfo($this->trunk_info);
-            
+
+						$run_param = $source_class->getRunParams($run_param);
+
             if (method_exists($source_class, 'get_caller_id')) {
                 $caller_id = $source_class->get_caller_id($this->trunk_info['callerid'], $run_param);
                 $this->setSpam($source_class->isSpam());
@@ -364,6 +366,7 @@ class superfecta_multi extends superfecta_base {
                 $source_class = NEW $source_name;
                 $source_class->set_DB($this->db);
                 $source_class->setDebug($this->isDebug());
+								$run_param = $source_class->getRunParams($run_param);
                 if (method_exists($source_class, 'post_processing')) {
                     $source_class->post_processing($this->isCacheFound(), NULL, $caller_id, $run_param, $this->trunk_info['callerid']);
                 } else {

@@ -66,11 +66,9 @@ class Who_Called extends superfecta_base {
 		$debug = $this->debug;
 
 		// username and password are optional, but it one is provided both must be
-		if($run_param['Username'] || $run_param['Password']) {
-			if(empty($run_param['Username']) || empty($run_param['Password'])) {
-				$this->DebugPrint("The whocalled username and password are optional, but if one is set, they both must be.");
-				return '';
-			}
+		if((!empty($run_param['Username']) && empty($run_param['Password'])) || (empty($run_param['Username']) && !empty($run_param['Password']))) {
+			$this->DebugPrint("The whocalled username and password are optional, but if one is set, they both must be.");
+			return '';
 		}
 
 		// Site is for NANP numbers only, trim to 10 digits, lookup will succeed with 11 digits, but return nothing
@@ -78,7 +76,7 @@ class Who_Called extends superfecta_base {
 
 
 		// Perform spam score lookup if enabled
-		if ($run_param['Spam_Scoring'])  {
+		if (!empty($run_param['Spam_Scoring']))  {
 			$this->DebugPrint("Searching Who Called for number of user reports ... ");
 			$url = "https://whocalled.us/do?action=getScore&name=" . $run_param['Username'] . "&pass=" . $run_param['Password'] . "&phoneNumber=$thenumber&days=". $run_param['Report_Age'];
 			$this->DebugPrint("SPAM URL: ".$url,3);

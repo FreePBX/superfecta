@@ -48,6 +48,13 @@ class GoogleContacts extends superfecta_base {
 
     function get_caller_id($thenumber, $run_param=array()) {
         $this->DebugPrint("Searching Google Contacts for number: {$thenumber}");
+        $paramlist = array('Client_ID','Client_Secret','Google_ID');
+        foreach($paramlist as $param){
+            if(!isset($run_param[$param])){
+                $this->DebugPrint("Run time parameter missing. Is this configured? Returning number as is");
+                return $thenumber;
+            }
+        }
 
         // Set up the auth manager for this person.
         $check = $this->googleAuthManager->configure(array('client_id'     => $run_param['Client_ID'],

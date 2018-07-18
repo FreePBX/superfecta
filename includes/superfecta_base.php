@@ -30,6 +30,25 @@ class superfecta_base {
 	protected $spam_count = 0;
 	public $debug_log = array(); //Send all log information here
 
+	function getRunParams($settings=array()) {
+		$final = array();
+		if(empty($this->source_param)) {
+			return $final;
+		}
+		foreach($this->source_param as $key => $values) {
+			if(isset($settings[$key])) {
+				$final[$key] = $settings[$key];
+			} else {
+				if(isset($values['default'])) {
+					$final[$key] = $values['default'];
+				} else {
+					$final[$key] = null;
+				}
+			}
+		}
+		return $final;
+	}
+
 	function isCLI() {
 		return $this->cli;
 	}
