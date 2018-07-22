@@ -17,12 +17,14 @@
  *     2014-02-09  First attempt to incorporate soif improvements in 2.11 branch by lgaetz
  *     2014-02-11  Bug fixes and cleanup
  *     2014-08-30  Fixed bug where pause checkbox setting was ignored
+ *     2018-04-21  Fixed bug with setting $my_dharma_params (reported by Jorge Martínez López)
+ *     2018-07-22  Add isset for $$run_param['Pause_PlayBack'] (reported by ffejtable)
  * 
  **** **** **** **** **** **** **** **** **** **** **** **** **** **** **** ****/
 
 class Send_to_XBMC extends superfecta_base {
 
-	public $description = "This source will send the CallerID number and CallerID name to XBMC hosts.";
+	public $description = "This source will send the CallerID number and CallerID name to Kodi (formerly XBMC) hosts.";
 	public $version_requirement = "2.11";
 	public $source_param = array(
 		'Hosts' => array(
@@ -196,17 +198,17 @@ class Send_to_XBMC extends superfecta_base {
 
 				//Send URLs and debug output
 				$this->DebugPrint("Sending XBMC command(s) To Host: $host",DEBUG_INFO);
-				if ($run_param['Change_Volume'] != ''){
+				if (isset($run_param['Change_Volume']) && $run_param['Change_Volume'] != ''){
 					$this->DebugPrint("Setting Volume on $host...",DEBUG_INFO);
 					$this->DebugPrint('<code>Volume URL: ' . $url1 . '</code>',DEBUG_ALL);
 					$value = $this->get_url_contents($url1);
 				}
-				if ($run_param['Pause_PlayBack']) {
+				if (isset($run_param['Pause_PlayBack'])) {
 					$this->DebugPrint("Pausing Media on $host...",DEBUG_INFO);
 					$this->DebugPrint('<code>Pause URL: ' . $url2 . '</code>',DEBUG_ALL);
 					$value = $this->get_url_contents($url2);
 				}
-				if ($run_param['Notification_Time'] ) {
+				if (isset($run_param['Notification_Time'])) {
 					$this->DebugPrint("Setting Notification Time to $host...",DEBUG_INFO);
 					$this->DebugPrint('<code>Notif URL: ' . $url3 . '</code>',DEBUG_ALL);
 					$value = $this->get_url_contents($url3);
