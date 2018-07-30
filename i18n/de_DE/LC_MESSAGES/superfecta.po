@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-12-08 18:29-0500\n"
-"PO-Revision-Date: 2018-07-18 19:12+0000\n"
+"PO-Revision-Date: 2018-07-31 15:00+0000\n"
 "Last-Translator: Bastian Mertgen <b.mertgen@bastian-mertgen.de>\n"
 "Language-Team: German <http://*/projects/freepbx/superfecta/de/>\n"
 "Language: de_DE\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2.19.1\n"
+"X-Generator: Weblate 3.0.1\n"
 
 #: functions.inc.php:50 views/scheme.php:143
 msgid "ALL"
@@ -80,7 +80,7 @@ msgstr "CNUM zu %s geändert"
 
 #: views/scheme.php:130
 msgid "DID Number"
-msgstr "DID-Nummer"
+msgstr "Durchwahlnummer"
 
 #: views/add_scheme.php:33 views/scheme.php:46
 msgid "DID Rules"
