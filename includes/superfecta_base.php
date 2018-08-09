@@ -506,7 +506,7 @@ class superfecta_base {
 	}
 
 	function _utf8_decode($string) {
-		$string = html_entity_decode($string);
+		$string = html_entity_decode($string, ENT_COMPAT, "ISO-8859-1");
 		$tmp = $string;
 		$count = 0;
 		while ($this->isutf8($tmp)) {
