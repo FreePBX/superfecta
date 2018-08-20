@@ -9,21 +9,20 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-04-16 15:01-0400\n"
-"PO-Revision-Date: 2018-02-16 20:01+0200\n"
-"Last-Translator: Nils <Nils@heckenkamp.info>\n"
-"Language-Team: German <http://weblate.freepbx.org/projects/freepbx/"
-"superfecta/de_DE/>\n"
+"POT-Creation-Date: 2017-12-08 18:29-0500\n"
+"PO-Revision-Date: 2018-07-31 15:00+0000\n"
+"Last-Translator: Bastian Mertgen <b.mertgen@bastian-mertgen.de>\n"
+"Language-Team: German <http://*/projects/freepbx/superfecta/de/>\n"
 "Language: de_DE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2.4\n"
+"X-Generator: Weblate 3.0.1\n"
 
 #: functions.inc.php:50 views/scheme.php:143
 msgid "ALL"
-msgstr ""
+msgstr "ALLE"
 
 #: views/main.php:25
 msgid "Actions"
@@ -35,7 +34,7 @@ msgstr ""
 
 #: page.superfecta.php:190
 msgid "Add Scheme"
-msgstr ""
+msgstr "Schema hinzufügen"
 
 #: views/scheme.php:7
 msgid ""
@@ -45,7 +44,7 @@ msgstr ""
 
 #: superfecta.i18n.php:6
 msgid "Admin"
-msgstr "Administrator"
+msgstr "Admin"
 
 #: views/add_scheme.php:149 views/scheme.php:89
 msgid "CID Prefix URL"
@@ -53,11 +52,11 @@ msgstr ""
 
 #: views/add_scheme.php:53 views/scheme.php:50
 msgid "CID Rules"
-msgstr ""
+msgstr "CID-Regeln"
 
 #: superfecta.i18n.php:4 superfecta.i18n.php:10
 msgid "CID Superfecta"
-msgstr ""
+msgstr "CID-Superfecta"
 
 #: Superfecta.class.php:231
 #, php-format
@@ -66,7 +65,7 @@ msgstr ""
 
 #: views/header.php:16
 msgid "Caller ID Superfecta"
-msgstr ""
+msgstr "Anrufer-ID-Superfecta"
 
 #: views/main.php:8
 msgid ""
@@ -77,15 +76,15 @@ msgstr ""
 #: Superfecta.class.php:155
 #, php-format
 msgid "Changed CNUM to: %s"
-msgstr ""
+msgstr "CNUM zu %s geändert"
 
 #: views/scheme.php:130
 msgid "DID Number"
-msgstr ""
+msgstr "Durchwahlnummer"
 
 #: views/add_scheme.php:33 views/scheme.php:46
 msgid "DID Rules"
-msgstr ""
+msgstr "DID-Regeln"
 
 #: views/scheme.php:16
 msgid "Data Source Name"
@@ -113,11 +112,11 @@ msgstr ""
 
 #: views/add_scheme.php:1
 msgid "Define Settings for a new Scheme"
-msgstr ""
+msgstr "Legen Sie die Einstellungen für ein neues Schema fest"
 
 #: views/add_scheme.php:23
 msgid "Define a new name for this scheme"
-msgstr ""
+msgstr "Legen Sie einen neuen Namen für dieses Schema fest"
 
 #: views/add_scheme.php:43 views/scheme.php:46
 msgid ""
@@ -133,7 +132,7 @@ msgstr "Beschreibung"
 
 #: views/scheme.php:38
 msgid "Edit Scheme"
-msgstr ""
+msgstr "Schema bearbeiten"
 
 #: views/add_scheme.php:216 views/scheme.php:107
 msgid "Enable SPAM Interception"
@@ -147,8 +146,8 @@ msgstr ""
 msgid "Enabled"
 msgstr "Aktiviert"
 
-#: includes/processors/superfecta_single.php:55
-#: includes/processors/superfecta_single.php:120
+#: includes/processors/superfecta_single.php:53
+#: includes/processors/superfecta_single.php:115
 msgid "Executing"
 msgstr ""
 
@@ -178,23 +177,22 @@ msgid ""
 "prefix) will not make any changes but will create a match. Only the first "
 "matched pattern will be executed and the remaining rules will not be acted "
 "on.<br /><br /><b>Rules:</b><br />\n"
-"\t\t\t\t\t\t\t<strong>X</strong>&nbsp;&nbsp;&nbsp; matches any digit from "
-"0-9<br />\n"
-"\t\t\t\t\t\t\t<strong>Z</strong>&nbsp;&nbsp;&nbsp; matches any digit from "
-"1-9<br />\n"
-"\t\t\t\t\t\t\t<strong>N</strong>&nbsp;&nbsp;&nbsp; matches any digit from "
-"2-9<br />\n"
+"\t\t\t\t\t\t\t<strong>X</strong>&nbsp;&nbsp;&nbsp; matches any digit from 0-"
+"9<br />\n"
+"\t\t\t\t\t\t\t<strong>Z</strong>&nbsp;&nbsp;&nbsp; matches any digit from 1-"
+"9<br />\n"
+"\t\t\t\t\t\t\t<strong>N</strong>&nbsp;&nbsp;&nbsp; matches any digit from 2-"
+"9<br />\n"
 "\t\t\t\t\t\t\t<strong>[1237-9]</strong>&nbsp;   matches any digit or letter "
 "in the brackets (in this example, 1,2,3,7,8,9)<br />\n"
 "\t\t\t\t\t\t\t<strong>.</strong>&nbsp;&nbsp;&nbsp; wildcard, matches one or "
 "more characters (not allowed before a | or +)<br />\n"
 "\t\t\t\t\t\t\t<strong>|</strong>&nbsp;&nbsp;&nbsp; removes a dialing prefix "
 "from the number (for example, 613|NXXXXXX would match when some one dialed "
-"\"6135551234\" but would only pass \"5551234\" to the Superfecta look "
-"up.)<br><strong>+</strong>&nbsp;&nbsp;&nbsp; adds a dialing prefix to the "
-"number (for example, 1613+NXXXXXX would match when someone dialed "
-"\"5551234\" and would pass \"16135551234\" to the Superfecta look up.)<br /"
-"><br />\n"
+"\"6135551234\" but would only pass \"5551234\" to the Superfecta look up.)"
+"<br><strong>+</strong>&nbsp;&nbsp;&nbsp; adds a dialing prefix to the number "
+"(for example, 1613+NXXXXXX would match when someone dialed \"5551234\" and "
+"would pass \"16135551234\" to the Superfecta look up.)<br /><br />\n"
 "\t\t\t\t\t\t\tYou can also use both + and |, for example: 01+0|1ZXXXXXXXXX "
 "would match \"016065551234\" and dial it as \"0116065551234\" Note that the "
 "order does not matter, eg. 0|01+1ZXXXXXXXXX does the same thing."
@@ -225,11 +223,10 @@ msgid ""
 "characters (not allowed before a | or +)<br />\n"
 "\t\t\t\t<strong>|</strong>&nbsp;&nbsp;&nbsp; removes a dialing prefix from "
 "the number (for example, 613|NXXXXXX would match when some one dialed "
-"\"6135551234\" but would only pass \"5551234\" to the Superfecta look "
-"up.)<br><strong>+</strong>&nbsp;&nbsp;&nbsp; adds a dialing prefix to the "
-"number (for example, 1613+NXXXXXX would match when someone dialed "
-"\"5551234\" and would pass \"16135551234\" to the Superfecta look up.)<br /"
-"><br />\n"
+"\"6135551234\" but would only pass \"5551234\" to the Superfecta look up.)"
+"<br><strong>+</strong>&nbsp;&nbsp;&nbsp; adds a dialing prefix to the number "
+"(for example, 1613+NXXXXXX would match when someone dialed \"5551234\" and "
+"would pass \"16135551234\" to the Superfecta look up.)<br /><br />\n"
 "\t\t\t\tYou can also use both + and |, for example: 01+0|1ZXXXXXXXXX would "
 "match \"016065551234\" and dial it as \"0116065551234\" Note that the order "
 "does not matter, eg. 0|01+1ZXXXXXXXXX does the same thing."
@@ -237,7 +234,7 @@ msgstr ""
 
 #: page.superfecta.php:191
 msgid "List Schemes"
-msgstr ""
+msgstr "Schemata auflisten"
 
 #: views/add_scheme.php:82 views/scheme.php:65
 msgid "Lookup Timeout"
@@ -276,7 +273,7 @@ msgstr "Nein"
 
 #: Superfecta.class.php:242
 msgid "No callerid found"
-msgstr ""
+msgstr "Keine Anrufer-ID gefunden"
 
 #: Superfecta.class.php:157
 msgid "No matching CID rules. Skipping scheme"
@@ -288,11 +285,11 @@ msgstr ""
 
 #: views/main.php:23
 msgid "Order"
-msgstr ""
+msgstr "Reihenfolge"
 
 #: views/scheme.php:134
 msgid "Phone Number"
-msgstr ""
+msgstr "Telefonnummer"
 
 #: views/scheme.php:134
 msgid "Phone number to test this scheme against"
@@ -324,7 +321,7 @@ msgstr "Zurücksetzen"
 
 #: Superfecta.class.php:324
 msgid "Returned Result would be:"
-msgstr ""
+msgstr "Das zurückgelieferte Ergebnis wäre:"
 
 #: views/add_scheme.php:244 views/scheme.php:118
 msgid "SPAM Send Threshold"
@@ -332,11 +329,11 @@ msgstr ""
 
 #: views/add_scheme.php:169 views/scheme.php:93
 msgid "SPAM Text"
-msgstr ""
+msgstr "SPAM-Text"
 
 #: views/add_scheme.php:189 views/scheme.php:97
 msgid "SPAM Text Substituted"
-msgstr ""
+msgstr "SPAM-Text ersetzt"
 
 #: Superfecta.class.php:82
 #, php-format
@@ -362,7 +359,7 @@ msgstr ""
 
 #: Superfecta.class.php:606
 msgid "Scheme can not be empty!"
-msgstr ""
+msgstr "Schema kann nicht leer sein!"
 
 #: Superfecta.class.php:397
 msgid "Scheme names cannot be blank"
@@ -412,7 +409,7 @@ msgstr ""
 #: Superfecta.class.php:112
 #, php-format
 msgid "Starting scheme %s"
-msgstr ""
+msgstr "Starte Schema %s"
 
 #: Superfecta.class.php:733
 msgid "Submit"
@@ -451,7 +448,7 @@ msgstr ""
 
 #: Superfecta.class.php:311
 msgid "The Scheme:"
-msgstr ""
+msgstr "Das Schema:"
 
 #: views/add_scheme.php:116 views/scheme.php:71
 msgid "These are the types of Superfecta Processors"
@@ -459,7 +456,7 @@ msgstr ""
 
 #: views/footer.php:4
 msgid "This Module's wiki pages can be found here."
-msgstr ""
+msgstr "Die Wiki-Seiten dieses Moduls finden Sie hier."
 
 #: views/footer.php:2
 #, php-format
@@ -485,7 +482,7 @@ msgstr ""
 
 #: page.superfecta.php:152
 msgid "Unknown Scheme"
-msgstr ""
+msgstr "Unbekanntes Schema"
 
 #: views/scheme.php:142
 msgid "WARN"
@@ -517,6 +514,7 @@ msgstr "Ja"
 #: Superfecta.class.php:610
 msgid "You cannot create a scheme the same name as an existing scheme"
 msgstr ""
+"Sie können kein Schema erzeugen, das denselben Namen hat wie ein bestehendes"
 
 #: Superfecta.class.php:621
 msgid "You cannot rename a scheme the same thing as an existing scheme"
@@ -524,13 +522,13 @@ msgstr ""
 
 #: views/scheme.php:103 views/scheme.php:113
 msgid "no"
-msgstr ""
+msgstr "nein"
 
 #: Superfecta.class.php:325
 #, php-format
 msgid "result took %s seconds"
-msgstr ""
+msgstr "Ergebnis benötigte %s Sekunden"
 
 #: views/scheme.php:101 views/scheme.php:111
 msgid "yes"
-msgstr ""
+msgstr "ja"
