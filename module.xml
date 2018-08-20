@@ -2,7 +2,7 @@
 	<rawname>superfecta</rawname>
 	<repo>extended</repo>
 	<name>CID Superfecta</name>
-	<version>15.0.1</version>
+	<version>15.0.2</version>
 	<type>setup</type>
 	<category>Admin</category>
 	<publisher>Sangoma Technologies Corporation</publisher>
@@ -12,6 +12,7 @@
 		Provides simultaneous use of, and complete control over multiple caller id data sources.
 	</description>
 	<changelog>
+		*15.0.2* Packaging of ver 15.0.2
 		*15.0.1* Backup and Restore 15.0
 	</changelog>
 	<menuitems>
@@ -19,59 +20,59 @@
 	</menuitems>
 	<database>
 		<table name="superfectaconfig">
-			<field name="source" type="string" length="150" primarykey="true" />
-			<field name="field" type="string" length="150" primarykey="true" />
-			<field name="value" type="text" notnull="false" />
+			<field name="source" type="string" length="150" primarykey="true"/>
+			<field name="field" type="string" length="150" primarykey="true"/>
+			<field name="value" type="text" notnull="false"/>
 		</table>
 		<table name="superfectacache">
-			<field name="number" type="bigint" unsigned="true" primarykey="true" />
-			<field name="callerid" type="string" length="45" />
-			<field name="dateentered" type="datetime" />
+			<field name="number" type="bigint" unsigned="true" primarykey="true"/>
+			<field name="callerid" type="string" length="45"/>
+			<field name="dateentered" type="datetime"/>
 		</table>
 		<table name="superfecta_to_incoming">
-			<field name="superfecta_to_incoming_id" type="bigint" primarykey="true" autoincrement="true" />
-			<field name="extension" type="string" length="50" notnull="false" />
-			<field name="cidnum" type="string" length="50" notnull="false" />
-			<field name="scheme" type="string" length="50" />
+			<field name="superfecta_to_incoming_id" type="bigint" primarykey="true" autoincrement="true"/>
+			<field name="extension" type="string" length="50" notnull="false"/>
+			<field name="cidnum" type="string" length="50" notnull="false"/>
+			<field name="scheme" type="string" length="50"/>
 			<key name="extn" type="unique">
-				<column name="extension" />
-				<column name="cidnum" />
+				<column name="extension"/>
+				<column name="cidnum"/>
 			</key>
 		</table>
 		<table name="superfecta_mf_child">
-			<field name="superfecta_mf_child_id" type="bigint" primarykey="true" autoincrement="true" />
-			<field name="superfecta_mf_id" type="bigint" notnull="false" />
-			<field name="priority" type="integer" notnull="false" />
-			<field name="source" type="string" length="128" notnull="false" />
-			<field name="timestamp_start" type="float" notnull="false" />
-			<field name="timestamp_cnam" type="float" notnull="false" />
-			<field name="timestamp_end" type="float" notnull="false" />
-			<field name="spam" type="integer" notnull="false" />
-			<field name="spam_text" type="string" length="64" notnull="false" />
-			<field name="cnam" type="string" length="128" notnull="false" />
-			<field name="cached" type="boolean" notnull="false" />
-			<field name="debug_result" type="text" notnull="false" />
-			<field name="error_result" type="text" notnull="false" />
+			<field name="superfecta_mf_child_id" type="bigint" primarykey="true" autoincrement="true"/>
+			<field name="superfecta_mf_id" type="bigint" notnull="false"/>
+			<field name="priority" type="integer" notnull="false"/>
+			<field name="source" type="string" length="128" notnull="false"/>
+			<field name="timestamp_start" type="float" notnull="false"/>
+			<field name="timestamp_cnam" type="float" notnull="false"/>
+			<field name="timestamp_end" type="float" notnull="false"/>
+			<field name="spam" type="integer" notnull="false"/>
+			<field name="spam_text" type="string" length="64" notnull="false"/>
+			<field name="cnam" type="string" length="128" notnull="false"/>
+			<field name="cached" type="boolean" notnull="false"/>
+			<field name="debug_result" type="text" notnull="false"/>
+			<field name="error_result" type="text" notnull="false"/>
 			<key name="start_time" type="index">
-				<column name="timestamp_start" />
+				<column name="timestamp_start"/>
 			</key>
 			<key name="superfecta_mf_id" type="index">
-				<column name="superfecta_mf_id" />
+				<column name="superfecta_mf_id"/>
 			</key>
 		</table>
 		<table name="superfecta_mf">
-			<field name="superfecta_mf_id" type="bigint" primarykey="true" autoincrement="true" />
-			<field name="timestamp_start" type="float" notnull="false" />
-			<field name="timestamp_end" type="float" notnull="false" />
-			<field name="scheme" type="string" length="64" notnull="false" />
-			<field name="cidnum" type="string" length="50" notnull="false" />
-			<field name="extension" type="string" length="50" notnull="false" />
-			<field name="prefix" type="string" length="50" notnull="false" />
-			<field name="debug" type="boolean" notnull="false" />
-			<field name="winning_child_id" type="bigint" notnull="false" />
-			<field name="spam_child_id" type="bigint" notnull="false" />
+			<field name="superfecta_mf_id" type="bigint" primarykey="true" autoincrement="true"/>
+			<field name="timestamp_start" type="float" notnull="false"/>
+			<field name="timestamp_end" type="float" notnull="false"/>
+			<field name="scheme" type="string" length="64" notnull="false"/>
+			<field name="cidnum" type="string" length="50" notnull="false"/>
+			<field name="extension" type="string" length="50" notnull="false"/>
+			<field name="prefix" type="string" length="50" notnull="false"/>
+			<field name="debug" type="boolean" notnull="false"/>
+			<field name="winning_child_id" type="bigint" notnull="false"/>
+			<field name="spam_child_id" type="bigint" notnull="false"/>
 			<key name="start_time" type="index">
-				<column name="timestamp_start" />
+				<column name="timestamp_start"/>
 			</key>
 		</table>
 	</database>

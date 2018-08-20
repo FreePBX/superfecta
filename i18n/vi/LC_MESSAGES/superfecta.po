@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-04-16 15:01-0400\n"
+"POT-Creation-Date: 2018-08-20 14:27-0400\n"
 "PO-Revision-Date: 2017-08-03 10:42+0200\n"
 "Last-Translator: PETER <ftek@ymail.com>\n"
 "Language-Team: Vietnamese <http://weblate.freepbx.org/projects/freepbx/"
@@ -61,7 +61,7 @@ msgstr "Nguyên tắc của CID"
 msgid "CID Superfecta"
 msgstr "CID Superfecta ( Claler ID Superfecta)"
 
-#: Superfecta.class.php:231
+#: Superfecta.class.php:249
 #, php-format
 msgid "Call detected as spam, would send call to: %s"
 msgstr "Các cuộc gọi được phát hiện là cuộc gọi spam, sẽ được gửi tới: %s"
@@ -79,7 +79,7 @@ msgstr ""
 "tên CallerID trên hệ thống Asterisk của bạn bằng cách sử dụng nhiều nguồn dữ "
 "liệu"
 
-#: Superfecta.class.php:155
+#: Superfecta.class.php:173
 #, php-format
 msgid "Changed CNUM to: %s"
 msgstr "CNUM được thay đổi thành: %s"
@@ -104,7 +104,7 @@ msgstr "Cấp độ gỡ lỗi (Debug Level)"
 msgid "Debug Level to display"
 msgstr "Debug Level để hiển thị"
 
-#: Superfecta.class.php:309
+#: Superfecta.class.php:328
 msgid "Debug is on and set at level:"
 msgstr "Debug đang bật và cài đặt tại cấp độ:"
 
@@ -112,7 +112,7 @@ msgstr "Debug đang bật và cài đặt tại cấp độ:"
 msgid "Debug/Test Run Scheme"
 msgstr "Biểu đồ Debug/ Chạy thử nghiệm"
 
-#: Superfecta.class.php:313
+#: Superfecta.class.php:332
 msgid "Debugging Enabled, will not stop after first result"
 msgstr ""
 "Đã kích hoạt tính năng gỡ lỗi, và nó sẽ không dừng sau khi có được kết quả "
@@ -313,12 +313,12 @@ msgstr "Danh sách các lược đồ"
 msgid "Lookup Timeout"
 msgstr "Tra cứu thời gian chờ (Timeout)"
 
-#: Superfecta.class.php:153
+#: Superfecta.class.php:171
 #, php-format
 msgid "Matched CID Rule: %s with %s"
 msgstr "Rule CID đã tương khớp: %s với %s"
 
-#: Superfecta.class.php:144
+#: Superfecta.class.php:162
 #, php-format
 msgid "Matched DID Rule: %s with %s"
 msgstr "Rule DID đã tương khớp: %s với %s"
@@ -339,20 +339,20 @@ msgstr "Tên"
 msgid "New Scheme Name"
 msgstr "Tên của lược đồ mới"
 
-#: Superfecta.class.php:522 functions.inc.php:29 views/add_scheme.php:197
+#: Superfecta.class.php:532 functions.inc.php:29 views/add_scheme.php:197
 #: views/add_scheme.php:224 views/scheme.php:32
 msgid "No"
 msgstr "Không"
 
-#: Superfecta.class.php:242
+#: Superfecta.class.php:260
 msgid "No callerid found"
 msgstr "Không tìm thấy callerid nào"
 
-#: Superfecta.class.php:157
+#: Superfecta.class.php:175
 msgid "No matching CID rules. Skipping scheme"
 msgstr "Không có rule CID nào tương khớp. Bỏ qua lược đồ"
 
-#: Superfecta.class.php:146
+#: Superfecta.class.php:164
 msgid "No matching DID rules. Skipping scheme"
 msgstr "Không có rule CID nào tương khớp. Bỏ qua lược đồ"
 
@@ -368,16 +368,16 @@ msgstr "Số điện thoại"
 msgid "Phone number to test this scheme against"
 msgstr "Số điện thoại để kiểm tra lược đồ này"
 
-#: Superfecta.class.php:170
+#: Superfecta.class.php:188
 #, php-format
 msgid "Prefix Url defined as: %s"
 msgstr "Tiên tố Url được xác định là: %s"
 
-#: Superfecta.class.php:172
+#: Superfecta.class.php:190
 msgid "Prefix Url defined but result was empty"
 msgstr "Thêm tiền tố cho Url được xác định như kết quả trống"
 
-#: Superfecta.class.php:174
+#: Superfecta.class.php:192
 #, php-format
 msgid "Prefix Url result took %s seconds."
 msgstr "Thêm tiền tố cho kết quả Url mất %s giây."
@@ -389,11 +389,11 @@ msgid ""
 msgstr ""
 "Cung cấp sử dụng động thời, và điều khiển toàn bộ nguồn dữ liệu Caller id."
 
-#: Superfecta.class.php:728
+#: Superfecta.class.php:739
 msgid "Reset"
 msgstr "Cài đặt lại"
 
-#: Superfecta.class.php:324
+#: Superfecta.class.php:343
 msgid "Returned Result would be:"
 msgstr "Kết quả được trả lại là:"
 
@@ -409,7 +409,7 @@ msgstr "Đoạn văn bản SPAM"
 msgid "SPAM Text Substituted"
 msgstr "Đoạn văn bản SPAM thay thế"
 
-#: Superfecta.class.php:82
+#: Superfecta.class.php:100
 #, php-format
 msgid "Scheme Asked is: %s"
 msgstr "Lược đồ được yêu cầu là: %s"
@@ -427,15 +427,15 @@ msgstr "Tên lược đồ không được để trống!"
 msgid "Scheme Name: %s"
 msgstr "Tên lược đồ: %s"
 
-#: Superfecta.class.php:312
+#: Superfecta.class.php:331
 msgid "Scheme Type:"
 msgstr "Kiểu lược đồ:"
 
-#: Superfecta.class.php:606
+#: Superfecta.class.php:617
 msgid "Scheme can not be empty!"
 msgstr "Lược đồ không được để trống!"
 
-#: Superfecta.class.php:397
+#: Superfecta.class.php:412
 msgid "Scheme names cannot be blank"
 msgstr "Tên của lược đồ không được để trống"
 
@@ -451,7 +451,7 @@ msgstr ""
 msgid "Send Spam Call To"
 msgstr "Gửi cuộc gọi Spam tới"
 
-#: Superfecta.class.php:236
+#: Superfecta.class.php:254
 #, php-format
 msgid "Setting caller id to: %s"
 msgstr "Cài đặt caller id về: %s"
@@ -464,7 +464,7 @@ msgstr "Thiết lâp các lược đồ ( Schemes) trong phần CID Superfecta"
 msgid "Sources can be added/removed in CID Superfecta section"
 msgstr "Các nguồn có thể được thêm/ lược bỏ trong phần CID Superfecta"
 
-#: Superfecta.class.php:228
+#: Superfecta.class.php:246
 #, php-format
 msgid "Spam Call, Sending call to: %s"
 msgstr "Cuộc gọi Spam, gửi cuộc gọi tới: %s"
@@ -487,12 +487,12 @@ msgstr ""
 "Chỉ định thời gian chờ tính bừng giây cho mỗi nguồn. Nếu nguồn không thể trả "
 "lại một kết quả trong vòng thời gian được chỉ định, kịch bản sẽ tiếp tục."
 
-#: Superfecta.class.php:112
+#: Superfecta.class.php:130
 #, php-format
 msgid "Starting scheme %s"
 msgstr "Đang khởi động lược đồ %s"
 
-#: Superfecta.class.php:733
+#: Superfecta.class.php:744
 msgid "Submit"
 msgstr "Gửi đi"
 
@@ -504,17 +504,17 @@ msgstr "Bộ xử lý Superfecta"
 msgid "Superfecta Scheme"
 msgstr "Lược đồ Superfecta"
 
-#: Superfecta.class.php:85
+#: Superfecta.class.php:103
 #, php-format
 msgid "The CNAME is: %s"
 msgstr "CNAME là: %s"
 
-#: Superfecta.class.php:84
+#: Superfecta.class.php:102
 #, php-format
 msgid "The CNUM is: %s"
 msgstr "CNUM là: %s"
 
-#: Superfecta.class.php:83
+#: Superfecta.class.php:101
 #, php-format
 msgid "The DID is: %s"
 msgstr "DID là: %s"
@@ -523,11 +523,11 @@ msgstr "DID là: %s"
 msgid "The DID to test this scheme against"
 msgstr "DID để kiểm tra lược đồ này"
 
-#: Superfecta.class.php:310
+#: Superfecta.class.php:329
 msgid "The Original Number:"
 msgstr "Số điện thoại gốc:"
 
-#: Superfecta.class.php:311
+#: Superfecta.class.php:330
 msgid "The Scheme:"
 msgstr "Lược đồ:"
 
@@ -552,7 +552,7 @@ msgid ""
 "This is the threshold to send the call to the specified destination below"
 msgstr "Đây là ngưỡng để gửi cuộc gọi tới điểm đích được chỉ định dưới đây"
 
-#: Superfecta.class.php:239
+#: Superfecta.class.php:257
 #, php-format
 msgid "This scheme would set the caller id to: %s"
 msgstr "Lược đồ này sẽ cài đặt caller Id là; %s"
@@ -594,16 +594,16 @@ msgstr ""
 msgid "Where to send the call when it is detected as spam"
 msgstr "Nơi để gửi cuộc gọi đến đó khi cuộc gọi này bị phát hiện là Spam"
 
-#: Superfecta.class.php:520 functions.inc.php:27 views/add_scheme.php:195
+#: Superfecta.class.php:530 functions.inc.php:27 views/add_scheme.php:195
 #: views/add_scheme.php:222 views/scheme.php:30
 msgid "Yes"
 msgstr "Có"
 
-#: Superfecta.class.php:610
+#: Superfecta.class.php:621
 msgid "You cannot create a scheme the same name as an existing scheme"
 msgstr "Bạn không thể tạo một lược đồ có cùng ten với lược đồ hiện có"
 
-#: Superfecta.class.php:621
+#: Superfecta.class.php:632
 msgid "You cannot rename a scheme the same thing as an existing scheme"
 msgstr "Bạn không thể đổi tên một lược đồ cùng tên với lược đồ hiện có"
 
@@ -611,7 +611,7 @@ msgstr "Bạn không thể đổi tên một lược đồ cùng tên với lư�
 msgid "no"
 msgstr "không"
 
-#: Superfecta.class.php:325
+#: Superfecta.class.php:344
 #, php-format
 msgid "result took %s seconds"
 msgstr "Kết quả sẽ mất %s giây"
