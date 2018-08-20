@@ -13,7 +13,7 @@ class Restore Extends Base\RestoreBase{
     }
     $bmo = $this->FreePBX->Superfecta;
     $bmo->setDatabase($pdo);
-    $configs = $bmo->dumpConfigs()
+    $configs = $bmo->dumpConfigs();
     $bmo->resetDatabase();
     $bmo->loadConfigs($configs);
     return $this;
