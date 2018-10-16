@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-12-08 18:29-0500\n"
-"PO-Revision-Date: 2018-08-25 15:00+0000\n"
+"PO-Revision-Date: 2018-10-17 15:00+0000\n"
 "Last-Translator: Bastian Mertgen <b.mertgen@bastian-mertgen.de>\n"
 "Language-Team: German <http://*/projects/freepbx/superfecta/de/>\n"
 "Language: de_DE\n"
@@ -61,7 +61,7 @@ msgstr "CID-Superfecta"
 #: Superfecta.class.php:231
 #, php-format
 msgid "Call detected as spam, would send call to: %s"
-msgstr ""
+msgstr "Anruf als Spam erkannt, würde den Anruf nach %s verbinden"
 
 #: views/header.php:16
 msgid "Caller ID Superfecta"
@@ -153,7 +153,7 @@ msgstr ""
 
 #: views/scheme.php:141
 msgid "INFO"
-msgstr ""
+msgstr "INFO"
 
 #: views/add_scheme.php:159 views/scheme.php:89
 msgid ""
@@ -342,20 +342,20 @@ msgstr ""
 
 #: views/scheme.php:42
 msgid "Scheme Name"
-msgstr ""
+msgstr "Schemaname"
 
 #: assets/js/superfecta.js:205
 msgid "Scheme Name can not be blank!"
-msgstr ""
+msgstr "Der Schemaname kann nicht leer sein!"
 
 #: views/scheme.php:4
 #, php-format
 msgid "Scheme Name: %s"
-msgstr ""
+msgstr "Schemaname: %s"
 
 #: Superfecta.class.php:312
 msgid "Scheme Type:"
-msgstr ""
+msgstr "Schematyp:"
 
 #: Superfecta.class.php:606
 msgid "Scheme can not be empty!"
@@ -363,7 +363,7 @@ msgstr "Schema kann nicht leer sein!"
 
 #: Superfecta.class.php:397
 msgid "Scheme names cannot be blank"
-msgstr ""
+msgstr "Schemanamen können nicht leer sein"
 
 #: views/scheme.php:9
 msgid ""
@@ -444,7 +444,7 @@ msgstr ""
 
 #: Superfecta.class.php:310
 msgid "The Original Number:"
-msgstr ""
+msgstr "Die ursprüngliche Nummer:"
 
 #: Superfecta.class.php:311
 msgid "The Scheme:"
