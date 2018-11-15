@@ -4,64 +4,120 @@
  * Performs lookups towards CapsuleCRM's RESTful API.
  *
  * Enter your API key and password from the web interface.
- * Code borrowed from BulkCNAM module and other modules.
+ * Capsule CRM Documentation: https://developer.capsulecrm.com/v2/operations/Party
  *
- * Written by Stian Eklund
- * 9-Nov-2015
+ * Written by James Read
+ * 14-Nov-2018
  *
  *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
 
-class CapsuleCRM extends superfecta_base {
+class CapsuleCRM extends superfecta_base
+{
 
-  public $description = "CapsuleCRM CallerID lookup";
-  public $version_requirement = "2.11";
-  public $source_param = array(
-    'Organization' => array(
-		'description' => 'CapsuleCRM organization name',
-		'type' => 'text',
-  ),
-  'API_Key' => array(
-    'description' => 'CapsuleCRM API Key',
-    'type' => 'password',
-  ),
-);
+    const CAPSULE_URL = 'https://api.capsulecrm.com/api/v2/parties/search';
 
-function get_caller_id($thenumber, $run_param=array()) {
-  $caller_id = null;
-  $name = "";
-  $spam = "";
-  $companyname = $run_param['Organization'];
-  $apitoken = $run_param['API_Key'];
+    public $description = "CapsuleCRM CallerID lookup";
+    public $version_requirement = "2.11";
+    public $source_param = array(
+        'Organization' => array(
+            'description' => 'CapsuleCRM organization name',
+            'type' => 'text',
+        ),
+        'API_Key' => array(
+            'description' => 'CapsuleCRM API Key',
+            'type' => 'password',
+        ),
+    );
 
-// Query CapsuleCRM
-$this->DebugPrint("Searching CapsuleCRM  {$this->thenumber} ... ");
-$url = "https://$apitoken:x@$companyname.capsulecrm.com/api/party?q=$thenumber";
+    /**
+     * @param $thenumber
+     * @param array $run_param
+     * @return null|string
+     */
+    function get_caller_id($thenumber, $run_param = array())
+    {
+        $apiToken = isset($run_param['API_Key']) ? $run_param['API_Key'] : '';
 
-$ch = curl_init();
-curl_setopt ($ch, CURLOPT_URL, $url);
-curl_setopt ($ch, CURLOPT_RETURNTRANSFER, 1);
-curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
-curl_setopt($ch, CURLOPT_HTTPHEADER, array('Accept: application/json')); // Lets Capsule know we want JSON, default output is XML
-$value = htmlspecialchars_decode(curl_exec($ch));
-curl_close($ch);
+        $this->DebugPrint("Searching CapsuleCRM  {$thenumber} ... ");
+        $value = $this->queryCapsuleCrm($thenumber, $apiToken);
+        if ($value == null) {
+            return null;
+        }
 
-$result = (array)json_decode($value,true);
-// $this->DebugPrint($url);   // for debug
-// $this->DebugPrint($result); // print results
+        return $this->parseResult($value);
+    }
 
-if (isset($result['parties']['person']['firstName']) . ($result['parties']['person']['lastName'])); {
-  if ($result['parties']['person']['firstName'] == 'Not Found') {
-  } else {
-    $name = trim($result['parties']['person']['firstName'] .  ' ' . $result['parties']['person']['lastName']);
-  }
-}
+    /**
+     * Queries CapsuleCRM to lookup the information
+     *
+     * @param string $number
+     * @param string $token
+     * @return string|null
+     */
+    private function queryCapsuleCrm($number, $token = '')
+    {
+        $ch = curl_init();
+        curl_setopt_array($ch, [
+            CURLOPT_URL => self::CAPSULE_URL . "?q=$number",
+            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_CONNECTTIMEOUT => $this->get_CurlTimeout(),
+            CURLOPT_HTTPHEADER => array(
+                'Accept: application/json',
+                "Authorization: Bearer $token"
+            ),
+        ]);
 
-// Return the number if match found.
-if (strlen($name) > 1) {
-  $caller_id = $name;
-} else {
-  $this->DebugPrint("not found");
-}
-return($caller_id);
-}
+        $res = htmlspecialchars_decode(curl_exec($ch));
+        $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        // failed to execute cURL request
+        if ($res === false) {
+            $this->DebugPrint('cURL Error: ' . curl_error($ch));
+            $response = null;
+        }
+
+        // Capsule API Error
+        if ($status !== 200) {
+            $this->DebugPrint("Capsule Error ($status): $res");
+            $response = null;
+        }
+
+        curl_close($ch);
+        return $res;
+    }
+
+    /**
+     * parses JSON result form CapsuleCRM
+     *
+     * @param string $raw
+     * @return string|null
+     */
+    private function parseResult($raw)
+    {
+        $data = json_decode($raw);
+
+        // Parse error
+        if ($data == null) {
+            $this->DebugPrint('Parse Error');
+            return null;
+        }
+
+        // Not Found
+        if (empty($data->parties)) {
+            $this->DebugPrint('Not Found');
+            return null;
+        }
+
+        $item = $data->parties[0];
+
+        // checks the party first party is a person if so it will
+        // return the person name and there organisation if it is set.
+        if ($item->type == 'person') {
+            $organisation = $item->organisation == null ? '' : "- {$item->organisation->name}";
+            return trim("{$item->firstName} {$item->lastName} ${organisation}");
+        }
+
+        // party is an organisation so just return the name
+        return trim($item->name);
+    }
 }
