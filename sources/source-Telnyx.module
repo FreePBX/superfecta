@@ -25,15 +25,15 @@ class Telnyx extends superfecta_base{
 	public $description = "https://telnyx.com/products/caller-id-and-cnam - Provides lookups from the Telnyx carrier grade CNAM lookup service.";
 	public $version_requirement = "2.11";
 	public $source_param = array(
-			'APIKey' => array(
-			'description' => "APIKey - Can be obtained from https://portal.telnyx.com/#/app/auth/api-tokens.  You must create a Telco Profile in Mission Control that connects this key to CNAM data.",
+			'API_Token' => array(
+			'description' => "API Token - Can be obtained from https://portal.telnyx.com/#/app/auth/api-tokens.  You must create a Telco Profile in Mission Control that connects this key to CNAM data.",
 			'type' => 'text'
 		)
 	);
 	function get_caller_id($thenumber, $run_param=array()) {
-		$run_param['APIKey'] = isset($run_param['APIKey'])?$run_param['APIKey']:'';
+		$run_param['API_Token'] = isset($run_param['API_Token'])?$run_param['API_Token']:'';
 		$debug = $this->debug;
-		if(empty($run_param['APIKey'])) {
+		if(empty($run_param['API_Token'])) {
 				$this->DebugPrint("Telnyx requires a registered account.");
 				return '';
 		}
@@ -44,7 +44,7 @@ class Telnyx extends superfecta_base{
 		$headers = array(
     'Content-Type: application/json"',
 	'Accept: application/json',
-    'Authorization: Token ' .$run_param['APIKey'],
+    'Authorization: Token ' .$run_param['API_Token'],
     );
 		curl_setopt($crl, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.1) Gecko/20061204 Firefox/2.0.0.1");
 		curl_setopt($crl, CURLOPT_URL, $url);
