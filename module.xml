@@ -2,7 +2,7 @@
 	<rawname>superfecta</rawname>
 	<repo>extended</repo>
 	<name>CID Superfecta</name>
-	<version>14.0.12</version>
+	<version>14.0.13</version>
 	<type>setup</type>
 	<category>Admin</category>
 	<publisher>Sangoma Technologies Corporation</publisher>
@@ -12,6 +12,7 @@
 		Provides simultaneous use of, and complete control over multiple caller id data sources.
 	</description>
 	<changelog>
+		*14.0.13* FREEPBX-17332 fix send-to order bug 
 		*14.0.12* FREEPBX-14139 fix issues with cache and trunk provided 
 		*14.0.11* FREEPBX-15891 fix for connectwise bug 
 		*14.0.10* FREEPBX-17220 trivial fix 
