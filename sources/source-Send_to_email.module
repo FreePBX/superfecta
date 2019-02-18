@@ -6,6 +6,7 @@
  * 	2013-08-11		Initial migration
  * 	2013-08-12		support for multiple email address and debug output
  * 	2015-02-20		Added support for from: address
+ * 	2018-04-22		Added support including DID in email subject/body
  * 
  *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
 
@@ -20,14 +21,14 @@ class Send_to_Email extends superfecta_base {
 			'default' => ''
 		),
 		'Message_Subject' => array(
-			'description' => 'Content for the subject of the email.  Substitute [NUMBER] and [NAME] for CID variables.',
+			'description' => 'Content for the subject of the email.  Substitute [NUMBER], [NAME] and [DID] for CID variables.',
 			'type' => 'textarea',
 			'default' => 'Incoming call from [NAME] at [NUMBER]'
 		),
 		'Message_Body' => array(
-			'description' => 'Content for the body of the email. Substitute [NUMBER] and [NAME] for CID variables.',
+			'description' => 'Content for the body of the email. Substitute [NUMBER], [NAME] and [DID] for CID variables.',
 			'type' => 'textarea',
-			'default' => 'Incoming call from [NAME] at [NUMBER]. Automated notification email sent by the POSSA Superfecta Caller ID Module'
+			'default' => 'Incoming call to [DID] from [NAME] at [NUMBER]. Automated notification email sent by the POSSA Superfecta Caller ID Module'
 		),
 		'Default_CNAM' => array(
 			'description' => 'If no CNAM is found, input a default name to use for the email notice, the user will receive an email with the number and this default name. Leave blank to send no email if no CNAM is found.',
@@ -43,6 +44,8 @@ class Send_to_Email extends superfecta_base {
 
     function post_processing($cache_found, $winning_source, $first_caller_id, $run_param, $thenumber) {
 		$cnam = "";
+		$headers = "";
+		$from_did = "";
 		if ($first_caller_id != "")  {
 			$cnam = $first_caller_id;
 		}
@@ -50,17 +53,31 @@ class Send_to_Email extends superfecta_base {
 			$cnam = $run_param['Default_CNAM'];
 		}
 
-		$subject = $run_param['Message_Subject'];
+		$from_did = $this->trunk_info['did'];
+		
+		if ($run_param['Message_Subject'] != ""){
+			$subject = $run_param['Message_Subject'];
+		} else {
+			$subject = $this->source_param['Message_Subject']['default'];
+		}
 		$subject = str_replace('[NAME]', $cnam, $subject);
 		$subject = str_replace('[name]', $cnam, $subject);
 		$subject = str_replace('[NUMBER]', $thenumber, $subject);
 		$subject = str_replace('[number]', $thenumber, $subject);
+		$subject = str_replace('[DID]', $from_did, $subject);
+		$subject = str_replace('[did]', $from_did, $subject);		
 
-		$body = $run_param['Message_Body'];
+		if ($run_param['Message_Body'] != ""){
+			$body = $run_param['Message_Body'];
+		} else {
+			$body = $this->source_param['Message_Body']['default'];
+		}
 		$body = str_replace('[NAME]', $cnam, $body);
 		$body = str_replace('[name]', $cnam, $body);
 		$body = str_replace('[NUMBER]', $thenumber, $body);
 		$body = str_replace('[number]', $thenumber, $body);
+		$body = str_replace('[DID]', $from_did, $body);
+		$body = str_replace('[did]', $from_did, $body);
 
 		if ($run_param['From_Address'])  {
 			$headers =  'From: '.$run_param['From_Address']."\r\n";
