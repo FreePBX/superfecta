@@ -26,6 +26,13 @@ if (!empty($agi->request['agi_callerid'])) {
 	$superfecta = FreePBX::Superfecta();
 	$superfecta->setAgi($agi);
 	$callerid = $superfecta->execute($sn[1], $agi->request);
+	$agi->set_variable("SUPERFECTA_NEW", trim($callerid));
+	$agi->set_variable("SUPERFECTA_OLD", trim($agi->request[agi_calleridname]));
+	$superfecta_new  = $agi->get_variable("SUPERFECTA_NEW");
+	$superfecta_old = $agi->get_variable("SUPERFECTA_OLD");
+	$agi->verbose("Setting channel variable SUPERFECTA_NEW: ".trim($superfecta_new['data']));
+	$agi->verbose("Setting channel variable SUPERFECTA_OLD: ".trim($superfecta_old['data']));
+	
 	$dest = $superfecta->getDest();
 	if(!empty($dest)) {
 		$agi->verbose("CID Determined to be: '" . trim($callerid) . "'");
