@@ -22,3 +22,22 @@ try {
 } catch (IOExceptionInterface $e) {
 	out(sprintf("Couldn't set permissions on %s please run fwconsole chown from the command line",__DIR__.'/agi/superfecta.agi'));
 }
+
+global $db;
+// Remove entries from Caller ID Lookup sources left by legacy Superfecta Installs
+$sql = "SELECT * FROM `cidlookup` WHERE `description` = 'Caller ID Superfecta'";
+$res = $db->query($sql);
+if ( !DB::IsError($res) && $res->numRows() != 0 ) {
+	echo "Cleaning up remnants of legacy Superfecta installation.</p>";
+	$sql = "DELETE FROM cidlookup WHERE description = 'Caller ID Superfecta'";
+	$res = $db->query($sql);
+}
+
+// remove spurious superfecta cache entries caused by previous versions of Trunk Provided module:
+$sql = "select * from superfectacache where `callerid` like 'CID Superfecta!'";
+$res = $db->query($sql);
+if ( !DB::IsError($res) && $res->numRows() != 0 ) {
+	echo "Cleaning up Superfecta Cache pollution from Trunk Provided module.</p>";
+	$sql = "DELETE FROM superfectacache where `callerid` like 'CID Superfecta!'";
+	$res = $db->query($sql);
+}
