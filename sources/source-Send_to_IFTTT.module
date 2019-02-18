@@ -1,0 +1,56 @@
+<?php
+
+/*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+ * Developer Notes:
+ *      Just create a Webhook at IFTTT.com, determine account Token and Webhook name
+ *
+ * Created by Lorne Gaetz @ Sangoma Technologies
+ *
+ * Version History:
+ *      2018-02-24  Initial commit
+ *
+ *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
+
+
+//  potential enhancemets:
+//  Add support for customizing Webhook variables
+//  Thinking might be possible to query IFTTT using the token and get a list of Webhooks for user to select from - possible?
+//  Add support for multiple webhooks? 
+ 
+class Send_to_IFTTT extends superfecta_base {
+
+	public $description = "Runs a previously created Webhoook Event at IFTTT.com {{value1}} and {{value2}} are CID name and CID number respectively.";
+	public $version_requirement = "2.11";
+	public $source_param = array(
+		'Token' => array(
+				'description' => 'Webhook Token for Webhook event',
+				'type' => 'text',
+				'default' => null,
+		),
+		'Event_Name' => array(
+				'description' => 'Event name for your IFTTT Webhook {{value1}} and {{value2}} are CID name and CID number respectively.',
+				'type' => 'text',
+				'default' => 'superfecta',
+		),
+	);
+
+	function post_processing($cache_found, $winning_source, $first_caller_id, $run_param, $thenumber) {
+		$this->DebugPrint("Loading IFTTT event ".$run_param['Event_Name']);
+		$curl = curl_init();
+		$url = 'https://maker.ifttt.com/trigger/'.$run_param['Event_Name'].'/with/key/'.$run_param['Token'];		
+		curl_setopt($curl, CURLOPT_URL, $url);
+		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'POST');
+		$queryData['value1'] = $first_caller_id;
+		$queryData['value2'] = $thenumber;
+		$data = json_encode($queryData);
+		curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+			'Content-Type: application/json',
+			'Content-Length: ' . strlen($data)
+		));
+		curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
+		curl_setopt($curl, CURLOPT_HEADER, FALSE);
+		$response = curl_exec($curl);
+		curl_close($curl);
+	}
+}
