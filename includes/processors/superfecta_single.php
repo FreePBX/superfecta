@@ -101,8 +101,8 @@ class superfecta_single extends superfecta_base {
 			// Run the source
 			$source_file = $this->path_location . "/source-" . $source_name . ".module";
 			$class = "\\".$source_name;
-			if (file_exists($source_name) && !class_exists($class)) {
-				include $source_name;
+			if (file_exists($source_file) && !class_exists($class)) {
+				include $source_file;
 			}
 			if(class_exists($class)) {
 				$source_class = new $class;
