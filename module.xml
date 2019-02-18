@@ -2,7 +2,7 @@
 	<rawname>superfecta</rawname>
 	<repo>extended</repo>
 	<name>CID Superfecta</name>
-	<version>14.0.16</version>
+	<version>14.0.17</version>
 	<type>setup</type>
 	<category>Admin</category>
 	<publisher>Sangoma Technologies Corporation</publisher>
@@ -12,6 +12,7 @@
 		Provides simultaneous use of, and complete control over multiple caller id data sources.
 	</description>
 	<changelog>
+		*14.0.17* Bugfix/FREEPBX-17185 
 		*14.0.16* Bugfix/FREEPBX-17727 
 		*14.0.15* FREEPBX-17387 store pre and post cnam in channel vars 
 		*14.0.14* FREEPBX-15699 add DID send to sources 
