@@ -79,9 +79,22 @@ class Superfecta_Cache extends superfecta_base {
         //People might not have anything in Exclusion Rules, account for this
         $run_param['CID_Exclusion_Rules'] = isset($run_param['CID_Exclusion_Rules']) ? $run_param['CID_Exclusion_Rules'] : '';
         $rule_match = $this->match_pattern_all(!empty($run_param['CID_Exclusion_Rules']) ? $run_param['CID_Exclusion_Rules'] : '', $thenumber);
-        if($first_caller_id === "CID Superfecta"){
-          return;
-        }
+        if($first_caller_id === "CID Superfecta!"){
+			$this->DebugPrint("Detected dummy CNAM, not writing to cache.");
+			return null;
+		}
+		
+	   // check to see if the cnam came from the cache and if so return without caching
+		$sql = "SELECT callerid FROM superfectacache WHERE number = '$thenumber'";
+		$sres = $this->db->getOne($sql);
+		if (DB::IsError($sres)) {
+			die_freepbx("Error: " . $sres->getMessage() . "<br>");
+		}
+		if ($sres==$first_caller_id) {
+			$this->DebugPrint("CNAM already cached, skipping write.");
+			return null;
+		}
+		
         if ((!$rule_match['status']) || (!$rule_match['number'])) {
             if (!$cache_found && ($first_caller_id != '')) {
                 $sql = "REPLACE INTO superfectacache (number,callerid,dateentered)
