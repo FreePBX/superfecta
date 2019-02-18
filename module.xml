@@ -2,7 +2,7 @@
 	<rawname>superfecta</rawname>
 	<repo>extended</repo>
 	<name>CID Superfecta</name>
-	<version>14.0.7</version>
+	<version>14.0.8</version>
 	<type>setup</type>
 	<category>Admin</category>
 	<publisher>Sangoma Technologies Corporation</publisher>
@@ -12,6 +12,7 @@
 		Provides simultaneous use of, and complete control over multiple caller id data sources.
 	</description>
 	<changelog>
+		*14.0.8* FREEPBX-17279 Add IFTT support 
 		*14.0.7* FREEPBX-17421 Set default values 
 		*14.0.6* FREEPBX-10782 validate configuration parameters. 
 		*14.0.5* fix pushbullet API for non-active devices 
