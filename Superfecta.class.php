@@ -215,14 +215,14 @@ class Superfecta extends FreePBX_Helpers implements BMO {
 				$callerid = preg_replace("/[\";']/", "", $callerid);
 				//limit caller id to the first 60 char
 				$callerid = substr($callerid, 0, 60);
-				
+
 				// Display issues on phones and CDR with special characters
 				// convert CNAM to UTF-8 to fix
 				if (function_exists('mb_convert_encoding')) {
 					$this->out("Converting result to UTF-8");
 					$callerid = mb_convert_encoding($callerid, "UTF-8");
 				}
-				
+
 				//send off
 				$superfecta->send_results($callerid);
 			}
@@ -764,53 +764,4 @@ class Superfecta extends FreePBX_Helpers implements BMO {
 		$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 		return is_array($results) ? $results : array();
 	}
-	
-	public function dumpConfigs(){
-		return [
-			'configs' => $this->Database->query('SELECT * FROM superfectaconfig')->fetchAll(PDO::FETCH_ASSOC),
-			'cache' => $this->Database->query('SELECT * FROM superfectacache')->fetchAll(PDO::FETCH_ASSOC),
-			'incoming' => $this->Database->query('SELECT * FROM superfecta_to_incoming')->fetchAll(PDO::FETCH_ASSOC),
-			'mf' => $this->Database->query('SELECT * FROM superfecta_mf_child')->fetchAll(PDO::FETCH_ASSOC),
-			'mf_child' => $this->Database->query('SELECT * FROM superfecta_mf_child')->fetchAll(PDO::FETCH_ASSOC),
-		];
-	}
-	public function loadConfigs($configs){
-		foreach ($configs as $type => $data) {
-			$sql = false;
-			if($type === 'configs'){
-				$sql = "REPLACE INTO superfectaconfig (source, config, value) VALUES (:source, :config, :value)";
-			}
-			if($type === 'cache'){
-				$sql = "REPLACE INTO superfectacache (number, callerid, dateentered) VALUES (:number, :callerid, :dateentered)";
-			}
-			if($type === 'incoming'){
-				$sql = "REPLACE INTO superfeca_to_incoming (superfecta_to_incoming_id, extension, cidnum, scheme) VALUES (:superfecta_to_incoming_id, :extension, :cidnum, :scheme)";
-			}
-			if($type === 'mf'){
-				$sql = 'REPLACE INTO superfecta_mf (superfecta_mf_id, timestamp_start, timestamp_end, scheme, cidnum, extension, prefix, debug, winning_child_id, spam_child_id) 
-				VALUES (:superfecta_mf_id, :timestamp_start, :timestamp_end, :scheme, :cidnum, :extension, :prefix, :debug, :winning_child_id, :spam_child_id)';
-			}
-			if($type === 'mf_child'){
-				$sql = "REPLACE INTO superfecta_mf_child (superfecta_mf_child_id,  superfecta_mf_id,  priority,  source,  timestamp_start,  timestamp_cnam,  timestamp_end,  spam,  spam_text,  cnam,  cached,  debug_result,  error_result)
-				 VALUES (:superfecta_mf_child_id, :superfecta_mf_id, :priority, :source, :timestamp_start, :timestamp_cnam, :timestamp_end, :spam, :spam_text, :cnam, :cached, :debug_result, :error_result)";	
-			}
-		}
-		if($sql !== false){
-			$stmt = $this->Database->prepare($sql);
-			foreach ($data as $item) {
-				$stmt->execute($item);
-			}	
-		}
-	}
-
-	public function setDatabase($pdo){
-		$this->Database = $pdo;
-		return $this;
-	}
-	
-	public function resetDatabase(){
-		$this->Database = $this->FreePBX->Database;
-		return $this;
-	}
-
 }
