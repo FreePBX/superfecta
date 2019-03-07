@@ -82,6 +82,10 @@ class Google_Service_ReadContacts
         $output = array();
         foreach ($result as $entry) {
             $name = $entry->getElementsByTagName('title')->item(0)->textContent;
+            // if no firstname/lastname found, try to get organization name
+            if ($name == '') {
+                $name = $entry->getElementsByTagName('orgName')->item(0)->textContent;
+            }
             $phoneNos = $entry->getElementsByTagName('phoneNumber');
             foreach ($phoneNos as $number) {
                 $no = $this->cleanNumber($number->textContent);
