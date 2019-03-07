@@ -188,23 +188,13 @@ class Superfecta implements \BMO {
 			$found = false;
 			if (!empty($callerid)) {
 				$found = true;
-				//$first_caller_id = _utf8_decode($first_caller_id);
 				$callerid = trim(strip_tags($callerid));
-				if ($superfecta->isCharSetIA5()) {
-					$callerid = $superfecta->stripAccents($callerid);
-				}
-				//Why?
-				$callerid = preg_replace("/[\";']/", "", $callerid);
-				//limit caller id to the first 60 char
-				$callerid = substr($callerid, 0, 60);
-				
 				// Display issues on phones and CDR with special characters
 				// convert CNAM to UTF-8 to fix
-				if (function_exists('mb_convert_encoding')) {
+				if (function_exists('mb_convert_encoding') && (! $superfecta->isutf8($callerid))) {
 					$this->out("Converting result to UTF-8");
 					$callerid = mb_convert_encoding($callerid, "UTF-8");
 				}
-				
 				//send off
 				$superfecta->send_results($callerid);
 			}
