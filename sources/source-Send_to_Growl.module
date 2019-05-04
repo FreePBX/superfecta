@@ -15,7 +15,8 @@
  * 		2014-01-25 - Added support for callback URL by lgaetz
  * 		2014-09-30 - Added support for CID, DID and CNAM to be substituted into URL
  *		2014-11-12 - Add check for mbstring extensions
- *		2018-04-22 - Fixed bug that had DID as null 
+ *		2018-04-22 - Fixed bug that had DID as null
+ *		2019-05-04 - Second atttempt to fix DID bug
  * 
  *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
 
@@ -105,8 +106,13 @@ class Send_to_Growl extends superfecta_base {
 
 			// format numbers -------------------------------
 			$thenumberformated = $thenumber;
-			// $the_did_formated =$this->get_DID();  // stopped working at some point before March 2017, don't know why
-			$the_did_formated = $this->trunk_info['did'];
+			
+			if(isset($this->trunk_info['dnid'])){
+				$the_did_formated = $this->trunk_info['dnid'];
+			} else {
+				$the_did_formated = "";
+			}
+			
 			switch ($run_param['Display_Setting']){
 				case 1:
 					if (strlen($thenumber)==10){
