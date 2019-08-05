@@ -13,12 +13,13 @@
  *        2017-10-21   Added some basic spam logic
  *        2017-10-23   change to only load url once, eliminate date retrieve
  *        2018-04-15   bug fix, don't assume $average_rate has a value
+ *        2019-07-26   regex updates and additional logging
  *
  *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
 
  class WhoCalled_UK extends superfecta_base {
 
-	public $description = "https://who-called.co.uk - A datasource devoted to identifying telemarketers. These listings are provided by other users of this service.";
+	public $description = "https://who-called.co.uk - A datasource devoted to identifying telemarketers. These listings are provided by other users of this service. Review TOS at https://who-called.co.uk/Terms-of-Service";
 	public $version_requirement = "2.11";
 	public $source_param = array(
 		'Comment_Number_Threshold' => array(
@@ -49,7 +50,7 @@
 		$value = $this->get_url_contents($url);
 	
 		// find average rate 
-		$pattern = '~<div class="textColumn">Average rate:</div>.*?<div class="dataColumn">(.+?)</div>~s';   // working 2017-10-21
+		$pattern = '~<div class="textColumn">Average rate:</div>.*?<div class="dataColumn"><span class=".*?">(.+?)</span></div>~s';    // working 2019-07-26
 		$matches = null;
 		$foo=preg_match($pattern,$value,$matches);
 		if (isset($matches[1])) {
@@ -63,27 +64,29 @@
 		$foo=preg_match($pattern,$value,$matches);
 		if (isset($matches[1])) {
 			$number_of_searches = trim($matches[1]);
-			$this->DebugPrint("Number of Searches: ".$number_of_searches);
 		} else {
 			$number_of_searches = 0;
 		}
+		$this->DebugPrint("Number of Searches: ".$number_of_searches);
+		$this->DebugPrint("Search Threshhold : ".$run_param['Search_Number_Threshold']);
 
 		// find number of comments
-		$pattern = '~<div class="textColumn">Number of comments:</div>.*?<div class="dataColumn">(.+?)</div>~s';  // working 2017-10-21
+		$pattern = '~<h2 class="numberRanks"><span>COMMENTS: <span class=".*?">(.+?)</span></span>~s';           // working 2019-07-26
 		$matches = null;
 		$foo=preg_match($pattern,$value,$matches);
 		if (isset($matches[1])) {
 			$number_of_comments = trim($matches[1]);
-			$this->DebugPrint("Number of Comments: ".$number_of_comments);
 		} else {
 			$number_of_comments = 0;
 		}
+		$this->DebugPrint("Number of Comments: ".$number_of_comments);
+		$this->DebugPrint("Comment Threshold : ".$run_param['Comment_Number_Threshold']);
 
 		// site should return a rate text string, dangerous, harassing, unknown, neutral, safe
 		if (isset ($average_rate)) {
 			switch (strtolower($average_rate)) {
 				case "dangerous":
-					if($number_of_searches < $run_param['Search_Number_Threshold'] || $number_of_comments < $run_param['Comment_Number_Threshold']) {
+					if($number_of_searches <= $run_param['Search_Number_Threshold'] || $number_of_comments <= $run_param['Comment_Number_Threshold']) {
 						$this->DebugPrint("Number flagged as Dangerous, but comment/search threshold not met");
 					} else {
 						$this->DebugPrint("Number flagged as Dangerous, comment/search threshold met, setting call as SPAM");
@@ -91,7 +94,7 @@
 					}
 					break;
 				case "harassing":
-					if($number_of_searches < $run_param['Search_Number_Threshold'] || $number_of_comments < $run_param['Comment_Number_Threshold']) {
+					if($number_of_searches <= $run_param['Search_Number_Threshold'] || $number_of_comments <= $run_param['Comment_Number_Threshold']) {
 						$this->DebugPrint("Number flagged as Harassing, but comment/search threshold not met");
 					} else {
 						$this->DebugPrint("Number flagged as Harassing, comment/search threshold met, setting call as SPAM");
@@ -108,7 +111,7 @@
 					$this->DebugPrint("Number flagged as Safe, doing nothing");
 					break;
 				default:
-					$this->DebugPrint("Site returned unexpected rate of ".$average_rate.", doing nothing");
+					$this->DebugPrint("Site returned unexpected rating of ".$average_rate.", doing nothing");
 					break;
 			}
 		}
