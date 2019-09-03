@@ -665,6 +665,37 @@ class Superfecta extends FreePBX_Helpers implements BMO {
 		return array("status" => true);
 	}
 
+	public function bulkhandler_superfecta_cfg($settings) {
+		global $db;
+		$sfenable = $settings['sf_enable'];
+		if (isset($sfenable) && !empty($sfenable) && (strtolower($sfenable) == 'true')) {
+			if (!isset($settings['sf_scheme']) || empty($settings['sf_scheme'])) {
+				$sfscheme = 'ALL|ALL'; //default scheme
+			} else if (strstr($settings['sf_scheme'],'ALL')) {
+				$sfscheme = 'ALL|ALL'; //default scheme
+			} else {
+				$sfscheme = $settings['sf_scheme'];
+				$res = $this->getScheme(trim($sfscheme));
+				if(!$res || empty($res)) {
+					dbug("bulkhandler_scheme_cfg: Invalid superfecta scheme ".$sfscheme);
+					return;
+				}
+				$sfscheme = 'base_'.$sfscheme;
+			}
+			$invalidDIDChars = array('<', '>');
+			$settings['extension'] = trim(str_replace($invalidDIDChars, "", $settings['extension']));
+			$settings['cidnum'] = trim(str_replace($invalidDIDChars, "", $settings['cidnum']));
+
+			$sql = "INSERT INTO superfecta_to_incoming (extension, cidnum, scheme) values (:extension, :cidnum,:superfecta_scheme)";
+			$q = $db->prepare($sql);
+			$q->bindParam(':extension', $settings['extension'], \PDO::PARAM_STR);
+			$q->bindParam(':cidnum', $settings['cidnum'], \PDO::PARAM_STR);
+			$q->bindParam(':superfecta_scheme', $sfscheme, \PDO::PARAM_STR);
+			$q->execute();
+			dbug("bulkhandler_scheme_cfg: superfecta scheme ".$sfscheme. " enabled for incoming did".$settings['extension']);
+		}
+	}
+
 	public function getScheme($scheme) {
 		//strip off base if it's sent to us we dont need it
 		$scheme = preg_replace('/^base_/','',$scheme);
