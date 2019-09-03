@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-18 15:26-0500\n"
+"POT-Creation-Date: 2019-09-03 13:44+0530\n"
 "PO-Revision-Date: 2018-10-17 15:00+0000\n"
 "Last-Translator: Bastian Mertgen <b.mertgen@bastian-mertgen.de>\n"
 "Language-Team: German <http://*/projects/freepbx/superfecta/de/>\n"
@@ -317,7 +317,7 @@ msgid ""
 "data sources."
 msgstr ""
 
-#: Superfecta.class.php:728
+#: Superfecta.class.php:759
 msgid "Reset"
 msgstr "Zurücksetzen"
 
@@ -413,7 +413,7 @@ msgstr ""
 msgid "Starting scheme %s"
 msgstr "Starte Schema %s"
 
-#: Superfecta.class.php:733
+#: Superfecta.class.php:764
 msgid "Submit"
 msgstr "Absenden"
 

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-04-16 15:01-0400\n"
+"POT-Creation-Date: 2019-09-03 13:44+0530\n"
 "PO-Revision-Date: 2017-03-08 21:01+0200\n"
 "Last-Translator: Kingvoice <suporte@kingvoice.com.br>\n"
 "Language-Team: Portuguese (Brazil) <http://weblate.freepbx.org/projects/"
@@ -336,7 +336,7 @@ msgstr ""
 "Fornece o uso simultâneo e o controle completo sobre várias fontes de dados "
 "de identificação de chamadas."
 
-#: Superfecta.class.php:728
+#: Superfecta.class.php:759
 msgid "Reset"
 msgstr "Reiniciar"
 
@@ -440,7 +440,7 @@ msgstr ""
 msgid "Starting scheme %s"
 msgstr "Inicializando esquema %s"
 
-#: Superfecta.class.php:733
+#: Superfecta.class.php:764
 msgid "Submit"
 msgstr "Enviar"
 
