@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-20 14:27-0400\n"
+"POT-Creation-Date: 2019-09-03 13:45+0530\n"
 "PO-Revision-Date: 2016-12-11 12:35+0200\n"
 "Last-Translator: Ernesto <ecasas@sangoma.com>\n"
 "Language-Team: Spanish <http://weblate.freepbx.org/projects/freepbx/"
@@ -400,7 +400,7 @@ msgstr ""
 "Provee uso simultaneo de, y control completo sobe muchas fuentes de datos de "
 "Identificador de Llamada."
 
-#: Superfecta.class.php:739
+#: Superfecta.class.php:770
 msgid "Reset"
 msgstr "Reinicio"
 
@@ -505,7 +505,7 @@ msgstr ""
 msgid "Starting scheme %s"
 msgstr "Esquema de inicio %s"
 
-#: Superfecta.class.php:744
+#: Superfecta.class.php:775
 msgid "Submit"
 msgstr "Enviar"
 

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-20 14:27-0400\n"
+"POT-Creation-Date: 2019-09-03 13:45+0530\n"
 "PO-Revision-Date: 2017-08-03 10:42+0200\n"
 "Last-Translator: PETER <ftek@ymail.com>\n"
 "Language-Team: Vietnamese <http://weblate.freepbx.org/projects/freepbx/"
@@ -389,7 +389,7 @@ msgid ""
 msgstr ""
 "Cung cấp sử dụng động thời, và điều khiển toàn bộ nguồn dữ liệu Caller id."
 
-#: Superfecta.class.php:739
+#: Superfecta.class.php:770
 msgid "Reset"
 msgstr "Cài đặt lại"
 
@@ -492,7 +492,7 @@ msgstr ""
 msgid "Starting scheme %s"
 msgstr "Đang khởi động lược đồ %s"
 
-#: Superfecta.class.php:744
+#: Superfecta.class.php:775
 msgid "Submit"
 msgstr "Gửi đi"
 

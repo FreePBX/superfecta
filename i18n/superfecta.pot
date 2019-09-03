@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-05 09:01+0530\n"
+"POT-Creation-Date: 2019-09-03 13:45+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -329,7 +329,7 @@ msgid ""
 "data sources."
 msgstr ""
 
-#: Superfecta.class.php:739
+#: Superfecta.class.php:770
 msgid "Reset"
 msgstr ""
 
@@ -431,7 +431,7 @@ msgstr ""
 msgid "Starting scheme %s"
 msgstr ""
 
-#: Superfecta.class.php:744
+#: Superfecta.class.php:775
 msgid "Submit"
 msgstr ""
 
