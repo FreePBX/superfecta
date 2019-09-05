@@ -2,7 +2,7 @@
 	<rawname>superfecta</rawname>
 	<repo>extended</repo>
 	<name>CID Superfecta</name>
-	<version>15.0.2.16</version>
+	<version>15.0.2.17</version>
 	<type>setup</type>
 	<category>Admin</category>
 	<publisher>Sangoma Technologies Corporation</publisher>
@@ -12,6 +12,7 @@
 		Provides simultaneous use of, and complete control over multiple caller id data sources.
 	</description>
 	<changelog>
+		*15.0.2.17* bump 
 		*15.0.2.16* freepbx-17661 
 		*15.0.2.15* FREEPBX-20323 Update regexs for whocalledUK 
 		*15.0.2.14* FREEPBX-15770 fix name formatting for whocalled 
