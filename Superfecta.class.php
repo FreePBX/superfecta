@@ -686,7 +686,7 @@ class Superfecta extends FreePBX_Helpers implements BMO {
 			$settings['extension'] = trim(str_replace($invalidDIDChars, "", $settings['extension']));
 			$settings['cidnum'] = trim(str_replace($invalidDIDChars, "", $settings['cidnum']));
 
-			$sql = "INSERT INTO superfecta_to_incoming (extension, cidnum, scheme) values (:extension, :cidnum,:superfecta_scheme)";
+			$sql = "REPLACE INTO superfecta_to_incoming (extension, cidnum, scheme) values (:extension, :cidnum,:superfecta_scheme)";
 			$q = $db->prepare($sql);
 			$q->bindParam(':extension', $settings['extension'], \PDO::PARAM_STR);
 			$q->bindParam(':cidnum', $settings['cidnum'], \PDO::PARAM_STR);
