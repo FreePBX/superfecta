@@ -603,10 +603,10 @@ class Superfecta extends FreePBX_Helpers implements BMO {
 		foreach ($results as $data) {
 			$scheme_list[$i] = $data;
 			$scheme_list[$i]['name'] = substr($data['scheme'], 5);
-			$scheme_list[$i]['showdown'] = $i == $total;
-			$scheme_list[$i]['showup'] = $i == 1;
+			$scheme_list[$i]['showdown'] = $i == $total ? FALSE : TRUE;
+			$scheme_list[$i]['showup'] = $i == 1 ? FALSE : TRUE;
 			$scheme_list[$i]['showdelete'] = true;
-			$scheme_list[$i]['powered'] = $data['powered'] < 0;
+			$scheme_list[$i]['powered'] = $data['powered'] < 0 ? FALSE : TRUE;
 			$i++;
 		}
 		return $scheme_list;
