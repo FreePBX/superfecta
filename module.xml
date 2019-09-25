@@ -2,7 +2,7 @@
 	<rawname>superfecta</rawname>
 	<repo>extended</repo>
 	<name>CID Superfecta</name>
-	<version>15.0.2.18</version>
+	<version>15.0.2.19</version>
 	<type>setup</type>
 	<category>Admin</category>
 	<publisher>Sangoma Technologies Corporation</publisher>
@@ -12,6 +12,7 @@
 		Provides simultaneous use of, and complete control over multiple caller id data sources.
 	</description>
 	<changelog>
+		*15.0.2.19* FREEPBX-20563 Restoring legacy(FreePBX 13 ,14) Backup into FreePBX 15 system is disabling CallerID superfecta schemes. 
 		*15.0.2.18* Related to FREEPBX-20414: removed $jobid from runRestore() 
 		*15.0.2.17* bump 
 		*15.0.2.16* freepbx-17661 
