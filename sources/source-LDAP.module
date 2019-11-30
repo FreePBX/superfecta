@@ -48,7 +48,8 @@ class LDAP extends superfecta_base {
                 2 => '(sn, givenname) e.g. Bloggs, Joe',
                 3 => '(givenname sn) e.g. Joe Bloggs',
                 4 => '(o - sn) e.g. Acme - Bloggs',
-                5 => '(applecompany - sn) e.g. Acme - Bloggs'
+		5 => '(applecompany - sn) e.g. Acme - Bloggs',
+		6 => '(sn) e.g. Bloggs'
             ),
             'default' => 1
         ),
@@ -105,7 +106,8 @@ class LDAP extends superfecta_base {
             '2' => 'sn, givenname', // LastName, FirstName
             '3' => 'givenname sn', // FirstName LastName
             '4' => 'o - sn', // Organisation LastName
-            '5' => 'apple-company - sn' // Company LastName
+	    '5' => 'apple-company - sn', // Company LastName
+	    '6' => 'sn' // LastName
         );
 
         // Validate Formatting Options
