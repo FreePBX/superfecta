@@ -325,19 +325,22 @@ class Superfecta extends FreePBX_Helpers implements BMO {
 	public function ajaxCustomHandler() {
 		switch($_REQUEST['command']) {
 			case "debug":
-				echo "<span class='header'>"._('Debug is on and set at level:')."</span> ".$_REQUEST['level']."</br>";
-				echo "<span class='header'>"._('The Original Number:')."</span> ".$_REQUEST['tel']."</br>";
-				echo "<span class='header'>"._('The Scheme:')."</span> ".$_REQUEST['scheme']."</br>";
+				$tel 	= htmlEntities($_REQUEST['tel']);
+				$level 	= htmlEntities($_REQUEST['level']);
+				$schem 	= htmlEntities($_REQUEST['scheme']);
+				echo "<span class='header'>"._('Debug is on and set at level:')."</span> ". $level."</br>";
+				echo "<span class='header'>"._('The Original Number:')."</span> ".$tel."</br>";
+				echo "<span class='header'>"._('The Scheme:')."</span> ".$schem."</br>";
 				echo "<span class='header'>"._('Scheme Type:')."</span> SINGLEFECTA</br>";
 				echo "<span class='header'>"._('Debugging Enabled, will not stop after first result')."</span></br>";
 				echo "</br>";
 				$time_start = microtime(true);
-				$callerid = $this->execute($_REQUEST['scheme'],array(
-					'callerid' => $_REQUEST['tel'],
+				$callerid = $this->execute($schem,array(
+					'callerid' => $tel,
 					'did' => '5555555555',
 					'extension' => '5555555555',
 					'calleridname' => 'CID Superfecta!',
-				),$_REQUEST['level'],true);
+				), $level ,true);
 				$time_end = microtime(true);
 				echo "</br>";
 				echo "<span class='header'>"._('Returned Result would be:')."</span>".$callerid."</br>";
