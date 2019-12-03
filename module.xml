@@ -2,7 +2,7 @@
 	<rawname>superfecta</rawname>
 	<repo>extended</repo>
 	<name>CID Superfecta</name>
-	<version>13.0.4.7</version>
+	<version>13.0.4.8</version>
 	<type>setup</type>
 	<category>Admin</category>
 	<publisher>Sangoma Technologies Corporation</publisher>
@@ -12,6 +12,7 @@
 		Provides simultaneous use of, and complete control over multiple caller id data sources.
 	</description>
 	<changelog>
+		*13.0.4.8* FREEPBX-20557 XSS in Superfecta.class.php 
 		*13.0.4.7* Github PRs
 		*13.0.4.6* Set default values
 		*13.0.4.5* DasTelefonBuch fixes 
