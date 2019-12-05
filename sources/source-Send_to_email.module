@@ -7,6 +7,7 @@
  * 	2013-08-12		support for multiple email address and debug output
  * 	2015-02-20		Added support for from: address
  * 	2018-04-22		Added support including DID in email subject/body
+ *  2019-05-04		Fix bug in DID and add field to specify DID if unknown
  * 
  *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
 
@@ -40,6 +41,11 @@ class Send_to_Email extends superfecta_base {
 			'type' => 'text',
 			'default' => ''
 		),
+		'Default_DID' => array(
+			'description' => 'In cases where DID is unknown, substitute this string in its place.',
+			'type' => 'text',
+			'default' => 'Unknown'
+		),
     );
 
     function post_processing($cache_found, $winning_source, $first_caller_id, $run_param, $thenumber) {
@@ -53,7 +59,13 @@ class Send_to_Email extends superfecta_base {
 			$cnam = $run_param['Default_CNAM'];
 		}
 
-		$from_did = $this->trunk_info['did'];
+		if(isset($this->trunk_info['dnid'])){
+			$from_did = $this->trunk_info['dnid'];
+		} elseif (isset($run_param['Default_DID']) &&  $run_param['Default_DID'] != "") {
+			$from_did = $run_param['Default_DID'];
+		} else {
+			$from_did = $this->source_param['Default_DID']['default'];
+		}
 		
 		if ($run_param['Message_Subject'] != ""){
 			$subject = $run_param['Message_Subject'];
