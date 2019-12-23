@@ -2,7 +2,7 @@
 	<rawname>superfecta</rawname>
 	<repo>extended</repo>
 	<name>CID Superfecta</name>
-	<version>15.0.2.21</version>
+	<version>15.0.2.22</version>
 	<type>setup</type>
 	<category>Admin</category>
 	<publisher>Sangoma Technologies Corporation</publisher>
@@ -12,6 +12,7 @@
 		Provides simultaneous use of, and complete control over multiple caller id data sources.
 	</description>
 	<changelog>
+		*15.0.2.22* FREEPBX-20879 Need to update tooltip for Send to email CID Superfecta. 
 		*15.0.2.21* Bugfix/FREEPBX-15699 
 		*15.0.2.20* FREEPBX-20557 XSS in Superfecta.class.php 
 		*15.0.2.19* FREEPBX-20563 Restoring legacy(FreePBX 13 ,14) Backup into FreePBX 15 system is disabling CallerID superfecta schemes. 
