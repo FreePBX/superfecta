@@ -1,3 +1,5 @@
 views/compiled/
+assets/less/cache/**
+module.sig
 log
 .DS_Store

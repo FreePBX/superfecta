@@ -13,7 +13,7 @@
 
 class Send_to_Email extends superfecta_base {
 
-	public $description = "This module will send a notification email for all inbound calls to the user supplied email addresses.";
+	public $description = "This module will send a notification email to the user supplied email addresses for all inbound calls where a CallerID name is found by Superfecta.";
 	public $version_requirement = "2.11";
 	public $source_param = array (
 		'Email_address' => array(
