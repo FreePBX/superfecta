@@ -12,6 +12,9 @@
  *    2014-08-22  Added user param to set the API version in the URL
  *    2015-05-01  Add field for user supplied CNAM prefix
  *    2018-06-30  Fix for bug FREEPBX-17727
+ *    2020-01-06  Modified by Clinton Pownall of Computer Business to
+ *                accommodate the ConnectWise REST API and the ConnectWise
+ *                Required ClientID.
 ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****/
 
 class ConnectWise extends superfecta_base {
@@ -27,12 +30,16 @@ class ConnectWise extends superfecta_base {
 				'description' => 'ConnectWise Company ID',
 				'type' => 'text',
 		),
-		'DB_User' => array(
-				'description' => 'Integration Username to connect to ConnectWise.  This ID should have access to the Company, Contact and Reporting APIs',
+		'DB_Public_Key' => array(
+				'description' => 'Integration Public Key Created in ConnectWise: Members -> API Members -> API Keys',
 				'type' => 'text',
 		),
-		'DB_Password' => array(
-				'description' => 'Integration Password to connect to ConnectWise',
+		'DB_Private_Key' => array(
+				'description' => 'Integration Private Key Created in ConnectWise: Members -> API Members -> API Keys',
+				'type' => 'password',
+		),
+		'DB_ClientID' => array(
+				'description' => 'Client ID created using the ConnectWise Developer Site, See https://developer.connectwise.com/ClientID',
 				'type' => 'password',
 		),
 		'Search_Type' => array(
@@ -62,24 +69,27 @@ class ConnectWise extends superfecta_base {
 		),
 	);
 
+
 	function get_caller_id($thenumber, $run_param=array()) {
 		$caller_id = null;
+		
+                $site = $run_param['DB_Site'];
+                $companyid = $run_param['DB_Company'];
+                $APIPublicKey = $run_param['DB_Public_Key'];
+                $APIPrivateKey = $run_param['DB_Private_Key'];
+                $varSearchType = $run_param['Search_Type'];
+		$clientid = $run_param['DB_ClientID'];
 
-		$integration_site = $run_param['DB_Site'];
-		$integration_company = $run_param['DB_Company'];
-		$integration_user = $run_param['DB_User'];
-		$integration_password = $run_param['DB_Password'];
 		$varSearchType = $run_param['Search_Type'];
 		if ($run_param['API_Version']) {
-			$integration_apiver = $run_param['API_Version'];
+			$apiver = $run_param['API_Version'];
 		} else {
-			$integration_apiver = 'v4_6_release';
+			$apiver = 'v4_6_release';
 		}
 
 		$wquery_string = "";
 		$wquery_result = "";
 		$wresult_caller_name = "";
-		$timeout = 5;					// keeping this as is for now but it is probably not necessary. If timeout is req'd it should be a user setting
 
 		$this->DebugPrint("Searching ConnectWise ... ");
 		
@@ -87,123 +97,84 @@ class ConnectWise extends superfecta_base {
 			if (strlen($thenumber) > $run_param['Filter_Length']) $thenumber = substr($thenumber, -$run_param['Filter_Length']);  // keep only the filter_length rightmost digits
 		}
 
+		$APIEndpoint = 'https://' .$site. '/'.$apiver.'/apis/3.0';
+
+		$APIkey = 'Basic ' . base64_encode($companyid . '+' . $APIPublicKey . ':' . $APIPrivateKey);
+
+
 		// Search Companies
 		if($run_param['Search_Type'] == 1 || $run_param['Search_Type'] == 3)  {
 			$this->DebugPrint("Searching Companies ... ");
-			$integration_xml = <<<EOT
-				<FindPartnerCompaniesAction xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-				<CompanyName>$integration_company</CompanyName>
-				<IntegrationLoginId>$integration_user</IntegrationLoginId>
-				<IntegrationPassword>$integration_password</IntegrationPassword>
-				<Conditions>PhoneNumber like "$thenumber"</Conditions>
-				<OrderBy>CompanyID</OrderBy>
-				<Limit>1</Limit>
-				</FindPartnerCompaniesAction>
-EOT;
-			// Order of replacement
-			$order  = array("\r\n", "\n", "\r");
-			$replace = '';
+			/* COMPANY */
+			$conditions='conditions=phoneNumber%20like%20%22'.$thenumber.'%22%20';
 
-			// Processes \r\n's first so they aren't converted twice.
-			$integration_xml = str_replace($order, $replace, $integration_xml);
+			$url = '/company/companies?'.$conditions.'&fields=name&pageSize=1000';
 
-			$url="https://$integration_site/$integration_apiver/services/system_io/integration_io.asmx/ProcessClientAction?actionString=".urlencode($integration_xml);
-			$ch = curl_init();
-			curl_setopt ($ch, CURLOPT_URL, $url);
-			curl_setopt ($ch, CURLOPT_RETURNTRANSFER, 1);
-			curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
-			$value = htmlspecialchars_decode(curl_exec($ch));
-			curl_close($ch);
+			$url = $APIEndpoint . $url;
 
-			$pattern = "/<CompanyName>(.*?)<\/CompanyName>/";
-			preg_match_all($pattern, $value, $matches);
-			if (count($matches[0])>1) {
-				$wresult_caller_name = $matches[0][1];
+			$curl = curl_init();
+			curl_setopt($curl, CURLOPT_URL, $url);
+			curl_setopt($curl, CURLOPT_HTTPHEADER, array('clientId:' . $clientid,'Authorization:'. $APIkey,	'Content-Type: application/json',));
+   			curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+   			curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+   			curl_setopt($curl, CURLINFO_HEADER_OUT, true);
+
+			$result = curl_exec($curl);
+
+			if(!$result){die("Connection Failure");}
+			curl_close($curl);
+		
+			$name=preg_split('/"*"/i', $result, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+
+			if (!empty($name[3])) {
+				$wresult_caller_name = $name[3];
 			}
 			else
 			{
-				$this->DebugPrint("Not found in Companies ... ");
+				$this->DebugPrint("Not found in Companies... ");
 			}
 		}
 
 		// Search Contacts
 		if($run_param['Search_Type'] == 2 || $run_param['Search_Type'] == 3 && $wresult_caller_name =="")  {
 			$this->DebugPrint("Searching Contacts ... ");
-		
-			$integration_xml = <<<EOT
-				<RunReportQueryAction xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-				<CompanyName>$integration_company</CompanyName>
-				<IntegrationLoginId>$integration_user</IntegrationLoginId>
-				<IntegrationPassword>$integration_password</IntegrationPassword>
-				<ReportName>ContactCommunication</ReportName>
-				<Conditions>Contact_Communication_Desc like "$thenumber"</Conditions>
-				<Limit>1</Limit>
-				</RunReportQueryAction>
-EOT;
-			// Order of replacement
-			$order  = array("\r\n", "\n", "\r");
-			$replace = '';
+			/* CONTACT */
+			$conditions='childconditions=communicationItems/value%20like%20%22'.$thenumber.'%22%20AND%20communicationItems/communicationType="Phone"';
 
-			// Processes \r\n's first so they aren't converted twice.
-			$integration_xml = str_replace($order, $replace, $integration_xml);
+			$url = '/company/contacts?'.$conditions.'&fields=&pageSize=1000';
 
-			$url="https://$integration_site/$integration_apiver/services/system_io/integration_io.asmx/ProcessClientAction?actionString=".urlencode($integration_xml);
-			$ch = curl_init();
-			curl_setopt ($ch, CURLOPT_URL, $url);
-			curl_setopt ($ch, CURLOPT_RETURNTRANSFER, 1);
-			curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
-			$value = htmlspecialchars_decode(curl_exec($ch));
-			curl_close($ch);
+			$url = $APIEndpoint . $url;
 
-			$pattern = '/<Value Name="Contact_RecID" Type="Numeric" IsNullable="false">(.*?)<\/Value>/';
-			preg_match($pattern, $value, $match_ContactID);
-			if (count($match_ContactID)>0)  {
-				$integration_xml = <<<EOT
-					<FindPartnerContactsAction xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-					<CompanyName>$integration_company</CompanyName>
-					<IntegrationLoginId>$integration_user</IntegrationLoginId>
-					<IntegrationPassword>$integration_password</IntegrationPassword>
-					<Conditions>ContactRecID = $match_ContactID[1]</Conditions>
-					<OrderBy>LastName</OrderBy>
-					<Limit>10</Limit>
-					</FindPartnerContactsAction>
-EOT;
-				// Order of replacement
-				$order  = array("\r\n", "\n", "\r");
-				$replace = '';
+			$curl = curl_init();
+			curl_setopt($curl, CURLOPT_URL, $url);
+			curl_setopt($curl, CURLOPT_HTTPHEADER, array('clientId:' . $clientid,'Authorization:'. $APIkey,	'Content-Type: application/json',));
+		 	curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+			curl_setopt($curl, CURLINFO_HEADER_OUT, true);
+			$result = curl_exec($curl);
 
-				// Processes \r\n's first so they aren't converted twice.
-				$integration_xml = str_replace($order, $replace, $integration_xml);
+			if(!$result){die("Connection Failure");}
+			curl_close($curl);
 
-				$url="https://$integration_site/$integration_apiver/services/system_io/integration_io.asmx/ProcessClientAction?actionString=".urlencode($integration_xml);
-				$ch = curl_init();
-				curl_setopt ($ch, CURLOPT_URL, $url);
-				curl_setopt ($ch, CURLOPT_RETURNTRANSFER, 1);
-				curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
-				$value = htmlspecialchars_decode(curl_exec($ch));
-				curl_close($ch);
+			$name=preg_split('/"*"/i', $result, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);;
 
-				$pattern = "/<LastName>(.*?)<\/LastName>/";
-				preg_match($pattern, $value, $match_LastName);
-
-				$pattern = "/<FirstName>(.*?)<\/FirstName>/";
-				preg_match($pattern, $value, $match_FirstName);
-				if (count($match_LastName)>0 && count($match_FirstName)>0) {
-					$wresult_caller_name = $match_FirstName[1]." ".$match_LastName[1];
-				}
+			if (!empty($name[9])) {
+			 	$wresult_caller_name = $name[5]." ".$name[9]; }
+			
 			}
 			if ($wresult_caller_name =="")  {
-				$this->DebugPrint("Not found in Contacts ... ");
+				$this->DebugPrint("Not found in Contacts... ");
 			}
-		}
 
 		
-		if(strlen($wresult_caller_name) > 0) {
-			$caller_id = $run_param['CNAM_prefix'].trim(strip_tags($wresult_caller_name));
-			return $run_param['CNAM_prefix'].$caller_id;
-		}
-		else {
-			$this->DebugPrint("Not found in ConneceWise");
-		}
+			if(strlen($wresult_caller_name) > 0) {
+				$caller_id = $run_param['CNAM_prefix'].trim(strip_tags($wresult_caller_name));
+				return $run_param['CNAM_prefix'].$caller_id;
+			}
+			else {
+				$this->DebugPrint("Not found in ConnectWise");
+			}
 	}
 }
+
+?>
