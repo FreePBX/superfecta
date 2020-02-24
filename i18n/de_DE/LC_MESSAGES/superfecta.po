@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-12-03 15:43+0530\n"
-"PO-Revision-Date: 2018-10-17 15:00+0000\n"
-"Last-Translator: Bastian Mertgen <b.mertgen@bastian-mertgen.de>\n"
+"PO-Revision-Date: 2020-02-11 14:05+0000\n"
+"Last-Translator: florian alberts <alberts@ar-systems.de>\n"
 "Language-Team: German <http://*/projects/freepbx/superfecta/de/>\n"
 "Language: de_DE\n"
 "MIME-Version: 1.0\n"
@@ -30,7 +30,7 @@ msgstr "Aktionen"
 
 #: views/header.php:3
 msgid "Add Caller ID Scheme"
-msgstr ""
+msgstr "Füge Anrufer ID Schema hinzu"
 
 #: page.superfecta.php:190
 msgid "Add Scheme"
@@ -41,6 +41,8 @@ msgid ""
 "Add, Remove, Enable, Disable, Sort and Configure data sources as appropriate "
 "for your situation."
 msgstr ""
+"Datenquellen entsprechend Ihrer Situation hinzufügen, entfernen, aktivieren, "
+"deaktivieren, sortieren und konfigurieren."
 
 #: superfecta.i18n.php:6
 msgid "Admin"
@@ -48,7 +50,7 @@ msgstr "Administrator"
 
 #: views/add_scheme.php:149 views/scheme.php:89
 msgid "CID Prefix URL"
-msgstr ""
+msgstr "CID Präfix URL"
 
 #: views/add_scheme.php:53 views/scheme.php:50
 msgid "CID Rules"
@@ -72,6 +74,9 @@ msgid ""
 "CallerID Superfecta for FreePBX is a utility program which adds incoming "
 "CallerID name lookups to your Asterisk system using multiple data sources"
 msgstr ""
+"CallerID Superfecta (Anrufer-ID-Superfecta) für FreePBX ist ein "
+"Hilfsprogramm, das eingehende CallerID/AnruferID-Namenssuchen unter "
+"Verwendung mehrerer Datenquellen zu Ihrem Asterisk-System hinzufügt"
 
 #: Superfecta.class.php:155
 #, php-format
@@ -88,27 +93,27 @@ msgstr "DID-Regeln"
 
 #: views/scheme.php:16
 msgid "Data Source Name"
-msgstr ""
+msgstr "Name der Datenquelle"
 
 #: views/scheme.php:138
 msgid "Debug Level"
-msgstr ""
+msgstr "Debug Level"
 
 #: views/scheme.php:138
 msgid "Debug Level to display"
-msgstr ""
+msgstr "Anzuzeigendes Debug Level"
 
 #: Superfecta.class.php:312
 msgid "Debug is on and set at level:"
-msgstr ""
+msgstr "Das Debuggen ist aktiviert und ist auf folgender Stufe gesetzt:"
 
 #: views/scheme.php:5 views/scheme.php:128
 msgid "Debug/Test Run Scheme"
-msgstr ""
+msgstr "Ausführungsschema für Debug / Test"
 
 #: Superfecta.class.php:316
 msgid "Debugging Enabled, will not stop after first result"
-msgstr ""
+msgstr "Debugging aktiviert, stoppt nicht nach dem ersten Ergebnis"
 
 #: views/add_scheme.php:1
 msgid "Define Settings for a new Scheme"
@@ -125,6 +130,12 @@ msgid ""
 "rule trys both absolute and pattern matching (eg \"_2[345]X\", to match a "
 "range of numbers). (The \"_\" underscore is optional.)"
 msgstr ""
+"Definieren Sie die erwartete Durchwahlnummer, wenn Ihre Amtsleitung bei "
+"eingehenden Anrufen die Durchwahl weiterleitet. <br> <br> Lassen Sie dieses "
+"Feld leer, um Anrufe mit beliebigen oder keinen DID-Informationen "
+"abzugleichen. <br> <br> Diese Regel versucht sowohl den absoluten als auch "
+"den Musterabgleich (z. B. \"_2 [345] X\", um einen Bereich von Zahlen "
+"abzugleichen). (Der Unterstrich \"_\" ist optional.)"
 
 #: views/scheme.php:17
 msgid "Description"
@@ -136,11 +147,11 @@ msgstr "Schema bearbeiten"
 
 #: views/add_scheme.php:216 views/scheme.php:107
 msgid "Enable SPAM Interception"
-msgstr ""
+msgstr "Aktiviere Abfangen von Spam"
 
 #: functions.inc.php:22
 msgid "Enable Superfecta Lookup"
-msgstr ""
+msgstr "Aktiviere Superfecta Suche"
 
 #: views/scheme.php:18
 msgid "Enabled"
@@ -149,7 +160,7 @@ msgstr "Aktiviert"
 #: includes/processors/superfecta_single.php:55
 #: includes/processors/superfecta_single.php:120
 msgid "Executing"
-msgstr ""
+msgstr "In Ausführung"
 
 #: views/scheme.php:141
 msgid "INFO"
@@ -163,6 +174,12 @@ msgid ""
 "http://www.example.com/GetCID.php?phone_number=[thenumber]<br>[thenumber] "
 "will be replaced with the full 10 digit phone number when the URL is called"
 msgstr ""
+"Wenn Sie Informationen zur Anrufer-ID voranstellen möchten, können Sie hier "
+"eine URL angeben, unter der diese Kennung abgerufen werden kann. <br> Die "
+"Daten werden in keiner Weise analysiert aber auf die ersten 10 Zeichen "
+"gekürzt. <br> Beispiel URL: http://www.example.com/"
+"GetCID.php?phone_number=[thenumber] <br> [thenumber] wird beim Aufrufen der "
+"URL durch die vollständige 10-stellige Telefonnummer ersetzt"
 
 #: views/add_scheme.php:63
 msgid ""
@@ -198,6 +215,39 @@ msgid ""
 "would match \"016065551234\" and dial it as \"0116065551234\" Note that the "
 "order does not matter, eg. 0|01+1ZXXXXXXXXX does the same thing."
 msgstr ""
+"Eingehende Anrufe mit CID, die den hier angegebenen Mustern entsprechen, "
+"verwenden dieses CID-Schema. Wenn dieses Feld leer gelassen wird, wird "
+"dieses Schema für jede CID verwendet. Es kann verwendet werden, um Präfixe "
+"hinzuzufügen oder zu entfernen.<br>\n"
+"<strong>Viele Quellen erfordern eine bestimmte Anzahl von Ziffern in der "
+"Telefonnummer. Es wird empfohlen, die Muster zu verwenden, um überschüssige "
+"Ländercodedaten von der eingehenden CID zu entfernen, um die Effektivität "
+"dieses Moduls zu erhöhen.</strong><br>\n"
+"Beachten Sie, dass ein Muster ohne + oder | (um ein Präfix hinzuzufügen oder "
+"zu entfernen) nimmt keine Änderungen vor, erstellt jedoch eine "
+"Übereinstimmung. Es wird nur das erste übereinstimmende Muster ausgeführt "
+"und die verbleibenden Regeln werden nicht beachtet.<br /><br "
+"/><b>Regeln:</b><br />\n"
+"<strong>X</strong>&nbsp;&nbsp;&nbsp; Entspricht einer beliebigen Ziffer von "
+"0-9 <br />\n"
+"<strong>Z</strong>&nbsp;&nbsp;&nbsp; Entspricht einer beliebigen Ziffer von "
+"1-9 <br />\n"
+"<strong>N</strong>&nbsp;&nbsp;&nbsp; Entspricht einer beliebigen Ziffer von "
+"2-9 <br />\n"
+"<strong>[1237-9]</strong>&nbsp; Entspricht einer beliebigen Ziffer oder "
+"einem Buchstaben in den Klammern (in diesem Beispiel 1,2,3,7,8,9)<br />\n"
+"<strong>.</strong>&nbsp;&nbsp;&nbsp; Platzhalter, entspricht einem oder "
+"mehreren Zeichen (nicht zulässig vor einem | oder +)<br />\n"
+"<strong>|</strong>&nbsp;&nbsp;&nbsp; Entfernt ein Wählpräfix von der Nummer ("
+"z. B. würde 613 | NXXXXXX übereinstimmen, wenn jemand \"6135551234\" wählte, "
+"aber nur \"5551234\" an die Superfecta-Suche übergibt.) <br> <strong> + "
+"</strong>&nbsp;&nbsp;&nbsp;   fügt der Nummer ein Wählpräfix hinzu (z. B. "
+"würde 1613 + NXXXXXX übereinstimmen, wenn jemand \"5551234\" wählt und \""
+"16135551234\" an Superfecta weiterleitet.) <br /> <br />\n"
+"Sie können auch + und | verwenden, zum Beispiel: 01 + 0 | 1ZXXXXXXXXX würde "
+"mit \"016065551234\" übereinstimmen und als \"0116065551234\" wählen. "
+"Beachten Sie, dass die Reihenfolge keine Rolle spielt, z. 0 | 01 + "
+"1ZXXXXXXXXX macht dasselbe."
 
 #: views/scheme.php:50
 msgid ""
@@ -233,6 +283,39 @@ msgid ""
 "match \"016065551234\" and dial it as \"0116065551234\" Note that the order "
 "does not matter, eg. 0|01+1ZXXXXXXXXX does the same thing."
 msgstr ""
+"Eingehende Anrufe mit CID, die den hier angegebenen Mustern entsprechen, "
+"verwenden dieses CID-Schema. Wenn dieses Feld leer gelassen wird, wird "
+"dieses Schema für jede CID verwendet. Es kann zum Hinzufügen oder Entfernen "
+"von Präfixen verwendet werden. <br>\n"
+"<strong> Viele Quellen erfordern eine bestimmte Anzahl von Ziffern in der "
+"Telefonnummer. Es wird empfohlen, die Muster zu verwenden, um überschüssige "
+"Ländercode-Daten von eingehenden CIDs zu entfernen und die Effektivität "
+"dieses Moduls zu erhöhen. </ Strong> <br>\n"
+"Beachten Sie, dass ein Muster ohne + oder | (um ein Präfix hinzuzufügen oder "
+"zu entfernen) nimmt keine Änderungen vor, erstellt jedoch eine "
+"Übereinstimmung. Nur das erste übereinstimmende Muster wird ausgeführt und "
+"die verbleibenden Regeln werden nicht berücksichtigt. <br /> <br /> <b> "
+"Regeln: </ b> <br />\n"
+"<strong> X </ strong> &nbsp;&nbsp;&nbsp; entspricht einer beliebigen Ziffer "
+"von 0 bis 9 <br />\n"
+"<strong> Z </ strong> &nbsp;&nbsp;&nbsp; entspricht einer beliebigen Ziffer "
+"von 1-9 <br />\n"
+"<strong> N </ strong> &nbsp;&nbsp;&nbsp; entspricht einer beliebigen Ziffer "
+"von 2-9 <br />\n"
+"<strong> [1237-9] </ strong> &nbsp; entspricht einer beliebigen Ziffer oder "
+"einem Buchstaben in Klammern (in diesem Beispiel 1,2,3,7,8,9) <br />\n"
+"<strong>. </ strong> &nbsp;&nbsp;&nbsp; Platzhalter, entspricht einem oder "
+"mehreren Zeichen (nicht zulässig vor einem | oder +) <br />\n"
+"<strong> | </ strong> &nbsp;&nbsp;&nbsp; entfernt ein Wählpräfix von der "
+"Nummer (z. B. würde 613 | NXXXXXX mit \"6135551234\" übereinstimmen, aber "
+"nur \"5551234\" an die Superfecta-Suche übergeben.) <br > <strong> + </ "
+"strong> &nbsp;&nbsp;&nbsp; fügt der Nummer eine Vorwahl hinzu (z. B. würde "
+"1613 + NXXXXXX übereinstimmen, wenn jemand \"5551234\" wählt, und würde \""
+"16135551234\" an die Superfecta-Suche übergeben.) <br / > <br />\n"
+"Sie können auch + und | verwenden, zum Beispiel: 01 + 0 | 1ZXXXXXXXXX würde "
+"mit \"016065551234\" übereinstimmen und als \"0116065551234\" wählen. "
+"Beachten Sie, dass die Reihenfolge keine Rolle spielt, z. 0 | 01 + "
+"1ZXXXXXXXXX macht dasselbe."
 
 #: page.superfecta.php:191
 msgid "List Schemes"
@@ -240,25 +323,25 @@ msgstr "Schemata auflisten"
 
 #: views/add_scheme.php:82 views/scheme.php:65
 msgid "Lookup Timeout"
-msgstr ""
+msgstr "Zeitlimit für Suche"
 
 #: Superfecta.class.php:153
 #, php-format
 msgid "Matched CID Rule: %s with %s"
-msgstr ""
+msgstr "Übereinstimmende CID-Regel: %s mit %s"
 
 #: Superfecta.class.php:144
 #, php-format
 msgid "Matched DID Rule: %s with %s"
-msgstr ""
+msgstr "Übereinstimmende DID-Regel: %s mit %s"
 
 #: views/add_scheme.php:129 views/scheme.php:85
 msgid "Multifecta Timeout"
-msgstr ""
+msgstr "Multifecta Auszeit"
 
 #: views/scheme.php:140
 msgid "NONE"
-msgstr ""
+msgstr "NICHTS"
 
 #: views/main.php:24
 msgid "Name"
@@ -266,7 +349,7 @@ msgstr "Name"
 
 #: views/add_scheme.php:13
 msgid "New Scheme Name"
-msgstr ""
+msgstr "Neuer Schemaname"
 
 #: Superfecta.class.php:525 functions.inc.php:29 views/add_scheme.php:197
 #: views/add_scheme.php:224 views/scheme.php:32
@@ -279,11 +362,11 @@ msgstr "Keine Anrufer-ID gefunden"
 
 #: Superfecta.class.php:157
 msgid "No matching CID rules. Skipping scheme"
-msgstr ""
+msgstr "Keine übereinstimmenden CID-Regeln. Überspringe Schema"
 
 #: Superfecta.class.php:146
 msgid "No matching DID rules. Skipping scheme"
-msgstr ""
+msgstr "Keine übereinstimmenden DID-Regeln. Überspringe Schema"
 
 #: views/main.php:23
 msgid "Order"
@@ -295,27 +378,29 @@ msgstr "Telefonnummer"
 
 #: views/scheme.php:134
 msgid "Phone number to test this scheme against"
-msgstr ""
+msgstr "Telefonnummer zum Gegentesten dieses Schemas"
 
 #: Superfecta.class.php:170
 #, php-format
 msgid "Prefix Url defined as: %s"
-msgstr ""
+msgstr "Präfix-URL definiert als: %s"
 
 #: Superfecta.class.php:172
 msgid "Prefix Url defined but result was empty"
-msgstr ""
+msgstr "Präfix-URL ist definiert, aber Ergebnis war leer"
 
 #: Superfecta.class.php:174
 #, php-format
 msgid "Prefix Url result took %s seconds."
-msgstr ""
+msgstr "Das Ergebnis der Präfix-URL dauerte %s Sekunden."
 
 #: superfecta.i18n.php:8
 msgid ""
 "Provides simultaneous use of, and complete control over multiple caller id "
 "data sources."
 msgstr ""
+"Ermöglicht die gleichzeitige Verwendung und vollständige Kontrolle über "
+"mehrere Anrufer-ID-Datenquellen."
 
 #: Superfecta.class.php:762
 msgid "Reset"
@@ -327,7 +412,7 @@ msgstr "Das zurückgelieferte Ergebnis wäre:"
 
 #: views/add_scheme.php:244 views/scheme.php:118
 msgid "SPAM Send Threshold"
-msgstr ""
+msgstr "SPAM-Übermittlungslimit"
 
 #: views/add_scheme.php:169 views/scheme.php:93
 msgid "SPAM Text"
@@ -340,7 +425,7 @@ msgstr "SPAM-Text ersetzt"
 #: Superfecta.class.php:82
 #, php-format
 msgid "Scheme Asked is: %s"
-msgstr ""
+msgstr "Gefragt ist: %s"
 
 #: views/scheme.php:42
 msgid "Scheme Name"
@@ -372,28 +457,31 @@ msgid ""
 "Select which data source(s) to use for your lookups, and the order in which "
 "you want them used:"
 msgstr ""
+"Wählen Sie die Datenquelle(n) aus, die Sie für Ihre Suche verwenden möchten, "
+"und die Reihenfolge, in der Sie sie verwenden möchten:"
 
 #: views/add_scheme.php:266 views/scheme.php:122
 msgid "Send Spam Call To"
-msgstr ""
+msgstr "Sende Spam-Anruf an"
 
 #: Superfecta.class.php:236
 #, php-format
 msgid "Setting caller id to: %s"
-msgstr ""
+msgstr "Festlegen der Anrufer-ID auf: %s"
 
 #: functions.inc.php:88
 msgid "Setup Schemes in CID Superfecta section"
-msgstr ""
+msgstr "Setup-Schemata im Abschnitt CID Superfecta"
 
 #: functions.inc.php:37
 msgid "Sources can be added/removed in CID Superfecta section"
 msgstr ""
+"Quellen können im Abschnitt CID Superfecta hinzugefügt / entfernt werden"
 
 #: Superfecta.class.php:228
 #, php-format
 msgid "Spam Call, Sending call to: %s"
-msgstr ""
+msgstr "Spam-Anruf, Anruf senden an: %s"
 
 #: views/add_scheme.php:139 views/scheme.php:85
 msgid ""
@@ -401,12 +489,19 @@ msgid ""
 "source priority. After this timeout, the first source to respond with a CNAM "
 "will be taken, until \"Lookup Timeout\" is reached"
 msgstr ""
+"Geben Sie eine Zeitüberschreitung in Sekunden an, die angibt, wie lange der "
+"Multifecta der Quellpriorität folgt. Nach diesem Timeout wird die erste "
+"Quelle, die mit einem CNAM antwortet, genommen, bis das \"Lookup Timeout\" "
+"erreicht ist"
 
 #: views/add_scheme.php:92 views/scheme.php:65
 msgid ""
 "Specify a timeout in seconds for each source. If the source fails to return "
 "a result within the alloted time, the script will move on."
 msgstr ""
+"Geben Sie für jede Quelle ein Zeitlimit in Sekunden an. Wenn die Quelle "
+"innerhalb der festgelegten Zeit kein Ergebnis zurückgibt, wird das Skript "
+"fortgesetzt."
 
 #: Superfecta.class.php:112
 #, php-format
@@ -419,30 +514,30 @@ msgstr "Absenden"
 
 #: views/add_scheme.php:102 views/scheme.php:70
 msgid "Superfecta Processor"
-msgstr ""
+msgstr "Superfecta-Prozessor"
 
 #: functions.inc.php:74
 msgid "Superfecta Scheme"
-msgstr ""
+msgstr "Superfecta-Schema"
 
 #: Superfecta.class.php:85
 #, php-format
 msgid "The CNAME is: %s"
-msgstr ""
+msgstr "Der CNAME ist: %s"
 
 #: Superfecta.class.php:84
 #, php-format
 msgid "The CNUM is: %s"
-msgstr ""
+msgstr "Der CNUM ist: %s"
 
 #: Superfecta.class.php:83
 #, php-format
 msgid "The DID is: %s"
-msgstr ""
+msgstr "Der DID ist: %s"
 
 #: views/scheme.php:130
 msgid "The DID to test this scheme against"
-msgstr ""
+msgstr "Die DID, gegen die dieses Schema getestet werden soll"
 
 #: Superfecta.class.php:313
 msgid "The Original Number:"
@@ -454,7 +549,7 @@ msgstr "Das Schema:"
 
 #: views/add_scheme.php:116 views/scheme.php:71
 msgid "These are the types of Superfecta Processors"
-msgstr ""
+msgstr "Dies sind die Typen von Superfecta-Prozessoren"
 
 #: views/footer.php:4
 msgid "This Module's wiki pages can be found here."
@@ -465,22 +560,28 @@ msgstr "Die Wiki-Seiten dieses Moduls finden Sie hier."
 msgid ""
 "This Project is hosted/maintained at %s Feel free to fork/help/complain."
 msgstr ""
+"Dieses Projekt wird unter %s gehostet / gewartet. Fühlen Sie sich frei, sich "
+"zu teilen / zu helfen / sich zu beschweren."
 
 #: views/add_scheme.php:256 views/scheme.php:118
 msgid ""
 "This is the threshold to send the call to the specified destination below"
 msgstr ""
+"Dies ist der Schwellenwert, um den Anruf an das unten angegebene Ziel zu "
+"senden"
 
 #: Superfecta.class.php:239
 #, php-format
 msgid "This scheme would set the caller id to: %s"
-msgstr ""
+msgstr "Dieses Schema würde die Anrufer-ID auf: %s setzen"
 
 #: views/add_scheme.php:179 views/scheme.php:93
 msgid ""
 "This text will be prepended to Caller ID information to help you identify "
 "calls as SPAM calls"
 msgstr ""
+"Diesem Text werden Anrufer-ID-Informationen vorangestellt, damit Sie Anrufe "
+"als SPAM-Anrufe identifizieren können"
 
 #: page.superfecta.php:152
 msgid "Unknown Scheme"
@@ -488,25 +589,29 @@ msgstr "Unbekanntes Schema"
 
 #: views/scheme.php:142
 msgid "WARN"
-msgstr ""
+msgstr "WARNUNG"
 
 #: views/main.php:4
 msgid "What is CallerID Superfecta?"
-msgstr ""
+msgstr "Was ist CallerID Superfecta?"
 
 #: views/add_scheme.php:233 views/scheme.php:107
 msgid "When enabled, Spam calls can be diverted or terminated"
 msgstr ""
+"Wenn diese Option aktiviert ist, können Spam-Anrufe umgeleitet oder beendet "
+"werden"
 
 #: views/add_scheme.php:206 views/scheme.php:97
 msgid ""
 "When enabled, the text entered in \"SPAM Text\" (above) will replace the CID "
 "completely rather than pre-pending the CID value"
 msgstr ""
+"Bei Aktivierung ersetzt der in \"SPAM-Text\" (oben) eingegebene Text die CID "
+"vollständig, anstatt sie vor den CID-Wert zu setzen"
 
 #: views/add_scheme.php:276
 msgid "Where to send the call when it is detected as spam"
-msgstr ""
+msgstr "Wohin der Anruf gesendet werden soll, wenn er als Spam erkannt wird"
 
 #: Superfecta.class.php:523 functions.inc.php:27 views/add_scheme.php:195
 #: views/add_scheme.php:222 views/scheme.php:30
@@ -520,7 +625,7 @@ msgstr ""
 
 #: Superfecta.class.php:624
 msgid "You cannot rename a scheme the same thing as an existing scheme"
-msgstr ""
+msgstr "Sie können ein Schema nicht wie ein vorhandenes Schema benennen"
 
 #: views/scheme.php:103 views/scheme.php:113
 msgid "no"
