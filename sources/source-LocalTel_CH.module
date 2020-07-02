@@ -16,7 +16,14 @@ class LocalTel_CH extends superfecta_base {
 
     public $description = "http://local.ch (tel.search.ch) - 	These listings include business and residential data for Switzerland.";
     public $version_requirement = "2.11";
-
+    public $source_param = array(
+        'Callcenter_blocking' => array(
+            'description' => 'If enabled, Superfecta will retrieve name of the caller, if LocalTelCH reports "Call Center" it will be marked as spam',
+            'type' => 'checkbox',
+            'default' => 'unchecked',
+        )
+    );
+    
     function get_caller_id($thenumber, $run_param=array())
     {
         //Define vars
@@ -89,6 +96,17 @@ class LocalTel_CH extends superfecta_base {
                 }
             }
         }
+	
+	// Perform spam score lookup if enabled
+        if ($run_param['Callcenter_blocking'])  {
+            $this->DebugPrint("Checking for Name 'Call Center'");
+            if ($caller_id == "Call Center") {
+                $this->DebugPrint("Call Center found, flaggin as SPAM");
+                $this->spam = true;
+            }
+        }
+
+	
         //Return Callerid (success)
         return($caller_id);
     }
