@@ -11,6 +11,7 @@
 	<description>
 		Provides simultaneous use of, and complete control over multiple caller id data sources.
 	</description>
+  	<more-info>https://wiki.freepbx.org/display/FPG/CID+Superfecta</more-info>
 	<changelog>
 		*13.0.4.8* FREEPBX-20557 XSS in Superfecta.class.php 
 		*13.0.4.7* Github PRs
