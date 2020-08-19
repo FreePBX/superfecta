@@ -2,7 +2,7 @@
 	<rawname>superfecta</rawname>
 	<repo>extended</repo>
 	<name>CID Superfecta</name>
-	<version>14.0.27</version>
+	<version>14.0.28</version>
 	<type>setup</type>
 	<category>Admin</category>
 	<publisher>Sangoma Technologies Corporation</publisher>
@@ -11,7 +11,9 @@
 	<description>
 		Provides simultaneous use of, and complete control over multiple caller id data sources.
 	</description>
+  	<more-info>https://wiki.freepbx.org/display/FPG/CID+Superfecta</more-info>
 	<changelog>
+		*14.0.28* Packaging of ver 14.0.28
 		*14.0.27* Fixing FREEPBX-20992 Adding code to fix Connectwise connectivity issue 
 		*14.0.26* FREEPBX-20879 Need to update tooltip for Send to email CID Superfecta. 
 		*14.0.25* Bugfix/FREEPBX-15699 
