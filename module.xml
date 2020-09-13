@@ -2,7 +2,7 @@
 	<rawname>superfecta</rawname>
 	<repo>extended</repo>
 	<name>CID Superfecta</name>
-	<version>15.0.2.24</version>
+	<version>15.0.2.25</version>
 	<type>setup</type>
 	<category>Admin</category>
 	<publisher>Sangoma Technologies Corporation</publisher>
@@ -13,6 +13,7 @@
 	</description>
   	<more-info>https://wiki.freepbx.org/display/FPG/CID+Superfecta</more-info>
 	<changelog>
+		*15.0.2.25* FREEPBX-21840 add trim to token and SID 
 		*15.0.2.24* Packaging of ver 15.0.2.24
 		*15.0.2.23* Fixing FREEPBX-20992 Adding code to fix Connectwise connectivity issue 
 		*15.0.2.22* FREEPBX-20879 Need to update tooltip for Send to email CID Superfecta. 
