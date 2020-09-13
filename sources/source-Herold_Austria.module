@@ -19,6 +19,7 @@
  * 2016-05-03	Rewrite Numbers correct for Herold and change Query for new Mobile Web Template
  * 2017-03-20	Again Herold has a new Theme. We need to change the regexp again
  * 2017-11-09	If the Caller ID is 'unknown', 'anonymous' or empty then skip the check
+ * 2020-09-12	update regex per https://community.freepbx.org/t/superfecta-herold-austria/42997/15
  *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
 
 class Herold_Austria extends superfecta_base {
@@ -49,7 +50,7 @@ class Herold_Austria extends superfecta_base {
 
 		// regex patterns to search for
 		$regexp = array(
-			'~<h2><a href=".*?" data-clickpos="name"><span itemprop="name">(.+?)</span>~',
+			'~<h2><span itemprop="name">(.+?)</span>~', // working 2020-09-04 by Charles_Darwin
 		);
 
 		// first search for Residential match
