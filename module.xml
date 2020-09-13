@@ -2,7 +2,7 @@
 	<rawname>superfecta</rawname>
 	<repo>extended</repo>
 	<name>CID Superfecta</name>
-	<version>16.0.2</version>
+	<version>16.0.3</version>
 	<type>setup</type>
 	<category>Admin</category>
 	<publisher>Sangoma Technologies Corporation</publisher>
@@ -13,6 +13,7 @@
 	</description>
   	<more-info>https://wiki.freepbx.org/display/FPG/CID+Superfecta</more-info>
 	<changelog>
+		*16.0.3* FREEPBX-21840 add trim to token and SID 
 		*16.0.2* Packaging of ver 16.0.2
 		*16.0.1alpha* 16.0.1 alpha release
 	</changelog>
