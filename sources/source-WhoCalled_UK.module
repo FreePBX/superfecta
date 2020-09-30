@@ -14,6 +14,7 @@
  *        2017-10-23   change to only load url once, eliminate date retrieve
  *        2018-04-15   bug fix, don't assume $average_rate has a value
  *        2019-07-26   regex updates and additional logging
+ *        2020-09-26   COVID19 edition - fixed comment/harrassing logic
  *
  *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
 
@@ -67,8 +68,6 @@
 		} else {
 			$number_of_searches = 0;
 		}
-		$this->DebugPrint("Number of Searches: ".$number_of_searches);
-		$this->DebugPrint("Search Threshhold : ".$run_param['Search_Number_Threshold']);
 
 		// find number of comments
 		$pattern = '~<h2 class="numberRanks"><span>COMMENTS: <span class=".*?">(.+?)</span></span>~s';           // working 2019-07-26
@@ -79,6 +78,9 @@
 		} else {
 			$number_of_comments = 0;
 		}
+
+		$this->DebugPrint("Number of Searches: ".$number_of_searches);
+		$this->DebugPrint("Search Threshhold : ".$run_param['Search_Number_Threshold']);
 		$this->DebugPrint("Number of Comments: ".$number_of_comments);
 		$this->DebugPrint("Comment Threshold : ".$run_param['Comment_Number_Threshold']);
 
@@ -86,7 +88,7 @@
 		if (isset ($average_rate)) {
 			switch (strtolower($average_rate)) {
 				case "dangerous":
-					if($number_of_searches <= $run_param['Search_Number_Threshold'] || $number_of_comments <= $run_param['Comment_Number_Threshold']) {
+					if($number_of_searches < $run_param['Search_Number_Threshold'] || $number_of_comments < $run_param['Comment_Number_Threshold']) {
 						$this->DebugPrint("Number flagged as Dangerous, but comment/search threshold not met");
 					} else {
 						$this->DebugPrint("Number flagged as Dangerous, comment/search threshold met, setting call as SPAM");
@@ -94,7 +96,7 @@
 					}
 					break;
 				case "harassing":
-					if($number_of_searches <= $run_param['Search_Number_Threshold'] || $number_of_comments <= $run_param['Comment_Number_Threshold']) {
+					if($number_of_searches < $run_param['Search_Number_Threshold'] || $number_of_comments < $run_param['Comment_Number_Threshold']) {
 						$this->DebugPrint("Number flagged as Harassing, but comment/search threshold not met");
 					} else {
 						$this->DebugPrint("Number flagged as Harassing, comment/search threshold met, setting call as SPAM");
