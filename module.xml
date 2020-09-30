@@ -2,7 +2,7 @@
 	<rawname>superfecta</rawname>
 	<repo>extended</repo>
 	<name>CID Superfecta</name>
-	<version>15.0.2.26</version>
+	<version>15.0.2.27</version>
 	<type>setup</type>
 	<category>Admin</category>
 	<publisher>Sangoma Technologies Corporation</publisher>
@@ -13,6 +13,7 @@
 	</description>
   	<more-info>https://wiki.freepbx.org/display/FPG/CID+Superfecta</more-info>
 	<changelog>
+		*15.0.2.27* FREEPBX-20975 fix threshold logic 
 		*15.0.2.26* FREEPBX-21861 update harold austria regex 
 		*15.0.2.25* FREEPBX-21840 add trim to token and SID 
 		*15.0.2.24* Packaging of ver 15.0.2.24
