@@ -169,7 +169,7 @@ class ConnectWise extends superfecta_base {
 		
 			if(strlen($wresult_caller_name) > 0) {
 				$caller_id = $run_param['CNAM_prefix'].trim(strip_tags($wresult_caller_name));
-				return $run_param['CNAM_prefix'].$caller_id;
+				return $caller_id;
 			}
 			else {
 				$this->DebugPrint("Not found in ConnectWise");
