@@ -203,6 +203,6 @@ EOT;
 		else if($debug) {
 			$this->DebugPrint("Not found in ConneceWise");
 		}
-		return $run_param['CNAM_prefix'].$caller_id;
+		return $caller_id;
 	}
 }
