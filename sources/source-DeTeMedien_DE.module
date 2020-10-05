@@ -29,9 +29,10 @@ class DeTeMedien_DE extends superfecta_base {
 			//          '/arkey=.*>(.*)&nbsp;/',    // old regex from ver 2.2.x occasionally gives bad result
 			//          '/class="preview iname"><span class="">(.*?)<\/span><\/a> <\/span>/',   // working 2014-01-08
 			//          '/class="preview iname" onmouseover="" onMouseOut=""><span class="">(.*?)<\/span>/',    // working 2014-07-23
-			'/class="name " onmouseover="" onMouseOut=""><span class="">(.*?)<\/span>/',    // working 2014-07-23
-			'/class="name "><span class="">(.*?)<\/span>/',    // working 2014-07-23
-			'/class="name " onmouseover="" onmouseout=""><span class="">(.*?)<\/span>/',    // working 2014-07-23
+			//          '/class="name " onmouseover="" onMouseOut=""><span class="">(.*?)<\/span>/',    // working 2014-07-23
+			//          '/class="name "><span class="">(.*?)<\/span>/',    // working 2014-07-23
+			//          '/class="name " onmouseover="" onmouseout=""><span class="">(.*?)<\/span>/',    // working 2014-07-23
+			'/<span class="st-treff-name">(.*?)<\/span>/',    // working 2020-10-05
 		);
 
 		if ($this->SearchURL($url, $regexp, $match, NULL, TRUE)) {
