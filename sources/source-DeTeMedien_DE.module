@@ -19,8 +19,18 @@ class DeTeMedien_DE extends superfecta_base {
 	
 	function get_caller_id($thenumber, $run_param=array()) {
 		$caller_id = null;
+		$thenumber = trim($thenumber);
 		$this->DebugPrint(sprintf(_("Searching http://www.detemedien.de/ for %s..."),$thenumber));
 
+		if ($thenumber[0] !== '0') {
+                        $thenumber = '%2B' . $thenumber;
+                        $this->DebugPrint('Phone number has no leading "0", adding "+"');
+                }
+                else if ($thenumber[0] === '+') {
+                        $thenumber = '%2B' . substr($thenumber, 1);
+                        $this->DebugPrint('Phone number has leading "+"');
+                }
+		
 		// url from ver. 2.2.x still working 2014-01-08
 		$url = "http://www.dasoertliche.de/Controller?context=4&form_name=search_inv&action=43&page=5&ph=". $thenumber;
 
