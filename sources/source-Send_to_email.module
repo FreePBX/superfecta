@@ -59,7 +59,9 @@ class Send_to_Email extends superfecta_base {
 			$cnam = $run_param['Default_CNAM'];
 		}
 
-		if(isset($this->trunk_info['dnid'])){
+		if (isset($this->trunk_info['extension'])) {
+			$from_did = $this->trunk_info['extension'];
+		} elseif(isset($this->trunk_info['dnid'])){
 			$from_did = $this->trunk_info['dnid'];
 		} elseif (isset($run_param['Default_DID']) &&  $run_param['Default_DID'] != "") {
 			$from_did = $run_param['Default_DID'];
