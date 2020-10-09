@@ -15,6 +15,7 @@
  *    2020-01-06  Modified by Clinton Pownall of Computer Business to
  *                accommodate the ConnectWise REST API and the ConnectWise
  *                Required ClientID.
+ *    2020-10-08  Removed duplication of user-specified CID prefix, fix for FREEPBX-20051
 ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** *****/
 
 class ConnectWise extends superfecta_base {
@@ -169,7 +170,7 @@ class ConnectWise extends superfecta_base {
 		
 			if(strlen($wresult_caller_name) > 0) {
 				$caller_id = $run_param['CNAM_prefix'].trim(strip_tags($wresult_caller_name));
-				return $run_param['CNAM_prefix'].$caller_id;
+				return $caller_id;
 			}
 			else {
 				$this->DebugPrint("Not found in ConnectWise");
