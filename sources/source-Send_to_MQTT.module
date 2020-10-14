@@ -1,0 +1,64 @@
+<?php
+/*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+ * Developer Notes:
+ *
+ * Version History
+ *     2011-08-07  Initial creation by hartmann1970@gmx.de
+ *
+ *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
+
+class Send_to_MQTT extends superfecta_base {
+
+    public $description = "This source will send CID number and name to an MQTT topic for external processing. The MQTT topic is added with DID and payload is JSON format. To use this feature, mosqitto has to be installed.";
+    public $version_requirement = "2.11";
+    public $source_param = array(
+        'MQTT_broker' => array(
+            'description' => 'Specify FQDN or IP of MQTT broker. Use the format \'this.is.org\' or \'192.168.123.045\'',
+            'type' => 'text',
+            'default' => "10.0.0.10"
+        ),
+        'MQTT_port' => array(
+            'description' => 'Specify the port of the MQTT broker. Use the format \'1883\'',
+            'type' => 'number',
+            'default' => "1883"
+        ),
+        'MQTT_topic' => array(
+            'description' => 'Specify the topic to send CID/CNAM data to. Use the format \'this/is/my/topic\'',
+            'type' => 'text',
+            'default' => 'freepbx/calls'
+        ),
+        'Default_DID' => array(
+            'description' => 'In cases where DID is unknown, substitute this string in its place.',
+            'type' => 'text',
+            'default' => 'Unknown'
+        )
+    );
+
+    function post_processing($cache_found, $winning_source, $first_caller_id, $run_param, $thenumber) {
+
+        if (($run_param['MQTT_broker'] != '') && ($run_param['MQTT_topic'] != '') && ($first_caller_id != '')) {
+
+            $from_did = "";
+            if(isset($this->trunk_info['dnid'])){
+                $from_did = $this->trunk_info['dnid'];
+            } elseif (isset($run_param['Default_DID']) &&  $run_param['Default_DID'] != "") {
+                $from_did = $run_param['Default_DID'];
+            } else {
+                $from_did = $this->source_param['Default_DID']['default'];
+            }
+            $broker = $run_param['MQTT_broker'];
+            $topic = $run_param['MQTT_topic'];
+            $payload = '{"number": "'. $thenumber. '","name": "'. $first_caller_id. '"}';
+            $this->DebugPrint("Send to MQTT broker : {$broker}");
+            $this->DebugPrint("Send to MQTT topic  : {$topic}");
+            $this->DebugPrint("Send to MQTT payload: {$payload}");
+            $this->DebugPrint("Send to MQTT did    : {$from_did}");
+            $command = 'mosquitto_pub -h '. $broker. ' -t '. $topic. '/'. $from_did. ' -m \''. $payload. '\'';
+            $this->DebugPrint("Send to MQTT command: {$command}");
+            $output = shell_exec($command);
+            $this->DebugPrint("Send to MQTT result: {$output}");
+
+            $value = $output;
+        }
+    }
+}
