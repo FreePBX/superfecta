@@ -3,7 +3,8 @@
  * Developer Notes:
  *
  * Version History
- *     2011-08-07  Initial creation by hartmann1970@gmx.de
+ *     2020-10-14  Initial creation by hartmann1970@gmx.de
+ *     2020-10-15 added user, password, clientID by hartmann1970@gmx.de
  *
  *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
 
@@ -23,9 +24,24 @@ class Send_to_MQTT extends superfecta_base {
             'default' => "1883"
         ),
         'MQTT_topic' => array(
-            'description' => 'Specify the topic to send CID/CNAM data to. Use the format \'this/is/my/topic\'',
+            'description' => 'Specify the topic to send CID/CNAM data to. Use the format \'this/is/my/topic\' without trailing slash.',
             'type' => 'text',
             'default' => 'freepbx/calls'
+        ),
+        'MQTT_user' => array(
+            'description' => 'Specify the user. Neither spaces nor special characters allowed.',
+            'type' => 'text',
+            'default' => ''
+        ),
+        'MQTT_password' => array(
+            'description' => 'Specify the password. Neither spaces nor special characters allowed.',
+            'type' => 'text',
+            'default' => ''
+        ),
+        'MQTT_clientID' => array(
+            'description' => 'Specify the ClientID. Neither spaces nor special characters allowed.',
+            'type' => 'text',
+            'default' => 'freePBX'
         ),
         'Default_DID' => array(
             'description' => 'In cases where DID is unknown, substitute this string in its place.',
@@ -37,8 +53,18 @@ class Send_to_MQTT extends superfecta_base {
     function post_processing($cache_found, $winning_source, $first_caller_id, $run_param, $thenumber) {
 
         if (($run_param['MQTT_broker'] != '') && ($run_param['MQTT_topic'] != '') && ($first_caller_id != '')) {
-
-            $from_did = "";
+            $port = ' -p '. $run_param['MQTT_port'];
+            $broker = ' -h '. $run_param['MQTT_broker'];
+            $user = "";
+            if($run_param['MQTT_user'] != ''){
+                $user = ' -u '. $run_param['MQTT_user'];
+            };
+            $password = "";
+            if($run_param['MQTT_user'] != ''){
+                $password = ' -P '. $run_param['MQTT_password'];
+            };
+            $clientID = ' -i '. $run_param['MQTT_clientID'];
+             $from_did = "";
             if(isset($this->trunk_info['dnid'])){
                 $from_did = $this->trunk_info['dnid'];
             } elseif (isset($run_param['Default_DID']) &&  $run_param['Default_DID'] != "") {
@@ -46,14 +72,13 @@ class Send_to_MQTT extends superfecta_base {
             } else {
                 $from_did = $this->source_param['Default_DID']['default'];
             }
-            $broker = $run_param['MQTT_broker'];
-            $topic = $run_param['MQTT_topic'];
-            $payload = '{"number": "'. $thenumber. '","name": "'. $first_caller_id. '"}';
+            $topic = ' -t '. $run_param['MQTT_topic']. '/'. $from_did;
+            $payload = ' -m \'{"number": "'. $thenumber. '","name": "'. $first_caller_id. '"}\'';
             $this->DebugPrint("Send to MQTT broker : {$broker}");
             $this->DebugPrint("Send to MQTT topic  : {$topic}");
             $this->DebugPrint("Send to MQTT payload: {$payload}");
             $this->DebugPrint("Send to MQTT did    : {$from_did}");
-            $command = 'mosquitto_pub -h '. $broker. ' -t '. $topic. '/'. $from_did. ' -m \''. $payload. '\'';
+            $command = 'mosquitto_pub'. $broker. $port. $user. $password. $clientID. $topic. $payload;
             $this->DebugPrint("Send to MQTT command: {$command}");
             $output = shell_exec($command);
             $this->DebugPrint("Send to MQTT result: {$output}");
