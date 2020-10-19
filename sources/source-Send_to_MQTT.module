@@ -10,7 +10,7 @@
 
 class Send_to_MQTT extends superfecta_base {
 
-    public $description = "This source will send CID number and name to an MQTT topic for external processing. The MQTT topic is added with DID and payload is JSON format. To use this feature, mosqitto has to be installed.";
+    public $description = "This source will send CID number and name to an MQTT topic for external processing. The MQTT topic is added with DID and payload is JSON format. To use this feature, mosquitto has to be installed.";
     public $version_requirement = "2.11";
     public $source_param = array(
         'MQTT_broker' => array(
@@ -60,7 +60,7 @@ class Send_to_MQTT extends superfecta_base {
                 $user = ' -u '. $run_param['MQTT_user'];
             };
             $password = "";
-            if($run_param['MQTT_user'] != ''){
+            if($run_param['MQTT_password'] != ''){
                 $password = ' -P '. $run_param['MQTT_password'];
             };
             $clientID = ' -i '. $run_param['MQTT_clientID'];
