@@ -29,7 +29,7 @@ class Send_to_Email extends superfecta_base {
 		'Message_Body' => array(
 			'description' => 'Content for the body of the email. Substitute [NUMBER], [NAME] and [DID] for CID variables.',
 			'type' => 'textarea',
-			'default' => 'Incoming call to [DID] from [NAME] at [NUMBER]. Automated notification email sent by the POSSA Superfecta Caller ID Module'
+			'default' => 'Incoming call to [DID] from [NAME] at [NUMBER]. [NAME2] replaces spaces with plus in [NAME] for URL generation. Automated notification email sent by the POSSA Superfecta Caller ID Module'
 		),
 		'Default_CNAM' => array(
 			'description' => 'If no CNAM is found, input a default name to use for the email notice, the user will receive an email with the number and this default name. Leave blank to send no email if no CNAM is found.',
@@ -50,6 +50,7 @@ class Send_to_Email extends superfecta_base {
 
     function post_processing($cache_found, $winning_source, $first_caller_id, $run_param, $thenumber) {
 		$cnam = "";
+		$cnam2 = "";
 		$headers = "";
 		$from_did = "";
 		if ($first_caller_id != "")  {
@@ -58,7 +59,9 @@ class Send_to_Email extends superfecta_base {
 		else if ($run_param['Default_CNAM'] != "")  {
 			$cnam = $run_param['Default_CNAM'];
 		}
-
+		
+		$cnam2 = str_replace(' ', '+', $cnam);
+		
 		if(isset($this->trunk_info['dnid'])){
 			$from_did = $this->trunk_info['dnid'];
 		} elseif (isset($run_param['Default_DID']) &&  $run_param['Default_DID'] != "") {
@@ -86,6 +89,8 @@ class Send_to_Email extends superfecta_base {
 		}
 		$body = str_replace('[NAME]', $cnam, $body);
 		$body = str_replace('[name]', $cnam, $body);
+		$body = str_replace('[NAME2]', $cnam2, $body);
+		$body = str_replace('[name2]', $cnam2, $body);
 		$body = str_replace('[NUMBER]', $thenumber, $body);
 		$body = str_replace('[number]', $thenumber, $body);
 		$body = str_replace('[DID]', $from_did, $body);
