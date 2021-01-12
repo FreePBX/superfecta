@@ -204,10 +204,10 @@ class Superfecta implements \BMO {
 					$this->out("Converting result to UTF-8");
 					$callerid = mb_convert_encoding($callerid, "UTF-8");
 				}
-				
-				//send off
-				$superfecta->send_results($callerid);
 			}
+
+			//send off
+			$superfecta->send_results($callerid);
 
 			//Set Spam text
 			$spam_text = ($superfecta->isSpam()) ? $options['scheme_settings']['SPAM_Text'] : '';
