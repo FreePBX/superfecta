@@ -105,7 +105,7 @@ class Google_Service_ReadContacts
         $len_end = strlen($end) - 1;
         $len_no  = strlen($number) - 1;
         while (($len_end >= 0) && ($len_no >= 0)) {
-             if ($number{$len_no} == $end{$len_end}) $result++;
+             if ($number[$len_no] == $end[$len_end]) $result++;
              else return $result;
              $len_end--;
              $len_no--;
