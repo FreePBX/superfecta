@@ -1,0 +1,68 @@
+<?php
+/**
+ * Telnyx CNAM module
+ * API Details: https://developers.telnyx.com/docs/cnam-data/
+ * Copyright (C) 2018 Corporate IT LLC
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.	If not, see <http://www.gnu.org/licenses/>.
+ *
+ * 12.21.2018 v0.10 by Joseph Nadiv <ynadiv@corpit.xyz>
+ *
+ */
+
+class Telnyx extends superfecta_base{
+	public $description = "https://telnyx.com/products/caller-id-and-cnam - Provides lookups from the Telnyx carrier grade CNAM lookup service.";
+	public $version_requirement = "2.11";
+	public $source_param = array(
+			'API_Token' => array(
+			'description' => "API Token - Can be obtained from https://portal.telnyx.com/#/app/auth/api-tokens.  You must create a Telco Profile in Mission Control that connects this key to CNAM data.",
+			'type' => 'text'
+		)
+	);
+	function get_caller_id($thenumber, $run_param=array()) {
+		$run_param['API_Token'] = isset($run_param['API_Token'])?$run_param['API_Token']:'';
+		$debug = $this->debug;
+		if(empty($run_param['API_Token'])) {
+				$this->DebugPrint("Telnyx requires a registered account.");
+				return '';
+		}
+		//we need to use our own curl since get_url_contents doesn't support http headers
+		$url = sprintf("https://data.telnyx.com/cnam/v1/caller-information?tn=%s",$thenumber);
+		$crl = curl_init();
+		
+		$headers = array(
+    'Content-Type: application/json"',
+	'Accept: application/json',
+    'Authorization: Token ' .$run_param['API_Token'],
+    );
+		curl_setopt($crl, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.1) Gecko/20061204 Firefox/2.0.0.1");
+		curl_setopt($crl, CURLOPT_URL, $url);
+		curl_setopt($crl, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($crl, CURLOPT_FOLLOWLOCATION, true);
+		curl_setopt($crl, CURLOPT_HTTPHEADER,$headers);
+		curl_setopt($crl, CURLOPT_HTTPGET, TRUE);
+		$json = curl_exec($crl);
+		curl_close($crl);
+		$json = json_decode($json, true);
+		if(isset($json["reason"])){
+			$this->DebugPrint("Lookup Error: ");
+			$this->DebugPrint($json["reason"]);
+		}
+		if(isset($json["callerInformation"])) {
+			return($json["callerInformation"]);
+		} else {
+			return('');
+		}
+	}
+}
