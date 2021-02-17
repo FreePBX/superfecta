@@ -22,7 +22,7 @@
  */
 
 class Telnyx extends superfecta_base{
-	public $description = "https://telnyx.com/products/caller-id-and-cnam - Provides lookups from the Telnyx carrier grade CNAM lookup service.";
+	public $description = "https://telnyx.com/products/identity-services - Provides lookups from the Telnyx carrier grade CNAM lookup service.";
 	public $version_requirement = "2.11";
 	public $source_param = array(
 			'API_Token' => array(
