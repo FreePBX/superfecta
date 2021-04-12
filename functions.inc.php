@@ -42,9 +42,9 @@ function superfecta_hook_core($viewing_itemid, $target_menuid) {
 		';
 		//$html.='<tr><td colspan="2"><h5>' . _("Superfecta CID Lookup") . '<hr></h5></td></tr>';
 		$info = explode("/", $viewing_itemid);
-		$sql = "SELECT scheme FROM superfecta_to_incoming WHERE extension = ?";
+		$sql = "SELECT scheme FROM superfecta_to_incoming WHERE extension = ? AND cidnum = ?";
 		$q = $db->prepare($sql);
-		$q->execute(array($info[0]));
+		$q->execute(array($info[0], $info[1])); // protect against $info array too small or too large
 		$scheme = $q->fetchColumn();
 
 		$first = '<option value="ALL|ALL" {$selected}>'._('ALL').'</option>';
