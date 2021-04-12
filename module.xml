@@ -2,7 +2,7 @@
 	<rawname>superfecta</rawname>
 	<repo>extended</repo>
 	<name>CID Superfecta</name>
-	<version>16.0.8</version>
+	<version>16.0.9</version>
 	<type>setup</type>
 	<category>Admin</category>
 	<publisher>Sangoma Technologies Corporation</publisher>
@@ -13,6 +13,7 @@
 	</description>
   	<more-info>https://wiki.freepbx.org/display/FPG/CID+Superfecta</more-info>
 	<changelog>
+		*16.0.9* functions.inc.php edited online with Bitbucket 
 		*16.0.8* Packaging of ver 16.0.8
 		*16.0.7* FREEPBX-18814 Adding Telnyx module 
 		*16.0.6* FREEI-2790 bug fix of paranthassis { for array 
