@@ -1,0 +1,117 @@
+<?php /*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+ * Developer Notes:
+ * Using Voip Innovations Apidaze API, return either Caller ID name and/or Fraud Score
+ * associated with a Caller ID number
+ *
+ * Version History
+ * 2020-12-22 COVID Christmas - first commit
+ * 2021-04-29 General update and cleanup
+ *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/ class VOIP_Innovations_Apidaze extends superfecta_base {
+    public $description = "Gets Caller ID and Fraud Score via the VOIP Innovations 'Apidaze' API. https://carrierservices.sangoma.com/";
+    public $version_requirement = "2.11";
+	public function __construct() {
+		$this->source_param = array(
+			'Login_Name' => array(
+				'description' => _('Login name for VI Apidaze API'),
+				'type' => 'text'
+			),
+			'Password' => array(
+				'description' => _('Password for VI Apidaze API'),
+				'type' => 'password'
+			),
+			'Use_for_Name_Lookup' => array(
+				'description' => _('Use returned name as Caller ID Name '),
+				'type' => 'checkbox',
+				'default' => true),
+			'Use_For_SPAM_Scoring' => array(
+				'description' => _('Use returned fraud score for SPAM interception'),
+				'type' => 'checkbox',
+				'default' => true),
+			'SPAM_Threshold' => array(
+				'description' => _('Threshold above which call is treated as SPAM. Default = 70'),
+				'type' => 'number',
+				'default' => '70'),
+			
+		);
+	}
+	function get_caller_id($thenumber, $run_param=array()) {
+		if(!empty($run_param['Login_Name']) && !empty($run_param['Password'])) {
+			$caller_id = null;
+			if (empty($run_param['SPAM_Threshold'])) {
+				$run_param['SPAM_Threshold'] = 70;
+			}
+			
+			
+			// get DID if set, otherwise use CID
+			if(isset($this->trunk_info['dnid'])){
+				$from_did = $this->trunk_info['dnid'];
+			} else {
+				$from_did = $thenumber;
+			}
+			$data = array(
+			  'login' => $run_param['Login_Name'],
+			  'password' => $run_param['Password'],
+			  'caller_number' => $thenumber,
+			  'callee_number' => $from_did,
+			);
+			
+			$options = array(
+				'http' => array(
+					'method' => 'POST',
+					'content' => json_encode( $data ),
+					'header'=> "Content-Type: application/json\r\n" .
+					"Accept: application/json\r\n"
+				),
+			);
+			$url = "https://cnam-api.voipinnovations.com/CNAM";
+			$context = stream_context_create( $options );
+			
+			try {
+				$result = file_get_contents( $url, false, $context );
+			} catch (Exception $e) {
+				$this->DebugPrint(_("Caught exception: ".$e->getMessage()));
+			}
+			
+		} else {
+			// No user or password, we exit without trying
+			$this->DebugPrint(_("Apidaze name and/or password is not set. Skipping"));
+			return;
+		}
+		$response = (array) json_decode($result,true);
+		if (!isset($result) || empty($result) || empty($response['callId'])) {
+			$this->DebugPrint(_("API query failed, exiting"));
+			Return;
+		}
+		$this->DebugPrint(_("Calling Name Status: ".$response['calling_name_status']));
+		$this->DebugPrint(_("Calling Name: ".$response['calling_name']));
+		$this->DebugPrint(_("Presentation Indicator: ".$response['presentation_indicator']));
+		$this->DebugPrint(_("Call Treatment: ".$response['call_treatment']));
+		$this->DebugPrint(_("Fraud Score: ".$response['fraud_score']));
+		$this->DebugPrint(_("Original Calling Name: ".$response['original_calling_name']));
+		$this->DebugPrint(_("callId: ".$response['callId']));
+		$this->DebugPrint(_("Use for Name Lookup: ".$run_param['Use_for_Name_Lookup']));
+		$this->DebugPrint(_("Use for SPAM Scoring: ".$run_param['Use_For_SPAM_Scoring']));
+		$this->DebugPrint(_("SPAM Threshold set: ".$run_param['SPAM_Threshold']));
+		
+		if ($run_param['Use_For_SPAM_Scoring']==="on") {
+			if ($response['fraud_score'] >= $run_param['SPAM_Threshold']) {
+				$this->DebugPrint(_("Fraud Score exceeds threshold, setting as SPAM"));
+				$this->spam = true;
+			} else {
+				$this->DebugPrint(_("Fraud Score does not exceed threshold"));
+			}
+		} else {
+			$this->DebugPrint(_("Not using returned Fraud Score"));
+		}
+		if ($run_param['Use_for_Name_Lookup']==="on") {
+			if ($response['calling_name_status'] == "available") {
+				$caller_id = strip_tags(trim($response['calling_name']));
+				$this->DebugPrint(_("Setting CallerID Name to: ".$caller_id));
+				return($caller_id);
+			}
+		} else {
+			$this->DebugPrint(_("Not using returned Caller ID Name"));
+		}
+		Return;
+	}
+}
