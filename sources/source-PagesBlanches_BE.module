@@ -1,0 +1,46 @@
+<?php
+/*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+Developer Notes:
+TOS: https://www.pagesblanches.be/static/conditions-d-utilisation/?lang=fr
+TOS Date: unknown
+
+Version History
+2021-05-19 Initial Version
+*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
+class Infobel extends superfecta_base {
+
+    public $description,$source_param;
+    public $version_requirement = "2.11";
+
+    public function __construct() {
+      $this->description = "http://www.pagesblanches.be- "._("This source includes business and residential data for Belgium. Users may be subject to limits as imposed on by the Pageblanches terms of service. Use of this lookup source requires users to agree and conform with the TOS.");
+    }
+
+    function get_caller_id($thenumber, $run_param=array()) {
+        $caller_id = null;
+
+        $this->DebugPrint('Searching PagesBlanches...');
+
+        $url = "https://www.pagesblanches.be/chercher/personne/"
+
+        $url = $url . $loc_number . "/-/";
+        $sresult = $this->get_url_contents($url);
+
+        preg_match_all('data-small-result=\'{"title":\"(.*)\","href"/U', $sresult, $sname);
+
+        if (count($sname[1]) > 0) {
+            $sname = $sname[1][0];
+        } else {
+            $sname = "";
+        }
+
+        if ($sname != "") {
+            $caller_id = strip_tags($sname);
+        } else {
+            $this->DebugPrint("not found");
+        }
+
+        return $caller_id;
+    }
+
+}
