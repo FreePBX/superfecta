@@ -1,5 +1,20 @@
 <?php
-
+/*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** 
+ * Say_No_To_0870_UK superfecta module
+ * 
+ * Written By: Unknown
+ * 
+ * Gets caller ID name from the site www.saynoto0870.com
+ *
+ * Terms of service: https://www.saynoto0870.com/disclaimer.php
+ *        As of 2021-07-31 superfecta usage appears to be allowable for personal use
+ *                "You may view, download for caching purposes only, and print pages from the website for your own personal use ..."
+ * 
+ * Version History:
+ * 		Unknown    - Initial Release
+ * 		2021-07-31 - Review site TOS and update URL FREEPBX-22390
+ * 
+ *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
 class Say_No_To_0870_UK extends superfecta_base {	
 	public $version_requirement = "2.11";
 
@@ -20,7 +35,7 @@ class Say_No_To_0870_UK extends superfecta_base {
 			$name = "";
 
 			// numbersearch.php requires data to be posted
-			$url = "http://www.saynoto0870.com/numbersearch.php";
+			$url = "https://www.saynoto0870.com/numbersearch.php";
 			$PostData = array("number" => $thenumber);
 
 			// Grab the first result that matches our phone number
