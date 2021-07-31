@@ -10,6 +10,7 @@
  * 2010-03-16       created for ver 2.2 by zorka
  * 2013-08-16       migrated to 3.x platform
  * 2015-05-21       url fix by themurman
+ * 2021-07-31       updated regex
  *
  **** * **** * **** * **** * **** * **** * **** * **** * **** * **** * **** * **** * **** */
 
@@ -33,8 +34,7 @@ class Can411 extends superfecta_base {
 			$name = "";
 
 			$url = "https://411.ca/search/?q=$thenumber&st=reverse";    //working May 20, 2015
-
-			$pattern = '/itemprop=\"name\">(.+?)<\/a>/i';   // working May 20, 2015
+			$pattern = '/itemprop=\"name\">(.+?)<\/h4>/i';              // working 2021-07-31
 			// Patterns to search for
 			$regexp = array(
 				$pattern,
