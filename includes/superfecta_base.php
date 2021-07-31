@@ -693,13 +693,79 @@ class superfecta_base {
 				}
 
 				if (!$number_error) {
-					// Initialise $validSTD and $validNGN
-					$validSTD = false;
-					$validNGN = false;
-
 					// Convert 441xxx to 01xxx if delivered in International Format
 					$thenumber = (substr($thenumber, 0, 2) == 44) ? "0" . substr($thenumber, 2) : $thenumber;
 					$prefix2 = substr($thenumber, 0, 5);
+					
+					// at this point $thenumber does not have a country code and does have a leading zero
+					// series of checks based on the numeric prefix see FREEPBX-22293
+					
+					// check for 0[12]XX. Geographic with STD code - 01 and 02 
+					if ($this->match_pattern("0[12]XX.", $thenumber)) {
+						$this->DebugPrint("valid UK Geographic with STD code - 01 and 02");
+						Return true;
+					}
+					
+					// check for 03XX. UK-wide non-geographic - 03
+					if ($this->match_pattern("03XX.", $thenumber)) {
+						$this->DebugPrint("valid UK UK-wide non-geographic - 03");
+						Return true;
+					}
+					
+					// check for 05[56]XX. Corporate and VOIP phone numbers Note: 0500 Freephone withdrawn in 2017
+					if ($this->match_pattern("05[56]XX.", $thenumber)) {
+						$this->DebugPrint("valid UK Corporate and VOIP phone numbers");
+						Return true;
+					}					
+					
+					// check for 07[123456789]XX. Mobile numbers and pagers
+					if ($this->match_pattern("07[123456789]XX.", $thenumber)) {
+						$this->DebugPrint("valid UK Mobile numbers and pagers");
+						Return true;
+					}
+					
+					// check for 080[08]XX.	Freephone - 0800 and 0808
+					if ($this->match_pattern("080[08]XX.", $thenumber)) {
+						$this->DebugPrint("valid UK Freephone - 0800 and 0808");
+						Return true;
+					}
+					
+					// check for 082XX. Internet for Schools - 082
+					if ($this->match_pattern("082XX.", $thenumber)) {
+						$this->DebugPrint("valid UK Internet for Schools - 082");
+						Return true;
+					}
+					
+					// check for 084[345]XX. Non-geographic "local rate" - 0843/0844/0845
+					if ($this->match_pattern("084[345]XX.", $thenumber)) {
+						$this->DebugPrint("valid UK Non-geographic local rate - 0843/0844/0845");
+						Return true;
+					}
+					
+					// check for 087[0123]XX.	Non-geographic "national rate" - 0870/0871/0872/0873
+					if ($this->match_pattern("087[0123]XX.", $thenumber)) {
+						$this->DebugPrint("valid UK Non-geographic national rate - 0870/0871/0872/0873");
+						Return true;
+					}
+					
+					// check for 070XX. Personal number services
+					if ($this->match_pattern("070XX.", $thenumber)) {
+						$this->DebugPrint("valid UK Personal number services");
+						Return true;
+					}
+					
+					// check for 09XX. Premium Rate numbers
+					if ($this->match_pattern("09XX.", $thenumber)) {
+						$this->DebugPrint("valid UK Premium Rate number");
+						Return true;
+					}
+					
+					// the remainder of the legacy UK number checks that follow are redundant, but keeping them for now
+					// while rules above are vetted  lgaetz 2021-07-31
+					
+					// Initialise $validSTD and $validNGN
+					$validSTD = false;
+					$validNGN = false;
 
 					if ($prefix2 < 3000) {
 						// Check for valid UK STD
