@@ -2,7 +2,7 @@
 	<rawname>superfecta</rawname>
 	<repo>extended</repo>
 	<name>CID Superfecta</name>
-	<version>16.0.10</version>
+	<version>16.0.11</version>
 	<type>setup</type>
 	<category>Admin</category>
 	<publisher>Sangoma Technologies Corporation</publisher>
@@ -13,6 +13,7 @@
 	</description>
   	<more-info>https://wiki.freepbx.org/display/FPG/CID+Superfecta</more-info>
 	<changelog>
+		*16.0.11* FREEPBX-22390 update url for SayNoTo0870 
 		*16.0.10* FREEPBX-22205 New module for VOIP Innovations Apidaze 
 		*16.0.9* functions.inc.php edited online with Bitbucket 
 		*16.0.8* Packaging of ver 16.0.8
