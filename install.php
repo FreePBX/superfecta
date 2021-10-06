@@ -40,7 +40,7 @@ if (DB::IsError($check)) {
 
 //create the cache table
 $sql = "CREATE TABLE IF NOT EXISTS superfectacache (
-	number BIGINT UNSIGNED NOT NULL,
+	number VARCHAR(45) NOT NULL,
 	callerid VARCHAR(45) NOT NULL,
 	dateentered DATETIME NOT NULL,
 	PRIMARY KEY (number)
