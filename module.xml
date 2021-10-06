@@ -57,7 +57,7 @@
 			<field name="value" type="text" notnull="false"/>
 		</table>
 		<table name="superfectacache">
-			<field name="number" type="bigint" unsigned="true" primarykey="true"/>
+			<field name="number" type="string" length="45" primarykey="true"/>
 			<field name="callerid" type="string" length="45"/>
 			<field name="dateentered" type="datetime"/>
 		</table>
