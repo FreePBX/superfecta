@@ -2,7 +2,7 @@
 	<rawname>superfecta</rawname>
 	<repo>extended</repo>
 	<name>CID Superfecta</name>
-	<version>15.0.2.32</version>
+	<version>15.0.2.33</version>
 	<type>setup</type>
 	<category>Admin</category>
 	<publisher>Sangoma Technologies Corporation</publisher>
@@ -13,6 +13,7 @@
 	</description>
   	<more-info>https://wiki.freepbx.org/display/FPG/CID+Superfecta</more-info>
 	<changelog>
+		*15.0.2.33* FREEI-3731 used bind parameter to the specify variable name in a sql statement 
 		*15.0.2.32* FREEPBX-22390 update url for SayNoTo0870 
 		*15.0.2.31* FREEPBX-22205 New module for VOIP Innovations Apidaze 
 		*15.0.2.30* functions.inc.php edited online with Bitbucket 
