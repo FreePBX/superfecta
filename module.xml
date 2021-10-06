@@ -2,7 +2,7 @@
 	<rawname>superfecta</rawname>
 	<repo>extended</repo>
 	<name>CID Superfecta</name>
-	<version>14.0.29</version>
+	<version>14.0.30</version>
 	<type>setup</type>
 	<category>Admin</category>
 	<publisher>Sangoma Technologies Corporation</publisher>
@@ -13,6 +13,7 @@
 	</description>
   	<more-info>https://wiki.freepbx.org/display/FPG/CID+Superfecta</more-info>
 	<changelog>
+		*14.0.30* FREEI-3731 used bind parameter to the specify variable name in a sql statement 
 		*14.0.29* FREEPBX-18814 Adding Telnyx module 
 		*14.0.28* Packaging of ver 14.0.28
 		*14.0.27* Fixing FREEPBX-20992 Adding code to fix Connectwise connectivity issue 
