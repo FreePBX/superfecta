@@ -2,7 +2,7 @@
 	<rawname>superfecta</rawname>
 	<repo>extended</repo>
 	<name>CID Superfecta</name>
-	<version>13.0.4.10</version>
+	<version>13.0.4.11</version>
 	<type>setup</type>
 	<category>Admin</category>
 	<publisher>Sangoma Technologies Corporation</publisher>
@@ -13,6 +13,7 @@
 	</description>
   	<more-info>https://wiki.freepbx.org/display/FPG/CID+Superfecta</more-info>
 	<changelog>
+		*13.0.4.11* Packaging of ver 13.0.4.11
 		*13.0.4.10* FREEI-3731 used bind parameter to the specify variable name in a sql statement 
 		*13.0.4.9* Packaging of ver 13.0.4.9
 		*13.0.4.8* FREEPBX-20557 XSS in Superfecta.class.php 
