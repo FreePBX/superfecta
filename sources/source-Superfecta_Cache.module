@@ -85,7 +85,7 @@ class Superfecta_Cache extends superfecta_base {
         if ((!$rule_match['status']) || (!$rule_match['number'])) {
             if (!$cache_found && ($first_caller_id != '')) {
                 $sql = "REPLACE INTO superfectacache (number,callerid,dateentered)
-									VALUES(':number',':calledid',NOW())";
+									VALUES(:number,:calledid,NOW())";
                 $stmt = $this->db->prepare($sql);
                 $stmt->bindParam(':number', $thenumber);
                 $stmt->bindParam(':calledid', $first_caller_id);
