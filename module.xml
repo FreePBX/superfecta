@@ -2,7 +2,7 @@
 	<rawname>superfecta</rawname>
 	<repo>extended</repo>
 	<name>CID Superfecta</name>
-	<version>16.0.13</version>
+	<version>16.0.14</version>
 	<type>setup</type>
 	<category>Admin</category>
 	<publisher>Sangoma Technologies Corporation</publisher>
@@ -13,6 +13,7 @@
 	</description>
   	<more-info>https://wiki.freepbx.org/display/FPG/CID+Superfecta</more-info>
 	<changelog>
+		*16.0.14* FREEPBX-22959 FREEPBX-22314 CID Superfecta suppress accented characters 
 		*16.0.13* Packaging of ver 16.0.13
 		*16.0.12* FREEI-3731 used bind parameter to the specify variable name in a sql statement 
 		*16.0.11* FREEPBX-22390 update url for SayNoTo0870 
