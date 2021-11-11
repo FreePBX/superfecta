@@ -220,7 +220,7 @@ class Superfecta extends FreePBX_Helpers implements BMO {
 				// convert CNAM to UTF-8 to fix
 				if (function_exists('mb_convert_encoding')) {
 					$this->out("Converting result to UTF-8");
-					$callerid = mb_convert_encoding($callerid, "UTF-8");
+					$callerid = mb_convert_encoding($callerid, "UTF-8", "ISO-8859-1");
 				}
 
 				//send off
