@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-12-03 15:43+0530\n"
-"PO-Revision-Date: 2021-11-21 15:00+0000\n"
+"PO-Revision-Date: 2021-11-23 22:00+0000\n"
 "Last-Translator: Javier Pastor <jpastor@cerebelum.net>\n"
 "Language-Team: Spanish <http://weblate.freepbx.org/projects/freepbx/"
 "superfecta/es/>\n"
@@ -47,7 +47,7 @@ msgstr ""
 
 #: superfecta.i18n.php:6
 msgid "Admin"
-msgstr "Administ"
+msgstr "Admin"
 
 #: views/add_scheme.php:149 views/scheme.php:89
 msgid "CID Prefix URL"
@@ -613,7 +613,7 @@ msgstr "Dónde enviar la llamada cuando se detecta como spam"
 #: Superfecta.class.php:523 functions.inc.php:27 views/add_scheme.php:195
 #: views/add_scheme.php:222 views/scheme.php:30
 msgid "Yes"
-msgstr "Si"
+msgstr "Sí"
 
 #: Superfecta.class.php:613
 msgid "You cannot create a scheme the same name as an existing scheme"
