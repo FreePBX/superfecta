@@ -1,0 +1,54 @@
+<?php
+
+/**
+ * History
+ * 2022/04/08 - Init (Javier Pastor aka VSC55)
+ */
+
+class Responder_o_No extends superfecta_base {
+
+	public $description;
+	public $version_requirement = "2.11";
+
+	public function __construct()
+	{
+		$this->description = "http://www.responderono.es - "._("A datasource devoted to identifying telemarketers. These listings are provided by other users of this service.");
+		$this->source_param = array(
+			'SPAM_Threshold' => array(
+				'description' => _('Specify the number of listings required to mark a call as spam.'),
+				'type' => 'number',
+				'default' => 10
+			)
+		);
+	}
+
+	function get_caller_id($thenumber, $run_param=array())
+	{
+		// Get Config
+		$SPAM_Threshold = isset($run_param['SPAM_Threshold']) ? $run_param['SPAM_Threshold'] : $this->source_param['SPAM_Threshold']['default'];
+
+		//Test Number: 623422576 -> SPAM = YES
+		$url = sprintf("https://www.responderono.es/numero-de-telefono/%s", $thenumber);
+
+		// regex patterns to search for
+		$regexp = array('~<li class=\'active\'>(.+?)x negativa</li>~');
+
+		// search for persons match
+		if ($this->SearchURL($url, $regexp, $match)) {
+			$score = $this->ExtractMatch($match);
+			if ((! empty($score)) && (is_numeric($score))) 
+			{
+				$this->DebugEcho( sprintf(_('Value of %s returned...'), $score));
+				if ($score > $SPAM_Threshold)
+				{
+					$this->spam = true;
+					$this->DebugPrint(_(" determined to be SPAM"));
+				}
+				else
+				{
+					$this->DebugPrint(_(" not a SPAM caller"));
+				}
+			}
+		}
+	}
+}
