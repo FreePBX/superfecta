@@ -1,0 +1,105 @@
+<?php
+/**
+ * Developer Notes:
+ *
+ * Version History 
+ * 2022/04/09 - Init (Javier Pastor aka VSC55)
+ * 
+ */
+
+class Send_to_Telegram extends superfecta_base {
+
+    public $description;
+    public $version_requirement = "2.11";
+
+	public function __construct()
+    {
+        $this->description = _("This source will send the CID number and the CID name to a Bot from Telegram.");
+        $this->source_param = array(
+            'Token' => array(
+				'description' => _('Telegram Bot Token. Contact <a href="https://telegram.me/BotFather" target="_blank">@BotFather</a> on Telegram to get one.'),
+				'type' => 'text',
+			),
+            'Chat_ID' => array(
+				'description' => _('Telegram Chat ID, Group ID, Channel ID or @channelusername. Contact <a href="https://telegram.me/myidbot" target="_blank">@myidbot</a> on Telegram to get an ID.'),
+				'type' => 'text',
+			),
+            'Message_Format' => array(
+                'description' => _('Specify a messenger format to send CID/CNAM data to. Use the format \'Incoming call from [NAME] ([NUMBER])\' where [NAME] and [NUMBER] will have actual values substituted'),
+                'type' => 'text',
+                'default' => _("Incoming call from [NAME] ([NUMBER])")
+            ),
+        );
+	}
+
+    function post_processing($cache_found, $winning_source, $first_caller_id, $run_param, $thenumber)
+    {
+        // Get Config
+        $Token	        = isset($run_param['Token']) ? $run_param['Token'] : "";
+        $Chat_ID	    = isset($run_param['Chat_ID']) ? $run_param['Chat_ID'] : "";
+        $Message_Format = isset($run_param['Message_Format']) ? $run_param['Message_Format'] : $this->source_param['Message_Format']['default'];
+
+        $name = empty($first_caller_id) ? _('Unknown') : $first_caller_id;
+        
+        if ((! empty($Token)) && (! empty($Chat_ID)))
+        {
+            // replace [NAME] and [NUMBER] placeholders with actual urlencoded values
+            $msg = $Message_Format;
+            $msg = str_ireplace('[NAME]',  $name, $msg);
+            $msg = str_ireplace('[NUMBER]', $thenumber, $msg);
+
+            $msg = "\xE2\x98\x8E " . $msg;
+
+            $response = $this->Send_Telegram($Token, $Chat_ID, $msg);
+            if (! is_null($response)) {
+                $this->DebugPrint(_("Send OK!"));
+            }
+        }
+        else
+        {
+            $this->DebugPrint(_("No Token or ID defined... Skipping!"));
+        }
+    }
+
+    private function Send_Telegram($token, $Chat_ID, $msg) 
+    {
+        $url    = sprintf('https://api.telegram.org/bot%s/sendMessage', $token);
+        $this->DebugPrint(sprintf(_("Send to URL: %s"), $url));
+        $params = [
+            'chat_id'    => $Chat_ID, 
+            'text'       => $msg,
+            'parse_mode' => 'Markdown'
+        ];
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_HEADER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, ($params));
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+
+        $result = curl_exec($ch);
+        $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        // failed to execute cURL request
+        if ($result === false) {
+            $this->DebugPrint(sprintf(_('cURL Error: %s'), curl_error($ch)));
+            $result = null;
+        }
+
+        // API Error
+        if ($status !== 200)
+        {
+            $this->DebugPrint(sprintf(_('Telegram Error (%s): %s'), $status, strip_tags($result)));
+            $result = null;
+        }
+        else
+        {
+            $result = json_decode($result);
+            if ( is_null($result))
+            {
+                $this->DebugPrint(_('Telegram: Parse Error!'));
+            }
+        }
+        curl_close($ch);
+        return $result;
+    }
+}
