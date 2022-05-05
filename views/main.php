@@ -1,7 +1,7 @@
 <div class="panel panel-info">
   <div class="panel-heading">
     <div class="panel-title">
-      <a href="#" data-toggle="collapse" data-target="#moreinfo"><i class="glyphicon glyphicon-info-sign"></i></a>&nbsp;&nbsp;&nbsp;<?php echo _('What is CallerID Superfecta?')?></div>
+      <a href="#" data-toggle="collapse" data-target="#moreinfo"><i class="fa fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;<?php echo _('What is CallerID Superfecta?')?></div>
   </div>
   <!--At some point we can probably kill this... Maybe make is a 1 time panel that may be dismissed-->
   <div class="panel-body collapse" id="moreinfo">
@@ -34,8 +34,8 @@
         </td>
         <td class="scheme-actions">
           <i class="fa fa-toggle-<?php echo $scheme['powered'] ? 'on' : 'off'?>" data-type="power"></i>
-    			<i class="fa fa-arrow-down <?php echo ($scheme['showdown']) ? '' : 'hidden'?>" data-type="down"></i>
-    			<i class="fa fa-arrow-up <?php echo ($scheme['showup']) ? '' : 'hidden'?>" data-type="up"></i>
+    			<i class="fa fa-arrow-down <?php echo ($scheme['showdown']) ? '' : 'd-none'?>" data-type="down"></i>
+    			<i class="fa fa-arrow-up <?php echo ($scheme['showup']) ? '' : 'd-none'?>" data-type="up"></i>
     			<i class="fa fa-files-o" data-type="duplicate"></i>
     			<i class="fa fa-trash-o" data-type="delete"></i>
         </td>
