@@ -34,8 +34,8 @@
         </td>
         <td class="scheme-actions">
           <i class="fa fa-toggle-<?php echo $scheme['powered'] ? 'on' : 'off'?>" data-type="power"></i>
-    			<i class="fa fa-arrow-down <?php echo ($scheme['showdown']) ? '' : 'hidden'?>" data-type="down"></i>
-    			<i class="fa fa-arrow-up <?php echo ($scheme['showup']) ? '' : 'hidden'?>" data-type="up"></i>
+    			<i class="fa fa-arrow-down <?php echo ($scheme['showdown']) ? '' : 'd-none'?>" data-type="down"></i>
+    			<i class="fa fa-arrow-up <?php echo ($scheme['showup']) ? '' : 'd-none'?>" data-type="up"></i>
     			<i class="fa fa-files-o" data-type="duplicate"></i>
     			<i class="fa fa-trash-o" data-type="delete"></i>
         </td>
