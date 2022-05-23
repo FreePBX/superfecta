@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-12-03 15:43+0530\n"
-"PO-Revision-Date: 2022-04-13 13:00+0000\n"
+"PO-Revision-Date: 2022-05-25 00:00+0000\n"
 "Last-Translator: Santiago Pioli <spioli@sangoma.com>\n"
 "Language-Team: Spanish <http://weblate.freepbx.org/projects/freepbx/"
 "superfecta/es/>\n"
@@ -155,7 +155,7 @@ msgstr "Habilitar búsqueda de superfecta"
 
 #: views/scheme.php:18
 msgid "Enabled"
-msgstr "Activado"
+msgstr "Habilitado"
 
 #: includes/processors/superfecta_single.php:55
 #: includes/processors/superfecta_single.php:120
@@ -402,7 +402,7 @@ msgstr ""
 
 #: Superfecta.class.php:762
 msgid "Reset"
-msgstr "Restaurar"
+msgstr "Reiniciar"
 
 #: Superfecta.class.php:327
 msgid "Returned Result would be:"
