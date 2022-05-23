@@ -2,7 +2,7 @@
 	<rawname>superfecta</rawname>
 	<repo>extended</repo>
 	<name>CID Superfecta</name>
-	<version>16.0.17</version>
+	<version>16.0.18</version>
 	<type>setup</type>
 	<category>Admin</category>
 	<publisher>Sangoma Technologies Corporation</publisher>
@@ -13,6 +13,7 @@
 	</description>
   	<more-info>https://wiki.freepbx.org/display/FPG/CID+Superfecta</more-info>
 	<changelog>
+		*16.0.18* Reverting Bootstrap and dependent libs fixes 
 		*16.0.17* Packaging of ver 16.0.17
 		*16.0.16* FREEI-4793 
 		*16.0.15* FREEPBX-23437 and FREEPBX-23436 
