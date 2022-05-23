@@ -136,7 +136,7 @@ var scheme = "<?php echo $scheme_data['name']?>";
 	</div>
 	<div class="form-group">
 		<label><a href="javascript:return(false);" class="info"><?php echo _('Debug Level')?><span><?php echo _('Debug Level to display')?></span></a></label>
-		<select name="debug" id="debug_level" class="form-control mb-3">
+		<select name="debug" id="debug_level" class="form-control">
 			<option value="0"><?php echo _('NONE')?></option>
 			<option value="1" selected=""><?php echo _('INFO')?></option>
 			<option value="2"><?php echo _('WARN')?></option>
