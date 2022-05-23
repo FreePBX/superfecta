@@ -2,7 +2,7 @@
 	<rawname>superfecta</rawname>
 	<repo>extended</repo>
 	<name>CID Superfecta</name>
-	<version>16.0.17</version>
+	<version>17.0.1</version>
 	<type>setup</type>
 	<category>Admin</category>
 	<publisher>Sangoma Technologies Corporation</publisher>
@@ -13,23 +13,7 @@
 	</description>
   	<more-info>https://wiki.freepbx.org/display/FPG/CID+Superfecta</more-info>
 	<changelog>
-		*16.0.17* Packaging of ver 16.0.17
-		*16.0.16* FREEI-4793 
-		*16.0.15* FREEPBX-23437 and FREEPBX-23436 
-		*16.0.14* FREEPBX-22959 FREEPBX-22314 CID Superfecta suppress accented characters 
-		*16.0.13* Packaging of ver 16.0.13
-		*16.0.12* FREEI-3731 used bind parameter to the specify variable name in a sql statement 
-		*16.0.11* FREEPBX-22390 update url for SayNoTo0870 
-		*16.0.10* FREEPBX-22205 New module for VOIP Innovations Apidaze 
-		*16.0.9* functions.inc.php edited online with Bitbucket 
-		*16.0.8* Packaging of ver 16.0.8
-		*16.0.7* FREEPBX-18814 Adding Telnyx module 
-		*16.0.6* FREEI-2790 bug fix of paranthassis { for array 
-		*16.0.5* FREEPBX-20975 fix threshold logic 
-		*16.0.4* FREEPBX-21861 update harold austria regex 
-		*16.0.3* FREEPBX-21840 add trim to token and SID 
-		*16.0.2* Packaging of ver 16.0.2
-		*16.0.1alpha* 16.0.1 alpha release
+		*17.0.1alpha* 17.0.1 alpha release
 	</changelog>
 	<menuitems>
 		<superfecta needsenginedb="yes">CID Superfecta</superfecta>
@@ -102,6 +86,6 @@
 		</framework>
 	</hooks>
 	<supported>
-		<version>16.0</version>
+		<version>17.0</version>
 	</supported>
 </module>
