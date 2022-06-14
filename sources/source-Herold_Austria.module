@@ -3,10 +3,6 @@
 /*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
  * Developer Notes:
  *
- * There are two separate URLS for reverse searching, one for yellowpages one for ppl:
- *	http://www.herold.at/en/telefonbuch/telefon_$thenumber		- people
- *	http://www.herold.at/en/gelbe-seiten/telefon_$thenumber	 - business
- *  I could only get reverse searches to work for ppl
  *
  * herold.at Terms of Service:
  * As summarized in the post here on 2014-06-27
@@ -20,6 +16,7 @@
  * 2017-03-20	Again Herold has a new Theme. We need to change the regexp again
  * 2017-11-09	If the Caller ID is 'unknown', 'anonymous' or empty then skip the check
  * 2020-09-12	update regex per https://community.freepbx.org/t/superfecta-herold-austria/42997/15
+ * 2022-06-10   general update per https://community.freepbx.org/t/superfecta-herold-austria-not-working-anymore-they-changed-the-code/83830
  *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
 
 class Herold_Austria extends superfecta_base {
@@ -44,13 +41,15 @@ class Herold_Austria extends superfecta_base {
 			$thenumber=trim($thenumber,' ');
 		}
 
-		// Set the url we're searching for
-		$res_rul = "https://www.herold.at/telefonbuch/was_".$thenumber."/";// url for searching residential listings
-		$bus_url = "https://www.herold.at/gelbe-seiten/was_".$thenumber."/";// url for searching business listings
+		// Set the urls we're searching for
+		$res_rul = "https://www.herold.at/telefonbuch/suche/?term=".$thenumber."/";// url for searching residential listings
+		$bus_url = "https://www.herold.at/gelbe-seiten/suche/?term=".$thenumber."/";// url for searching business listings		
 
 		// regex patterns to search for
 		$regexp = array(
-			'~<h2><span itemprop="name">(.+?)</span>~', // working 2020-09-04 by Charles_Darwin
+			'~<h2><span itemprop="name">(.+?)</span>~', // reported broken 2022-06-10
+            '~<h2 class="business-content_heading__2ED5C"><a itemProp="name" data-clickpos="showdetails" href=".+?">(.+?)</a></h2>~',  // working 2022-06-10
+			'~<a rel="nofollow" href=".+?"><h2 class="white-pages-search-result-item_heading__1BDNn">(.+?)</h2></a>~',   // working 2022-06-10
 		);
 
 		// first search for Residential match
