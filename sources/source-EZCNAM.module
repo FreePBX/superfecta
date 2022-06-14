@@ -1,0 +1,61 @@
+<?php
+
+/*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+ * Developer Notes:
+ *
+ * Version History:
+ * 2022-06-13	Initial commit
+ *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
+
+class EZCNAM extends superfecta_base {
+
+	public $description = "https://www.ezcnam.com/ Commercial source for Caller ID Name data.";
+	public $version_requirement = "2.11";
+	public $source_param = array(
+		'Key' => array(
+		'description' => 'Your unique API key will be assigned to you when you create an EZCNAM account.',
+		'type' => 'text'
+	),
+        'Ignore_Keywords' => array(
+                'description' => 'If this source provides CNAM including any of the keywords listed here, the CNAM will be ignored and other sources will be used to find the value.<br>Separate keywords with commas.',
+                'type' => 'textarea',
+                'default' => 'unavailable, unknown'
+        ),
+    );
+
+    function get_caller_id($thenumber, $run_param=array()) {
+		$run_param['Key'] = isset($run_param['Key'])?trim($run_param['Key']):null;
+        $caller_id = null;
+        $thenumber = urlencode($thenumber);
+        $this->DebugPrint("Searching ezcnam.com ... ");
+
+        if ($run_param['Key'] == null) {
+			$this->DebugPrint("Lookups require account key, exiting ... ");
+			exit;
+        }
+		$url = "https://api.ezcnam.com/v1?key=".$run_param['Key']."&phone=".$thenumber."&out=text";
+        $sname = $this->get_url_contents($url);
+
+        if (strlen($sname) > 1) {
+                // convert list of ignore keywords into array
+                $key_words = array();
+                $temp_array = explode(',',(isset($run_param['Ignore_Keywords'])?$run_param['Ignore_Keywords']:$this->source_param['Ignore_Keywords']['default']));
+                foreach($temp_array as $val) {
+                    $key_words[] = trim($val);
+                }
+
+                // Remove all ignore keywords from the retuned CNAM string and compare the before and after.
+                $test_string = str_ireplace($key_words,'',$sname);
+                if($test_string == $sname) {
+                    $caller_id = $sname;
+                    $this->DebugPrint("CNAM determined good.");
+                } else {
+                    $this->DebugPrint(" '$sname' contains flagged key word(s), discarding ...");
+                }
+        } else {
+            $this->DebugPrint("CNAM not found.");
+        }
+        return($caller_id);
+    }
+
+}
