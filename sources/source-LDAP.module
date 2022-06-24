@@ -60,6 +60,9 @@ class LDAP extends superfecta_base {
 
     function get_caller_id($thenumber, $run_param=array()) {
         $caller_id = null;
+        if (isset($run_param['Filter_Length']) && !empty($run_param['Filter_Length'])) {
+            $thenumber = substr($thenumber, (-1*$run_param['Filter_Length']));
+        }
 
         $this->DebugPrint("Searching LDAP for number: {$thenumber}");
 
