@@ -1,0 +1,104 @@
+<?php
+/*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+ * Developer Notes:
+ *
+ * Version History
+ *     2020-10-14  Initial creation by hartmann1970@gmx.de
+ *     2020-10-15  added user and password
+ *     2022-04-10  added support for languages, parameter to set path to mosquitto_pub and test if exists
+ *
+ *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
+
+class Send_to_MQTT extends superfecta_base {
+
+    public $description;
+    public $version_requirement = "2.11";
+    public function __construct()
+    {
+        $this->description = _("This source will send CID number and name to an MQTT topic for external processing. The MQTT topic is added with DID and payload is JSON format. To use this feature, mosquitto has to be installed.");
+        $this->source_param = array(
+            'MQTT_broker' => array(
+                'description' => _('Specify FQDN or IP of MQTT broker. Use the format \'this.is.org\' or \'192.168.123.045\''),
+                'type' => 'text',
+                'default' => "10.0.0.10"
+            ),
+            'MQTT_port' => array(
+                'description' => _('Specify the port of the MQTT broker. Use the format \'1883\''),
+                'type' => 'number',
+                'default' => "1883"
+            ),
+            'MQTT_topic' => array(
+                'description' => _('Specify the topic to send CID/CNAM data to. Use the format \'this/is/my/topic\' without trailing slash.'),
+                'type' => 'text',
+                'default' => 'freepbx/calls'
+            ),
+            'MQTT_user' => array(
+                'description' => _('Specify the user. Neither spaces nor special characters allowed.'),
+                'type' => 'text',
+                'default' => ''
+            ),
+            'MQTT_password' => array(
+                'description' => _('Specify the password. Neither spaces nor special characters allowed.'),
+                'type' => 'text',
+                'default' => ''
+            ),
+            'MQTT_clientID' => array(
+                'description' => _('Specify the ClientID. Neither spaces nor special characters allowed.'),
+                'type' => 'text',
+                'default' => 'freePBX'
+            ),
+            'Default_DID' => array(
+                'description' => _('In cases where DID is unknown, substitute this string in its place.'),
+                'type' => 'text',
+                'default' => _('Unknown')
+            ),
+            'MQTT_Path' => array(
+                'description' => _('Path to mosquitto_pub.'),
+                'type' => 'text',
+                'default' => '/usr/bin/mosquitto_pub'
+            )
+        );
+    }
+
+    function post_processing($cache_found, $winning_source, $first_caller_id, $run_param, $thenumber) {
+        $mosquitto_Path = isset($run_param['MQTT_Path']) ? $run_param['MQTT_Path'] : $this->source_param['MQTT_Path']['default'];
+        if(! file_exists($mosquitto_Path)) {
+            $this->DebugPrint(sprintf(_('%s not found!'), $mosquitto_Path));
+        } else {
+            if (($run_param['MQTT_broker'] != '') && ($run_param['MQTT_topic'] != '')) {
+                $port = ' -p '. $run_param['MQTT_port'];
+                $broker = ' -h '. $run_param['MQTT_broker'];
+                $user = "";
+                if($run_param['MQTT_user'] != ''){
+                    $user = ' -u '. $run_param['MQTT_user'];
+                };
+                $password = "";
+                if($run_param['MQTT_password'] != ''){
+                    $password = ' -P '. $run_param['MQTT_password'];
+                };
+                $clientID = ' -i '. $run_param['MQTT_clientID'];
+                $from_did = "";
+                if(isset($this->trunk_info['dnid'])){
+                    $from_did = $this->trunk_info['dnid'];
+                } elseif (isset($run_param['Default_DID']) &&  $run_param['Default_DID'] != "") {
+                    $from_did = $run_param['Default_DID'];
+                } else {
+                    $from_did = $this->source_param['Default_DID']['default'];
+                }
+                $topic = ' -t '. $run_param['MQTT_topic']. '/'. $from_did;
+                $payload = ' -m \'{"number": "'. $thenumber. '","name": "'. $first_caller_id. '","extension": "'. $from_did. '","format": "'. $first_caller_id. ' ('. $thenumber. ')"}\'';
+                $this->DebugPrint(sprintf(_('Send to MQTT broker : %s'), $broker));
+                $this->DebugPrint(sprintf(_('Send to MQTT topic  : %s'), $topic));
+                $this->DebugPrint(sprintf(_('Send to MQTT payload: %s'), $payload));
+                $this->DebugPrint(sprintf(_('Send to MQTT did    : %s'), $from_did));
+                $command = $mosquitto_Path. $broker. $port. $user. $password. $clientID. $topic. $payload;
+                $this->DebugPrint(sprintf(_('Send to MQTT command: %s'), $command));
+                $output = shell_exec($command);
+                $this->DebugPrint(sprintf(_('Send to MQTT result : %s'), $output));
+
+                $value = $output;
+            }
+        }
+    }
+}
+

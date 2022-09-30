@@ -115,8 +115,8 @@ $(".enabled input").click(function() {
 			});
 		break;
 		case "off":
-			row.find(".fa-arrow-down").addClass("d-none");
-			row.find(".fa-arrow-up").addClass("d-none");
+			row.find(".fa-arrow-down").addClass("hidden");
+			row.find(".fa-arrow-up").addClass("hidden");
 			$("#sources tr").each(function(index) {
 				var eid = $(this).attr("id"), $this = this;
 				if (($(this).attr("id") != "row_header") && !$("#" + eid + "_enabled_yes").is(":checked") && parent_id != eid) {
@@ -312,12 +312,12 @@ function runDebug(scheme) {
 }
 
 function sort_scheme() {
-	$("#schemeorder_list li.scheme i.fa-arrow-down").removeClass("d-none");
-	$("#schemeorder_list li.scheme i.fa-arrow-down").removeClass("d-none");
-	$("#schemeorder_list li.scheme:last i.fa-arrow-down").addClass("d-none");
-	$("#schemeorder_list li.scheme:last i.fa-arrow-up").removeClass("d-none");
-	$("#schemeorder_list li.scheme:first i.fa-arrow-down").removeClass("d-none");
-	$("#schemeorder_list li.scheme:first i.fa-arrow-up").addClass("d-none");
+	$("#schemeorder_list li.scheme i.fa-arrow-down").removeClass("hidden");
+	$("#schemeorder_list li.scheme i.fa-arrow-down").removeClass("hidden");
+	$("#schemeorder_list li.scheme:last i.fa-arrow-down").addClass("hidden");
+	$("#schemeorder_list li.scheme:last i.fa-arrow-up").removeClass("hidden");
+	$("#schemeorder_list li.scheme:first i.fa-arrow-down").removeClass("hidden");
+	$("#schemeorder_list li.scheme:first i.fa-arrow-up").addClass("hidden");
 }
 
 function source_order() {
@@ -326,21 +326,21 @@ function source_order() {
 		var id = $(this).attr("id"), up = $(this).find(".fa-arrow-up"), down = $(this).find(".fa-arrow-down");
 		if (($(this).attr("id") != "row_header") && $("#" + id + "_enabled_yes").is(":checked")) {
 			if(index == 1) {
-				up.addClass("d-none");
+				up.addClass("hidden");
 				var nextid = $(this).next().attr("id");
 				if($("#" + nextid + "_enabled_yes").is(":checked")) {
-					down.removeClass("d-none");
+					down.removeClass("hidden");
 				} else {
-					down.addClass("d-none");
+					down.addClass("hidden");
 				}
 			} else {
 				var nextid = $(this).next().attr("id");
 				if($("#" + nextid + "_enabled_yes").is(":checked")) {
-					down.removeClass("d-none");
+					down.removeClass("hidden");
 				} else {
-					down.addClass("d-none");
+					down.addClass("hidden");
 				}
-				up.removeClass("d-none");
+				up.removeClass("hidden");
 			}
 			source_order.push(id);
 		}
