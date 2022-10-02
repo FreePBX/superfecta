@@ -7,8 +7,8 @@
 			<div class="element-container">
 				<div class="row">
 					<div class="col-md-12">
-						<div class="">
-							<div class="row form-group">
+						<div class="row">
+							<div class="form-group">
 								<div class="col-md-3">
 									<label class="control-label" for="element1"><?php echo _('New Scheme Name')?></label>
 									<i class="fa fa-question-circle fpbx-help-icon" data-for="element1"></i>
@@ -27,8 +27,8 @@
 			<div class="element-container">
 				<div class="row">
 					<div class="col-md-12">
-						<div class="">
-							<div class="row form-group">
+						<div class="row">
+							<div class="form-group">
 								<div class="col-md-3">
 									<label class="control-label" for="DID"><?php echo _('DID Rules')?></label>
 									<i class="fa fa-question-circle fpbx-help-icon" data-for="DID"></i>
@@ -47,8 +47,8 @@
 			<div class="element-container">
 				<div class="row">
 					<div class="col-md-12">
-						<div class="">
-							<div class="row form-group">
+						<div class="row">
+							<div class="form-group">
 								<div class="col-md-3">
 									<label class="control-label" for="dialrules"><?php echo _('CID Rules')?></label>
 									<i class="fa fa-question-circle fpbx-help-icon" data-for="dialrules"></i>
@@ -76,8 +76,8 @@
 			<div class="element-container">
 				<div class="row">
 					<div class="col-md-12">
-						<div class="">
-							<div class="row form-group">
+						<div class="row">
+							<div class="form-group">
 								<div class="col-md-3">
 									<label class="control-label" for="element4"><?php echo _('Lookup Timeout')?></label>
 									<i class="fa fa-question-circle fpbx-help-icon" data-for="element4"></i>
@@ -96,8 +96,8 @@
 			<div class="element-container">
 				<div class="row">
 					<div class="col-md-12">
-						<div class="">
-							<div class="row form-group">
+						<div class="row">
+							<div class="form-group">
 								<div class="col-md-3">
 									<label class="control-label" for="element5"><?php echo _('Superfecta Processor')?></label>
 									<i class="fa fa-question-circle fpbx-help-icon" data-for="element5"></i>
@@ -123,8 +123,8 @@
 			<div class="element-container">
 				<div class="row">
 					<div class="col-md-12">
-						<div class="">
-							<div class="row form-group">
+						<div class="row">
+							<div class="form-group">
 								<div class="col-md-3">
 									<label class="control-label" for="element6"><?php echo _('Multifecta Timeout')?></label>
 									<i class="fa fa-question-circle fpbx-help-icon" data-for="element6"></i>
@@ -143,8 +143,8 @@
 			<div class="element-container">
 				<div class="row">
 					<div class="col-md-12">
-						<div class="">
-							<div class="row form-group">
+						<div class="row">
+							<div class="form-group">
 								<div class="col-md-3">
 									<label class="control-label" for="element6"><?php echo _('CID Prefix URL')?></label>
 									<i class="fa fa-question-circle fpbx-help-icon" data-for="element7"></i>
@@ -163,8 +163,8 @@
 			<div class="element-container">
 				<div class="row">
 					<div class="col-md-12">
-						<div class="">
-							<div class="row form-group">
+						<div class="row">
+							<div class="form-group">
 								<div class="col-md-3">
 									<label class="control-label" for="element8"><?php echo _('SPAM Text')?></label>
 									<i class="fa fa-question-circle fpbx-help-icon" data-for="element8"></i>
@@ -183,8 +183,8 @@
 			<div class="element-container">
 				<div class="row">
 					<div class="col-md-12">
-						<div class="">
-							<div class="row form-group">
+						<div class="row">
+							<div class="form-group">
 								<div class="col-md-3">
 									<label class="control-label" for="element9"><?php echo _('SPAM Text Substituted')?></label>
 									<i class="fa fa-question-circle fpbx-help-icon" data-for="element9"></i>
@@ -210,8 +210,8 @@
 			<div class="element-container">
 				<div class="row">
 					<div class="col-md-12">
-						<div class="">
-							<div class="row form-group">
+						<div class="row">
+							<div class="form-group">
 								<div class="col-md-3">
 									<label class="control-label" for="element10"><?php echo _('Enable SPAM Interception')?></label>
 									<i class="fa fa-question-circle fpbx-help-icon" data-for="element10"></i>
@@ -238,8 +238,8 @@
 				<div class="element-container">
 					<div class="row">
 						<div class="col-md-12">
-							<div class="">
-								<div class="row form-group">
+							<div class="row">
+								<div class="form-group">
 									<div class="col-md-3">
 										<label class="control-label" for="element11"><?php echo _('SPAM Send Threshold')?></label>
 										<i class="fa fa-question-circle fpbx-help-icon" data-for="element11"></i>
@@ -260,8 +260,8 @@
 				<div class="element-container">
 					<div class="row">
 						<div class="col-md-12">
-							<div class="">
-								<div class="row form-group">
+							<div class="row">
+								<div class="form-group">
 									<div class="col-md-3">
 										<label class="control-label" for="element12"><?php echo _('Send Spam Call To')?></label>
 										<i class="fa fa-question-circle fpbx-help-icon" data-for="element11"></i>

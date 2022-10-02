@@ -16,8 +16,8 @@ function superfecta_hook_core($viewing_itemid, $target_menuid) {
 		<div class="element-container">
 			<div class="row">
 				<div class="col-md-12">
-					<div class="">
-						<div class="row form-group">
+					<div class="row">
+						<div class="form-group">
 							<div class="col-md-3">
 								<label class="control-label" for="enable_superfecta">'. _("Enable Superfecta Lookup") .'</label>
 								<i class="fa fa-question-circle fpbx-help-icon" data-for="enable_superfecta"></i>
@@ -68,8 +68,8 @@ function superfecta_hook_core($viewing_itemid, $target_menuid) {
 		<div class="element-container">
 			<div class="row">
 				<div class="col-md-12">
-					<div class="">
-						<div class="row form-group">
+					<div class="row">
+						<div class="form-group">
 							<div class="col-md-3">
 								<label class="control-label" for="superfecta_scheme">'. _("Superfecta Scheme") .'</label>
 								<i class="fa fa-question-circle fpbx-help-icon" data-for="superfecta_scheme"></i>

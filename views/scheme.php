@@ -19,9 +19,9 @@ var scheme = "<?php echo $scheme_data['name']?>";
 	</tr>
 	<?php foreach($sources as $source) { ?>
 		<tr id="<?php echo $source['source_name']?>" data-name="<?php echo $source['source_name']?>" class="<?php echo $source['status']?> source">
-			<td><i class="fa fa-arrow-down <?php echo $source['showdown'] ? '' : 'd-none' ?>" data-type="down"></i></td>
-			<td><i class="fa fa-arrow-up <?php echo $source['showup'] ? '' : 'd-none' ?>" data-type="up"></i></td>
-			<td><i class="fa fa-wrench <?php echo $source['configure'] ? '' : 'd-none' ?>" data-type="configure"></i></td>
+			<td><i class="fa fa-arrow-down <?php echo $source['showdown'] ? '' : 'hidden' ?>" data-type="down"></i></td>
+			<td><i class="fa fa-arrow-up <?php echo $source['showup'] ? '' : 'hidden' ?>" data-type="up"></i></td>
+			<td><i class="fa fa-wrench <?php echo $source['configure'] ? '' : 'hidden' ?>" data-type="configure"></i></td>
 			<td><?php echo $source['pretty_source_name']?></td>
 			<td class="description"><?php echo $source['description']?></td>
 			<td class="enabled">
