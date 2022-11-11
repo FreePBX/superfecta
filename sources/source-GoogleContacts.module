@@ -22,7 +22,7 @@ class GoogleContacts extends superfecta_base {
                                 'default' => '',
                 ),
                 'Redirect_URI' => array(
-                                'description' => 'CHANGE ONLY IF YOU\'RE SURE: Redirect URI to be used with Google OAuth2.0 Authentication<br>- For Google OAuth2.0 Desktop application credentials:  Set to https://127.0.0.1<br>- For Google OAuth2.0 Web application credentials: Set to https://yourfreepbxserver.com/oauth2callback.php<br> (replace yourfreepbxserver.com with your FreePBX FQDN)',
+                                'description' => 'CHANGE ONLY IF YOU\'RE SURE: Redirect URI to be used with Google OAuth2.0 Authentication<br>- For Google OAuth2.0 Desktop application credentials:  Set to https://127.0.0.1/oauth2callback.php or https://127.0.0.1<br>- For Google OAuth2.0 Web application credentials: Set to https://yourfreepbxserver.com/oauth2callback.php<br> (replace yourfreepbxserver.com with your FreePBX FQDN)',
                                 'type' => 'text',
                                 'default' => '',
                 ),
@@ -69,7 +69,8 @@ class GoogleContacts extends superfecta_base {
         // You can use your own credentials from your own project
         $default_client_id = "1078714058048-r89e31tdhaqhsaqh2hhv1b0conloftum.apps.googleusercontent.com";
         $default_client_secret = "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";
-        $default_redirect_uri = "https://sbenlevypbx.ddns.net/oauth2callback.php";
+//        $default_redirect_uri = "https://127.0.0.1/oauth2callback.php";
+        $default_redirect_uri = "https://127.0.0.1";
 
 
         // Set up the auth manager for this person.
