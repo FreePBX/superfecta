@@ -4,9 +4,7 @@ require_once 'Google/Client.php';
 class GoogleAuthManager
 {
     var $dataDir = '/tmp';
-    var $redirect_uri = 'urn:ietf:wg:oauth:2.0:oob';
-//    var $redirect_uri = 'urn:ietf:wg:oauth:2.0:oob:auto'; // Requires ability to read title from on a web page served from google
-//    var $redirect_uri = 'localhost'; // Requires ability to receive a return message
+    var $redirect_uri = 'https://127.0.0.1';
 
     var $users_id;
     var $client;
@@ -15,6 +13,8 @@ class GoogleAuthManager
     var $scope;
     var $access_token_json;
     var $access_token_only;
+    var $append_phone_types;
+    var $use_nicknames;
 
     var $needCode = true;
 
@@ -23,20 +23,26 @@ class GoogleAuthManager
     }
 
     public function configure($params) {
-        if ((!isset($this->client_id))     && (!isset($params['client_id']))) return null;
-        if ((!isset($this->client_secret)) && (!isset($params['client_secret']))) return null;
-        if ((!isset($this->users_id))      && (!isset($params['user_id']))) return null;
-        if ((!isset($this->scope))         && (!isset($params['scope']))) return null;
+//        echo json_encode($params).'<br>';
+        if ((!isset($this->redirect_uri))   && (!isset($params['redirect_uri']))) return null;
+        if ((!isset($this->client_id))      && (!isset($params['client_id']))) return null;
+        if ((!isset($this->client_secret))  && (!isset($params['client_secret']))) return null;
+        if ((!isset($this->users_id))       && (!isset($params['user_id']))) return null;
+        if ((!isset($this->scope))          && (!isset($params['scope']))) return null;
+        if ((!isset($this->append_phone_types)) && (!isset($params['append_phone_types']))) return null;
+        if ((!isset($this->use_nicknames))  && (!isset($params['use_nicknames']))) return null;
 
-        if (isset($params['client_id']))     $this->client_id     = $params['client_id'];
-        if (isset($params['client_secret'])) $this->client_secret = $params['client_secret'];
-        if (isset($params['user_id']))       $this->users_id      = $params['user_id'];
-        if (isset($params['scope']))         $this->scope         = $params['scope'];
+        if (isset($params['redirect_uri']))         $this->redirect_uri         = $params['redirect_uri'];
+        if (isset($params['client_id']))            $this->client_id            = $params['client_id'];
+        if (isset($params['client_secret']))        $this->client_secret        = $params['client_secret'];
+        if (isset($params['user_id']))              $this->users_id             = $params['user_id'];
+        if (isset($params['scope']))                $this->scope                = $params['scope'];
+        if (isset($params['append_phone_types']))   $this->append_phone_types   = $params['append_phone_types'];
+        if (isset($params['use_nicknames']))        $this->use_nicknames        = $params['use_nicknames'];
 
         $this->client->setClientId($this->client_id);
         $this->client->setClientSecret($this->client_secret);
         $this->client->setRedirectUri($this->redirect_uri);
-//        $this->client->setLoginHint($user_google_id);
         $this->client->setAccessType("offline"); // So we can keep going when the user is not at a browser
         $this->client->addScope($this->scope);
 
@@ -48,7 +54,7 @@ class GoogleAuthManager
         if (isset($params['code'])) {
             $this->authenticateFromCode($params['code']);
         }
-	else if (isset($params['access_token_json'])) {
+        else if (isset($params['access_token_json'])) {
             $this->useGivenJsonAccessToken($params['access_token_json']);
         }
 
@@ -160,7 +166,7 @@ class GoogleAuthManager
 
     private function getJavascript() {
         echo <<< EOT
-<h3>Google Authorisation necessary</h3>
+<h3>Google Authorization necessary</h3>
 To do that, click on the link below. A new page will open. When you have given your consent,
 copy the code you are given into this box:
 EOT;
