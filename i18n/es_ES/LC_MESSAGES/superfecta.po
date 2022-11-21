@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-03 15:44+0530\n"
+"POT-Creation-Date: 2022-11-21 04:27+0000\n"
 "PO-Revision-Date: 2016-12-11 12:35+0200\n"
 "Last-Translator: Ernesto <ecasas@sangoma.com>\n"
 "Language-Team: Spanish <http://weblate.freepbx.org/projects/freepbx/"
@@ -33,7 +33,7 @@ msgstr "Acciones"
 msgid "Add Caller ID Scheme"
 msgstr "Agregar Esquema de Caller ID"
 
-#: page.superfecta.php:190
+#: page.superfecta.php:195
 msgid "Add Scheme"
 msgstr "Agregar Esquema"
 
@@ -84,6 +84,11 @@ msgstr ""
 msgid "Changed CNUM to: %s"
 msgstr "Cambiado CNUM a: %s"
 
+#: includes/oauth-google/oauth2callback.php:10
+#, php-format
+msgid "Copy the code: <b>%s</b>"
+msgstr ""
+
 #: views/scheme.php:130
 msgid "DID Number"
 msgstr "Número DID"
@@ -104,7 +109,7 @@ msgstr "Nivel de Debug"
 msgid "Debug Level to display"
 msgstr "Nivel de Debug a desplegar"
 
-#: Superfecta.class.php:331
+#: Superfecta.class.php:335
 msgid "Debug is on and set at level:"
 msgstr "La depuración está activada y establecida a nivel:"
 
@@ -112,7 +117,7 @@ msgstr "La depuración está activada y establecida a nivel:"
 msgid "Debug/Test Run Scheme"
 msgstr "Esquema de ejecución de depuración/prueba"
 
-#: Superfecta.class.php:335
+#: Superfecta.class.php:340
 msgid "Debugging Enabled, will not stop after first result"
 msgstr "Depuración habilitada, no se detendrá después del primer resultado"
 
@@ -161,6 +166,14 @@ msgstr "Habilitado"
 #: includes/processors/superfecta_single.php:120
 msgid "Executing"
 msgstr "Ejecutando"
+
+#: includes/oauth-google/oauth2callback.php:11
+msgid "Go back to configure Google in FreePBX."
+msgstr ""
+
+#: includes/oauth-google/oauth2callback.php:14
+msgid "Hit <b>Save</b>."
+msgstr ""
 
 #: views/scheme.php:141
 msgid "INFO"
@@ -315,7 +328,7 @@ msgstr ""
 "en cuenta que el orden no importa, por ejemplo. 0 | 01 + 1ZXXXXXXXXX hace lo "
 "mismo."
 
-#: page.superfecta.php:191
+#: page.superfecta.php:196
 msgid "List Schemes"
 msgstr "Listar Esquemas"
 
@@ -349,7 +362,7 @@ msgstr "Nombre"
 msgid "New Scheme Name"
 msgstr "Nombre Nuevo Esquema"
 
-#: Superfecta.class.php:535 functions.inc.php:29 views/add_scheme.php:197
+#: Superfecta.class.php:540 functions.inc.php:29 views/add_scheme.php:197
 #: views/add_scheme.php:224 views/scheme.php:32
 msgid "No"
 msgstr "No"
@@ -366,9 +379,18 @@ msgstr "No hay reglas de CID coincidentes. Saltando Esquema"
 msgid "No matching DID rules. Skipping scheme"
 msgstr "No hay reglas DID coincidentes. Saltando Esquema"
 
+#: includes/oauth-google/oauth2callback.php:15
+msgid "Now run debug again and it should work."
+msgstr ""
+
 #: views/main.php:23
 msgid "Order"
 msgstr "Orden"
+
+#: includes/oauth-google/oauth2callback.php:13
+msgid ""
+"Paste this code into the <b>Google Code</b> box replacing the <b>XXX</b>."
+msgstr ""
 
 #: views/scheme.php:134
 msgid "Phone Number"
@@ -400,11 +422,11 @@ msgstr ""
 "Provee uso simultaneo de, y control completo sobe muchas fuentes de datos de "
 "Identificador de Llamada."
 
-#: Superfecta.class.php:773
+#: Superfecta.class.php:778
 msgid "Reset"
 msgstr "Reinicio"
 
-#: Superfecta.class.php:346
+#: Superfecta.class.php:351
 msgid "Returned Result would be:"
 msgstr "El resultado devuelto sería:"
 
@@ -438,15 +460,15 @@ msgstr "Nombre del Esquema no puede ser blanco!"
 msgid "Scheme Name: %s"
 msgstr "Nombre Esquema: %s"
 
-#: Superfecta.class.php:334
+#: Superfecta.class.php:339
 msgid "Scheme Type:"
 msgstr "Tipo de Esquema:"
 
-#: Superfecta.class.php:620
+#: Superfecta.class.php:625
 msgid "Scheme can not be empty!"
 msgstr "Esquema no puede estar vacío!"
 
-#: Superfecta.class.php:415
+#: Superfecta.class.php:420
 msgid "Scheme names cannot be blank"
 msgstr "Nombres de Esquema no pueden estar en blanco"
 
@@ -505,7 +527,7 @@ msgstr ""
 msgid "Starting scheme %s"
 msgstr "Esquema de inicio %s"
 
-#: Superfecta.class.php:778
+#: Superfecta.class.php:783
 msgid "Submit"
 msgstr "Enviar"
 
@@ -536,11 +558,15 @@ msgstr "El SIS es: %s"
 msgid "The DID to test this scheme against"
 msgstr "El DID para probar este esquema"
 
-#: Superfecta.class.php:332
+#: Superfecta.class.php:336
+msgid "The DID:"
+msgstr ""
+
+#: Superfecta.class.php:337
 msgid "The Original Number:"
 msgstr "El Numero Original:"
 
-#: Superfecta.class.php:333
+#: Superfecta.class.php:338
 msgid "The Scheme:"
 msgstr "El Esquema:"
 
@@ -580,7 +606,7 @@ msgstr ""
 "Este texto se adjuntará a la información del identificador de llamadas para "
 "ayudarle a identificar las llamadas como llamadas de SPAM"
 
-#: page.superfecta.php:152
+#: page.superfecta.php:157
 msgid "Unknown Scheme"
 msgstr "Esquema Desconocido"
 
@@ -610,16 +636,20 @@ msgstr ""
 msgid "Where to send the call when it is detected as spam"
 msgstr "Dónde enviar la llamada cuando se detecta como spam"
 
-#: Superfecta.class.php:533 functions.inc.php:27 views/add_scheme.php:195
+#: Superfecta.class.php:538 functions.inc.php:27 views/add_scheme.php:195
 #: views/add_scheme.php:222 views/scheme.php:30
 msgid "Yes"
 msgstr "Si"
 
-#: Superfecta.class.php:624
+#: includes/oauth-google/oauth2callback.php:17
+msgid "You can close this window once done."
+msgstr ""
+
+#: Superfecta.class.php:629
 msgid "You cannot create a scheme the same name as an existing scheme"
 msgstr "No puede crear un esquema con el mismo nombre que un esquema existente"
 
-#: Superfecta.class.php:635
+#: Superfecta.class.php:640
 msgid "You cannot rename a scheme the same thing as an existing scheme"
 msgstr ""
 "No se puede cambiar el nombre de un esquema a lo mismo que un esquema "
@@ -629,7 +659,7 @@ msgstr ""
 msgid "no"
 msgstr "No"
 
-#: Superfecta.class.php:347
+#: Superfecta.class.php:352
 #, php-format
 msgid "result took %s seconds"
 msgstr "El resultado tomó %s segundos"

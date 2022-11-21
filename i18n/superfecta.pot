@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-06-10 01:43+0000\n"
+"POT-Creation-Date: 2022-11-21 04:27+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -31,7 +31,7 @@ msgstr ""
 msgid "Add Caller ID Scheme"
 msgstr ""
 
-#: page.superfecta.php:190
+#: page.superfecta.php:195
 msgid "Add Scheme"
 msgstr ""
 
@@ -80,6 +80,11 @@ msgstr ""
 msgid "Changed CNUM to: %s"
 msgstr ""
 
+#: includes/oauth-google/oauth2callback.php:10
+#, php-format
+msgid "Copy the code: <b>%s</b>"
+msgstr ""
+
 #: views/scheme.php:130
 msgid "DID Number"
 msgstr ""
@@ -101,7 +106,7 @@ msgstr ""
 msgid "Debug Level to display"
 msgstr ""
 
-#: Superfecta.class.php:331
+#: Superfecta.class.php:335
 msgid "Debug is on and set at level:"
 msgstr ""
 
@@ -110,7 +115,7 @@ msgstr ""
 msgid "Debug/Test Run Scheme"
 msgstr ""
 
-#: Superfecta.class.php:335
+#: Superfecta.class.php:340
 msgid "Debugging Enabled, will not stop after first result"
 msgstr ""
 
@@ -155,6 +160,14 @@ msgstr ""
 #: includes/processors/superfecta_single.php:55
 #: includes/processors/superfecta_single.php:120
 msgid "Executing"
+msgstr ""
+
+#: includes/oauth-google/oauth2callback.php:11
+msgid "Go back to configure Google in FreePBX."
+msgstr ""
+
+#: includes/oauth-google/oauth2callback.php:14
+msgid "Hit <b>Save</b>."
 msgstr ""
 
 #: views/scheme.php:141
@@ -241,7 +254,7 @@ msgid ""
 "does not matter, eg. 0|01+1ZXXXXXXXXX does the same thing."
 msgstr ""
 
-#: page.superfecta.php:191
+#: page.superfecta.php:196
 msgid "List Schemes"
 msgstr ""
 
@@ -277,7 +290,7 @@ msgstr ""
 msgid "New Scheme Name"
 msgstr ""
 
-#: Superfecta.class.php:535
+#: Superfecta.class.php:540
 #: functions.inc.php:29
 #: views/add_scheme.php:197
 #: views/add_scheme.php:224
@@ -297,8 +310,17 @@ msgstr ""
 msgid "No matching DID rules. Skipping scheme"
 msgstr ""
 
+#: includes/oauth-google/oauth2callback.php:15
+msgid "Now run debug again and it should work."
+msgstr ""
+
 #: views/main.php:23
 msgid "Order"
+msgstr ""
+
+#: includes/oauth-google/oauth2callback.php:13
+msgid ""
+"Paste this code into the <b>Google Code</b> box replacing the <b>XXX</b>."
 msgstr ""
 
 #: views/scheme.php:134
@@ -329,11 +351,11 @@ msgid ""
 "data sources."
 msgstr ""
 
-#: Superfecta.class.php:773
+#: Superfecta.class.php:778
 msgid "Reset"
 msgstr ""
 
-#: Superfecta.class.php:346
+#: Superfecta.class.php:351
 msgid "Returned Result would be:"
 msgstr ""
 
@@ -370,15 +392,15 @@ msgstr ""
 msgid "Scheme Name: %s"
 msgstr ""
 
-#: Superfecta.class.php:334
+#: Superfecta.class.php:339
 msgid "Scheme Type:"
 msgstr ""
 
-#: Superfecta.class.php:620
+#: Superfecta.class.php:625
 msgid "Scheme can not be empty!"
 msgstr ""
 
-#: Superfecta.class.php:415
+#: Superfecta.class.php:420
 msgid "Scheme names cannot be blank"
 msgstr ""
 
@@ -431,7 +453,7 @@ msgstr ""
 msgid "Starting scheme %s"
 msgstr ""
 
-#: Superfecta.class.php:778
+#: Superfecta.class.php:783
 msgid "Submit"
 msgstr ""
 
@@ -463,11 +485,15 @@ msgstr ""
 msgid "The DID to test this scheme against"
 msgstr ""
 
-#: Superfecta.class.php:332
+#: Superfecta.class.php:336
+msgid "The DID:"
+msgstr ""
+
+#: Superfecta.class.php:337
 msgid "The Original Number:"
 msgstr ""
 
-#: Superfecta.class.php:333
+#: Superfecta.class.php:338
 msgid "The Scheme:"
 msgstr ""
 
@@ -504,7 +530,7 @@ msgid ""
 "calls as SPAM calls"
 msgstr ""
 
-#: page.superfecta.php:152
+#: page.superfecta.php:157
 msgid "Unknown Scheme"
 msgstr ""
 
@@ -532,7 +558,7 @@ msgstr ""
 msgid "Where to send the call when it is detected as spam"
 msgstr ""
 
-#: Superfecta.class.php:533
+#: Superfecta.class.php:538
 #: functions.inc.php:27
 #: views/add_scheme.php:195
 #: views/add_scheme.php:222
@@ -540,11 +566,15 @@ msgstr ""
 msgid "Yes"
 msgstr ""
 
-#: Superfecta.class.php:624
+#: includes/oauth-google/oauth2callback.php:17
+msgid "You can close this window once done."
+msgstr ""
+
+#: Superfecta.class.php:629
 msgid "You cannot create a scheme the same name as an existing scheme"
 msgstr ""
 
-#: Superfecta.class.php:635
+#: Superfecta.class.php:640
 msgid "You cannot rename a scheme the same thing as an existing scheme"
 msgstr ""
 
@@ -553,7 +583,7 @@ msgstr ""
 msgid "no"
 msgstr ""
 
-#: Superfecta.class.php:347
+#: Superfecta.class.php:352
 #, php-format
 msgid "result took %s seconds"
 msgstr ""
