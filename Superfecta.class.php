@@ -328,7 +328,12 @@ class Superfecta extends FreePBX_Helpers implements BMO {
 				$tel 	= htmlEntities($_REQUEST['tel']);
 				$level 	= htmlEntities($_REQUEST['level']);
 				$schem 	= htmlEntities($_REQUEST['scheme']);
+				$thedid = htmlEntities($_REQUEST['thedid']);
+				if (empty($thedid)){
+				  $thedid = '5555555555';   
+				}
 				echo "<span class='header'>"._('Debug is on and set at level:')."</span> ". $level."</br>";
+				echo "<span class='header'>"._('The DID:')."</span> ".$thedid."</br>";
 				echo "<span class='header'>"._('The Original Number:')."</span> ".$tel."</br>";
 				echo "<span class='header'>"._('The Scheme:')."</span> ".$schem."</br>";
 				echo "<span class='header'>"._('Scheme Type:')."</span> SINGLEFECTA</br>";
@@ -337,8 +342,8 @@ class Superfecta extends FreePBX_Helpers implements BMO {
 				$time_start = microtime(true);
 				$callerid = $this->execute($schem,array(
 					'callerid' => $tel,
-					'did' => '5555555555',
-					'extension' => '5555555555',
+					'did'      => $thedid,
+					'extension'=> $thedid,
 					'calleridname' => 'CID Superfecta!',
 				), $level ,true);
 				$time_end = microtime(true);
@@ -479,9 +484,9 @@ class Superfecta extends FreePBX_Helpers implements BMO {
 				$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES (?, ?, ?)";
 				$sth = $this->Database->prepare($sql);
 				foreach($params as $key => $data) {
-										if (strcmp($data['type'], 'internal') != 0) {
-							$sth->execute(array($scheme . "_" . $source, $key, $_POST[$key]));
-										}
+					if (strcmp($data['type'], 'internal') != 0) {
+						$sth->execute(array($scheme . "_" . $source, $key, $_POST[$key]));
+					}
 				}
 				return array("status" => true);
 			case "options":

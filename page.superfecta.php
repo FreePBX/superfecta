@@ -27,6 +27,11 @@ switch($action) {
 	case "add":
 		$middle = load_view(__DIR__.'/views/add_scheme.php', array("scheme_data" => FreePBX::Superfecta()->getSchemeDefaults()));
 	break;
+
+	case "oauth2callback":
+		$middle = load_view(__DIR__.'/includes/oauth-google/oauth2callback.php');
+	break;
+
 	case "schemecopy":
 		//determine the highest order amount.
 		$query = "SELECT MAX(ABS(value)) FROM superfectaconfig WHERE field = 'order'";
