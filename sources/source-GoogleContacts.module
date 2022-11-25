@@ -5,7 +5,18 @@ class GoogleContacts extends superfecta_base {
     public $description = "Use your personal google contacts list to provide Caller ID.<br><br>This data source requires Superfecta Module version 2.11 or higher.";
     public $version_requirement = "2.11";
 
+	public $greek_chars = array(
+		'α','ά','Ά','Α','β','Β','γ', 'Γ', 'δ','Δ','ε','έ','Ε','Έ','ζ','Ζ','η','ή','Η','θ','Θ','ι','ί','ϊ','ΐ','Ι','Ί',
+		'κ','Κ','λ','Λ','μ','Μ','ν','Ν','ξ','Ξ','ο','ό','Ο','Ό','π','Π','ρ','Ρ','σ','ς', 
+		'Σ','τ','Τ','υ','ύ','Υ','Ύ','φ','Φ','χ','Χ','ψ','Ψ','ω','ώ','Ω','Ώ',' ',"'","'",','
+	);
 
+    public $english_chars = array(
+		'a', 'a','A','A','b','B','g','G','d','D','e','e','E','E','z','Z','i','i','I','th','Th', 
+		'i','i','i','i','I','I','k','K','l','L','m','M','n','N','x','X','o','o','O','O','p','P',
+		'r','R','s','s','S','t','T','u','u','Y','Y','f','F','x','X','ps','PS','o','o','O','O',' ','_','_','_'
+	);
+	
     public $source_param = array(
                 'Google_ID' => array(
                                 'description' => 'Your Google ID, eg. fred@google.com<br>',
@@ -73,6 +84,16 @@ class GoogleContacts extends superfecta_base {
                                 'type' => 'checkbox',
                                 'default' => 'off',
                 ),
+        		'Convert_To_Greeklish' => array(
+                                'description' => 'Enable this setting to have the returned name converted to greeklish.',
+                                'type' => 'checkbox',
+                                'default' => 'off'
+                ),
+        		'Caller_Id_Max_Length' => array(
+                                'description' => 'Maximum Length for Caller ID String (<=60)',
+                                'type' => 'number',
+                                'default' => '60'
+                ),
     );
 
     var $googleAuthManager;
@@ -118,6 +139,7 @@ class GoogleContacts extends superfecta_base {
  //       $this->DebugPrint("<b>Client ID: </b>".$client_id.'<br>');
  //       $this->DebugPrint("<b>Client Secret: </b>".$client_secret.'<br>');
         $this->DebugPrint("<b>Display Last Name First Name: </b>".$run_param['Display_LastName_FirstName'].'<br>');
+        $this->DebugPrint("<b>Convert To Greeklish: </b>".$run_param['Convert_To_Greeklish'].'<br>');
 
         $check = $this->googleAuthManager->configure(array(
              'redirect_uri'                 => $redirect_uri,
@@ -195,6 +217,23 @@ class GoogleContacts extends superfecta_base {
                 $name = $info['name'];
             }
         }
+        
+
+        if ($run_param['Convert_To_Greeklish'] === 'on'){
+            $this->DebugPrint('<b>Converting to Greeklish</b><br>');
+            $name = $this->toGreeklish($name);
+        }
+
+        // Truncate name if needed
+        if ($run_param['Caller_Id_Max_Length'] > 60 or $run_param['Caller_Id_Max_Length'] < 10){
+            $caller_id_max_length = 60;
+            $this->updateCallerIdMaxLength($caller_id_max_length);
+        }
+        else{
+            $caller_id_max_length = $run_param['Caller_Id_Max_Length'];            
+        };
+        $this->DebugPrint('<b>Maximum Caller Id Length: </b><br>'.$caller_id_max_length);
+        $name = substr($name,0,$caller_id_max_length);
 
         return $name;
     }
@@ -221,6 +260,10 @@ class GoogleContacts extends superfecta_base {
         $this->updateParameter("Client_Secret", $client_secret);
     }
 
+    private function updateCallerIdMaxLength($caller_id_max_length) {
+        $this->updateParameter("Caller_Id_Max_Length", $caller_id_max_length);
+    }
+
     private function giveAuthLink() {
         $this->DebugPrint("<h3>To set or reset authorization</h3>Click the link in the next line, then copy the code google give into the second box on the settings area for Google Contacts. Then click submit in the settings, and then use another test number to check all is working.<p>");
         $this->DebugPrint("To start that process, <b>click <a target='_blank' href='".$this->googleAuthManager->codeGettingUrl()."'>here</a></b><p>.");
@@ -230,5 +273,12 @@ class GoogleContacts extends superfecta_base {
         if (strcmp($run_param['Google_Code'], 'XXX') === 0) return false;
         return true;
     }
+    
+    private function toGreeklish($caller_id){
+        $greeklish_caller_id = str_replace($this->greek_chars, $this->english_chars, $caller_id);
+        return $greeklish_caller_id;
+    }
 
 }
+
+
