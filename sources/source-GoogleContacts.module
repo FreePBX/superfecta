@@ -16,7 +16,15 @@ class GoogleContacts extends superfecta_base {
 		'i','i','i','i','I','I','k','K','l','L','m','M','n','N','x','X','o','o','O','O','p','P',
 		'r','R','s','s','S','t','T','u','u','Y','Y','f','F','x','X','ps','PS','o','o','O','O',' ','_','_','_'
 	);
-	
+    
+    public $german_umlauts_chars = array(
+        'Ä','Ö','Ü','ä','ö','ü','ß'
+	);
+
+    public $english_2_chars = array(
+        'Ae','Oe','Ue','ae','oe','ue','ss'
+    );
+    
     public $source_param = array(
                 'Google_ID' => array(
                                 'description' => 'Your Google ID, eg. fred@google.com<br>',
@@ -85,14 +93,20 @@ class GoogleContacts extends superfecta_base {
                                 'default' => 'off',
                 ),
         		'Convert_To_Greeklish' => array(
-                                'description' => 'Enable this setting to have the returned name converted to greeklish.',
+                                'description' => 'Enable this setting to replace Greek characters with greeklish characters.',
+                                'type' => 'checkbox',
+                                'default' => 'off'
+                ),
+                'Replace_German_Umlauts' => array(
+                                'description' => 'Enable this setting to replace German Umlauts with English characters.',
                                 'type' => 'checkbox',
                                 'default' => 'off'
                 ),
         		'Caller_Id_Max_Length' => array(
-                                'description' => 'Maximum Length for Caller ID String (<=60)',
+                                'description' => 'Maximum Length for Caller ID String<br>'.
+                                                '<b>-1</b> - for unlimited',
                                 'type' => 'number',
-                                'default' => '60'
+                                'default' => '-1'
                 ),
     );
 
@@ -140,6 +154,7 @@ class GoogleContacts extends superfecta_base {
  //       $this->DebugPrint("<b>Client Secret: </b>".$client_secret.'<br>');
         $this->DebugPrint("<b>Display Last Name First Name: </b>".$run_param['Display_LastName_FirstName'].'<br>');
         $this->DebugPrint("<b>Convert To Greeklish: </b>".$run_param['Convert_To_Greeklish'].'<br>');
+        $this->DebugPrint("<b>Replace German Umlauts with English characters: </b>".$run_param['Replace_German_Umlauts'].'<br>');
 
         $check = $this->googleAuthManager->configure(array(
              'redirect_uri'                 => $redirect_uri,
@@ -223,17 +238,22 @@ class GoogleContacts extends superfecta_base {
             $this->DebugPrint('<b>Converting to Greeklish</b><br>');
             $name = $this->toGreeklish($name);
         }
+        if ($run_param['Replace_German_Umlauts'] === 'on'){
+            $this->DebugPrint('<b>Replacing German Umlauts with English characters</b><br>');
+            $name = $this->germanUmlautsToEnglish($name);
+        }
 
         // Truncate name if needed
-        if ($run_param['Caller_Id_Max_Length'] > 60 or $run_param['Caller_Id_Max_Length'] < 10){
-            $caller_id_max_length = 60;
+        if ($run_param['Caller_Id_Max_Length'] < 10){
+            $caller_id_max_length = -1;
             $this->updateCallerIdMaxLength($caller_id_max_length);
+            $this->DebugPrint('<b>Maximum Caller Id Length:</b> Unlimited<br>');
         }
         else{
             $caller_id_max_length = $run_param['Caller_Id_Max_Length'];            
+            $this->DebugPrint('<b>Maximum Caller Id Length: </b>' . $caller_id_max_length . '<br>');
+            $name = substr($name,0,$caller_id_max_length);
         };
-        $this->DebugPrint('<b>Maximum Caller Id Length: </b><br>'.$caller_id_max_length);
-        $name = substr($name,0,$caller_id_max_length);
 
         return $name;
     }
@@ -277,6 +297,10 @@ class GoogleContacts extends superfecta_base {
     private function toGreeklish($caller_id){
         $greeklish_caller_id = str_replace($this->greek_chars, $this->english_chars, $caller_id);
         return $greeklish_caller_id;
+    }
+    private function germanUmlautsToEnglish($caller_id){
+        $english_caller_id = str_replace($this->german_umlauts_chars, $this->english_2_chars, $caller_id);
+        return $english_caller_id;
     }
 
 }
