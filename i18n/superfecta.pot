@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-25 06:42+0000\n"
+"POT-Creation-Date: 2022-12-01 04:18+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,6 +23,7 @@ msgstr ""
 msgid "ALL"
 msgstr ""
 
+#: includes/oauth-google/oauth2callback.php:55
 #: views/main.php:25
 msgid "Actions"
 msgstr ""
@@ -80,9 +81,16 @@ msgstr ""
 msgid "Changed CNUM to: %s"
 msgstr ""
 
-#: includes/oauth-google/oauth2callback.php:10
-#, php-format
-msgid "Copy the code: <b>%s</b>"
+#: includes/oauth-google/oauth2callback.php:63
+msgid "Close"
+msgstr ""
+
+#: includes/oauth-google/oauth2callback.php:57
+msgid "Copy"
+msgstr ""
+
+#: includes/oauth-google/oauth2callback.php:58
+msgid "Copy the Google Code."
 msgstr ""
 
 #: views/scheme.php:130
@@ -162,11 +170,19 @@ msgstr ""
 msgid "Executing"
 msgstr ""
 
-#: includes/oauth-google/oauth2callback.php:11
-msgid "Go back to configure Google in FreePBX."
+#: includes/oauth-google/oauth2callback.php:59
+msgid "Go back to configure Google Contacts Caller-ID Lookup in FreePBX."
 msgstr ""
 
-#: includes/oauth-google/oauth2callback.php:14
+#: includes/oauth-google/oauth2callback.php:54
+msgid "Google Code"
+msgstr ""
+
+#: includes/oauth-google/oauth2callback.php:65
+msgid "Google Code copied: "
+msgstr ""
+
+#: includes/oauth-google/oauth2callback.php:61
 msgid "Hit <b>Save</b>."
 msgstr ""
 
@@ -310,7 +326,7 @@ msgstr ""
 msgid "No matching DID rules. Skipping scheme"
 msgstr ""
 
-#: includes/oauth-google/oauth2callback.php:15
+#: includes/oauth-google/oauth2callback.php:62
 msgid "Now run debug again and it should work."
 msgstr ""
 
@@ -318,9 +334,10 @@ msgstr ""
 msgid "Order"
 msgstr ""
 
-#: includes/oauth-google/oauth2callback.php:13
+#: includes/oauth-google/oauth2callback.php:60
 msgid ""
-"Paste this code into the <b>Google Code</b> box replacing the <b>XXX</b>."
+"Paste this Google Code into the <b>Google Code</b> box replacing the <b>XXX</"
+"b>."
 msgstr ""
 
 #: views/scheme.php:134
@@ -564,10 +581,6 @@ msgstr ""
 #: views/add_scheme.php:222
 #: views/scheme.php:30
 msgid "Yes"
-msgstr ""
-
-#: includes/oauth-google/oauth2callback.php:17
-msgid "You can close this window once done."
 msgstr ""
 
 #: Superfecta.class.php:629

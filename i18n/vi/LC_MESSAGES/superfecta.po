@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-21 04:27+0000\n"
+"POT-Creation-Date: 2022-12-01 04:18+0000\n"
 "PO-Revision-Date: 2017-08-03 10:42+0200\n"
 "Last-Translator: PETER <ftek@ymail.com>\n"
 "Language-Team: Vietnamese <http://weblate.freepbx.org/projects/freepbx/"
@@ -25,7 +25,7 @@ msgstr ""
 msgid "ALL"
 msgstr "TẤT CẢ"
 
-#: views/main.php:25
+#: includes/oauth-google/oauth2callback.php:55 views/main.php:25
 msgid "Actions"
 msgstr "Các thao tác"
 
@@ -84,9 +84,16 @@ msgstr ""
 msgid "Changed CNUM to: %s"
 msgstr "CNUM được thay đổi thành: %s"
 
-#: includes/oauth-google/oauth2callback.php:10
-#, php-format
-msgid "Copy the code: <b>%s</b>"
+#: includes/oauth-google/oauth2callback.php:63
+msgid "Close"
+msgstr ""
+
+#: includes/oauth-google/oauth2callback.php:57
+msgid "Copy"
+msgstr ""
+
+#: includes/oauth-google/oauth2callback.php:58
+msgid "Copy the Google Code."
 msgstr ""
 
 #: views/scheme.php:130
@@ -168,11 +175,19 @@ msgstr "Đã kích hoạt"
 msgid "Executing"
 msgstr "Đang thực thi"
 
-#: includes/oauth-google/oauth2callback.php:11
-msgid "Go back to configure Google in FreePBX."
+#: includes/oauth-google/oauth2callback.php:59
+msgid "Go back to configure Google Contacts Caller-ID Lookup in FreePBX."
 msgstr ""
 
-#: includes/oauth-google/oauth2callback.php:14
+#: includes/oauth-google/oauth2callback.php:54
+msgid "Google Code"
+msgstr ""
+
+#: includes/oauth-google/oauth2callback.php:65
+msgid "Google Code copied: "
+msgstr ""
+
+#: includes/oauth-google/oauth2callback.php:61
 msgid "Hit <b>Save</b>."
 msgstr ""
 
@@ -369,7 +384,7 @@ msgstr "Không có rule CID nào tương khớp. Bỏ qua lược đồ"
 msgid "No matching DID rules. Skipping scheme"
 msgstr "Không có rule CID nào tương khớp. Bỏ qua lược đồ"
 
-#: includes/oauth-google/oauth2callback.php:15
+#: includes/oauth-google/oauth2callback.php:62
 msgid "Now run debug again and it should work."
 msgstr ""
 
@@ -377,9 +392,10 @@ msgstr ""
 msgid "Order"
 msgstr "Thứ tự"
 
-#: includes/oauth-google/oauth2callback.php:13
+#: includes/oauth-google/oauth2callback.php:60
 msgid ""
-"Paste this code into the <b>Google Code</b> box replacing the <b>XXX</b>."
+"Paste this Google Code into the <b>Google Code</b> box replacing the <b>XXX</"
+"b>."
 msgstr ""
 
 #: views/scheme.php:134
@@ -624,10 +640,6 @@ msgstr "Nơi để gửi cuộc gọi đến đó khi cuộc gọi này bị ph�
 #: views/add_scheme.php:222 views/scheme.php:30
 msgid "Yes"
 msgstr "Có"
-
-#: includes/oauth-google/oauth2callback.php:17
-msgid "You can close this window once done."
-msgstr ""
 
 #: Superfecta.class.php:629
 msgid "You cannot create a scheme the same name as an existing scheme"
