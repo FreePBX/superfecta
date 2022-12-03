@@ -311,7 +311,6 @@ class superfecta_multi extends superfecta_base {
                 $this->setSpam($source_class->isSpam());
                 $cache_found = $source_class->isCacheFound();
                 unset($source_class);
-                $caller_id = $this->_utf8_decode($caller_id);
 
                 if (isset($this->multifecta_id)) {
                     $this->caller_id_array[$this->multifecta_id] = $caller_id;

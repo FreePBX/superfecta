@@ -124,3 +124,39 @@
 		padding: 12px;
 	}
 }
+
+#Character_Encodings {
+    border:1px solid White;
+    background-color:Silver;
+    width:100%;
+    display:inline-block;
+    vertical-align:top
+}
+.EncodingList {
+	box-sizing: border-box;
+	width: 40%;
+	height: 300px;
+	overflow: auto;
+	display:inline-block;
+	vertical-align:top
+}
+.EncodingList::before{
+	content:attr(data-header);
+	background-color:Silver;
+	display:inline-block;
+	width:100%;
+	text-align: left;
+}
+.EncodingList li {
+	background-color:Azure;
+	border-bottom:1px dotted Gray;
+	list-style-type: "";
+	text-align: left;
+	padding: 5px;
+}
+.EncodingList li:nth-child(even) {
+	background-color: #f2f2f2;
+}
+.EncodingList li.selected {
+	background-color:GoldenRod;
+}

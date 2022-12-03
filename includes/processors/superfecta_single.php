@@ -61,7 +61,6 @@ class superfecta_single extends superfecta_base {
 						$this->set_SpamCount($this->get_SpamCount() + 1);
 					}
 					unset($source_class);
-					$caller_id = $this->_utf8_decode($caller_id);
 
 
 					if (($this->first_caller_id == '') && ($caller_id != '')) {
@@ -81,7 +80,7 @@ class superfecta_single extends superfecta_base {
 
 			if ($this->isDebug()) {
 				if ($caller_id != '') {
-					print "'" . utf8_encode($caller_id) . "'<br>\nresult <i class=\"fa fa-hand-o-up\"></i> took " . number_format(($this->mctime_float() - $start_time), 4) . " seconds.<br>\n<br>\n";
+					print "'" . $caller_id . "'<br>\nresult <i class=\"fa fa-hand-o-up\"></i> took " . number_format(($this->mctime_float() - $start_time), 4) . " seconds.<br>\n<br>\n";
 				} else {
 					print "result <i class=\"fa fa-hand-o-up\"></i> took " . number_format(($this->mctime_float() - $start_time), 4) . " seconds.<br>\n<br>\n";
 				}

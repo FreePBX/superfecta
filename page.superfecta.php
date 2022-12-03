@@ -172,7 +172,10 @@ switch($action) {
 				'SPAM_Text_Substitute' => $_POST['SPAM_Text_Substitute'],
 				'enable_interceptor' => $_POST['enable_interceptor'],
 				'SPAM_threshold' => $_POST['SPAM_threshold'],
-				'destination' => (!empty($type) ? $_POST[$type.'0'] : '')
+				'destination' => (!empty($type) ? $_POST[$type.'0'] : ''),
+				'Character_Encodings' => $_POST['Character_Encodings'],
+				'Strip_Accent_Characters' => $_POST['Strip_Accent_Characters'],
+				'Caller_Id_Max_Length' => $_POST['Caller_Id_Max_Length'],
 			));
 		}
 		$middle = load_view(__DIR__.'/views/main.php', array("schemes" => FreePBX::Superfecta()->getAllSchemes()));
