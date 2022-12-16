@@ -25,26 +25,26 @@ class Telnyx extends superfecta_base{
 	public $description = "https://telnyx.com/products/identity-services - Provides lookups from the Telnyx carrier grade CNAM lookup service.";
 	public $version_requirement = "2.11";
 	public $source_param = array(
-			'API_Token' => array(
-			'description' => "API Token - Can be obtained from https://portal.telnyx.com/#/app/auth/api-tokens.  You must create a Telco Profile in Mission Control that connects this key to CNAM data.",
+			'API_Key' => array(
+			'description' => "API Key - Can be obtained from https://portal.telnyx.com/#/app/api-keys.  You must create a Telco Profile in Mission Control that connects this key to CNAM data.",
 			'type' => 'text'
 		)
 	);
 	function get_caller_id($thenumber, $run_param=array()) {
-		$run_param['API_Token'] = isset($run_param['API_Token'])?$run_param['API_Token']:'';
-		$debug = $this->debug;
-		if(empty($run_param['API_Token'])) {
-				$this->DebugPrint("Telnyx requires a registered account.");
+		$run_param['API_Key'] = isset($run_param['API_Key'])?$run_param['API_Key']:'';
+        $thenumber=urlencode($thenumber);
+		if(empty($run_param['API_Key'])) {
+				$this->DebugPrint("Telnyx requires a registered account -- API Key.");
 				return '';
 		}
 		//we need to use our own curl since get_url_contents doesn't support http headers
-		$url = sprintf("https://data.telnyx.com/cnam/v1/caller-information?tn=%s",$thenumber);
+		$url = sprintf("https://api.telnyx.com/v2/number_lookup/%s?type=caller-name",$thenumber);
 		$crl = curl_init();
 		
 		$headers = array(
     'Content-Type: application/json"',
 	'Accept: application/json',
-    'Authorization: Token ' .$run_param['API_Token'],
+    'Authorization: Bearer ' .$run_param['API_Key'],
     );
 		curl_setopt($crl, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.1) Gecko/20061204 Firefox/2.0.0.1");
 		curl_setopt($crl, CURLOPT_URL, $url);
@@ -55,14 +55,19 @@ class Telnyx extends superfecta_base{
 		$json = curl_exec($crl);
 		curl_close($crl);
 		$json = json_decode($json, true);
-		if(isset($json["reason"])){
-			$this->DebugPrint("Lookup Error: ");
-			$this->DebugPrint($json["reason"]);
-		}
-		if(isset($json["callerInformation"])) {
-			return($json["callerInformation"]);
-		} else {
-			return('');
-		}
+
+        if(isset($json["data"]) and isset($json["data"]["caller_name"])){
+            if(isset($json["data"]["caller_name"]["error_code"])){
+                $this->DebugPrint("Lookup Error Code: ".$json["data"]["caller_name"]["error_code"]);
+            }
+
+            if(isset($json["data"]["caller_name"]["caller_name"])){
+                return($json["data"]["caller_name"]["caller_name"]);
+            } else {
+                return('');
+            }
+        } else {
+            return('');
+        }
 	}
 }
