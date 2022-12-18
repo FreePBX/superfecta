@@ -1,8 +1,7 @@
 <?php
-
+// vim: set ai ts=4 sw=4 ft=php:
 class GoogleContacts extends superfecta_base {
-
-    public $description = "Use your personal google contacts list to provide Caller ID.<br><br>This data source requires Superfecta Module version 2.11 or higher.";
+	public $description,$source_param;
     public $version_requirement = "2.11";
 
 	public $greek_chars = array(
@@ -25,95 +24,101 @@ class GoogleContacts extends superfecta_base {
         'Ae','Oe','Ue','ae','oe','ue','ss'
     );
     
-    public $source_param = array(
-                'Google_ID' => array(
-                                'description' => 'Your Google ID, eg. fred@google.com<br>',
-                                'type' => 'text',
-                                'default' => '',
-                ),
-                'Google_Code' => array(
-                                'description' =>
-                                    'This is a one off code to authenticate superfecta to Google for you.<br>'.
-                                    '<b>How to set it:</b><br>'.
-                                    '- Set your <b>Google ID</b>, and click <b>Save</b>.<br>'.
-                                    '- Click <b>Debug/Test Run Scheme</b>.  Enter a test phone number in the <b>Phone Number</b> field and click <b>Run This Scheme.</b><br>'.
-                                    '  if this is your first time or if the Google Authentication failed you will be prompted with further instructions. Follow the instructions provided in the debug area on how to authenticate and authorize access to Google Contacts. <br><br>'.
-                                    '- Once you\'ve followed them:<br><br>'.
-                                    ' <b>For Google OAuth2.0 Web Application Credentials:</b><br>'.
-                                    '- Copy the Code from the Google Authentication page and paste it into here replacing the <b>XXX</b>, and click <b>Save</b>.<br><br>'.
-                                    ' <b>For Google OAuth2.0 Desktop Application Credentials:</b><br>'.
-                                    '- You will see a URL similar to this one: <br>https://127.0.0.1?code=<b>4%2FXXXXXXXXXXXXXXXXXXXXX</b>&scope=....<br>'.
-                                    '- Extract and copy the code from the URL and paste it into here replacing the <b>XXX</b>, and click <b>Save</b>.<br><br>'.
-                                    '- Click <b>Debug/Test Run Scheme</b>.  Enter a test phone number in the <b>Phone Number</b> field and click <b>Run This Scheme.</b><br>'.
-                                    'This time around you should be able to get the caller ID for the test phone number.<br>',
-                                'type' => 'text',
-                                'default' => 'XXX',
-                ),
-                'Access_Token' => array(
-                                'description' => 'CHANGE AT YOUR PERIL. This is the day to day authorization code for the requests. If it is blank, there is an authorization issue.',
-                                'type' => 'text',
-                                //'type' => 'password',
-                                'default' => '',
-                ),
-                'Redirect_URI' => array(
-                                'description' =>
-                                    'CHANGE ONLY IF YOU\'RE SURE: Redirect URI to be used with Google OAuth2.0 Authentication<br><br>'.
-                                    ' <b>For Google OAuth2.0 Web Application Credentials:</b><br>'.
-                                    '- Set to https://<b>yourfreepbxserver.com</b>/admin/config.php?display=superfecta&action=oauth2callback<br> (replace <b>yourfreepbxserver.com</b> with your FreePBX FQDN)<br><br>'.
-                                    ' <b>For Google OAuth2.0 Desktop Application Credentials:</b><br>'.
-                                    '- Set to https://127.0.0.1<br>',
-                                'type' => 'text',
-                                'default' => 'https://127.0.0.1/admin/config.php?display=superfecta&action=oauth2callback',
-                ),
-                'Client_ID' => array(
-                                'description' => 'CHANGE ONLY IF YOU\'RE SURE: This is how Google CID Superfecta identifies itself to Google.',
-                                'type' => 'text',
-                                //'type' => 'password',
-                                'default' => '756994375458-i1ivgcfkehjul0tbu51aue4j4o8ptjkc.apps.googleusercontent.com',
-                ),
-                'Client_Secret' => array(
-                                'description' => 'CHANGE ONLY IF YOU\'RE SURE: This is how Google CID Superfecta certifies itself with Google.',
-                                'type' => 'text',
-                                //'type' => 'password',
-                                'default' => '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',
-                ),
-                'Append_Phone_Types' => array(
-                                'description' => 'Yes - Append phone type to contact name<br>No - Do not append phone type to contact name<br>',
-                                'type' => 'checkbox',
-                                'default' => 'off',
-                ),
-                'Use_Nicknames' => array(
-                                'description' => 'Yes - Use nicknames as contact names if exist.<br>No - Do not use nicknames.<br>',
-                                'type' => 'checkbox',
-                                'default' => 'off',
-                ),
-                'Display_LastName_FirstName' => array(
-                                'description' => 'Yes - Display Last Name, First Name<br>No - Default Name display.<br>',
-                                'type' => 'checkbox',
-                                'default' => 'off',
-                ),
-        		'Convert_To_Greeklish' => array(
-                                'description' => 'Enable this setting to replace Greek characters with greeklish characters.',
-                                'type' => 'checkbox',
-                                'default' => 'off'
-                ),
-                'Replace_German_Umlauts' => array(
-                                'description' => 'Enable this setting to replace German Umlauts with English characters.',
-                                'type' => 'checkbox',
-                                'default' => 'off'
-                ),
-        		'Caller_Id_Max_Length' => array(
-                                'description' => 'Maximum Length for Caller ID String<br>'.
-                                                '<b>-1</b> - for unlimited',
-                                'type' => 'number',
-                                'default' => '-1'
-                ),
-    );
 
     var $googleAuthManager;
     var $contactGetter;
+	
+	const CALLER_ID_MAX_LENGTH_MIN = 10;
+    
+	function __construct() {
+		$this->description = _("Use your personal google contacts list to provide Caller ID.<br><br>This data source requires Superfecta Module version 2.11 or higher.");
+	
+		$this->source_param = array(
 
-    function __construct() {
+			'Google_ID' => array(
+							'description' => _('Your Google ID, eg. fred@google.com<br>'),
+							'type' => 'text',
+							'default' => '',
+			),
+			'Google_Code' => array(
+							'description' =>
+								_('This is a one off code to authenticate superfecta to Google for you.<br>'.
+								'<b>How to set it:</b><br>'.
+								'- Set your <b>Google ID</b>, and click <b>Save</b>.<br>'.
+								'- Click <b>Debug/Test Run Scheme</b>.  Enter a test phone number in the <b>Phone Number</b> field and click <b>Run This Scheme.</b><br>'.
+								'  if this is your first time or if the Google Authentication failed you will be prompted with further instructions. Follow the instructions provided in the debug area on how to authenticate and authorize access to Google Contacts. <br><br>'.
+								'- Once you\'ve followed them:<br><br>'.
+								' <b>For Google OAuth2.0 Web Application Credentials:</b><br>'.
+								'- Copy the Code from the Google Authentication page and paste it into here replacing the <b>XXX</b>, and click <b>Save</b>.<br><br>'.
+								' <b>For Google OAuth2.0 Desktop Application Credentials:</b><br>'.
+								'- You will see a URL similar to this one: <br>https://127.0.0.1?code=<b>4%2FXXXXXXXXXXXXXXXXXXXXX</b>&scope=....<br>'.
+								'- Extract and copy the code from the URL and paste it into here replacing the <b>XXX</b>, and click <b>Save</b>.<br><br>'.
+								'- Click <b>Debug/Test Run Scheme</b>.  Enter a test phone number in the <b>Phone Number</b> field and click <b>Run This Scheme.</b><br>'.
+								'This time around you should be able to get the caller ID for the test phone number.<br>'),
+							'type' => 'text',
+							'default' => 'XXX',
+			),
+			'Access_Token' => array(
+							'description' => _('CHANGE AT YOUR PERIL. This is the day to day authorization code for the requests. If it is blank, there is an authorization issue.'),
+							'type' => 'text',
+							//'type' => 'password',
+							'default' => '',
+			),
+			'Redirect_URI' => array(
+							'description' =>
+								_('CHANGE ONLY IF YOU\'RE SURE: Redirect URI to be used with Google OAuth2.0 Authentication<br><br>'.
+								' <b>For Google OAuth2.0 Web Application Credentials:</b><br>'.
+								'- Set to https://<b>yourfreepbxserver.com</b>/admin/config.php?display=superfecta&action=oauth2callback<br> (replace <b>yourfreepbxserver.com</b> with your FreePBX FQDN)<br><br>'.
+								' <b>For Google OAuth2.0 Desktop Application Credentials:</b><br>'.
+								'- Set to https://127.0.0.1<br>'),
+							'type' => 'text',
+							'default' => 'https://127.0.0.1/admin/config.php?display=superfecta&action=oauth2callback',
+			),
+			'Client_ID' => array(
+							'description' => _('CHANGE ONLY IF YOU\'RE SURE: This is how Google CID Superfecta identifies itself to Google.'),
+							'type' => 'text',
+							//'type' => 'password',
+							'default' => '756994375458-i1ivgcfkehjul0tbu51aue4j4o8ptjkc.apps.googleusercontent.com',
+			),
+			'Client_Secret' => array(
+							'description' => _('CHANGE ONLY IF YOU\'RE SURE: This is how Google CID Superfecta certifies itself with Google.'),
+							'type' => 'text',
+							//'type' => 'password',
+							'default' => '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',
+			),
+			'Append_Phone_Types' => array(
+							'description' => _('Yes - Append phone type to contact name<br>No - Do not append phone type to contact name<br>'),
+							'type' => 'checkbox',
+							'default' => 'off',
+			),
+			'Use_Nicknames' => array(
+							'description' => _('Yes - Use nicknames as contact names if exist.<br>No - Do not use nicknames.<br>'),
+							'type' => 'checkbox',
+							'default' => 'off',
+			),
+			'Display_LastName_FirstName' => array(
+							'description' => _('Yes - Display Last Name, First Name<br>No - Default Name display.<br>'),
+							'type' => 'checkbox',
+							'default' => 'off',
+			),
+			'Convert_To_Greeklish' => array(
+							'description' => _('Enable this setting to replace Greek characters with greeklish characters.'),
+							'type' => 'checkbox',
+							'default' => 'off'
+			),
+			'Replace_German_Umlauts' => array(
+							'description' => _('Enable this setting to replace German Umlauts with English characters.'),
+							'type' => 'checkbox',
+							'default' => 'off'
+			),
+			'Caller_Id_Max_Length' => array(
+							'description' => _('Maximum Length for Caller ID String (At least 10 characters long)<br>'.
+											'<b>-1</b> - for unlimited'),
+							'type' => 'number',
+							'default' => '-1'
+			),
+    	);
+			
         set_include_path(dirname(__FILE__)."/../includes/oauth-google/" . PATH_SEPARATOR . get_include_path());
         require_once("GoogleAuthManager.php");
         require_once("Google_Service_ReadContacts.php");
@@ -133,7 +138,7 @@ class GoogleContacts extends superfecta_base {
         // Replace 011 at a begining of a number with a '+' sign
         $thenumber = preg_replace('/^011/', '\+', $thenumber);
 
-        $this->DebugPrint("<br><b>Searching Google Contacts for number: {$thenumber}</b>");
+        $this->DebugPrint(sprintf(_("<br><b>Searching Google Contacts for number: %s</b>"), $thenumber));
         // Set up the auth manager for this person.
         if(empty($run_param['Redirect_URI']) or empty($run_param['Client_ID']) or empty($run_param['Client_Secret'])){
             $this->updateRedirectURI($this->source_param['Redirect_URI']['default']);
@@ -149,12 +154,12 @@ class GoogleContacts extends superfecta_base {
             $client_secret = $run_param['Client_Secret'];
         }
 
- //       $this->DebugPrint("<b>Redirect URI: </b>".$redirect_uri.'<br>');
- //       $this->DebugPrint("<b>Client ID: </b>".$client_id.'<br>');
- //       $this->DebugPrint("<b>Client Secret: </b>".$client_secret.'<br>');
-        $this->DebugPrint("<b>Display Last Name First Name: </b>".$run_param['Display_LastName_FirstName'].'<br>');
-        $this->DebugPrint("<b>Convert To Greeklish: </b>".$run_param['Convert_To_Greeklish'].'<br>');
-        $this->DebugPrint("<b>Replace German Umlauts with English characters: </b>".$run_param['Replace_German_Umlauts'].'<br>');
+ //       $this->DebugPrint(sprintf(_("<b>Redirect URI: </b>%s<br>"), $redirect_uri));
+ //       $this->DebugPrint(sprintf(_("<b>Client ID: </b>%s<br>"), $client_id));
+ //       $this->DebugPrint(sprintf(_("<b>Client Secret: </b>%s<br>"), $client_secret));
+        $this->DebugPrint(sprintf(_("<b>Display Last Name First Name: </b>%s<br>"), $run_param['Display_LastName_FirstName']));
+        $this->DebugPrint(sprintf(_("<b>Convert To Greeklish: </b>%s<br>"), $run_param['Convert_To_Greeklish']));
+        $this->DebugPrint(sprintf(_("<b>Replace German Umlauts with English characters: </b>%s<br>"), $run_param['Replace_German_Umlauts']));
 
         $check = $this->googleAuthManager->configure(array(
              'redirect_uri'                 => $redirect_uri,
@@ -169,30 +174,30 @@ class GoogleContacts extends superfecta_base {
         // Get the previous Access Token, if any
         $access_token_json = NULL;
         if (array_key_exists('Access_Token', $run_param)) {
- //           $this->DebugPrint("We have access Token");
+ //           $this->DebugPrint(_("We have access Token"));
             $access_token_json = base64_decode($run_param['Access_Token']);
         }
 
- //       $this->DebugPrint("Access Token Json: ".$access_token_json);
+ //       $this->DebugPrint(_("Access Token Json: ") . $access_token_json);
 
         // Have we got an fresh google code? If so use it.
         if ($this->newGoogleCodeHasBeenSent($run_param)) {
-            $this->DebugPrint("A new Google Code has been sent.  Need to get a new access token");
+            $this->DebugPrint(_("A new Google Code has been sent.  Need to get a new access token"));
             $access_token_json = $this->googleAuthManager->configure(array('code' => $run_param['Google_Code']));
             if ($access_token_json == null) {
-                $this->DebugPrint("Google Code did not result in authentication.");
+                $this->DebugPrint(_("Google Code did not result in authentication."));
                 $this->giveAuthLink();
                 $this->clearUsedOrFailedGoogleCode();
                 return null;
             }
-//            $this->DebugPrint("New Access Token JSON: ".$access_token_json);
+//            $this->DebugPrint(_("New Access Token JSON: ") . $access_token_json);
             $this->updateAccessToken($access_token_json);
             $this->clearUsedOrFailedgoogleCode();
         }
         // No code, so hopefully we have a previous access token, if not ...
         else if (strlen($access_token_json) < 10) {
-//            $this->DebugPrint("Invalid Access Token JSON: ".$access_token_json);
-            $this->DebugPrint("An Access Token is missing: A new authorization is needed.");
+//            $this->DebugPrint(sprintf(_"Invalid Access Token JSON: %s<br>"), $access_token_json);
+            $this->DebugPrint(_("An Access Token is missing: A new authorization is needed.<br>"));
             $this->giveAuthLink();
             return null;
         }
@@ -201,14 +206,14 @@ class GoogleContacts extends superfecta_base {
             $access_token_json_check = $this->googleAuthManager->configure(array('access_token_json' => $access_token_json));
             // If the token has been updated, store the new one
             if (strcmp($access_token_json_check, $access_token_json) != 0){
-                $this->DebugPrint("Updating Access Token with a new Token");
+                $this->DebugPrint(_("Updating Access Token with a new Token"));
                 $this->updateAccessToken($access_token_json_check);
             }
         }
 
         // Final check that the Auth manager is happy
         if ($this->googleAuthManager->needAuthentication()) {
-            $this->DebugPrint("For an unclear reason, authorization is failing.");
+            $this->DebugPrint(_("For an unclear reason, authorization is failing."));
             $this->giveAuthLink();
             return null;
         }
@@ -219,7 +224,7 @@ class GoogleContacts extends superfecta_base {
         if ($results == null) return null;
 
         if ($results['success'] === 'no') {
-            $this->DebugPrint("Failed to get number: ".$results['data']);
+            $this->DebugPrint(sprintf(_("Failed to get number: %s<br>"), $results['data']));
             return null;
         }
 
@@ -235,26 +240,28 @@ class GoogleContacts extends superfecta_base {
         
 
         if ($run_param['Convert_To_Greeklish'] === 'on'){
-            $this->DebugPrint('<b>Converting to Greeklish</b><br>');
+            $this->DebugPrint(_('<b>Converting to Greeklish</b><br>'));
             $name = $this->toGreeklish($name);
         }
         if ($run_param['Replace_German_Umlauts'] === 'on'){
-            $this->DebugPrint('<b>Replacing German Umlauts with English characters</b><br>');
+            $this->DebugPrint(_('<b>Replacing German Umlauts with English characters</b><br>'));
             $name = $this->germanUmlautsToEnglish($name);
         }
 
         // Truncate name if needed
-        if ($run_param['Caller_Id_Max_Length'] < 10){
-            $caller_id_max_length = -1;
+		$caller_id_max_length = ($run_param['Caller_Id_Max_Length'] < self::CALLER_ID_MAX_LENGTH_MIN and $run_param['Caller_Id_Max_Length'] != -1) ? self::CALLER_ID_MAX_LENGTH_MIN : $run_param['Caller_Id_Max_Length'];
+		
+        if ($caller_id_max_length != $run_param['Caller_Id_Max_Length']){
             $this->updateCallerIdMaxLength($caller_id_max_length);
-            $this->DebugPrint('<b>Maximum Caller Id Length:</b> Unlimited<br>');
+            $this->DebugPrint(sprintf(_('<b>Updating Maximum Caller Id Length to </b>%s<br>'),$caller_id_max_length));
         }
-        else{
-            $caller_id_max_length = $run_param['Caller_Id_Max_Length'];            
-            $this->DebugPrint('<b>Maximum Caller Id Length: </b>' . $caller_id_max_length . '<br>');
+							  
+        if ($caller_id_max_length != -1){
+            $this->DebugPrint(sprintf(_('<b>Maximum Caller Id Length: </b>%s<br>'), $caller_id_max_length));
             $name = substr($name,0,$caller_id_max_length);
         };
 
+        $this->DebugPrint(_('<b>Name: </b>') . $name . '<br>');
         return $name;
     }
 
@@ -264,8 +271,8 @@ class GoogleContacts extends superfecta_base {
 
     private function updateAccessToken($new_at_json) {
         $this->updateParameter("Access_Token", base64_encode($new_at_json));
-//        $this->DebugPrint("Updating Access Token: ".$new_at_json);
-//        $this->DebugPrint("Updating Access Token base64: ".base64_encode($new_at_json));
+//        $this->DebugPrint(sprintf(_("Updating Access Token: %s<br>"), $new_at_json);
+//        $this->DebugPrint(sprintf(_("Updating Access Token base64: %s<br>"), base64_encode($new_at_json));
     }
 
     private function updateRedirectURI($redirect_uri) {
@@ -285,8 +292,8 @@ class GoogleContacts extends superfecta_base {
     }
 
     private function giveAuthLink() {
-        $this->DebugPrint("<h3>To set or reset authorization</h3>Click the link in the next line, then copy the code google give into the second box on the settings area for Google Contacts. Then click submit in the settings, and then use another test number to check all is working.<p>");
-        $this->DebugPrint("To start that process, <b>click <a target='_blank' href='".$this->googleAuthManager->codeGettingUrl()."'>here</a></b><p>.");
+        $this->DebugPrint(_("<h3>To set or reset authorization</h3>Click the link in the next line, then copy the code google give into the second box on the settings area for Google Contacts. Then click submit in the settings, and then use another test number to check all is working.<p>"));
+        $this->DebugPrint(sprintf(_("To start that process, <b>click <a target='_blank' href='%s'>here</a></b><p>."),$this->googleAuthManager->codeGettingUrl()));
     }
 
     private function newGoogleCodeHasBeenSent($run_param) {

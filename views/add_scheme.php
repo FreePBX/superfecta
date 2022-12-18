@@ -146,7 +146,7 @@
 						<div class="row">
 							<div class="form-group">
 								<div class="col-md-3">
-									<label class="control-label" for="element6"><?php echo _('CID Prefix URL')?></label>
+									<label class="control-label" for="element7"><?php echo _('CID Prefix URL')?></label>
 									<i class="fa fa-question-circle fpbx-help-icon" data-for="element7"></i>
 								</div>
 								<div class="col-md-9"><input type="text" id="element7" class="form-control" name="Prefix_URL" maxlength="255" value="<?php echo $scheme_data['Prefix_URL']?>"></div>
@@ -264,7 +264,7 @@
 								<div class="form-group">
 									<div class="col-md-3">
 										<label class="control-label" for="element12"><?php echo _('Send Spam Call To')?></label>
-										<i class="fa fa-question-circle fpbx-help-icon" data-for="element11"></i>
+										<i class="fa fa-question-circle fpbx-help-icon" data-for="element12"></i>
 									</div>
 									<div class="col-md-9"><?php echo drawselects('', 0, FALSE, FALSE)?></div>
 								</div>
@@ -278,6 +278,145 @@
 					</div>
 				</div>
 			</div>
-		</div>
+			
+<!--
+			<div class="element-container">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="row">
+							<div class="form-group">
+								<div class="col-md-3">
+									<label class="control-label" for="element13"><?php echo _('Character Encodings')?></label>
+									<i class="fa fa-question-circle fpbx-help-icon" data-for="element13"></i>
+								</div>
+								<div class="col-md-9">			
+									<select class="form-control " id="Character_Encodings" name="Character_Encodings">
+										<?php 
+											$encoding_list = array_unique( array_merge( array("auto","pass"), mb_list_encodings()));
+											foreach($encoding_list as $encoding){
+												echo sprintf('<option value="%s"%s>%s</option>', $encoding, (in_array($encoding, explode(',', $scheme_data['Character_Encodings'])) ? ' selected="" ' : '') , $encoding);
+											}
+										?>
+									</select>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12">
+						<span id="element13-help" class="help-block fpbx-help-block"><?php echo _('This is the Character Encoding to use for Caller ID.')?></span>
+					</div>
+				</div>
+			</div>
+-->
+
+			<div class="element-container">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="row">
+							<div class="form-group">
+								<div class="col-md-3">
+									<label class="control-label" for="element13"><?php echo _('Character Encodings')?></label>
+									<i class="fa fa-question-circle fpbx-help-icon" data-for="element13"></i>
+								</div>
+								<div class="col-md-9"><input type="text" class="form-control" name="Character_Encodings" id="Character_Encodings" maxlength="200" value="<?php echo $scheme_data['Character_Encodings']?>" readonly></div>
+							
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12">
+						<span id="element13-help" class="help-block fpbx-help-block"><?php echo _('This is the Character Encoding to use for Caller ID.')?></span>
+					</div>
+				</div>
+			</div>
+
+			
+			<div class="element-container">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="row">
+							<div class="form-group">
+								<div>
+									<ul class="EncodingList" id="Available_Encodings" data-header="Available Encodings" style="float: left;">
+										<?php 
+											$encoding_list = array_unique(array_merge( array("auto","pass","UTF-8","ISO-8859-1","Windows-1251","Windows-1252"), mb_list_encodings()));
+											foreach($encoding_list as $encoding){
+												if (! in_array($encoding, explode(',', $scheme_data['Character_Encodings']))){
+													echo sprintf("<li>%s</li>",$encoding);	
+												} 
+											}
+										?>
+									</ul>
+
+									<ul class="EncodingList" id="Selected_Encodings" data-header="Selected Encodings" style="float: left;">
+										<?php 
+											$encoding_list = array_unique(array_merge( array("auto","pass"), mb_list_encodings()));
+											foreach($encoding_list as $encoding){
+												if (in_array($encoding, explode(',', $scheme_data['Character_Encodings']))){
+													echo sprintf("<li>%s</li>",$encoding);	
+												} 
+											}
+										?>
+									</ul>
+								</div>	
+			
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="element-container">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="row">
+							<div class="form-group">
+								<div class="col-md-3">
+									<label class="control-label" for="element14"><?php echo _('Strip Accent Characters')?></label>
+									<i class="fa fa-question-circle fpbx-help-icon" data-for="element14"></i>
+								</div>
+								<div class="col-md-9">
+									<span class="radioset">
+										<input type="radio" id="Strip_Accent_Characters_yes" name="Strip_Accent_Characters" value="Y" <?php echo $scheme_data['Strip_Accent_Characters'] == "Y" ? 'checked' : ''?>>
+										<label for="Strip_Accent_Characters_yes"><?php echo _('Yes')?></label>
+										<input type="radio" id="Strip_Accent_Characters_no" name="Strip_Accent_Characters" value="N" <?php echo $scheme_data['Strip_Accent_Characters'] != "Y" ? 'checked' : ''?>>
+										<label for="Strip_Accent_Characters_no"><?php echo _('No')?></label>
+									</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12">
+						<span id="element14-help" class="help-block fpbx-help-block"><?php echo _('When enabled, Accents will be removed from characters')?></span>
+					</div>
+				</div>
+			</div>
+			<div class="element-container">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="row">
+							<div class="form-group">
+								<div class="col-md-3">
+									<label class="control-label" for="element15"><?php echo _('Caller Id Max Length')?></label>
+									<i class="fa fa-question-circle fpbx-help-icon" data-for="element15"></i>
+								</div>
+								<div class="col-md-9"><input id="element15" type="number" name="Caller_Id_Max_Length" class="form-control" min="-1" value="<?php echo $scheme_data['Caller_Id_Max_Length']?>"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12">
+						<span id="element15-help" class="help-block fpbx-help-block"><?php echo _('Maximum Length for Caller Id Name.  Should be at least 10 characters long. -1 for no limit.')?></span>
+					</div>
+				</div>
+			</div>
+            
+        </div>
 	</div>
 </form>
