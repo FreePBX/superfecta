@@ -339,30 +339,46 @@
 					<div class="col-md-12">
 						<div class="row">
 							<div class="form-group">
-								<div>
-									<ul class="EncodingList" id="Available_Encodings" data-header="Available Encodings" style="float: left;">
-										<?php 
-											$encoding_list = array_unique(array_merge( array("auto","pass","UTF-8","ISO-8859-1","Windows-1251","Windows-1252"), mb_list_encodings()));
-											foreach($encoding_list as $encoding){
-												if (! in_array($encoding, explode(',', $scheme_data['Character_Encodings']))){
-													echo sprintf("<li>%s</li>",$encoding);	
-												} 
-											}
-										?>
-									</ul>
-
-									<ul class="EncodingList" id="Selected_Encodings" data-header="Selected Encodings" style="float: left;">
-										<?php 
-											$encoding_list = array_unique(array_merge( array("auto","pass"), mb_list_encodings()));
-											foreach($encoding_list as $encoding){
-												if (in_array($encoding, explode(',', $scheme_data['Character_Encodings']))){
-													echo sprintf("<li>%s</li>",$encoding);	
-												} 
-											}
-										?>
-									</ul>
-								</div>	
-			
+								<div class="col-md-3"></div>
+								<div class="col-md-9">
+									<div class="BoxEncodingList">
+										<div class="row">
+											<div class="col-md-6">
+												<div class="alert alert-info" role="alert">
+													<?php echo _("Available Encodings"); ?>
+												</div>
+											</div>
+											<div class="col-md-6">
+												<div class="alert alert-info" role="alert">
+													<?php echo _("Selected Encodings"); ?>
+												</div>								
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-md-6">
+												<ul class="EncodingList list-group" id="Available_Encodings">
+												<?php 
+													$encoding_list = array_unique(array_merge( array("auto","pass","UTF-8","ISO-8859-1","Windows-1251","Windows-1252"), mb_list_encodings()));
+													foreach($encoding_list as $encoding){
+														if (! in_array($encoding, explode(',', $scheme_data['Character_Encodings']))){
+															echo sprintf('<li class="list-group-item">%s</li>',$encoding);
+														}
+													}
+												?>
+												</ul>
+											</div>
+											<div class="col-md-6">
+												<ul class="EncodingList list-group" id="Selected_Encodings">
+												<?php 
+													foreach(explode(',', $scheme_data['Character_Encodings']) as $encoding){
+														echo sprintf('<li class="list-group-item">%s</li>',$encoding);
+													}
+												?>
+												</ul>
+											</div>
+										</div>
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
