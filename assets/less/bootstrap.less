@@ -132,31 +132,35 @@
     display:inline-block;
     vertical-align:top
 }
-.EncodingList {
-	box-sizing: border-box;
-	width: 40%;
-	height: 300px;
-	overflow: auto;
-	display:inline-block;
-	vertical-align:top
-}
-.EncodingList::before{
-	content:attr(data-header);
-	background-color:Silver;
-	display:inline-block;
-	width:100%;
-	text-align: left;
-}
-.EncodingList li {
-	background-color:Azure;
-	border-bottom:1px dotted Gray;
-	list-style-type: "";
-	text-align: left;
-	padding: 5px;
-}
-.EncodingList li:nth-child(even) {
-	background-color: #f2f2f2;
-}
-.EncodingList li.selected {
-	background-color:GoldenRod;
+
+.BoxEncodingList {
+	.alert {
+		text-align: center;
+	}
+	ul {
+		width: 100%;
+		height: 300px;
+		max-height: 300px;
+		margin-bottom: 10px;
+		overflow: auto;
+		-webkit-overflow-scrolling: touch;
+
+		border: 1px dashed rgb(197, 70, 70);
+	}
+
+	ul li {
+		background-color: Azure;
+		list-style-type: "";
+		text-align: left;
+		padding: 5px;
+		border: 0px;
+	}
+
+	ul.EncodingList li:nth-child(even) {
+		background-color: #f2f2f2;
+	}
+
+	ul.EncodingList li.selected {
+		background-color: GoldenRod;
+	}
 }
