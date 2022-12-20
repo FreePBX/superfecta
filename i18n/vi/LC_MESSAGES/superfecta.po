@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-18 04:38+0000\n"
+"POT-Creation-Date: 2022-12-20 08:51+0000\n"
 "PO-Revision-Date: 2017-08-03 10:42+0200\n"
 "Last-Translator: PETER <ftek@ymail.com>\n"
 "Language-Team: Vietnamese <http://weblate.freepbx.org/projects/freepbx/"
@@ -29,7 +29,7 @@ msgstr ""
 msgid ", mb_strlen: %s"
 msgstr ""
 
-#: functions.inc.php:50 views/scheme.php:190
+#: functions.inc.php:50 views/scheme.php:204
 msgid "ALL"
 msgstr "TẤT CẢ"
 
@@ -56,6 +56,10 @@ msgstr ""
 #: superfecta.i18n.php:6
 msgid "Admin"
 msgstr "Quản trị viên"
+
+#: views/add_scheme.php:348 views/scheme.php:137
+msgid "Available Encodings"
+msgstr ""
 
 #: Superfecta.class.php:244
 msgid "Bypassing character conversion."
@@ -137,7 +141,7 @@ msgstr ""
 msgid "Caller ID string length is not limited"
 msgstr ""
 
-#: views/add_scheme.php:405 views/scheme.php:170
+#: views/add_scheme.php:421 views/scheme.php:184
 msgid "Caller Id Max Length"
 msgstr ""
 
@@ -195,7 +199,7 @@ msgstr ""
 msgid "Copy the Google Code."
 msgstr ""
 
-#: views/scheme.php:177
+#: views/scheme.php:191
 msgid "DID Number"
 msgstr "Số DID"
 
@@ -207,11 +211,11 @@ msgstr "Các nguyê tắc DID"
 msgid "Data Source Name"
 msgstr "Tên nguồn dữ liệu"
 
-#: views/scheme.php:185
+#: views/scheme.php:199
 msgid "Debug Level"
 msgstr "Cấp độ gỡ lỗi (Debug Level)"
 
-#: views/scheme.php:185
+#: views/scheme.php:199
 msgid "Debug Level to display"
 msgstr "Debug Level để hiển thị"
 
@@ -219,7 +223,7 @@ msgstr "Debug Level để hiển thị"
 msgid "Debug is on and set at level:"
 msgstr "Debug đang bật và cài đặt tại cấp độ:"
 
-#: views/scheme.php:5 views/scheme.php:175
+#: views/scheme.php:5 views/scheme.php:189
 msgid "Debug/Test Run Scheme"
 msgstr "Biểu đồ Debug/ Chạy thử nghiệm"
 
@@ -294,7 +298,7 @@ msgstr ""
 msgid "Hit <b>Save</b>."
 msgstr ""
 
-#: views/scheme.php:188
+#: views/scheme.php:202
 msgid "INFO"
 msgstr "INFO"
 
@@ -454,13 +458,13 @@ msgstr "Rule CID đã tương khớp: %s với %s"
 msgid "Matched DID Rule: %s with %s"
 msgstr "Rule DID đã tương khớp: %s với %s"
 
-#: views/add_scheme.php:415
+#: views/add_scheme.php:431
 msgid ""
 "Maximum Length for Caller Id Name.  Should be at least 10 characters long. "
 "-1 for no limit."
 msgstr ""
 
-#: views/scheme.php:170
+#: views/scheme.php:184
 msgid ""
 "Maximum Length for Caller Id Name. Should be at least 10 characters long. -1 "
 "for no limit."
@@ -470,7 +474,7 @@ msgstr ""
 msgid "Multifecta Timeout"
 msgstr "Thời gian chờ Multifecta"
 
-#: views/scheme.php:187
+#: views/scheme.php:201
 msgid "NONE"
 msgstr "NONE"
 
@@ -483,7 +487,7 @@ msgid "New Scheme Name"
 msgstr "Tên của lược đồ mới"
 
 #: Superfecta.class.php:600 functions.inc.php:29 views/add_scheme.php:197
-#: views/add_scheme.php:224 views/add_scheme.php:386 views/scheme.php:32
+#: views/add_scheme.php:224 views/add_scheme.php:402 views/scheme.php:32
 msgid "No"
 msgstr "Không"
 
@@ -513,11 +517,11 @@ msgid ""
 "b>."
 msgstr ""
 
-#: views/scheme.php:181
+#: views/scheme.php:195
 msgid "Phone Number"
 msgstr "Số điện thoại"
 
-#: views/scheme.php:181
+#: views/scheme.php:195
 msgid "Phone number to test this scheme against"
 msgstr "Số điện thoại để kiểm tra lược đồ này"
 
@@ -600,6 +604,10 @@ msgstr ""
 "Chọn nguồn dữ liệu cho việc tra cứu của bạn, và thứ tự mà bạn muốn các nguồn "
 "dữ liệu được sử dụng trong đó:"
 
+#: views/add_scheme.php:353 views/scheme.php:142
+msgid "Selected Encodings"
+msgstr ""
+
 #: views/add_scheme.php:266 views/scheme.php:122
 msgid "Send Spam Call To"
 msgstr "Gửi cuộc gọi Spam tới"
@@ -645,7 +653,7 @@ msgstr ""
 msgid "Starting scheme %s"
 msgstr "Đang khởi động lược đồ %s"
 
-#: views/add_scheme.php:378 views/scheme.php:159
+#: views/add_scheme.php:394 views/scheme.php:173
 msgid "Strip Accent Characters"
 msgstr ""
 
@@ -676,7 +684,7 @@ msgstr "CNUM là: %s"
 msgid "The DID is: %s"
 msgstr "DID là: %s"
 
-#: views/scheme.php:177
+#: views/scheme.php:191
 msgid "The DID to test this scheme against"
 msgstr "DID để kiểm tra lược đồ này"
 
@@ -738,7 +746,7 @@ msgstr ""
 msgid "Unknown Scheme"
 msgstr "Lược đồ không xác định"
 
-#: views/scheme.php:189
+#: views/scheme.php:203
 msgid "WARN"
 msgstr "CẢNH BÁO"
 
@@ -746,7 +754,7 @@ msgstr "CẢNH BÁO"
 msgid "What is CallerID Superfecta?"
 msgstr "CallerID Superfecta là gì?"
 
-#: views/add_scheme.php:395 views/scheme.php:159
+#: views/add_scheme.php:411 views/scheme.php:173
 msgid "When enabled, Accents will be removed from characters"
 msgstr ""
 
@@ -768,7 +776,7 @@ msgid "Where to send the call when it is detected as spam"
 msgstr "Nơi để gửi cuộc gọi đến đó khi cuộc gọi này bị phát hiện là Spam"
 
 #: Superfecta.class.php:598 functions.inc.php:27 views/add_scheme.php:195
-#: views/add_scheme.php:222 views/add_scheme.php:384 views/scheme.php:30
+#: views/add_scheme.php:222 views/add_scheme.php:400 views/scheme.php:30
 msgid "Yes"
 msgstr "Có"
 
@@ -780,7 +788,7 @@ msgstr "Bạn không thể tạo một lược đồ có cùng ten với lược
 msgid "You cannot rename a scheme the same thing as an existing scheme"
 msgstr "Bạn không thể đổi tên một lược đồ cùng tên với lược đồ hiện có"
 
-#: views/scheme.php:103 views/scheme.php:113 views/scheme.php:165
+#: views/scheme.php:103 views/scheme.php:113 views/scheme.php:179
 msgid "no"
 msgstr "không"
 
@@ -789,6 +797,6 @@ msgstr "không"
 msgid "result took %s seconds"
 msgstr "Kết quả sẽ mất %s giây"
 
-#: views/scheme.php:101 views/scheme.php:111 views/scheme.php:163
+#: views/scheme.php:101 views/scheme.php:111 views/scheme.php:177
 msgid "yes"
 msgstr "Có"
