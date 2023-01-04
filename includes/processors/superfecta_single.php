@@ -58,7 +58,7 @@ class superfecta_single extends superfecta_base {
 					$this->set_CacheFound($source_class->isCacheFound());
 					$this->setSpam($source_class->isSpam());
 					if ($source_class->isSpam()) {
-						$this->set_SpamCount($this->get_SpamCount() + 1);
+						$this->set_SpamCount($source_class->get_SpamCount());
 					}
 					unset($source_class);
 					$caller_id = $this->_utf8_decode($caller_id);
