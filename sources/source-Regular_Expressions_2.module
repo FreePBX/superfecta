@@ -1,0 +1,95 @@
+<?php
+
+class Regular_Expressions_2 extends superfecta_base
+{
+
+	public $description, $source_param;
+	public $version_requirement = "2.11";
+	public $dynamic_name = true;
+
+	public function __construct()
+	{
+		$this->description = _("Improved Regular Expression Website Parser. This allows you to to do any kind of match with ease and optionally do SPAM match.<br>Use a service like https://regex101.com to create and test regex.");
+		$this->source_param = array(
+			'URL' => array(
+				'description' => _('URL, if you do GET add the standard "?parameter=something" and use "$thenumber" as the substitution string for the inbound number, you can also use the POST section if you need it.'),
+				'type' => 'text'
+			),
+			'POST_Data' => array(
+				'description' => _('POST parameters. You can use it in conjuction with GET or alone, use "$thenumber" as the substitution string for the inbound number. You MUST fill it using something like this example template:') . '<br>"number" = "$thenumber"<br>"KEY_2" = "VALUE_2"<br>' . _('and so on... Please be careful that different parameters must be separated by newline, key and value must always be surrounded by double quotes and the "=" in mandatory between key and value.'),
+				'type' => 'textarea'
+			),
+			'Regular_Expressions' => array(
+				'description' => _('Regular Expressions one per line with options, the first to match wins. You MUST insert one and only one capture group. An example: ') . '"/^The name is (.*)/im"',
+				'type' => 'textarea'
+			),
+			'Enable_SPAM_Match' => array(
+				'description' => _('If enabled will match the next regex(s) to determine if the call is SPAM.'),
+				'type' => 'checkbox',
+				'default' => 'off'
+			),
+			'SPAM_Regular_Expressions' => array(
+				'description' => _('Regular Expressions one per line with options, the first to match wins. No capture group is needed, this will only check for a match. An example: ') . '"/^The call is SPAM/im"',
+				'type' => 'textarea'
+			)
+		);
+	}
+
+	function get_caller_id($thenumber, $run_param = array())
+	{
+		$caller_id = null;
+
+		if (!empty($run_param['URL']) && !empty($run_param['Regular_Expressions'])) { //these are the only mandative values
+			$run_param['URL'] = str_replace('$thenumber', $thenumber, $run_param['URL']);
+			$post = false;
+
+			//parse POST data if present
+			if (!empty($run_param['POST_Data'])) {
+				preg_match_all('/\s*"(?P<key>.*)"\s*=\s*"(?P<value>.*)"/m', $run_param['POST_Data'], $matches);
+				for ($i = 0; $i < count($matches['key']); $i++)
+					$post[$matches['key'][$i]] = $matches['value'][$i] == '$thenumber' ? $thenumber : $matches['value'][$i];
+
+				$this->DebugPrint(sprintf(_('Parsed POST data is: %s'), http_build_query($post, '', ', ')));
+			}
+
+			//retrieve url contents
+			$this->DebugPrint(sprintf(_('Retrieving URL %s'), $run_param['URL']));
+			$res = $this->get_url_contents($run_param['URL'], $post);
+			if ($res) {
+				//a regular expression to replace "/" in the string is /(?!^)(?<!\\)\/(?=.*\/)/g but this has problem if the user has incorrectly written the regex. Then I thought about it: why all of this trouble?? If the user input an unescaped "/" the regex is wrong in any case! So the regex(s) are directly passed as they are. Any exception will show up in the debugger.
+				$regexs = explode("\n", $run_param['Regular_Expressions']);
+
+				//exec number regex(s)
+				foreach ($regexs as $regex) {
+					$this->DebugPrint(sprintf(_('Testing regex %s'), $regex));
+
+					if (preg_match($regex, $res, $match)) {
+						$caller_id = $this->html2text($match[1]);
+						$this->DebugPrint(_("Match found!"));
+						break;
+					}
+				}
+
+				//Do SPAM detection if enabled
+				if (isset($run_param['Enable_SPAM_Match']) && $run_param['Enable_SPAM_Match'] == 'on') {
+					$this->DebugPrint(_('SPAM Match is enabled, starting tests'));
+
+					$regexs = explode("\n", $run_param['SPAM_Regular_Expressions']);
+					foreach ($regexs as $regex) {
+						$this->DebugPrint(sprintf(_('Testing SPAM with regex %s'), $regex));
+
+						if (preg_match($regex, $res)) {
+							$this->spam = true;
+							$this->DebugPrint(_("SPAM found!"));
+							break;
+						}
+					}
+				}
+			} else
+				$this->DebugPrint(_('Something went wrong, url returned empty.'));
+		} else
+			$this->DebugPrint(_("Empty Query. Skipping"));
+
+		return (strip_tags(trim($caller_id)));
+	}
+}
