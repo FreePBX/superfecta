@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-12-03 15:43+0530\n"
-"PO-Revision-Date: 2020-12-09 19:00+0000\n"
-"Last-Translator: Walter Moon <wmoon@sangoma.com>\n"
+"PO-Revision-Date: 2023-01-14 18:00+0000\n"
+"Last-Translator:  peyre <contact@provya.fr>\n"
 "Language-Team: French <http://weblate.freepbx.org/projects/freepbx/"
 "superfecta/fr/>\n"
 "Language: fr_FR\n"
@@ -416,7 +416,7 @@ msgstr ""
 
 #: Superfecta.class.php:767
 msgid "Submit"
-msgstr "Envoyer"
+msgstr "Soumettre"
 
 #: views/add_scheme.php:102 views/scheme.php:70
 msgid "Superfecta Processor"
