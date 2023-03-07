@@ -1,8 +1,9 @@
 <?php
 /**
  * Telnyx CNAM module
- * API Details: https://developers.telnyx.com/docs/cnam-data/
+ * API Details: https://developers.telnyx.com/docs/api/v2/number-lookup/Number-Lookup
  * Copyright (C) 2018 Corporate IT LLC
+ *               2023 Ilteris Yagiztegin Eroglu
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -18,56 +19,56 @@
  * along with this program.	If not, see <http://www.gnu.org/licenses/>.
  *
  * 12.21.2018 v0.10 by Joseph Nadiv <ynadiv@corpit.xyz>
+ * 2023-03-05 v0.11 by Ilteris Yagiztegin Eroglu <ilteris@asenkron.com.tr>
  *
  */
 
-class Telnyx extends superfecta_base{
-	public $description = "https://telnyx.com/products/identity-services - Provides lookups from the Telnyx carrier grade CNAM lookup service.";
+class Telnyx extends superfecta_base {
+	public $description = "https://telnyx.com/products/number-lookup - Provides lookups from the Telnyx carrier grade CNAM lookup service.";
 	public $version_requirement = "2.11";
 	public $source_param = array(
-			'API_Key' => array(
-			'description' => "API Key - Can be obtained from https://portal.telnyx.com/#/app/api-keys.  You must create a Telco Profile in Mission Control that connects this key to CNAM data.",
+			'APIv2_Token' => array(
+			'description' => "API v2 Token - Can be obtained from https://portal.telnyx.com/#/app/api-keys.",
 			'type' => 'text'
 		)
 	);
 	function get_caller_id($thenumber, $run_param=array()) {
-		$run_param['API_Key'] = isset($run_param['API_Key'])?$run_param['API_Key']:'';
-        $thenumber=urlencode($thenumber);
-		if(empty($run_param['API_Key'])) {
-				$this->DebugPrint("Telnyx requires a registered account -- API Key.");
+		$run_param['APIv2_Token'] = isset($run_param['APIv2_Token'])?$run_param['APIv2_Token']:'';
+		$debug = $this->debug;
+		if(empty($run_param['APIv2_Token'])) {
+				$this->DebugPrint("Telnyx requires a registered account.");
 				return '';
 		}
 		//we need to use our own curl since get_url_contents doesn't support http headers
-		$url = sprintf("https://api.telnyx.com/v2/number_lookup/%s?type=caller-name",$thenumber);
+		$url = sprintf("https://api.telnyx.com/v2/number_lookup/%s?type=caller-name", $thenumber);
 		$crl = curl_init();
 		
-		$headers = array(
-    'Content-Type: application/json"',
-	'Accept: application/json',
-    'Authorization: Bearer ' .$run_param['API_Key'],
-    );
-		curl_setopt($crl, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.1) Gecko/20061204 Firefox/2.0.0.1");
+		$headers = array('Content-Type: application/json', 'Accept: application/json', 'Authorization: Bearer ' . $run_param['APIv2_Token'],);
 		curl_setopt($crl, CURLOPT_URL, $url);
 		curl_setopt($crl, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($crl, CURLOPT_FOLLOWLOCATION, true);
-		curl_setopt($crl, CURLOPT_HTTPHEADER,$headers);
+		curl_setopt($crl, CURLOPT_HTTPHEADER, $headers);
+		curl_setopt($crl, CURLOPT_TIMEOUT, 5);
 		curl_setopt($crl, CURLOPT_HTTPGET, TRUE);
 		$json = curl_exec($crl);
 		curl_close($crl);
 		$json = json_decode($json, true);
-
-        if(isset($json["data"]) and isset($json["data"]["caller_name"])){
-            if(isset($json["data"]["caller_name"]["error_code"])){
-                $this->DebugPrint("Lookup Error Code: ".$json["data"]["caller_name"]["error_code"]);
-            }
-
-            if(isset($json["data"]["caller_name"]["caller_name"])){
-                return($json["data"]["caller_name"]["caller_name"]);
-            } else {
-                return('');
-            }
-        } else {
-            return('');
-        }
+		if(isset($json["errors"])){
+			$this->DebugPrint("Lookup Error: ");
+			$this->DebugPrint($json["errors"][0]["title"]);
+		}
+		if(isset($json["data"])) {
+			if(isset($json["data"]["caller_name"])) {
+				if(isset($json["data"]["caller_name"]["caller_name"])) {
+					return($json["data"]["caller_name"]["caller_name"]);
+				} else {
+					return('');
+				}
+			} else {
+				return('');
+			}
+		} else {
+			return('');
+		}
 	}
 }
