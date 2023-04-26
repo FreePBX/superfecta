@@ -12,6 +12,11 @@ use BMO;
 use FreePBX_Helpers;
 use PDO;
 class Superfecta extends FreePBX_Helpers implements BMO {
+	function __construct($options=array()) {
+	}
+	const DEFAULT_CHARACTER_ENCODINGS = 'ISO-8859-1';
+	const DEFAULT_CALLER_ID_MAX_LENGTH = 60;
+	const CALLER_ID_MAX_LENGTH_MIN = 10;
 	private $schemeDefaults = array(
 		'Curl_Timeout' => 3,
 		'SPAM_Text' => 'SPAM',
@@ -24,6 +29,9 @@ class Superfecta extends FreePBX_Helpers implements BMO {
 		'spam_interceptor' => false,
 		'SPAM_threshold' => '3',
 		'interceptor_select' => '',
+		'Character_Encodings' => self::DEFAULT_CHARACTER_ENCODINGS,
+		'Strip_Accent_Characters' => true,
+		'Caller_Id_Max_Length' => self::DEFAULT_CALLER_ID_MAX_LENGTH,
 		'sources' => array(),
 		'name' => null
 	);
@@ -39,6 +47,9 @@ class Superfecta extends FreePBX_Helpers implements BMO {
 				[':source' => 'base_Default', ':field' => 'order', ':value' => '0'],
 				[':source' => 'base_Default', ':field' => 'Curl_Timeout', ':value' => '3'],
 				[':source' => 'base_Default', ':field' => 'SPAM_Text', ':value' => 'SPAM'],
+				[':source' => 'base_Default', ':field' => 'Character_Encodings', ':value' => self::DEFAULT_CHARACTER_ENCODINGS], // To keep it backward compatible and make sure we don't break existing schemes
+				[':source' => 'base_Default', ':field' => 'Strip_Accent_Characters', ':value' => 'Y'], // To keep it backward compatible and make sure we don't break existing schemes
+				[':source' => 'base_Default', ':field' => 'Caller_Id_Max_Length', ':value' => self::DEFAULT_CALLER_ID_MAX_LENGTH],
 				[':source' => 'base_Default', ':field' => 'sources', ':value' => 'Asterisk_Phonebook,Superfecta_Cache,Trunk_Provided,Telco_Data'],
 				[':source' => 'Trunk_Provided', ':field' => 'Ignore_Keywords', ':value' => 'unknown, wireless, toll free, unlisted'],
 				[':source' => 'Superfecta_Cache', ':field' => 'Cache_Timeout', ':value' => '120'],
@@ -113,8 +124,6 @@ class Superfecta extends FreePBX_Helpers implements BMO {
 		include __DIR__ . '/includes/processors/superfecta_multi.php';
 		include __DIR__ . '/includes/processors/superfecta_single.php';
 
-
-
 		global $db, $amp_conf, $astman;
 		$options = array(
 			'db' => $this->Database,
@@ -126,140 +135,189 @@ class Superfecta extends FreePBX_Helpers implements BMO {
 		);
 
 		foreach ($schemes as $s) {
-			$this->out("");
-			$this->out(sprintf(_("Starting scheme %s"),$s['name']));
-			//reset these each time
-			$cnum = $trunk_info['callerid'];
-			$cnam = $trunk_info['calleridname'];
-			$did = $trunk_info['extension'];
+			try{				
+				$this->out("");
+				$this->out(sprintf(_("Starting scheme %s"),$s['name']));
+				//reset these each time
+				$cnum = $trunk_info['callerid'];
+				$cnam = $trunk_info['calleridname'];
+				$did = $trunk_info['extension'];
 
-			$options['scheme_name'] = "base_".$s['name'];
-			$options['scheme_settings'] = $this->getScheme($s['name']);
-			$options['module_parameters'] = $this->getSchemeAllModuleSettings($s['name']);
+				$options['scheme_name'] = "base_".$s['name'];
+				$options['scheme_settings'] = $this->getScheme($s['name']);
+				$options['module_parameters'] = $this->getSchemeAllModuleSettings($s['name']);
 
-			switch ($options['scheme_settings']) {
-				case 'superfecta_multi.php':
-					//TODO: This is broken and needs to be fixed, there are better ways to do it of course
-					//for now send all results back through to single
-					//$options['multifecta_id'] = isset($multifecta_id) ? $multifecta_id : null;
-					//$options['source'] = isset($source) ? $source : null;
-					//$superfecta = NEW \superfecta_multi($options);
-					//break;
-				case 'superfecta_single.php':
-				default:
-					$superfecta = NEW \superfecta_single($options);
-				break;
-			}
+				switch ($options['scheme_settings']) {
+					case 'superfecta_multi.php':
+						//TODO: This is broken and needs to be fixed, there are better ways to do it of course
+						//for now send all results back through to single
+						//$options['multifecta_id'] = isset($multifecta_id) ? $multifecta_id : null;
+						//$options['source'] = isset($source) ? $source : null;
+						//$superfecta = NEW \superfecta_multi($options);
+						//break;
+					case 'superfecta_single.php':
+					default:
+						$superfecta = NEW \superfecta_single($options);
+					break;
+				}
+				
+				$superfecta->setDebug($debug);
+				$superfecta->setCLI(true);
+				$superfecta->setDID($did);
+				$superfecta->set_CurlTimeout($options['scheme_settings']['Curl_Timeout']);
 
-			$superfecta->setDebug($debug);
-			$superfecta->setCLI(true);
-			$superfecta->setDID($did);
-			$superfecta->set_CurlTimeout($options['scheme_settings']['Curl_Timeout']);
+				// Determine if this is the correct DID, if this scheme is limited to a DID.
+				$rule_match = $superfecta->match_pattern_all((isset($options['scheme_settings']['DID'])) ? $options['scheme_settings']['DID'] : '', $did);
+				if ($rule_match['number']) {
+					$this->out(sprintf(_("Matched DID Rule: %s with %s"),$rule_match['pattern'], $rule_match['number']));
+				} elseif ($rule_match['status']) {
+					$this->out(_("No matching DID rules. Skipping scheme"));
+					continue;
+				}
+				
+				// Determine if the CID matches any patterns defined for this scheme
+				$rule_match = $superfecta->match_pattern_all((isset($options['scheme_settings']['CID_rules'])) ? $options['scheme_settings']['CID_rules'] : '', $cnum);
+				if ($rule_match['number']) {
+					$this->out(sprintf(_("Matched CID Rule: %s with %s"),$rule_match['pattern'], $rule_match['number']));
+					$cnum = $rule_match['number'];
+					$this->out(sprintf(_("Changed CNUM to: %s"),$cnum));
+				} elseif ($rule_match['status']) {
+					$this->out(_("No matching CID rules. Skipping scheme"));
+					continue;
+				}
 
-			// Determine if this is the correct DID, if this scheme is limited to a DID.
-			$rule_match = $superfecta->match_pattern_all((isset($options['scheme_settings']['DID'])) ? $options['scheme_settings']['DID'] : '', $did);
-			if ($rule_match['number']) {
-				$this->out(sprintf(_("Matched DID Rule: %s with %s"),$rule_match['pattern'], $rule_match['number']));
-			} elseif ($rule_match['status']) {
-				$this->out(_("No matching DID rules. Skipping scheme"));
-				continue;
-			}
+				//if a prefix lookup is enabled, look it up, and truncate the result to 10 characters
+				///Clean these up, set NULL values instead of blanks then don't check for ''
+				$superfecta->set_Prefix('');
+				if ((isset($scheme_param['Prefix_URL'])) && (trim($scheme_param['Prefix_URL']) != '')) {
+					$start_time = $superfecta->mctime_float();
 
-			// Determine if the CID matches any patterns defined for this scheme
-			$rule_match = $superfecta->match_pattern_all((isset($options['scheme_settings']['CID_rules'])) ? $options['scheme_settings']['CID_rules'] : '', $cnum);
-			if ($rule_match['number']) {
-				$this->out(sprintf(_("Matched CID Rule: %s with %s"),$rule_match['pattern'], $rule_match['number']));
-				$cnum = $rule_match['number'];
-				$this->out(sprintf(_("Changed CNUM to: %s"),$cnum));
-			} elseif ($rule_match['status']) {
-				$this->out(_("No matching CID rules. Skipping scheme"));
-				continue;
-			}
+					$superfecta->set_Prefix($superfecta->get_url_contents(str_replace("[thenumber]", $cnum, $options['scheme_settings']['Prefix_URL'])));
 
-			//if a prefix lookup is enabled, look it up, and truncate the result to 10 characters
-			///Clean these up, set NULL values instead of blanks then don't check for ''
-			$superfecta->set_Prefix('');
-			if ((isset($scheme_param['Prefix_URL'])) && (trim($scheme_param['Prefix_URL']) != '')) {
-				$start_time = $superfecta->mctime_float();
+					if ($superfecta->prefix != '') {
+						$this->out(sprintf(_("Prefix Url defined as: %s"),$superfecta->get_Prefix()));
+					} else {
+						$this->out(_("Prefix Url defined but result was empty"));
+					}
+					$this->out(sprintf(_("Prefix Url result took %s seconds."),number_format((mctime_float() - $start_time), 4)));
+				}
 
-				$superfecta->set_Prefix($superfecta->get_url_contents(str_replace("[thenumber]", $cnum, $options['scheme_settings']['Prefix_URL'])));
+				$trunk_info['callerid'] = $cnum;
+				$superfecta->set_TrunkInfo($trunk_info);
 
-				if ($superfecta->prefix != '') {
-					$this->out(sprintf(_("Prefix Url defined as: %s"),$superfecta->get_Prefix()));
+				if($this->agi === null) {
+					$callerid = $superfecta->web_debug();
 				} else {
-					$this->out(_("Prefix Url defined but result was empty"));
-				}
-				$this->out(sprintf(_("Prefix Url result took %s seconds."),number_format((mctime_float() - $start_time), 4)));
-			}
-
-			$trunk_info['callerid'] = $cnum;
-			$superfecta->set_TrunkInfo($trunk_info);
-
-			if($this->agi === null) {
-				$callerid = $superfecta->web_debug();
-			} else {
-				$callerid = $superfecta->get_results();
-			}
-
-			$callerid = trim($callerid);
-
-			$found = false;
-			if (!empty($callerid)) {
-				$found = true;
-				//$first_caller_id = _utf8_decode($first_caller_id);
-				$callerid = trim(strip_tags($callerid));
-				if ($superfecta->isCharSetIA5()) {
-					$callerid = $superfecta->stripAccents($callerid);
-				}
-				//Why?
-				$callerid = preg_replace("/[\";']/", "", $callerid);
-				//limit caller id to the first 60 char
-				$callerid = substr($callerid, 0, 60);
-
-				// Display issues on phones and CDR with special characters
-				// convert CNAM to UTF-8 to fix
-				if (function_exists('mb_convert_encoding')) {
-					$this->out("Converting result to UTF-8");
-					$callerid = mb_convert_encoding($callerid, "UTF-8", "ISO-8859-1");
+					$callerid = $superfecta->get_results();
 				}
 
-				//send off
-				$superfecta->send_results($callerid);
-			}
+				$callerid = trim($callerid);
 
-			//Set Spam text
-			$spam_text = ($superfecta->isSpam()) ? $options['scheme_settings']['SPAM_Text'] : '';
-			if($superfecta->isSpam() && $options['scheme_settings']['SPAM_Text_Substitute'] == 'Y') {
-				$callerid = $spam_text;
-			} else {
-				$callerid = trim($spam_text . " " . $superfecta->get_Prefix() . $callerid);
-			}
+				$found = false;
+				$Caller_Id_Max_Length = isset($options['scheme_settings']['Caller_Id_Max_Length']) ? $options['scheme_settings']['Caller_Id_Max_Length'] : self::DEFAULT_CALLER_ID_MAX_LENGTH;
 
-			//Set Spam Destination
-			$spam_dest = (!empty($options['scheme_settings']['spam_interceptor']) && ($options['scheme_settings']['spam_interceptor'] == 'Y')) ? $options['scheme_settings']['spam_destination'] : '';
-			$this->spamCount = $this->spamCount + (int)$superfecta->get_SpamCount();
-			if(!empty($spam_dest) && ($this->spamCount >= (int)$options['scheme_settings']['SPAM_threshold'])) {
-				$parts = explode(",", $spam_dest);
-				$this->destination = $parts;
-				//stop all processing at this point, the spam score is too high
-				if(!$keepGoing) {
-					$this->out(sprintf(_("Spam Call, Sending call to: %s"),$spam_dest));
-					return $callerid;
+				$Caller_Id_Max_Length = ($Caller_Id_Max_Length < self::CALLER_ID_MAX_LENGTH_MIN and $Caller_Id_Max_Length != -1) ? self::CALLER_ID_MAX_LENGTH_MIN : $Caller_Id_Max_Length;
+
+				if (!empty($callerid)) {
+					$found = true;
+					$this->out(sprintf(_("Caller ID before strip_tags: %s, length: %s"), $callerid,strlen($callerid)) . ((function_exists('mb_strlen')) ? (sprintf(_(", mb_strlen: %s"),mb_strlen($callerid))) : ''));
+					$callerid = trim(strip_tags($callerid));
+					$this->out(sprintf(_("Caller ID after strip_tags: %s, length: %s"), $callerid,strlen($callerid)) . ((function_exists('mb_strlen')) ? (sprintf(_(", mb_strlen: %s"),mb_strlen($callerid))) : ''));
+					$stripAccentsCharacters = (isset($options['scheme_settings']['Strip_Accent_Characters'])) ? $options['scheme_settings']['Strip_Accent_Characters'] : 'Y'; // Default to stripping accent character for backward compatibility
+					$this->out("Strip_Accent_Characters: " . $stripAccentsCharacters);
+					if ($superfecta->isCharSetIA5() && $stripAccentsCharacters == 'Y') {
+						$this->out(sprintf(_("Caller ID before stripAccents: %s, length: %s"), $callerid,strlen($callerid)) . ((function_exists('mb_strlen')) ? (sprintf(_(", mb_strlen: %s"),mb_strlen($callerid))) : ''));
+						$callerid = $superfecta->stripAccents($callerid);
+						$this->out(sprintf(_("Caller ID after stripAccents: %s, length: %s"), $callerid,strlen($callerid)) . ((function_exists('mb_strlen')) ? (sprintf(_(", mb_strlen: %s"),mb_strlen($callerid))) : ''));
+					}
+
+					//Why?
+					$this->out(sprintf(_("Caller ID before preg_replace: %s, length: %s"), $callerid,strlen($callerid)) . ((function_exists('mb_strlen')) ? (sprintf(_(", mb_strlen: %s"),mb_strlen($callerid))) : ''));
+					$callerid = preg_replace("/[\";']/", "", $callerid);
+					$this->out(sprintf(_("Caller ID after preg_replace: %s, length: %s"), $callerid,strlen($callerid)) . ((function_exists('mb_strlen')) ? (sprintf(_(", mb_strlen: %s"),mb_strlen($callerid))) : ''));
+					
+					// Display issues on phones and CDR with special characters
+					// convert CNAM to UTF-8 to fix
+					$character_encodings = (isset($options['scheme_settings']['Character_Encodings'])) ? $options['scheme_settings']['Character_Encodings'] : self::DEFAULT_CHARACTER_ENCODINGS;
+					$this->out(sprintf(_("Character Encodings: '%s'"), $character_encodings));
+					if (in_array('pass',explode(',', $character_encodings))){
+						$this->out(_("Bypassing character conversion."));	
+					}
+					elseif(!function_exists('mb_convert_encoding')) {
+						$this->out(_("Function mb_convert_encoding does not exist."));
+					}
+					else{
+						$this->out(_("Converting result to UTF-8"));
+
+						try{
+							$this->out(sprintf(_("Caller ID before mb_convert_encoding: %s, length: %s"), $callerid,strlen($callerid)) . ((function_exists('mb_strlen')) ? (sprintf(_(", mb_strlen: %s"),mb_strlen($callerid))) : ''));
+							$callerid = mb_convert_encoding($callerid, "UTF-8", $character_encodings);
+							$this->out(sprintf(_("Caller ID after mb_convert_encoding: %s, length: %s"), $callerid,strlen($callerid)) . ((function_exists('mb_strlen')) ? (sprintf(_(", mb_strlen: %s"),mb_strlen($callerid))) : ''));
+						}
+						catch(Exception $e) {
+							$this->out(sprintf(_('Caught exception calling mb_convert_encoding: %s'),  $e->getMessage()));
+						}
+
+					}
+
+					$this->out(sprintf(_("Caller_Id_Max_Length: '%s'"),$Caller_Id_Max_Length));
+					if ($Caller_Id_Max_Length != -1){
+						$this->out(sprintf(_("Caller ID before %s: %s, length: %s"), ((function_exists('mb_substr')) ? 'mb_substr' : 'substr'), $callerid,strlen($callerid)) . ((function_exists('mb_strlen')) ? (sprintf(_(", mb_strlen: %s"),mb_strlen($callerid))) : ''));
+						$callerid = (function_exists('mb_substr')) ? mb_substr($callerid, 0, $Caller_Id_Max_Length)  : substr($callerid, 0, $Caller_Id_Max_Length);
+						$this->out(sprintf(_("Caller ID after %s: %s, length: %s"), ((function_exists('mb_substr')) ? 'mb_substr' : 'substr'), $callerid,strlen($callerid)) . ((function_exists('mb_strlen')) ? (sprintf(_(", mb_strlen: %s"),mb_strlen($callerid))) : ''));
+					}
+					else{
+						$this->out(sprintf(_("Caller ID string length is not limited")));
+					}
+
+					//send off
+					$superfecta->send_results($callerid);
+				}
+
+				//Set Spam text
+				$spam_text = ($superfecta->isSpam()) ? $options['scheme_settings']['SPAM_Text'] : '';
+				if($superfecta->isSpam() && $options['scheme_settings']['SPAM_Text_Substitute'] == 'Y') {
+					$callerid = $spam_text;
 				} else {
-					$this->out(sprintf(_("Call detected as spam, would send call to: %s"),$spam_dest));
+					$callerid = trim($spam_text . " " . $superfecta->get_Prefix() . $callerid);
+				}
+
+				if ($Caller_Id_Max_Length != -1){
+					$this->out(sprintf(_("Caller ID before %s: %s, length: %s"), ((function_exists('mb_substr')) ? 'mb_substr' : 'substr'), $callerid,strlen($callerid)) . ((function_exists('mb_strlen')) ? (sprintf(_(", mb_strlen: %s"),mb_strlen($callerid))) : ''));
+					$callerid = (function_exists('mb_substr')) ? mb_substr($callerid, 0, $Caller_Id_Max_Length)  : substr($callerid, 0, $Caller_Id_Max_Length);
+					$this->out(sprintf(_("Caller ID after %s: %s, length: %s"), ((function_exists('mb_substr')) ? 'mb_substr' : 'substr'), $callerid,strlen($callerid)) . ((function_exists('mb_strlen')) ? (sprintf(_(", mb_strlen: %s"),mb_strlen($callerid))) : ''));
+				}
+
+				//Set Spam Destination
+				$spam_dest = (!empty($options['scheme_settings']['spam_interceptor']) && ($options['scheme_settings']['spam_interceptor'] == 'Y')) ? $options['scheme_settings']['spam_destination'] : '';
+				$this->spamCount = $this->spamCount + (int)$superfecta->get_SpamCount();
+				if(!empty($spam_dest) && ($this->spamCount >= (int)$options['scheme_settings']['SPAM_threshold'])) {
+					$parts = explode(",", $spam_dest);
+					$this->destination = $parts;
+					//stop all processing at this point, the spam score is too high
+					if(!$keepGoing) {
+						$this->out(sprintf(_("Spam Call, Sending call to: %s"),$spam_dest));
+						return $callerid;
+					} else {
+						$this->out(sprintf(_("Call detected as spam, would send call to: %s"),$spam_dest));
+					}
+				}
+				if(!empty(trim($callerid))) {
+					if(!$keepGoing) {
+						$this->out(sprintf(_("Setting caller id to: %s"),$callerid));
+						return $callerid;
+					} else {
+						$this->out(sprintf(_("This scheme would set the caller id to: %s"),$callerid));
+					}
+				} else {
+					$this->out(_("No callerid found"));
 				}
 			}
-			if(!empty(trim($callerid))) {
-				if(!$keepGoing) {
-					$this->out(sprintf(_("Setting caller id to: %s"),$callerid));
-					return $callerid;
-				} else {
-					$this->out(sprintf(_("This scheme would set the caller id to: %s"),$callerid));
-				}
-			} else {
-				$this->out(_("No callerid found"));
+			catch(Exception $e) {
+				$this->out(sprintf(_('Caught exception: %s<br>Skipping scheme %s<br>'),  $e->getMessage(), $s['name']));
 			}
 		}
+		
 		if(empty($callerid) && !$keepGoing) {
 			//No callerid so I guess?
 			return $trunk_info['calleridname'];
@@ -396,7 +454,6 @@ class Superfecta extends FreePBX_Helpers implements BMO {
 				$this->reorderSchemes();
 				return array("status" => true, "redirect" => "config.php?display=superfecta&action=edit&scheme=".$scheme.'copy'.$int);
 			case "update_scheme":
-
 				$data = array(
 					"enable_interceptor" => $_POST['enable_interceptor'] == "on",
 					"scheme_name" => preg_replace('/\s/i', '_', preg_replace('/\+/i', '_', trim($_POST['scheme_name']))),
@@ -410,6 +467,9 @@ class Superfecta extends FreePBX_Helpers implements BMO {
 					"processor" => utf8_decode($_POST['processor']),
 					"multifecta_timeout" => utf8_decode($_POST['multifecta_timeout']),
 					"SPAM_threshold" => $_POST['SPAM_threshold'],
+					"Character_Encodings" => $_POST['Character_Encodings'],
+					"Strip_Accent_Characters" => $_POST['Strip_Accent_Characters'] == "on" ? 'Y' : 'N',
+					"Caller_Id_Max_Length" =>  ($_POST['Caller_Id_Max_Length'] < self::CALLER_ID_MAX_LENGTH_MIN and $_POST['Caller_Id_Max_Length'] != -1) ? self::CALLER_ID_MAX_LENGTH_MIN : $_POST['Caller_Id_Max_Length'],
 				);
 
 				$type = $_POST['goto0'];
@@ -667,6 +727,9 @@ class Superfecta extends FreePBX_Helpers implements BMO {
 		$sth->execute(array($scheme,'DID',$data['DID']));
 		$sth->execute(array($scheme,'CID_rules',$data['CID_rules']));
 		$sth->execute(array($scheme,'SPAM_threshold',$data['SPAM_threshold']));
+		$sth->execute(array($scheme,'Character_Encodings',(!empty($data['Character_Encodings']) ? $data['Character_Encodings'] : self::DEFAULT_CHARACTER_ENCODINGS)));
+		$sth->execute(array($scheme,'Strip_Accent_Characters',(!empty($data['Strip_Accent_Characters']) && $data['Strip_Accent_Characters'] == 'Y' ? 'Y' : 'N')));
+		$sth->execute(array($scheme,'Caller_Id_Max_Length',$data['Caller_Id_Max_Length']));
 		if(isset($data['order'])) {
 			$sth->execute(array($scheme,'order',$data['order']));
 		}

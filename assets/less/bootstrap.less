@@ -124,3 +124,43 @@
 		padding: 12px;
 	}
 }
+
+#Character_Encodings {
+    border:1px solid White;
+    background-color:Silver;
+    width:100%;
+    display:inline-block;
+    vertical-align:top
+}
+
+.BoxEncodingList {
+	.alert {
+		text-align: center;
+	}
+	ul {
+		width: 100%;
+		height: 300px;
+		max-height: 300px;
+		margin-bottom: 10px;
+		overflow: auto;
+		-webkit-overflow-scrolling: touch;
+
+		border: 1px dashed rgb(197, 70, 70);
+	}
+
+	ul li {
+		background-color: Azure;
+		list-style-type: "";
+		text-align: left;
+		padding: 5px;
+		border: 0px;
+	}
+
+	ul.EncodingList li:nth-child(even) {
+		background-color: #f2f2f2;
+	}
+
+	ul.EncodingList li.selected {
+		background-color: GoldenRod;
+	}
+}

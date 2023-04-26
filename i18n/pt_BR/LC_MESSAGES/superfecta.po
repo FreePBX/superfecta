@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-03 15:44+0530\n"
+"POT-Creation-Date: 2022-12-20 08:51+0000\n"
 "PO-Revision-Date: 2017-03-08 21:01+0200\n"
 "Last-Translator: Kingvoice <suporte@kingvoice.com.br>\n"
 "Language-Team: Portuguese (Brazil) <http://weblate.freepbx.org/projects/"
@@ -21,11 +21,19 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 2.4\n"
 
-#: functions.inc.php:50 views/scheme.php:143
+#: Superfecta.class.php:223 Superfecta.class.php:225 Superfecta.class.php:229
+#: Superfecta.class.php:231 Superfecta.class.php:235 Superfecta.class.php:237
+#: Superfecta.class.php:253 Superfecta.class.php:255 Superfecta.class.php:265
+#: Superfecta.class.php:267 Superfecta.class.php:286 Superfecta.class.php:288
+#, php-format
+msgid ", mb_strlen: %s"
+msgstr ""
+
+#: functions.inc.php:50 views/scheme.php:204
 msgid "ALL"
 msgstr "TUDO"
 
-#: views/main.php:25
+#: includes/oauth-google/oauth2callback.php:55 views/main.php:25
 msgid "Actions"
 msgstr "Ações"
 
@@ -33,7 +41,7 @@ msgstr "Ações"
 msgid "Add Caller ID Scheme"
 msgstr "Adicionar Esquema de ID Chamador"
 
-#: page.superfecta.php:190
+#: page.superfecta.php:198
 msgid "Add Scheme"
 msgstr "Adicionar Esquema"
 
@@ -49,6 +57,14 @@ msgstr ""
 msgid "Admin"
 msgstr "Admin"
 
+#: views/add_scheme.php:348 views/scheme.php:137
+msgid "Available Encodings"
+msgstr ""
+
+#: Superfecta.class.php:244
+msgid "Bypassing character conversion."
+msgstr ""
+
 #: views/add_scheme.php:149 views/scheme.php:89
 msgid "CID Prefix URL"
 msgstr "Prefixo CID URL"
@@ -61,7 +77,7 @@ msgstr "Regras CID"
 msgid "CID Superfecta"
 msgstr "CID Superfecta"
 
-#: Superfecta.class.php:249
+#: Superfecta.class.php:302
 #, php-format
 msgid "Call detected as spam, would send call to: %s"
 msgstr "Chamada detectada como spam, enviaria uma chamada para: %s"
@@ -69,6 +85,65 @@ msgstr "Chamada detectada como spam, enviaria uma chamada para: %s"
 #: views/header.php:16
 msgid "Caller ID Superfecta"
 msgstr "ID Chamador Superfecta"
+
+#: Superfecta.class.php:267 Superfecta.class.php:288
+#, php-format
+msgid "Caller ID after %s: %s, length: %s"
+msgstr ""
+
+#: Superfecta.class.php:255
+#, php-format
+msgid "Caller ID after mb_convert_encoding: %s, length: %s"
+msgstr ""
+
+#: Superfecta.class.php:237
+#, php-format
+msgid "Caller ID after preg_replace: %s, length: %s"
+msgstr ""
+
+#: Superfecta.class.php:231
+#, php-format
+msgid "Caller ID after stripAccents: %s, length: %s"
+msgstr ""
+
+#: Superfecta.class.php:225
+#, php-format
+msgid "Caller ID after strip_tags: %s, length: %s"
+msgstr ""
+
+#: Superfecta.class.php:265 Superfecta.class.php:286
+#, php-format
+msgid "Caller ID before %s: %s, length: %s"
+msgstr ""
+
+#: Superfecta.class.php:253
+#, php-format
+msgid "Caller ID before mb_convert_encoding: %s, length: %s"
+msgstr ""
+
+#: Superfecta.class.php:235
+#, php-format
+msgid "Caller ID before preg_replace: %s, length: %s"
+msgstr ""
+
+#: Superfecta.class.php:229
+#, php-format
+msgid "Caller ID before stripAccents: %s, length: %s"
+msgstr ""
+
+#: Superfecta.class.php:223
+#, php-format
+msgid "Caller ID before strip_tags: %s, length: %s"
+msgstr ""
+
+#: Superfecta.class.php:270
+#, php-format
+msgid "Caller ID string length is not limited"
+msgstr ""
+
+#: views/add_scheme.php:421 views/scheme.php:184
+msgid "Caller Id Max Length"
+msgstr ""
 
 #: views/main.php:8
 msgid ""
@@ -79,12 +154,52 @@ msgstr ""
 "chamadas de nome de ID Chamador de entrada para o seu sistema Asterisk "
 "usando várias fontes de dados"
 
-#: Superfecta.class.php:173
+#: Superfecta.class.php:263
+#, php-format
+msgid "Caller_Id_Max_Length: '%s'"
+msgstr ""
+
+#: Superfecta.class.php:258
+#, php-format
+msgid "Caught exception calling mb_convert_encoding: %s"
+msgstr ""
+
+#: Superfecta.class.php:317
+#, php-format
+msgid "Caught exception: %s<br>Skipping scheme %s<br>"
+msgstr ""
+
+#: Superfecta.class.php:183
 #, php-format
 msgid "Changed CNUM to: %s"
 msgstr "Alterado CNUM para: %s"
 
-#: views/scheme.php:130
+#: views/add_scheme.php:289 views/add_scheme.php:320 views/scheme.php:129
+msgid "Character Encodings"
+msgstr ""
+
+#: Superfecta.class.php:242
+#, php-format
+msgid "Character Encodings: '%s'"
+msgstr ""
+
+#: includes/oauth-google/oauth2callback.php:63
+msgid "Close"
+msgstr ""
+
+#: Superfecta.class.php:250
+msgid "Converting result to UTF-8"
+msgstr ""
+
+#: includes/oauth-google/oauth2callback.php:57
+msgid "Copy"
+msgstr ""
+
+#: includes/oauth-google/oauth2callback.php:58
+msgid "Copy the Google Code."
+msgstr ""
+
+#: views/scheme.php:191
 msgid "DID Number"
 msgstr "Número DID"
 
@@ -96,23 +211,23 @@ msgstr "Regras DID"
 msgid "Data Source Name"
 msgstr "Nome da Fonte de Dados"
 
-#: views/scheme.php:138
+#: views/scheme.php:199
 msgid "Debug Level"
 msgstr "Nível de Depuração"
 
-#: views/scheme.php:138
+#: views/scheme.php:199
 msgid "Debug Level to display"
 msgstr "Nível de Depuração a exibir"
 
-#: Superfecta.class.php:331
+#: Superfecta.class.php:393
 msgid "Debug is on and set at level:"
 msgstr "Depuração está ativada e definida no nível:"
 
-#: views/scheme.php:5 views/scheme.php:128
+#: views/scheme.php:5 views/scheme.php:189
 msgid "Debug/Test Run Scheme"
 msgstr "Esquema de Depuração/Teste de Execução"
 
-#: Superfecta.class.php:335
+#: Superfecta.class.php:398
 msgid "Debugging Enabled, will not stop after first result"
 msgstr "Depuração Habilitada, não irá parar após o primeiro resultado"
 
@@ -158,11 +273,31 @@ msgid "Enabled"
 msgstr "Habilitar"
 
 #: includes/processors/superfecta_single.php:55
-#: includes/processors/superfecta_single.php:120
+#: includes/processors/superfecta_single.php:119
 msgid "Executing"
 msgstr "Executando"
 
-#: views/scheme.php:141
+#: Superfecta.class.php:247
+msgid "Function mb_convert_encoding does not exist."
+msgstr ""
+
+#: includes/oauth-google/oauth2callback.php:59
+msgid "Go back to configure Google Contacts Caller-ID Lookup in FreePBX."
+msgstr ""
+
+#: includes/oauth-google/oauth2callback.php:54
+msgid "Google Code"
+msgstr ""
+
+#: includes/oauth-google/oauth2callback.php:65
+msgid "Google Code copied: "
+msgstr ""
+
+#: includes/oauth-google/oauth2callback.php:61
+msgid "Hit <b>Save</b>."
+msgstr ""
+
+#: views/scheme.php:202
 msgid "INFO"
 msgstr "INFO"
 
@@ -251,7 +386,7 @@ msgid ""
 "does not matter, eg. 0|01+1ZXXXXXXXXX does the same thing."
 msgstr ""
 
-#: page.superfecta.php:191
+#: page.superfecta.php:199
 msgid "List Schemes"
 msgstr "Listar Esquemas"
 
@@ -259,21 +394,33 @@ msgstr "Listar Esquemas"
 msgid "Lookup Timeout"
 msgstr "Tempo de Espera de Pesquisa"
 
-#: Superfecta.class.php:171
+#: Superfecta.class.php:181
 #, php-format
 msgid "Matched CID Rule: %s with %s"
 msgstr "Regra CID Coincidente: %s com %s"
 
-#: Superfecta.class.php:162
+#: Superfecta.class.php:172
 #, php-format
 msgid "Matched DID Rule: %s with %s"
 msgstr "Regra DID Coincidente: %s com %s"
+
+#: views/add_scheme.php:431
+msgid ""
+"Maximum Length for Caller Id Name.  Should be at least 10 characters long. "
+"-1 for no limit."
+msgstr ""
+
+#: views/scheme.php:184
+msgid ""
+"Maximum Length for Caller Id Name. Should be at least 10 characters long. -1 "
+"for no limit."
+msgstr ""
 
 #: views/add_scheme.php:129 views/scheme.php:85
 msgid "Multifecta Timeout"
 msgstr "Tempo de Espera Multifecta"
 
-#: views/scheme.php:140
+#: views/scheme.php:201
 msgid "NONE"
 msgstr "NENHUM"
 
@@ -285,45 +432,55 @@ msgstr "Nome"
 msgid "New Scheme Name"
 msgstr "Nome do Novo Esquema"
 
-#: Superfecta.class.php:535 functions.inc.php:29 views/add_scheme.php:197
-#: views/add_scheme.php:224 views/scheme.php:32
+#: Superfecta.class.php:600 functions.inc.php:29 views/add_scheme.php:197
+#: views/add_scheme.php:224 views/add_scheme.php:402 views/scheme.php:32
 msgid "No"
 msgstr "Não"
 
-#: Superfecta.class.php:260
+#: Superfecta.class.php:313
 msgid "No callerid found"
 msgstr "Nenhum id chamador encontrado"
 
-#: Superfecta.class.php:175
+#: Superfecta.class.php:185
 msgid "No matching CID rules. Skipping scheme"
 msgstr "Nenhuma regra CID correspondente. Pulando Esquema"
 
-#: Superfecta.class.php:164
+#: Superfecta.class.php:174
 msgid "No matching DID rules. Skipping scheme"
 msgstr "Nenhuma regra DID correspondente. Pulando Esquema"
+
+#: includes/oauth-google/oauth2callback.php:62
+msgid "Now run debug again and it should work."
+msgstr ""
 
 #: views/main.php:23
 msgid "Order"
 msgstr "Ordem"
 
-#: views/scheme.php:134
+#: includes/oauth-google/oauth2callback.php:60
+msgid ""
+"Paste this Google Code into the <b>Google Code</b> box replacing the <b>XXX</"
+"b>."
+msgstr ""
+
+#: views/scheme.php:195
 msgid "Phone Number"
 msgstr "Número de Telefone"
 
-#: views/scheme.php:134
+#: views/scheme.php:195
 msgid "Phone number to test this scheme against"
 msgstr "Número de telefone para testar neste esquema"
 
-#: Superfecta.class.php:188
+#: Superfecta.class.php:198
 #, php-format
 msgid "Prefix Url defined as: %s"
 msgstr "Prefixo URL definido como: %s"
 
-#: Superfecta.class.php:190
+#: Superfecta.class.php:200
 msgid "Prefix Url defined but result was empty"
 msgstr "Prefixo URL definido, mas o resultado estava vazio"
 
-#: Superfecta.class.php:192
+#: Superfecta.class.php:202
 #, php-format
 msgid "Prefix Url result took %s seconds."
 msgstr "O resultado do URL do prefixo levou %s segundos."
@@ -336,11 +493,11 @@ msgstr ""
 "Fornece o uso simultâneo e o controle completo sobre várias fontes de dados "
 "de identificação de chamadas."
 
-#: Superfecta.class.php:773
+#: Superfecta.class.php:841
 msgid "Reset"
 msgstr "Reiniciar"
 
-#: Superfecta.class.php:346
+#: Superfecta.class.php:409
 msgid "Returned Result would be:"
 msgstr "O Resultado Retornado seria:"
 
@@ -356,7 +513,7 @@ msgstr "Texto SPAM"
 msgid "SPAM Text Substituted"
 msgstr "Texto de SPAM Substituído"
 
-#: Superfecta.class.php:100
+#: Superfecta.class.php:111
 #, php-format
 msgid "Scheme Asked is: %s"
 msgstr "O Esquema Solicitado é: %s"
@@ -374,15 +531,15 @@ msgstr "O Nome do Esquema não pode ficar em branco!"
 msgid "Scheme Name: %s"
 msgstr "Nome do Esquema: %s"
 
-#: Superfecta.class.php:334
+#: Superfecta.class.php:397
 msgid "Scheme Type:"
 msgstr "Tipo do Esquema:"
 
-#: Superfecta.class.php:620
+#: Superfecta.class.php:685
 msgid "Scheme can not be empty!"
 msgstr "Esquema não pode estar vazio!"
 
-#: Superfecta.class.php:415
+#: Superfecta.class.php:480
 msgid "Scheme names cannot be blank"
 msgstr "Os nomes dos esquemas não podem ficar em branco"
 
@@ -394,11 +551,15 @@ msgstr ""
 "Selecione a(s) fonte(s) de dados a serem usadas para suas pesquisas e a "
 "ordem em que você deseja que elas sejam usadas:"
 
+#: views/add_scheme.php:353 views/scheme.php:142
+msgid "Selected Encodings"
+msgstr ""
+
 #: views/add_scheme.php:266 views/scheme.php:122
 msgid "Send Spam Call To"
 msgstr "Enviar Chamada de Spam Para"
 
-#: Superfecta.class.php:254
+#: Superfecta.class.php:307
 #, php-format
 msgid "Setting caller id to: %s"
 msgstr "Configurar id chamador em: %s"
@@ -411,7 +572,7 @@ msgstr "Esquemas de configuração na seção CID Superfecta"
 msgid "Sources can be added/removed in CID Superfecta section"
 msgstr "Fontes podem ser adicionadas/removidas na seção CID Superfecta"
 
-#: Superfecta.class.php:246
+#: Superfecta.class.php:299
 #, php-format
 msgid "Spam Call, Sending call to: %s"
 msgstr "Chamada de spam. Enviando chamada para: %s"
@@ -435,12 +596,16 @@ msgstr ""
 "Especifique um tempo limite em segundos para cada fonte. Se a origem não "
 "retornar um resultado dentro do tempo atribuído, o script seguirá."
 
-#: Superfecta.class.php:130
+#: Superfecta.class.php:140
 #, php-format
 msgid "Starting scheme %s"
 msgstr "Inicializando esquema %s"
 
-#: Superfecta.class.php:778
+#: views/add_scheme.php:394 views/scheme.php:173
+msgid "Strip Accent Characters"
+msgstr ""
+
+#: Superfecta.class.php:846
 msgid "Submit"
 msgstr "Enviar"
 
@@ -452,30 +617,34 @@ msgstr "Processador Superfecta"
 msgid "Superfecta Scheme"
 msgstr "Esquema Superfecta"
 
-#: Superfecta.class.php:103
+#: Superfecta.class.php:114
 #, php-format
 msgid "The CNAME is: %s"
 msgstr "O CNAME é: %s"
 
-#: Superfecta.class.php:102
+#: Superfecta.class.php:113
 #, php-format
 msgid "The CNUM is: %s"
 msgstr "O CNUM é: %s"
 
-#: Superfecta.class.php:101
+#: Superfecta.class.php:112
 #, php-format
 msgid "The DID is: %s"
 msgstr "O DID é: %s"
 
-#: views/scheme.php:130
+#: views/scheme.php:191
 msgid "The DID to test this scheme against"
 msgstr "O DID para testar neste esquema"
 
-#: Superfecta.class.php:332
+#: Superfecta.class.php:394
+msgid "The DID:"
+msgstr ""
+
+#: Superfecta.class.php:395
 msgid "The Original Number:"
 msgstr "O Número Original:"
 
-#: Superfecta.class.php:333
+#: Superfecta.class.php:396
 msgid "The Scheme:"
 msgstr "O Esquema:"
 
@@ -495,13 +664,21 @@ msgstr ""
 "Este projeto é hospedado/mantido em %s Sinta-se livre para bifurcar/ajudar/"
 "reclamar."
 
+#: views/scheme.php:129
+msgid "This is a list of Character Encodings to use for Caller ID"
+msgstr ""
+
+#: views/add_scheme.php:308 views/add_scheme.php:331
+msgid "This is the Character Encoding to use for Caller ID."
+msgstr ""
+
 #: views/add_scheme.php:256 views/scheme.php:118
 msgid ""
 "This is the threshold to send the call to the specified destination below"
 msgstr ""
 "Este é o limite para enviar a chamada para o destino especificado abaixo"
 
-#: Superfecta.class.php:257
+#: Superfecta.class.php:310
 #, php-format
 msgid "This scheme would set the caller id to: %s"
 msgstr "Esse esquema configuraria o identificador de chamadas para: %s"
@@ -514,17 +691,21 @@ msgstr ""
 "Este texto será adicionado previamente às informações de ID Chamador para "
 "ajudá-lo a identificar chamadas como as chamadas SPAM"
 
-#: page.superfecta.php:152
+#: page.superfecta.php:157
 msgid "Unknown Scheme"
 msgstr "Esquema Desconhecido"
 
-#: views/scheme.php:142
+#: views/scheme.php:203
 msgid "WARN"
 msgstr "WARN"
 
 #: views/main.php:4
 msgid "What is CallerID Superfecta?"
 msgstr "O que é ID Chamador Superfecta?"
+
+#: views/add_scheme.php:411 views/scheme.php:173
+msgid "When enabled, Accents will be removed from characters"
+msgstr ""
 
 #: views/add_scheme.php:233 views/scheme.php:107
 msgid "When enabled, Spam calls can be diverted or terminated"
@@ -543,30 +724,30 @@ msgstr ""
 msgid "Where to send the call when it is detected as spam"
 msgstr "Onde enviar a chamada quando ela é detectada como spam"
 
-#: Superfecta.class.php:533 functions.inc.php:27 views/add_scheme.php:195
-#: views/add_scheme.php:222 views/scheme.php:30
+#: Superfecta.class.php:598 functions.inc.php:27 views/add_scheme.php:195
+#: views/add_scheme.php:222 views/add_scheme.php:400 views/scheme.php:30
 msgid "Yes"
 msgstr "Sim"
 
-#: Superfecta.class.php:624
+#: Superfecta.class.php:689
 msgid "You cannot create a scheme the same name as an existing scheme"
 msgstr ""
 "Não é possível criar um esquema com o mesmo nome de um esquema existente"
 
-#: Superfecta.class.php:635
+#: Superfecta.class.php:700
 msgid "You cannot rename a scheme the same thing as an existing scheme"
 msgstr ""
 "Você não pode renomear um esquema para o mesmo que um esquema existente"
 
-#: views/scheme.php:103 views/scheme.php:113
+#: views/scheme.php:103 views/scheme.php:113 views/scheme.php:179
 msgid "no"
 msgstr "não"
 
-#: Superfecta.class.php:347
+#: Superfecta.class.php:410
 #, php-format
 msgid "result took %s seconds"
 msgstr "o resultado levou %s segundos"
 
-#: views/scheme.php:101 views/scheme.php:111
+#: views/scheme.php:101 views/scheme.php:111 views/scheme.php:177
 msgid "yes"
 msgstr "sim"

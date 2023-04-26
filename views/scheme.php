@@ -123,6 +123,67 @@ var scheme = "<?php echo $scheme_data['name']?>";
 				<?php echo $scheme_data['interceptor_select']?>
 			</div>
 		</div>
+	
+		<div class="form-group">
+			<div>
+				<label><a href="javascript:return(false);" class="info"><?php echo _('Character Encodings')?><span><?php echo _('This is a list of Character Encodings to use for Caller ID')?></span></a></label>
+				<input type="text" class="form-control" name="Character_Encodings" id="Character_Encodings" maxlength="20" value="<?php echo $scheme_data['Character_Encodings']?>" readonly>
+			</div>
+			<br/>
+			<div class="BoxEncodingList">
+				<div class="row">
+					<div class="col-md-6">
+						<div class="alert alert-info" role="alert">
+							<?php echo _("Available Encodings"); ?>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="alert alert-info" role="alert">
+							<?php echo _("Selected Encodings"); ?>
+						</div>								
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<ul class="EncodingList list-group" id="Available_Encodings">
+						<?php 
+							$encoding_list = array_unique(array_merge( array("auto","pass","UTF-8","ISO-8859-1","Windows-1251","Windows-1252"), mb_list_encodings()));
+							foreach($encoding_list as $encoding){
+								if (! in_array($encoding, explode(',', $scheme_data['Character_Encodings']))){
+									echo sprintf('<li class="list-group-item">%s</li>',$encoding);
+								}
+							}
+						?>
+						</ul>
+					</div>
+					<div class="col-md-6">
+						<ul class="EncodingList list-group" id="Selected_Encodings">
+						<?php 
+							foreach(explode(',', $scheme_data['Character_Encodings']) as $encoding){
+								echo sprintf('<li class="list-group-item">%s</li>',$encoding);
+							}
+						?>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="form-group">
+			<label><a href="javascript:return(false);" class="info"><?php echo _('Strip Accent Characters')?><span><?php echo _('When enabled, Accents will be removed from characters')?></span></a></label>
+			<br/>
+			<span class="radioset">
+				<input type="radio" id="Strip_Accent_Characters_on" name="Strip_Accent_Characters" value="on" <?php echo $scheme_data['Strip_Accent_Characters'] == 'Y' ? 'checked' : ''?>>
+				<label for="Strip_Accent_Characters_on"><?php echo _("yes")?></label>
+				<input type="radio" id="Strip_Accent_Characters_off" name="Strip_Accent_Characters" value="off" <?php echo $scheme_data['Strip_Accent_Characters'] == "Y" ? '' : 'checked'?>>
+				<label for="Strip_Accent_Characters_off"><?php echo _("no")?></label>
+			</span>
+		</div>
+		
+		<div class="form-group">
+			<label><a href="javascript:return(false);" class="info"><?php echo _('Caller Id Max Length')?><span><?php echo _('Maximum Length for Caller Id Name. Should be at least 10 characters long. -1 for no limit.')?></span></a></label>
+			<input type="number" name="Caller_Id_Max_Length" class="form-control" min="-1" value="<?php echo $scheme_data['Caller_Id_Max_Length']?>">
+		</div>		
 	</form>
 </div>
 <div id="debug-dialog" title="<?php echo _('Debug/Test Run Scheme')?>">
@@ -146,3 +207,5 @@ var scheme = "<?php echo $scheme_data['name']?>";
 	<div class="debug-window">
 	</div>
 </div>
+
+
