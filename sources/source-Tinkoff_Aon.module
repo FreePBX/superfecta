@@ -1,0 +1,43 @@
+<?php
+
+class Tinkoff_Aon extends superfecta_base {
+
+        public $description;
+        public $version_requirement = "2.11";
+#        public $dynamic_name = true;
+
+        public function __construct() {
+                $this->description = _("For +7 numbers (Russia), Tinkoff Bank Oleg Service Hock for Company Name and spam detection");
+        }
+
+        function get_caller_id($thenumber, $run_param=array()) {
+
+
+                $caller_id = null;
+
+                $run_param['url'] = "https://www.tinkoff.ru/oleg/who-called/info/7$thenumber/";
+                $this->DebugPrint(sprintf(_("Searching %s with regular expressions..."),$run_param['url']));
+
+                $reg = str_replace('/', '\\/', "<span>Название компании<!-- -->: <!-- -->(.*?)</span>");
+                $reg = "/$reg/i";
+
+                $value = $this->get_url_contents($run_param['url'], false, false, false, "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36");
+
+                if(preg_match($reg, $value, $matches)) {
+                        $v = $matches[1];
+                        $this->DebugPrint(sprintf(_("Dump %s"),var_dump(explode(",", $v))));
+                        if (count(explode(",", $v))==1)
+                                $caller_id = "Неизвестно, $v";
+                        else
+                                $caller_id = $v;
+                }
+
+                if(preg_match("/Возможно, спам/i", $value, $matches)) {
+                        $this->spam=true;
+                        $this->spam_count=1;
+                }
+
+
+                return($caller_id);
+        }
+}
