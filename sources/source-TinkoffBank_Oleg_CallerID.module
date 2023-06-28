@@ -1,6 +1,6 @@
 <?php
 
-class Tinkoff_Aon extends superfecta_base {
+class TinkoffBank_Oleg_CallerID extends superfecta_base {
 
         public $description;
         public $version_requirement = "2.11";
