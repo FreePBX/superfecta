@@ -1,0 +1,46 @@
+<?php
+
+class AmoCRM extends superfecta_base {
+
+        public $description, $source_param;
+        public $version_requirement = "2.11";
+
+        public function __construct() {
+                $this->description = _("AmoCRM PhoneBook Lookup https://www.amocrm.ru");
+                $this->source_param = array(
+                        'UrlPrefix' => array(
+                                'description' => _('Name of UrlPrefix in https://{UrlPrefix}.amocrm.ru'),
+                                'type' => 'text'
+                        ),
+                        'USER_HASH' => array(
+                                'description' => _('User hash (Depricated. Need request from Support) used for API Access in url /private/acceptors/asterisk_new/'),
+                                'type' => 'text'
+                        ),
+                        'USER_LOGIN' => array(
+                                'description' => _('User login (email) used for access to API'),
+                                'type' => 'text'
+                        ),
+                        'ADD_PREFIX' => array(
+                                'description' => _('Allways add prefix'),
+                                'type' => 'text',
+                                'default' => "7"
+                        )
+                );
+        }
+
+        function get_caller_id($thenumber, $run_param=array()) {
+                $caller_id = null;
+
+                if (isset($run_param['UrlPrefix']) && isset($run_param['USER_HASH']) && isset($run_param['USER_LOGIN'])) {
+                        $run_param['url'] = "https://" . $run_param['UrlPrefix'] . ".amocrm.ru/private/acceptors/asterisk_new/?number=".$run_param['ADD_PREFIX']."$thenumber&USER_LOGIN=".$run_param['USER_LOGIN']."&USER_HASH=".$run_param['USER_HASH'];
+
+                        $value = $this->get_url_contents($run_param['url'], false, false, false, "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36");
+
+                        if(strlen($value)>0 && $value != "7$thenumber |") {
+                                $caller_id=explode("|",$value)[0];
+                                $caller_id=trim($caller_id);
+                        }
+                }
+                return($caller_id);
+        }
+}
