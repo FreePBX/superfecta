@@ -27,7 +27,7 @@ class TinkoffBank_Oleg_CallerID extends superfecta_base {
                                 $caller_id = $v;
                 }
 
-                if(preg_match("/Возможно, спам/i", $value, $matches)) {
+                if(preg_match("/Возможно, (спам|мошенники)/i", $value, $matches)) {
                         $this->spam=true;
                         $this->spam_count=1;
                 }
