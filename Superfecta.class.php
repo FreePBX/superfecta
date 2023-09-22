@@ -96,7 +96,7 @@ class Superfecta extends FreePBX_Helpers implements BMO {
 	public function setAgi($agi) {
 		$this->agi = $agi;
 	}
-	public function execute($scheme='ALL', $request, $debug=0, $keepGoing=false) {
+	public function execute($scheme='ALL', $request=[], $debug=0, $keepGoing=false) {
 		if(empty($scheme) || !is_array($request) || empty($request)) {
 			return '';
 		}
