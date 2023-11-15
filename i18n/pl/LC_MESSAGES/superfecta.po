@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-11 10:28+0000\n"
-"PO-Revision-Date: 2023-11-14 09:01+0000\n"
+"PO-Revision-Date: 2023-11-16 22:01+0000\n"
 "Last-Translator: Szymon Wysokinski <szymon.wysokinski@sqspolska.pl>\n"
 "Language-Team: Polish <http://weblate.freepbx.org/projects/freepbx/"
 "superfecta/pl/>\n"
@@ -542,7 +542,7 @@ msgstr ""
 #: views/add_scheme.php:222
 #: views/scheme.php:30
 msgid "Yes"
-msgstr ""
+msgstr "Tak"
 
 #: Superfecta.class.php:613
 msgid "You cannot create a scheme the same name as an existing scheme"
