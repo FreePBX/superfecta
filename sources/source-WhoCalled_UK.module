@@ -51,16 +51,16 @@
 		$value = $this->get_url_contents($url);
 	
 		// find average rate 
-		$pattern = '~<div class="textColumn">Average rate:</div>.*?<div class="dataColumn"><span class=".*?">(.+?)</span></div>~s';    // working 2019-07-26
+		$pattern = '~<div class="call-stats-item">\s+<span>User reputation:</span>\s+<span><b><span class="([A-Za-z]+(-[A-Za-z]+)+) ([A-Za-z]+(-[A-Za-z]+)+)"> (.+?) </span></b></span>\s+</div>~s';    // working 2019-07-26
 		$matches = null;
 		$foo=preg_match($pattern,$value,$matches);
 		if (isset($matches[1])) {
-			$average_rate = trim($matches[1]);
+			$average_rate = trim($matches[5]);
 			$this->DebugPrint("Average Rate: ".$average_rate);
 		}
 		
 		// find number of searches
-		$pattern = '~<div class="textColumn">Number of searches:</div>.*?<div class="dataColumn">(.+?)</div>~s';   // working 2017-10-21
+		$pattern = '~<div class="call-stats-item">\s+<span>Number of searches:</span>\s+<span><b>(.+?)\s+</b></span>\s+</div>~s';   // working 2017-10-21
 		$matches = null;
 		$foo=preg_match($pattern,$value,$matches);
 		if (isset($matches[1])) {
@@ -70,7 +70,7 @@
 		}
 
 		// find number of comments
-		$pattern = '~<h2 class="numberRanks"><span>COMMENTS: <span class=".*?">(.+?)</span></span>~s';           // working 2019-07-26
+		$pattern = '~<div class="call-stats-item">\s+<span>Number of comments:</span>\s+<span><b><a style="color: black" href="#user-reviews">(.+?) </a></b></span>\s+</div>~s';           // working 2019-07-26
 		$matches = null;
 		$foo=preg_match($pattern,$value,$matches);
 		if (isset($matches[1])) {
@@ -87,7 +87,7 @@
 		// site should return a rate text string, dangerous, harassing, unknown, neutral, safe
 		if (isset ($average_rate)) {
 			switch (strtolower($average_rate)) {
-				case "dangerous":
+				case "negative":
 					if($number_of_searches < $run_param['Search_Number_Threshold'] || $number_of_comments < $run_param['Comment_Number_Threshold']) {
 						$this->DebugPrint("Number flagged as Dangerous, but comment/search threshold not met");
 					} else {
@@ -95,21 +95,10 @@
 						$this->spam = true;
 					}
 					break;
-				case "harassing":
-					if($number_of_searches < $run_param['Search_Number_Threshold'] || $number_of_comments < $run_param['Comment_Number_Threshold']) {
-						$this->DebugPrint("Number flagged as Harassing, but comment/search threshold not met");
-					} else {
-						$this->DebugPrint("Number flagged as Harassing, comment/search threshold met, setting call as SPAM");
-						$this->spam = true;
-					}
-					break;
-				case "unknown":
+				case "undetermined":
 					$this->DebugPrint("Number flagged as Unknown, doing nothing");
 					break;
-				case "neutral":
-					$this->DebugPrint("Number flagged as Neutral, doing nothing");
-					break;
-				case "safe":
+				case "positive":
 					$this->DebugPrint("Number flagged as Safe, doing nothing");
 					break;
 				default:
