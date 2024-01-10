@@ -5,6 +5,7 @@
  * 
  * Version history:
  *   2016-07-27 by frontrangegeeks
+ *	 2024-09-01 by defib
  * 
  ***** ***** ***** ***** ***** ***** ***** *****/
 
@@ -64,7 +65,7 @@ class PCRTcnam extends superfecta_base {
 		}
 
 		$sql_params = array();
-		$sql = 'SELECT * FROM `pc_owner` where `pccellphone` REGEXP :theregex or `pcworkphone` REGEXP :theregex or `pcphone` REGEXP :theregex';
+		$sql = 'SELECT * FROM `pc_group` where `grpcellphone` REGEXP :theregex or `grpworkphone` REGEXP :theregex or `grpphone` REGEXP :theregex';
 
 		//  Build regular expression from the $thenumber to avoid non-digit characters stored in database
 		$theregex = "[^0-9]*";
@@ -88,12 +89,13 @@ class PCRTcnam extends superfecta_base {
 		if($find && is_array($find)) {
 			$this->DebugPrint("Found..");
 			//return $find[1];
-			$custName = $find['pcname'];
-			$custPCID = $find['pcid'];
+			$custName = $find['pcgroupname'];
+			$custPCID = $find['pcgroupid'];
 			$custName = explode(" ",$custName);
             $firstName = $custName[0];
             $lastName = $custName[1];
 			
+		/* 
 			$sql1 = 'SELECT * FROM `pc_wo` where `pcid` = '.$custPCID;
 			$sth1 = $dbh->prepare($sql1, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
 		if(!$sth1) {
@@ -106,22 +108,19 @@ class PCRTcnam extends superfecta_base {
 		$find1 = $sth1->fetch(PDO::FETCH_BOTH);
 			$custWOID = $find1['woid'];
 			$custStatusId = $find1['pcstatus'];
-			
-			$sql2 = 'SELECT boxtitle FROM `boxstyles` where `statusid` = '.$custStatusId;
-			$sth2 = $dbh->prepare($sql2, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-		if(!$sth2) {
-			$this->DebugPrint("Failed to Prepare the SQL Statement. Are we connected?...Skipping");
-			return null;
+	
+		if ($custStatusId == 1 || $custStatusId == 3 || $custStatusId == 4 || $custStatusId == 6) {
+			// Code for the condition when $custStatusId is 1, 3, 4, or 6
+			$custStatus = "INS";
+		} else if ($custStatusId == 101) {
+			// Code for the condition when $custStatusId is 101
+			$custStatus = "WFP";
+		} else {
+			$custStatus = "";
 		}
-		$this->DebugPrint("Connected!");
-		$this->DebugPrint("Searching Database...");
-		$sth2->execute($sql_params);
-		$find2 = $sth2->fetch(PDO::FETCH_BOTH);
-			$custStatus = $find2['boxtitle'];
-		
-		
-			
-			return $firstName.' '.$custWOID.' '.$custStatus;
+		 */
+
+			return $firstName.' '.$lastName; //.' '.$custWOID.' '.$custStatus;
 		} else {
 			$this->DebugPrint("Not Found");
 			return null;
