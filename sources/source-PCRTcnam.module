@@ -1,0 +1,204 @@
+<?php
+
+/***** ***** ***** ***** ***** ***** ***** *****
+ * Module Dev notes:
+ * 
+ * Version history:
+ *   2016-07-27 by frontrangegeeks
+ *	 2024-10-01 by defib
+ * 
+ ***** ***** ***** ***** ***** ***** ***** *****/
+
+class PCRTcnam extends superfecta_base {
+
+	public $description = "Searches Your PC Repair Tracker db - local or remote.";
+	public $version_requirement = "1.7";
+	public $source_param = array(
+
+		'DB_Host' => array(
+				'description' => 'Host address of the PCRT database. (Be sure to allow remote access to your PCRT database for this to work!)',
+				'type' => 'text',
+				'default' => ''
+		),
+		'DB_Name' => array(
+				'description' => 'PCRT Database Name',
+				'type' => 'text',
+				'default' => ''
+		),
+		'DB_User' => array(
+				'description' => '',
+				'type' => 'text',
+				'default' => ''
+		),
+		'DB_Password' => array(
+				'description' => 'PCRT Database Password',
+				'type' => 'password',
+				'default' => ''
+		),
+		'Filter_Length' => array(
+				'description' => 'The number of rightmost digits to check for a match. Enter zero to disable ',
+				'type' => 'number',
+				'default' => 10
+		),
+		'Check_Work_Orders' => array(
+				'description' => 'Check through work orders instead of just groups',
+				'type' => 'checkbox',
+				'default' => 'off'
+		),
+		'Display_Work_Order_Number' => array(
+				'description' => 'Enable to display the Work Order number after the Caller Name if found. Requires "Check_Work_Orders" to be enabled.',
+				'type' => 'checkbox',
+				'default' => 'off'
+		),
+		'Display_Work_Order_Status' => array(
+				'description' => 'Enable to display the Work Order Status after the Caller Name if found. Requires "Check_Work_Orders" to be enabled.',
+				'type' => 'checkbox',
+				'default' => 'off'
+		),
+		'In_Store_Text' => array(
+				'description' => 'Text to display if the work order is in the store. Requires "Check_Work_Orders" to be enabled. Leave Blank to disable',
+				'type' => 'text',
+				'default' => ''
+		),
+		'Waiting_For_Parts_Text' => array(
+				'description' => 'Text to display if the work order is waiting for parts. Requires "Check_Work_Orders" to be enabled. Leave Blank to disable',
+				'type' => 'text',
+				'default' => ''
+		),
+		'In_Store_Status_Numbers' => array(
+			'description' => 'A comma separated list of status integers that trigger the In_Store_Text. Requires "In_Store_Text" to be enabled.',
+			'type' => 'text',
+			'default' => '1,2,3,4,6'
+		),
+		'Waiting_For_Parts_Status_Numbers' => array(
+			'description' => 'A comma separated list of status integers that trigger the In_Store_Text. Requires "In_Store_Text" to be enabled.',
+			'type' => 'text',
+			'default' => '101'
+		),
+	);
+
+
+	function get_caller_id($thenumber, $run_param=array()) {
+		$caller_id = null;
+
+		// DEBUG STATEMENTS
+		$this->DebugPrint("Check_Work_Orders: ".$run_param['Check_Work_Orders']);
+		$this->DebugPrint("Display_Work_Order_Number: ".$run_param['Display_Work_Order_Number']);
+		$this->DebugPrint("Display_Work_Order_Status: ".$run_param['Display_Work_Order_Status']);
+		$this->DebugPrint("In_Store_Text: ".$run_param['In_Store_Text']);
+		$this->DebugPrint("Waiting_For_Parts_Text: ".$run_param['Waiting_For_Parts_Text']);
+
+		if(class_exists('PDO')) {
+			$this->DebugPrint("Connecting to PCRT Database....");
+			try {
+				$dbh = new PDO('mysql:dbname='.$run_param['DB_Name'].';host='.$run_param['DB_Host'], $run_param['DB_User'], $run_param['DB_Password']);
+			} catch (PDOException $e) {
+				$this->DebugPrint('Connection failed: ' . $e->getMessage());
+				return null;
+			}
+		} else {
+			$this->DebugPrint("PDO not present on system...Skipping");
+			return null;
+		}
+
+		// trim number to filter length if applicable
+		if ($run_param['Filter_Length'] != 0) {
+			if (strlen($thenumber) > $run_param['Filter_Length']) $thenumber = substr($thenumber, -$run_param['Filter_Length']);
+		}
+		$sql_params = array();
+		//  Build regular expression from the $thenumber to avoid non-digit characters stored in database
+		$theregex = "[^0-9]*";
+		for( $x=0; $x < ((strlen($thenumber))-1); $x++ )  {
+			$theregex .=  substr($thenumber,$x,1)."[^0-9]*";
+		}
+		$theregex = $theregex.(substr($thenumber,-1))."([^0-9]+|$)";
+		$sql_params[':theregex'] = $theregex;
+
+		$sql_wo = 'SELECT * FROM `pc_owner` where `pccellphone` REGEXP :theregex or `pcworkphone` REGEXP :theregex or `pcphone` REGEXP :theregex ORDER BY `pcid` DESC LIMIT 1';
+		$sql_grp = 'SELECT * FROM `pc_group` where `grpcellphone` REGEXP :theregex or `grpworkphone` REGEXP :theregex or `grpphone` REGEXP :theregex ORDER BY `pcgroupid` DESC LIMIT 1';
+
+		// Run SQL Query for Work order
+		if($run_param['Check_Work_Orders'] == 'on') {
+			$sth_wo = $dbh->prepare($sql_wo, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+			if(!$sth_wo) {
+				$this->DebugPrint("Failed to Prepare the SQL Statement. Are we connected?...Skipping");
+				return null;
+			}
+			$this->DebugPrint("Connected!");
+			$this->DebugPrint("Searching Database...");
+			$sth_wo->execute($sql_params);
+			$find_wo = $sth_wo->fetch(PDO::FETCH_BOTH);
+		}
+		
+		if(($run_param['Check_Work_Orders'] == 'on') && $find_wo && is_array($find_wo)) {
+			$this->DebugPrint("Found Work Order..");
+			//return $find[1];
+			$custName = $find_wo['pcname'];
+			$custPCID = $find_wo['pcid'];
+			$custName = explode(" ",$custName);
+			$firstName = ucfirst(strtolower($custName[0]));
+			$lastName = ucfirst(strtolower($custName[1]));
+			
+			if(($run_param['Display_Work_Order_Status'] == 'on') || ($run_param['Display_Work_Order_Number'] == 'on')){
+				$sql1 = 'SELECT * FROM `pc_wo` where `pcid` = '.$custPCID.' ORDER BY `woid` DESC LIMIT 1';
+				$sth1 = $dbh->prepare($sql1, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+				if(!$sth1) {
+					$this->DebugPrint("Failed to Prepare the SQL Statement. Are we connected?...Skipping");
+					return null;
+				}
+				$this->DebugPrint("Connected!");
+				$this->DebugPrint("Searching Database...");
+				$sth1->execute($sql_params);
+				$find1 = $sth1->fetch(PDO::FETCH_BOTH);
+					$custWOID = $find1['woid'];
+					$custStatusId = $find1['pcstatus'];
+			
+				$this->DebugPrint("custStatusId: ".$custStatusId);
+				$inStoreStatusNumbers = explode(',', $run_param['In_Store_Status_Numbers']);
+				$waitingForPartsStatusNumbers = explode(',', $run_param['Waiting_For_Parts_Status_Numbers']);
+				if (in_array($custStatusId, $inStoreStatusNumbers)) {
+					$custStatus = $run_param['In_Store_Text'];
+
+				} else if (in_array($custStatusId, $waitingForPartsStatusNumbers)) {
+					$custStatus = $run_param['Waiting_For_Parts_Text'];
+				} else {
+					$custStatus = "";
+				}
+			}
+			
+			if($run_param['Display_Work_Order_Status'] == 'off') {
+					$custStatus = "";
+			}
+			if($run_param['Display_Work_Order_Number'] == 'off') {
+					$custWOID= "";
+			}
+
+			return $firstName.' '.$lastName.' '.$custWOID.' '.$custStatus;
+
+		} else {
+			// Run the Grp Check
+			$sth_grp = $dbh->prepare($sql_grp, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+			if(!$sth_grp) {
+				$this->DebugPrint("Failed to Prepare the SQL Statement. Are we connected?...Skipping");
+				return null;
+			}
+			$this->DebugPrint("Connected!");
+			$this->DebugPrint("Searching Database...");
+			$sth_grp->execute($sql_params);
+			$find_grp = $sth_grp->fetch(PDO::FETCH_BOTH);
+
+			if($find_grp && is_array($find_grp)) {
+				$this->DebugPrint("Found..");
+				$custName = $find_grp['pcgroupname'];
+				//$custPCID = $find['pcgroupid'];
+				$custName = explode(" ",$custName);
+				$firstName = ucfirst(strtolower($custName[0]));
+				$lastName = ucfirst(strtolower($custName[1]));
+				return $firstName.' '.$lastName;
+			} else {
+				$this->DebugPrint("Not Found");
+				return null;
+			}
+		}
+    }
+}
