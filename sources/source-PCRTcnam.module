@@ -38,8 +38,28 @@ class PCRTcnam extends superfecta_base {
 		'Filter_Length' => array(
 				'description' => 'The number of rightmost digits to check for a match. Enter zero to disable ',
 				'type' => 'number',
-				'default' => 10,
+				'default' => 10
 		),
+		'Check_Work_Orders' => array(
+				'description' => 'Check through work orders instead of just groups',
+				'type' => 'checkbox',
+				'default' => 'on'
+		),
+		'Display_Work_Order_Number' => array(
+				'description' => 'Enable to diaplay the Work Order number after the Caller Name if found',
+				'type' => 'checkbox',
+				'default' => 'on'
+		),
+		'In_Store_Text' => array(
+				'description' => 'Text to display if the work order is in the store. Requires "Check_Work_Orders" to be enabled. Leave Blank to disable',
+				'type' => 'text',
+				'default' => ''
+		),
+		'Waiting_For_Parts_Text' => array(
+				'description' => 'Text to display if the work order is waiting for parts. Requires "Check_Work_Orders" to be enabled. Leave Blank to disable',
+				'type' => 'text',
+				'default' => ''
+		)
 	);
 
 
@@ -98,27 +118,27 @@ class PCRTcnam extends superfecta_base {
 		/* 
 			$sql1 = 'SELECT * FROM `pc_wo` where `pcid` = '.$custPCID;
 			$sth1 = $dbh->prepare($sql1, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-		if(!$sth1) {
-			$this->DebugPrint("Failed to Prepare the SQL Statement. Are we connected?...Skipping");
-			return null;
-		}
-		$this->DebugPrint("Connected!");
-		$this->DebugPrint("Searching Database...");
-		$sth1->execute($sql_params);
-		$find1 = $sth1->fetch(PDO::FETCH_BOTH);
-			$custWOID = $find1['woid'];
-			$custStatusId = $find1['pcstatus'];
-	
-		if ($custStatusId == 1 || $custStatusId == 3 || $custStatusId == 4 || $custStatusId == 6) {
-			// Code for the condition when $custStatusId is 1, 3, 4, or 6
-			$custStatus = "INS";
-		} else if ($custStatusId == 101) {
-			// Code for the condition when $custStatusId is 101
-			$custStatus = "WFP";
-		} else {
-			$custStatus = "";
-		}
-		 */
+			if(!$sth1) {
+				$this->DebugPrint("Failed to Prepare the SQL Statement. Are we connected?...Skipping");
+				return null;
+			}
+			$this->DebugPrint("Connected!");
+			$this->DebugPrint("Searching Database...");
+			$sth1->execute($sql_params);
+			$find1 = $sth1->fetch(PDO::FETCH_BOTH);
+				$custWOID = $find1['woid'];
+				$custStatusId = $find1['pcstatus'];
+		
+			if ($custStatusId == 1 || $custStatusId == 3 || $custStatusId == 4 || $custStatusId == 6) {
+				// Code for the condition when $custStatusId is 1, 3, 4, or 6
+				$custStatus = "INS";
+			} else if ($custStatusId == 101) {
+				// Code for the condition when $custStatusId is 101
+				$custStatus = "WFP";
+			} else {
+				$custStatus = "";
+			}
+			*/
 
 			return $firstName.' '.$lastName; //.' '.$custWOID.' '.$custStatus;
 		} else {
