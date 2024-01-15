@@ -1,0 +1,33 @@
+<?php
+
+class FNS_RF extends superfecta_base {
+    public $description, $source_param;
+    public $version_requirement = "1.0";
+
+    public function __construct() {
+        $this->description = _("Search over Federal Tax Service of Russia");
+
+        $this->source_param = [
+            'API_Key' => [
+                'description' => _('Enter API Key from FNS (Registration on https://api-fns.ru/index)'),
+                'type' => 'text',
+                'default' => ''
+            ]
+        ];
+    }
+
+    function get_caller_id($thenumber, $run_param = []) {
+        $caller_id = null;
+
+        $url = "https://api-fns.ru/api/search?q={$thenumber}&filter=active&key={$run_param['API_Key']}";
+
+        $content = $this->get_url_contents($url);
+        $value = json_decode($content);
+
+        if(count($value->items) > 0) {
+            $caller_id = str_replace('"', "", $value->items[0]->ЮЛ->НаимСокрЮЛ);
+        }
+
+        return($caller_id);
+    }
+}
