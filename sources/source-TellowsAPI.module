@@ -36,7 +36,7 @@ class TellowsAPI extends superfecta_base {
 	
 	    $apihash = $run_param['Tellows_Key'];
 	    if ($apihash <> '') {
-		   $url = "https://www.tellows.de/basic/num/$thenumber?json=1&partner=tellowskey&apikey=$apihash";
+		   $url = "https://www.tellows.de/basic/num/$thenumber?json=1&apikeyMd5=$apihash";
            $this->DebugPrint(_('Request with API key')." ".$apihash);
 		} else {
 		   $url = "https://www.tellows.de/basic/num/$thenumber?json=1";
