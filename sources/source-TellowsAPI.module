@@ -24,7 +24,7 @@ class TellowsAPI extends superfecta_base {
 				'default' => 5
 			),
 			'Tellows_Key' => array(
-				'description' => _('Tellows API key (MD5 Hash).'),
+				'description' => _('Tellows API key in MD5 format).'),
 				'type' => 'text',
 				'default' => ''
 			)
@@ -35,17 +35,13 @@ class TellowsAPI extends superfecta_base {
 		// $thuenumber must be in E164 format: [+][country code][subscriber number including area code]
 	
 	    $apihash = $run_param['Tellows_Key'];
-	    if ($apihash <> '') {
-		   $url = "https://www.tellows.de/basic/num/$thenumber?json=1&apikeyMd5=$apihash";
-           $this->DebugPrint(_('Request with API key')." ".$apihash);
-		} else {
-		   $url = "https://www.tellows.de/basic/num/$thenumber?json=1";
-           $this->DebugPrint(_('Request without API key'));
-        }			
+        $url = "https://www.tellows.de/basic/num/$thenumber?json=1&apikeyMd5=$apihash";
+        $this->DebugPrint(_('Request with API key')." ".$apihash);
+
+        // Chcek for a valid response. In case the API key is wrong or not MD5 format, the response will not be valid JSON.
 		$json = $this->get_url_contents($url);
-		$errchk = strpos(strtolower($json),"error");
-		if ($errchk > 0) {
-           $this->DebugPrint(_("Invalid request format"));			
+		if (json_decode($json) == null) {
+           $this->DebugPrint(_("Invalid response. Check if your API key is valid and in MD5 format"));			
 		} else {
 		   $result = json_decode($json,true);
 		   $value = $result['tellows']['score'];
