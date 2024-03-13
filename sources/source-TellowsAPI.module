@@ -1,0 +1,64 @@
+<?php
+
+class TellowsAPI extends superfecta_base {
+
+	public $description, $source_param;
+	public $version_requirement = "2.11";
+
+	public function __construct() {
+		$this->description = "https://www.tellows.de/ - "._("A datasource devoted to identifying spam callers.");
+		$this->source_param = array(
+			'SPAM_Threshold' => array(
+				'description' => _('Specify the score from which a call is considered spam.'),
+				'type' => 'number',
+				'default' => 7
+			),
+			'COMMENTS_Threshold' => array(
+				'description' => _('Specify the number of comments which are needed for spam classification.'),
+				'type' => 'number',
+				'default' => 2
+			),
+			'SEARCHES_Threshold' => array(
+				'description' => _('Specify the number of searches which are needed for spam classification.'),
+				'type' => 'number',
+				'default' => 5
+			),
+			'Tellows_Key' => array(
+				'description' => _('Tellows API key in MD5 format).'),
+				'type' => 'text',
+				'default' => ''
+			)
+		);
+	}
+
+	function get_caller_id($thenumber, $run_param=array()) {
+		// $thuenumber must be in E164 format: [+][country code][subscriber number including area code]
+	
+	    $apihash = $run_param['Tellows_Key'];
+        $url = "https://www.tellows.de/basic/num/$thenumber?json=1&apikeyMd5=$apihash";
+        $this->DebugPrint(_('Request with API key')." ".$apihash);
+
+        // Chcek for a valid response. In case the API key is wrong or not MD5 format, the response will not be valid JSON.
+		$json = $this->get_url_contents($url);
+		if (json_decode($json) == null) {
+           $this->DebugPrint(_("Invalid response. Check if your API key is valid and in MD5 format"));			
+		} else {
+		   $result = json_decode($json,true);
+		   $value = $result['tellows']['score'];
+		   $comments = $result['tellows']['comments'];
+		   $searches = $result['tellows']['searches'];
+
+		   if (is_numeric($value)) {
+			   $this->DebugPrint(_('Found')." score ".$value." (".$run_param['SPAM_Threshold'].") with ".$comments." (".$run_param['COMMENTS_Threshold'].") comments and ".$searches." (".$run_param['SEARCHES_Threshold'].") searches");
+
+			   $score = $value;
+			   if ($score >= $run_param['SPAM_Threshold'] AND $comments >= $run_param['COMMENTS_Threshold'] AND $searches >= $run_param['SEARCHES_Threshold']) {
+				   $this->spam = true;
+				   $this->DebugPrint(" "._("determined to be SPAM"));
+			   } else {
+				   $this->DebugPrint(_("Not a SPAM caller"));
+			   }
+		   }
+		}
+	}
+}
