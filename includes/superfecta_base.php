@@ -17,7 +17,7 @@ class superfecta_base {
 	protected $caller_id = '';
 	protected $charsetIA5 = true;
 	protected $first_caller_id = '';
-	protected $prefix = '';
+	public $prefix = '';
 	protected $spam_text = '';
 	protected $cache_found = false;
 	protected $single_source = false;

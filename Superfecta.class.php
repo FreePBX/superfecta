@@ -179,7 +179,9 @@ class Superfecta extends FreePBX_Helpers implements BMO {
 			//if a prefix lookup is enabled, look it up, and truncate the result to 10 characters
 			///Clean these up, set NULL values instead of blanks then don't check for ''
 			$superfecta->set_Prefix('');
-			if ((isset($scheme_param['Prefix_URL'])) && (trim($scheme_param['Prefix_URL']) != '')) {
+			if ((isset($options['scheme_settings']['Prefix_URL'])) && (trim($options['scheme_settings']['Prefix_URL'])) != '') {
+
+
 				$start_time = $superfecta->mctime_float();
 
 				$superfecta->set_Prefix($superfecta->get_url_contents(str_replace("[thenumber]", $cnum, $options['scheme_settings']['Prefix_URL'])));
@@ -189,7 +191,7 @@ class Superfecta extends FreePBX_Helpers implements BMO {
 				} else {
 					$this->out(_("Prefix Url defined but result was empty"));
 				}
-				$this->out(sprintf(_("Prefix Url result took %s seconds."),number_format((mctime_float() - $start_time), 4)));
+				$this->out(sprintf(_("Prefix Url result took %s seconds."),number_format(($superfecta->mctime_float() - $start_time), 4)));
 			}
 
 			$trunk_info['callerid'] = $cnum;
