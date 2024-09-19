@@ -1,0 +1,51 @@
+<?php
+/*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+ * Developer Notes:
+ *
+ * FreeCNAM at https://freecnam.org is a free service presumably provided by Telephony Research at https://telephonyresearch.com/
+ * Resource appears to be rate limited to some small number of queries (single digit) per minute
+ * Unable to locate TOS as of 2024-09-19
+ * Unalbe to locate docs on how to structure cnam query other than what is provided at freecnam.org:
+ *            Example: https://freecnam.org/dip?q=2125551234
+ *
+ * 
+ * Version History:
+ * 2024-09-19    Initial commit by Lorne Gaetz
+ *
+ *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***/
+
+
+class FreeCNAM extends superfecta_base
+{
+	public $description, $source_param;
+	public $version_requirement = "2.11";
+	public $dynamic_name = true;
+
+	public function __construct()
+	{
+		$this->description = _("Caller ID name from https://freecnam.org. Free community service with low rate limits to prevent abuse.");
+	}
+
+	function get_caller_id($thenumber, $run_param = array())
+	{
+		$caller_id = null;
+		$url = "https://freecnam.org/dip?q=";
+
+		if ($this->isDebug())
+			$this->DebugPrint(_('Running FreeCNAM scheme.'));
+			$this->DebugPrint(_('If requested URL returns 429, rate limit exceeded.'));
+
+		//retrieve url contents
+		$caller_id = $this->get_url_contents($url.$thenumber);
+
+		if ($caller_id) {
+			if ($caller_id=="Error: Rate limit exceeded") {
+				if (!$this->isDebug())
+					$this->DebugPrint(_('FreeCNAM rate limit exceeded, returning null.'));
+				return;
+			}
+			
+		}
+		return (strip_tags(trim($caller_id)));
+	}
+}
