@@ -46,6 +46,11 @@ class Send_to_Email extends superfecta_base {
 			'type' => 'text',
 			'default' => 'Unknown'
 		),
+		'Use_HTML' => array(
+			'description' => _('HTML enabled email'),
+			'type' => 'checkbox',
+			'default' => 'off'
+		),
     );
 
     function post_processing($cache_found, $winning_source, $first_caller_id, $run_param, $thenumber) {
@@ -95,8 +100,11 @@ class Send_to_Email extends superfecta_base {
 		$body = str_replace('[DATE]', date("D M j G:i:s T Y"), $body);
 		$body = str_replace('[date]', date("D M j G:i:s T Y"), $body);
 
-		if ($run_param['From_Address'])  {
-			$headers =  'From: '.$run_param['From_Address']."\r\n";
+		if ($run_param['From_Address'])	 {
+			$headers = 'From: '.$run_param['From_Address']."\r\n";
+			if ($run_param['Use_HTML'] == 'on') {
+				$headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+			}
 		}
 
 		if ( $cnam != '' && $thenumber != '') {
