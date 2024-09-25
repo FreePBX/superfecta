@@ -2,7 +2,7 @@
 	<rawname>superfecta</rawname>
 	<repo>extended</repo>
 	<name>CID Superfecta</name>
-	<version>17.0.3.4</version>
+	<version>17.0.3.5</version>
 	<type>setup</type>
 	<category>Admin</category>
 	<publisher>Sangoma Technologies Corporation</publisher>
@@ -13,6 +13,7 @@
 	</description>
   	<more-info>https://sangomakb.atlassian.net/wiki/spaces/PG/pages/20644530/CID+Superfecta</more-info>
 	<changelog>
+		*17.0.3.5* bump 
 		*17.0.3.3* Add Russian Federal Tax Service source 
 		*17.0.3.2* Fixing PHP 8.2 compatibility issue in Google Auth module  and Add HTML support for email
 		*17.0.3.1* Fixing PHP 8.2 compatibility issue 
