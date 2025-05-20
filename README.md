@@ -13,10 +13,10 @@ This is a module for [FreePBX©](http://www.freepbx.org/ "FreePBX Home Page"). [
 [FreePBX](http://www.freepbx.org/ "FreePBX Home Page") is a completely modular GUI for Asterisk written in PHP and Javascript. Meaning you can easily write any module you can think of and distribute it free of cost to your clients so that they can take advantage of beneficial features in [Asterisk](http://www.asterisk.org/ "Asterisk Home Page")
 
 ### Setting up a FreePBX system
-[See our WIKI](http://sangomakb.atlassian.net/wiki/spaces/FP/pages/9732130/Install+FreePBX)
+[See our WIKI](http://wiki.freepbx.org/display/FOP/Install+FreePBX)
 ### License
 [This modules code is licensed as GPLv2+](httpS://www.gnu.org/licenses/gpl-2.0.txt)
 ### Contributing
-To contribute code or modules back into the [FreePBX](http://www.freepbx.org/ "FreePBX Home Page") ecosystem you must fully read our Code License Agreement. We are not able to look at or accept patches or code of any kind until this document is filled out. Please take a look at [http://sangomakb.atlassian.net/wiki/spaces/FP/pages/10682663/Contributor+License+Agreement](http://sangomakb.atlassian.net/wiki/spaces/FP/pages/10682663/Contributor+License+Agreement) for more information
+To contribute code or modules back into the [FreePBX](http://www.freepbx.org/ "FreePBX Home Page") ecosystem you must fully read our Code License Agreement. We are not able to look at or accept patches or code of any kind until this document is filled out. Please take a look at [http://wiki.freepbx.org/display/DC/Code+License+Agreement](http://wiki.freepbx.org/display/DC/Code+License+Agreement) for more information
 ### Issues
-Please file bug reports at http://github.com/FreePBX/issue-tracker/issues
+Please file bug reports at http://issues.freepbx.org
