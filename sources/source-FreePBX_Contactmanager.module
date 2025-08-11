@@ -26,7 +26,7 @@ class FreePBX_Contactmanager extends superfecta_base {
 
 	function get_caller_id($thenumber, $run_param=array()) {
 		$caller_id = null;
-		$data = FreePBX::Contactmanager()->lookupByUserID(-1, $thenumber,"/\D/");
+		$data = FreePBX::Contactmanager()->lookupByUserID(-1, $thenumber,"/[^\+\d]/");
 		if(empty($data)){
 			return null;
 		}
