@@ -10,6 +10,7 @@
  *        2014-01-08   Initial migration to 2.11 and update regex's by lgaetz
  *        2014-03-25   Regex fix by Håkan
  *        2014-07-23   Regex fix by kossmac
+ *        2025-08-11   Regex fix by JaCoTec, works now also with intl numbers (+49...)
  */
 class DeTeMedien_DE extends superfecta_base {
 
@@ -19,6 +20,7 @@ class DeTeMedien_DE extends superfecta_base {
 	
 	function get_caller_id($thenumber, $run_param=array()) {
 		$caller_id = null;
+		$thenumber = (strlen($thenumber) > 0 && $thenumber[0] === '+') ? '00' . substr($thenumber, 1) : $thenumber;
 		$this->DebugPrint(sprintf(_("Searching http://www.detemedien.de/ for %s..."),$thenumber));
 
 		// url from ver. 2.2.x still working 2014-01-08
@@ -32,13 +34,15 @@ class DeTeMedien_DE extends superfecta_base {
 			'/class="name " onmouseover="" onMouseOut=""><span class="">(.*?)<\/span>/',    // working 2014-07-23
 			'/class="name "><span class="">(.*?)<\/span>/',    // working 2014-07-23
 			'/class="name " onmouseover="" onmouseout=""><span class="">(.*?)<\/span>/',    // working 2014-07-23
+			'/class="hitlnk_name">(.*?)<\/a>/',    // working 2025-08-11
 		);
 
 		if ($this->SearchURL($url, $regexp, $match, NULL, TRUE)) {
 			$caller_id = $this->ExtractMatch($match);
 		}
+		$caller_id = isset($caller_id)?$caller_id:'';
 
-		return(str_replace("&nbsp;", '', $caller_id));
+		return($caller_id);
 	}
 
 }
