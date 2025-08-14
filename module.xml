@@ -2,7 +2,7 @@
 	<rawname>superfecta</rawname>
 	<repo>extended</repo>
 	<name>CID Superfecta</name>
-	<version>17.0.3.7</version>
+	<version>17.0.4</version>
 	<type>setup</type>
 	<category>Admin</category>
 	<publisher>Sangoma Technologies Corporation</publisher>
@@ -13,6 +13,7 @@
 	</description>
   	<more-info>https://sangomakb.atlassian.net/wiki/spaces/PG/pages/20644530/CID+Superfecta</more-info>
 	<changelog>
+		*17.0.4*   Fixes for German sources 
 		*17.0.3.7* #Issue-587 Contact Manager lookup fails if search-string contains '+' 
 		*17.0.3.6* Fix whoops error if lookup returns no CNAM 
 		*17.0.3.5* bump 
