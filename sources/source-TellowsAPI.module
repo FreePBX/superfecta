@@ -1,75 +1,136 @@
 <?php
+/**
+ * Superfecta Source: TellowsAPI
+ * Quelle: https://www.tellows.de/
+ * Ruft Score/Kommentare/Suchen ab und liefert – wenn vorhanden – den Anrufernamen zurück.
+ *
+ * Hinweis:
+ *  - Die Nummer muss in E.164 übergeben werden: [+][Ländervorwahl][Rufnummer inkl. Vorwahl], z.B. +4971211387725
+ *  - Für gültige Antworten wird der MD5-Hash des API-Schlüssels erwartet (Parameter: apikeyMd5).
+ */
 
 class TellowsAPI extends superfecta_base {
 
-	public $description, $source_param;
-	public $version_requirement = "2.11";
+    public $description, $source_param;
+    public $version_requirement = "2.11";
 
-	public function __construct() {
-		$this->description = "https://www.tellows.de/ - "._("A datasource devoted to identifying spam callers.");
-		$this->source_param = array(
-			'SPAM_Threshold' => array(
-				'description' => _('Specify the score from which a call is considered spam.'),
-				'type' => 'number',
-				'default' => 7
-			),
-			'COMMENTS_Threshold' => array(
-				'description' => _('Specify the number of comments which are needed for spam classification.'),
-				'type' => 'number',
-				'default' => 2
-			),
-			'SEARCHES_Threshold' => array(
-				'description' => _('Specify the number of searches which are needed for spam classification.'),
-				'type' => 'number',
-				'default' => 5
-			),
-			'Tellows_Key' => array(
-				'description' => _('Tellows API key (MD5 Hash).'),
-				'type' => 'text',
-				'default' => ''
-			),
-			'Allowlist_Skip' => array(
-				'description' => _('Skip Tellows spam classification if the number is found in the Allowlist.'),
-				'type' => 'checkbox',
-				'default' => '',
-			)
-		);
-	}
+    public function __construct() {
+        $this->description = "https://www.tellows.de/ - "._("A datasource devoted to identifying spam callers.");
+        $this->source_param = array(
+            'SPAM_Threshold' => array(
+                'description' => _('Specify the score from which a call is considered spam.'),
+                'type'        => 'number',
+                'default'     => 7
+            ),
+            'COMMENTS_Threshold' => array(
+                'description' => _('Specify the number of comments which are needed for spam classification.'),
+                'type'        => 'number',
+                'default'     => 2
+            ),
+            'SEARCHES_Threshold' => array(
+                'description' => _('Specify the number of searches which are needed for spam classification.'),
+                'type'        => 'number',
+                'default'     => 5
+            ),
+            'Tellows_Key' => array(
+                'description' => _('Tellows API key (MD5 Hash).'),
+                'type'        => 'text',
+                'default'     => ''
+            ),
+        );
+    }
 
-	function get_caller_id($thenumber, $run_param=array()) {
-		// $thuenumber must be in E164 format: [+][country code][subscriber number including area code]
-	
-		$apihash = $run_param['Tellows_Key'];
-		$url = "https://www.tellows.de/basic/num/$thenumber?json=1&apikeyMd5=$apihash";
-		$this->DebugPrint(_('Request with API key')." ".$apihash);
+    /**
+     * Hauptfunktion: Holt Daten von Tellows und gibt – falls vorhanden – den Anrufernamen zurück.
+     * @param string $thenumber E.164-Nummer
+     * @param array  $run_param Superfecta-Parameter
+     * @return string|null      Caller-ID (Name) oder null, wenn nicht verfügbar
+     */
+    function get_caller_id($thenumber, $run_param = array()) {
+        // $thenumber must be in E.164 format: [+][country code][subscriber number including area code]
+        $apihash = isset($run_param['Tellows_Key']) ? trim($run_param['Tellows_Key']) : '';
 
-		// Chcek for a valid response. In case the API key is wrong or not MD5 format, the response will not be valid JSON.
-		$json = $this->get_url_contents($url);
-		if (json_decode($json) == null) {
-		   $this->DebugPrint(_("Invalid response. Check if your API key is valid and in MD5 format"));          
-		} else {
-		   $result = json_decode($json,true);
-		   $value = $result['tellows']['score'];
-		   $comments = $result['tellows']['comments'];
-		   $searches = $result['tellows']['searches'];
+        // Verwende apikeyMd5, wie in deiner funktionierenden Variante
+        $url = "https://www.tellows.de/basic/num/$thenumber?json=1";
+        if ($apihash !== '') {
+            $url .= "&apikeyMd5=" . rawurlencode($apihash);
+            $this->DebugPrint(_('Request with API key') . " " . $apihash);
+        } else {
+            $this->DebugPrint(_('Request without API key'));
+        }
 
-		   if (is_numeric($value)) {
-			   $this->DebugPrint(_('Found')." score ".$value." (".$run_param['SPAM_Threshold'].") with ".$comments." (".$run_param['COMMENTS_Threshold'].") comments and ".$searches." (".$run_param['SEARCHES_Threshold'].") searches");
-			   $score = $value;
-			   if ($score >= $run_param['SPAM_Threshold'] AND $comments >= $run_param['COMMENTS_Threshold'] AND $searches >= $run_param['SEARCHES_Threshold']) {
-				   $allowname = strip_tags($this->astman->database_get('allowlist', $thenumber));
-				   if (strlen($allowname) > 1 AND $run_param['Allowlist_Skip'] == 'on') {
-					   $this->DebugPrint(" "._("Caller is on the Allowlist, classifying as NO SPAM"));
-				   }
-				   else {
-					   $this->spam_count = intval($score);      // Set Spam count (Which reflects to the Threshold for the SPAM interception)
-					   $this->spam = true;
-					   $this->DebugPrint(" "._("Determined to be SPAM"));
-				   }
-			   } else {
-				   $this->DebugPrint(_("Not a SPAM caller"));
-			   }
-		   }
-		}
-	}
+        // HTTP-Request
+        $json = $this->get_url_contents($url);
+        if ($json === false || $json === null || $json === '') {
+            $this->DebugPrint("Empty response from Tellows");
+            return null;
+        }
+
+        // Manche Fehlerfälle hängen Text hinter das JSON – wir schneiden bis zur letzten schließenden Klammer
+        $lastBrace = strrpos($json, '}');
+        if ($lastBrace !== false) {
+            $json_clean = substr($json, 0, $lastBrace + 1);
+        } else {
+            $json_clean = $json; // Fallback – wird gleich vom Decoder geprüft
+        }
+
+        // JSON decodieren + Fehler prüfen
+        $result = json_decode($json_clean, true);
+        if ($result === null) {
+            $this->DebugPrint("JSON decode failed: " . json_last_error_msg());
+            $this->DebugPrint("Raw response (truncated): " . substr($json, 0, 200));
+            $this->DebugPrint(_("Invalid response. Check if your API key is valid and in MD5 format"));
+            return null;
+        }
+
+        if (!isset($result['tellows'])) {
+            $this->DebugPrint("tellows node missing; raw: " . substr($json, 0, 200));
+            return null;
+        }
+
+        $t = $result['tellows'];
+
+        // Werte robust lesen (Strings -> ints)
+        $score    = isset($t['score'])    ? (int)$t['score']    : null;
+        $comments = isset($t['comments']) ? (int)$t['comments'] : 0;
+        $searches = isset($t['searches']) ? (int)$t['searches'] : 0;
+
+        // Anrufername extrahieren (beste Quelle zuerst)
+        $caller_id = null;
+        if (!empty($t['numberDetails']['name'])) {
+            $caller_id = trim($t['numberDetails']['name']);
+        } elseif (!empty($t['callerNames']['caller'][0])) {
+            $caller_id = trim($t['callerNames']['caller'][0]);
+        }
+
+        // Debug-Ausgaben + Spam-Entscheidung
+        if ($score !== null) {
+            $spamTh   = isset($run_param['SPAM_Threshold'])     ? (int)$run_param['SPAM_Threshold']     : 7;
+            $commTh   = isset($run_param['COMMENTS_Threshold']) ? (int)$run_param['COMMENTS_Threshold'] : 2;
+            $searchTh = isset($run_param['SEARCHES_Threshold']) ? (int)$run_param['SEARCHES_Threshold'] : 5;
+
+            $this->DebugPrint(
+                _('Found') . " score " . $score . " (" . $spamTh . ") with " .
+                $comments . " (" . $commTh . ") comments and " .
+                $searches . " (" . $searchTh . ") searches"
+            );
+
+            if ($score >= $spamTh && $comments >= $commTh && $searches >= $searchTh) {
+                // Superfecta kann optional einen Spam-Count anzeigen
+                $this->spam_count = $score;
+                $this->spam = true;
+                $this->DebugPrint(" " . _("determined to be SPAM"));
+            } else {
+                $this->DebugPrint(_("Not a SPAM caller"));
+            }
+        }
+
+        // Ganz wichtig: Name an Superfecta zurückgeben (damit er angezeigt wird)
+        if (!empty($caller_id)) {
+            return $caller_id;
+        }
+
+        // Kein Name vorhanden → null zurück (Superfecta probiert ggf. weitere Quellen)
+        return null;
+    }
 }
