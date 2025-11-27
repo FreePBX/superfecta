@@ -27,6 +27,11 @@ class TellowsAPI extends superfecta_base {
 				'description' => _('Tellows API key (MD5 Hash).'),
 				'type' => 'text',
 				'default' => ''
+			),
+			'Allowlist_Skip' => array(
+				'description' => _('Skip Tellows spam classification if the number is found in the Allowlist.'),
+				'type' => 'checkbox',
+				'default' => '',
 			)
 		);
 	}
@@ -34,14 +39,14 @@ class TellowsAPI extends superfecta_base {
 	function get_caller_id($thenumber, $run_param=array()) {
 		// $thuenumber must be in E164 format: [+][country code][subscriber number including area code]
 	
-	    $apihash = $run_param['Tellows_Key'];
-        $url = "https://www.tellows.de/basic/num/$thenumber?json=1&apikeyMd5=$apihash";
-        $this->DebugPrint(_('Request with API key')." ".$apihash);
+		$apihash = $run_param['Tellows_Key'];
+		$url = "https://www.tellows.de/basic/num/$thenumber?json=1&apikeyMd5=$apihash";
+		$this->DebugPrint(_('Request with API key')." ".$apihash);
 
-        // Chcek for a valid response. In case the API key is wrong or not MD5 format, the response will not be valid JSON.
+		// Chcek for a valid response. In case the API key is wrong or not MD5 format, the response will not be valid JSON.
 		$json = $this->get_url_contents($url);
 		if (json_decode($json) == null) {
-           $this->DebugPrint(_("Invalid response. Check if your API key is valid and in MD5 format"));			
+		   $this->DebugPrint(_("Invalid response. Check if your API key is valid and in MD5 format"));          
 		} else {
 		   $result = json_decode($json,true);
 		   $value = $result['tellows']['score'];
@@ -50,12 +55,17 @@ class TellowsAPI extends superfecta_base {
 
 		   if (is_numeric($value)) {
 			   $this->DebugPrint(_('Found')." score ".$value." (".$run_param['SPAM_Threshold'].") with ".$comments." (".$run_param['COMMENTS_Threshold'].") comments and ".$searches." (".$run_param['SEARCHES_Threshold'].") searches");
-
 			   $score = $value;
 			   if ($score >= $run_param['SPAM_Threshold'] AND $comments >= $run_param['COMMENTS_Threshold'] AND $searches >= $run_param['SEARCHES_Threshold']) {
-			       $this->spam_count = intval($score);		// Set Spam count (Which reflects to the Threshold for the SPAM interception)
-				   $this->spam = true;
-				   $this->DebugPrint(" "._("determined to be SPAM"));
+				   $allowname = strip_tags($this->astman->database_get('allowlist', $thenumber));
+				   if (strlen($allowname) > 1 AND $run_param['Allowlist_Skip'] == 'on') {
+					   $this->DebugPrint(" "._("Caller is on the Allowlist, classifying as NO SPAM"));
+				   }
+				   else {
+					   $this->spam_count = intval($score);      // Set Spam count (Which reflects to the Threshold for the SPAM interception)
+					   $this->spam = true;
+					   $this->DebugPrint(" "._("Determined to be SPAM"));
+				   }
 			   } else {
 				   $this->DebugPrint(_("Not a SPAM caller"));
 			   }
