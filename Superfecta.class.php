@@ -39,6 +39,52 @@ class Superfecta extends FreePBX_Helpers implements BMO {
 	private $destination = null;
 	private $agi = null;
 
+	/* -------------------- Added: safe logging controls (non-breaking) -------------------- */
+	/** @var int $logLevel Current log threshold. 1=default (all existing out() calls map here) */
+	private $logLevel = 1;
+
+	/** @var bool $suppressWebEcho When true, out() won’t echo to web (keeps AGI verbose only) */
+	private $suppressWebEcho = false;
+
+	/**
+	 * Change log level (for future use). Existing out() calls use level=1,
+	 * so behavior remains identical unless you raise this threshold.
+	 */
+	public function setLogLevel($level) {
+		$lvl = intval($level);
+		if ($lvl < 0) { $lvl = 0; }
+		$this->logLevel = $lvl;
+	}
+
+	/** Suppress web echo (still logs via AGI->verbose when available). */
+	public function setSuppressWebEcho($bool) {
+		$this->suppressWebEcho = (bool)$bool;
+	}
+
+	/**
+	 * Safe logger used by out(). Honors logLevel and suppressWebEcho.
+	 * Non-breaking: if you never call setLogLevel/setSuppressWebEcho,
+	 * behavior is identical to the original out().
+	 */
+	private function safeLog($message, $level = 1) {
+		if ($level > $this->logLevel) {
+			return;
+		}
+		// Prefer AGI verbose when available (typical at call time)
+		if (is_object($this->agi)) {
+			$this->agi->verbose($message);
+			return;
+		}
+		// Otherwise echo to web/CLI unless suppressed for web
+		if (php_sapi_name() != "cli") {
+			if ($this->suppressWebEcho) { return; }
+			echo "<span class='header'>".$message."</span><br/>";
+		} else {
+			echo $message."\n";
+		}
+	}
+	/* ------------------ End: safe logging controls (non-breaking) ------------------ */
+
 	public function install() {
 		$sql = "SELECT * FROM superfectaconfig LIMIT 1;";
 		$res = $this->Database->query($sql);
@@ -83,14 +129,9 @@ class Superfecta extends FreePBX_Helpers implements BMO {
 		];
 	}
 
+	/** Non-breaking: route legacy out() via safeLog(level=1) */
 	private function out($message) {
-		if(is_object($this->agi)) {
-			$this->agi->verbose($message);
-		} elseif (php_sapi_name() != "cli") {
-			echo "<span class='header'>".$message."</span><br/>";
-		} else {
-			echo $message."\n";
-		}
+		$this->safeLog($message, 1);
 	}
 
 	public function setAgi($agi) {
@@ -135,7 +176,7 @@ class Superfecta extends FreePBX_Helpers implements BMO {
 		);
 
 		foreach ($schemes as $s) {
-			try{				
+			try{
 				$this->out("");
 				$this->out(sprintf(_("Starting scheme %s"),$s['name']));
 				//reset these each time
@@ -160,7 +201,7 @@ class Superfecta extends FreePBX_Helpers implements BMO {
 						$superfecta = NEW \superfecta_single($options);
 					break;
 				}
-				
+
 				$superfecta->setDebug($debug);
 				$superfecta->setCLI(true);
 				$superfecta->setDID($did);
@@ -174,7 +215,7 @@ class Superfecta extends FreePBX_Helpers implements BMO {
 					$this->out(_("No matching DID rules. Skipping scheme"));
 					continue;
 				}
-				
+
 				// Determine if the CID matches any patterns defined for this scheme
 				$rule_match = $superfecta->match_pattern_all((isset($options['scheme_settings']['CID_rules'])) ? $options['scheme_settings']['CID_rules'] : '', $cnum);
 				if ($rule_match['number']) {
@@ -222,39 +263,36 @@ class Superfecta extends FreePBX_Helpers implements BMO {
 
 				if (!empty($callerid)) {
 					$found = true;
-					$this->out(sprintf(_("Caller ID before strip_tags: %s, length: %s"), $callerid,strlen($callerid)) . ((function_exists('mb_strlen')) ? (sprintf(_(", mb_strlen: %s"),mb_strlen($callerid))) : ''));
+					// $this->out(sprintf(_("Caller ID before strip_tags: %s, length: %s"), $callerid,strlen($callerid)) . ((function_exists('mb_strlen')) ? (sprintf(_(", mb_strlen: %s"),mb_strlen($callerid))) : ''));
 					$callerid = trim(strip_tags($callerid));
-					$this->out(sprintf(_("Caller ID after strip_tags: %s, length: %s"), $callerid,strlen($callerid)) . ((function_exists('mb_strlen')) ? (sprintf(_(", mb_strlen: %s"),mb_strlen($callerid))) : ''));
-					$stripAccentsCharacters = (isset($options['scheme_settings']['Strip_Accent_Characters'])) ? $options['scheme_settings']['Strip_Accent_Characters'] : 'Y'; // Default to stripping accent character for backward compatibility
-					$this->out("Strip_Accent_Characters: " . $stripAccentsCharacters);
+					// $this->out(sprintf(_("Caller ID after strip_tags: %s, length: %s"), $callerid,strlen($callerid)) . ((function_exists('mb_strlen')) ? (sprintf(_(", mb_strlen: %s"),mb_strlen($callerid))) : ''));
+					$stripAccentsCharacters = (isset($options['scheme_settings']['Strip_Accent_Characters'])) ? $options['scheme_settings']['Strip_Accent_Characters'] : 'Y';
+					// $this->out("Strip_Accent_Characters: " . $stripAccentsCharacters);
 					if ($superfecta->isCharSetIA5() && $stripAccentsCharacters == 'Y') {
-						$this->out(sprintf(_("Caller ID before stripAccents: %s, length: %s"), $callerid,strlen($callerid)) . ((function_exists('mb_strlen')) ? (sprintf(_(", mb_strlen: %s"),mb_strlen($callerid))) : ''));
+						// $this->out(sprintf(_("Caller ID before stripAccents: %s, length: %s"), $callerid,strlen($callerid)) . ((function_exists('mb_strlen')) ? (sprintf(_(", mb_strlen: %s"),mb_strlen($callerid))) : ''));
 						$callerid = $superfecta->stripAccents($callerid);
-						$this->out(sprintf(_("Caller ID after stripAccents: %s, length: %s"), $callerid,strlen($callerid)) . ((function_exists('mb_strlen')) ? (sprintf(_(", mb_strlen: %s"),mb_strlen($callerid))) : ''));
+						// $this->out(sprintf(_("Caller ID after stripAccents: %s, length: %s"), $callerid,strlen($callerid)) . ((function_exists('mb_strlen')) ? (sprintf(_(", mb_strlen: %s"),mb_strlen($callerid))) : ''));
 					}
 
-					//Why?
-					$this->out(sprintf(_("Caller ID before preg_replace: %s, length: %s"), $callerid,strlen($callerid)) . ((function_exists('mb_strlen')) ? (sprintf(_(", mb_strlen: %s"),mb_strlen($callerid))) : ''));
+					// $this->out(sprintf(_("Caller ID before preg_replace: %s, length: %s"), $callerid,strlen($callerid)) . ((function_exists('mb_strlen')) ? (sprintf(_(", mb_strlen: %s"),mb_strlen($callerid))) : ''));
 					$callerid = preg_replace("/[\";']/", "", $callerid);
-					$this->out(sprintf(_("Caller ID after preg_replace: %s, length: %s"), $callerid,strlen($callerid)) . ((function_exists('mb_strlen')) ? (sprintf(_(", mb_strlen: %s"),mb_strlen($callerid))) : ''));
-					
-					// Display issues on phones and CDR with special characters
-					// convert CNAM to UTF-8 to fix
+					// $this->out(sprintf(_("Caller ID after preg_replace: %s, length: %s"), $callerid,strlen($callerid)) . ((function_exists('mb_strlen')) ? (sprintf(_(", mb_strlen: %s"),mb_strlen($callerid))) : ''));
+
 					$character_encodings = (isset($options['scheme_settings']['Character_Encodings'])) ? $options['scheme_settings']['Character_Encodings'] : self::DEFAULT_CHARACTER_ENCODINGS;
-					$this->out(sprintf(_("Character Encodings: '%s'"), $character_encodings));
+					// $this->out(sprintf(_("Character Encodings: '%s'"), $character_encodings));
 					if (in_array('pass',explode(',', $character_encodings))){
-						$this->out(_("Bypassing character conversion."));	
+						$this->out(_("Bypassing character conversion."));
 					}
 					elseif(!function_exists('mb_convert_encoding')) {
 						$this->out(_("Function mb_convert_encoding does not exist."));
 					}
 					else{
-						$this->out(_("Converting result to UTF-8"));
+						// $this->out(_("Converting result to UTF-8"));
 
 						try{
-							$this->out(sprintf(_("Caller ID before mb_convert_encoding: %s, length: %s"), $callerid,strlen($callerid)) . ((function_exists('mb_strlen')) ? (sprintf(_(", mb_strlen: %s"),mb_strlen($callerid))) : ''));
+							// $this->out(sprintf(_("Caller ID before mb_convert_encoding: %s, length: %s"), $callerid,strlen($callerid)) . ((function_exists('mb_strlen')) ? (sprintf(_(", mb_strlen: %s"),mb_strlen($callerid))) : ''));
 							$callerid = mb_convert_encoding($callerid, "UTF-8", $character_encodings);
-							$this->out(sprintf(_("Caller ID after mb_convert_encoding: %s, length: %s"), $callerid,strlen($callerid)) . ((function_exists('mb_strlen')) ? (sprintf(_(", mb_strlen: %s"),mb_strlen($callerid))) : ''));
+							// $this->out(sprintf(_("Caller ID after mb_convert_encoding: %s, length: %s"), $callerid,strlen($callerid)) . ((function_exists('mb_strlen')) ? (sprintf(_(", mb_strlen: %s"),mb_strlen($callerid))) : ''));
 						}
 						catch(Exception $e) {
 							$this->out(sprintf(_('Caught exception calling mb_convert_encoding: %s'),  $e->getMessage()));
@@ -262,11 +300,11 @@ class Superfecta extends FreePBX_Helpers implements BMO {
 
 					}
 
-					$this->out(sprintf(_("Caller_Id_Max_Length: '%s'"),$Caller_Id_Max_Length));
+					// $this->out(sprintf(_("Caller_Id_Max_Length: '%s'"),$Caller_Id_Max_Length));
 					if ($Caller_Id_Max_Length != -1){
-						$this->out(sprintf(_("Caller ID before %s: %s, length: %s"), ((function_exists('mb_substr')) ? 'mb_substr' : 'substr'), $callerid,strlen($callerid)) . ((function_exists('mb_strlen')) ? (sprintf(_(", mb_strlen: %s"),mb_strlen($callerid))) : ''));
+						// $this->out(sprintf(_("Caller ID before %s: %s, length: %s"), ((function_exists('mb_substr')) ? 'mb_substr' : 'substr'), $callerid,strlen($callerid)) . ((function_exists('mb_strlen')) ? (sprintf(_(", mb_strlen: %s"),mb_strlen($callerid))) : ''));
 						$callerid = (function_exists('mb_substr')) ? mb_substr($callerid, 0, $Caller_Id_Max_Length)  : substr($callerid, 0, $Caller_Id_Max_Length);
-						$this->out(sprintf(_("Caller ID after %s: %s, length: %s"), ((function_exists('mb_substr')) ? 'mb_substr' : 'substr'), $callerid,strlen($callerid)) . ((function_exists('mb_strlen')) ? (sprintf(_(", mb_strlen: %s"),mb_strlen($callerid))) : ''));
+						// $this->out(sprintf(_("Caller ID after %s: %s, length: %s"), ((function_exists('mb_substr')) ? 'mb_substr' : 'substr'), $callerid,strlen($callerid)) . ((function_exists('mb_strlen')) ? (sprintf(_(", mb_strlen: %s"),mb_strlen($callerid))) : ''));
 					}
 					else{
 						$this->out(sprintf(_("Caller ID string length is not limited")));
@@ -285,9 +323,9 @@ class Superfecta extends FreePBX_Helpers implements BMO {
 				}
 
 				if ($Caller_Id_Max_Length != -1){
-					$this->out(sprintf(_("Caller ID before %s: %s, length: %s"), ((function_exists('mb_substr')) ? 'mb_substr' : 'substr'), $callerid,strlen($callerid)) . ((function_exists('mb_strlen')) ? (sprintf(_(", mb_strlen: %s"),mb_strlen($callerid))) : ''));
+					// $this->out(sprintf(_("Caller ID before %s: %s, length: %s"), ((function_exists('mb_substr')) ? 'mb_substr' : 'substr'), $callerid,strlen($callerid)) . ((function_exists('mb_strlen')) ? (sprintf(_(", mb_strlen: %s"),mb_strlen($callerid))) : ''));
 					$callerid = (function_exists('mb_substr')) ? mb_substr($callerid, 0, $Caller_Id_Max_Length)  : substr($callerid, 0, $Caller_Id_Max_Length);
-					$this->out(sprintf(_("Caller ID after %s: %s, length: %s"), ((function_exists('mb_substr')) ? 'mb_substr' : 'substr'), $callerid,strlen($callerid)) . ((function_exists('mb_strlen')) ? (sprintf(_(", mb_strlen: %s"),mb_strlen($callerid))) : ''));
+					// $this->out(sprintf(_("Caller ID after %s: %s, length: %s"), ((function_exists('mb_substr')) ? 'mb_substr' : 'substr'), $callerid,strlen($callerid)) . ((function_exists('mb_strlen')) ? (sprintf(_(", mb_strlen: %s"),mb_strlen($callerid))) : ''));
 				}
 
 				//Set Spam Destination
@@ -319,7 +357,7 @@ class Superfecta extends FreePBX_Helpers implements BMO {
 				$this->out(sprintf(_('Caught exception: %s<br>Skipping scheme %s<br>'),  $e->getMessage(), $s['name']));
 			}
 		}
-		
+
 		if(empty($callerid) && !$keepGoing) {
 			//No callerid so I guess?
 			return $trunk_info['calleridname'];
@@ -390,7 +428,7 @@ class Superfecta extends FreePBX_Helpers implements BMO {
 				$schem 	= htmlEntities($_REQUEST['scheme']);
 				$thedid = htmlEntities($_REQUEST['thedid']);
 				if (empty($thedid)){
-				  $thedid = '5555555555';   
+				  $thedid = '5555555555';
 				}
 				echo "<span class='header'>"._('Debug is on and set at level:')."</span> ". $level."</br>";
 				echo "<span class='header'>"._('The DID:')."</span> ".$thedid."</br>";
