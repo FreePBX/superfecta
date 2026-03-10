@@ -106,6 +106,8 @@ class TellowsAPI extends superfecta_base {
             $caller_id = trim($t['numberDetails']['name']);
         } elseif (!empty($t['callerNames']['caller'][0])) {
             $caller_id = trim($t['callerNames']['caller'][0]);
+        } elseif (!empty($t['callerTypes']['caller'][0]['name'])) {
+            $caller_id = trim($t['callerTypes']['caller'][0]['name']);
         }
 
         // Debug-Ausgaben + Spam-Entscheidung
