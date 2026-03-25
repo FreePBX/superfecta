@@ -19,6 +19,9 @@ if ($scheme == 'ALL|ALL') {
 	$sn[1] = 'ALL';
 } else {
 	$sn = explode("_", $scheme, 2);
+	if (!isset($sn[1])) { 
+		$sn[1] = $sn[0]; 
+	}
 }
 
 if (!empty($agi->request['agi_callerid'])) {
