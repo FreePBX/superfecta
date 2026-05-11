@@ -2,7 +2,7 @@
 	<rawname>superfecta</rawname>
 	<repo>extended</repo>
 	<name>CID Superfecta</name>
-	<version>17.0.6</version>
+	<version>17.0.7</version>
 	<type>setup</type>
 	<category>Admin</category>
 	<publisher>Sangoma Technologies Corporation</publisher>
@@ -13,6 +13,7 @@
 	</description>
   	<more-info>https://sangomakb.atlassian.net/wiki/spaces/PG/pages/20644530/CID+Superfecta</more-info>
 	<changelog>
+		*17.0.7* FREEI-2883 changes done to fix the unsafe php code execution in superfecta 
 		*17.0.6* #issue-989 #issue-988 
 		*17.0.5*   Update source-TellowsAPI.module 
 		*17.0.4*   Fixes for German sources 
