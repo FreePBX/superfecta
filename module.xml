@@ -2,7 +2,7 @@
 	<rawname>superfecta</rawname>
 	<repo>extended</repo>
 	<name>CID Superfecta</name>
-	<version>16.0.39</version>
+	<version>16.0.40</version>
 	<type>setup</type>
 	<category>Admin</category>
 	<publisher>Sangoma Technologies Corporation</publisher>
@@ -13,6 +13,7 @@
 	</description>
   	<more-info>https://wiki.freepbx.org/display/FPG/CID+Superfecta</more-info>
 	<changelog>
+		*16.0.40* FREEI-2883 changes done to fix the unsafe php code execution in superfecta 
 		*16.0.39* Packaging of ver 16.0.39
 		*16.0.38* Add Federal Tax Service of Russia API source 
 		*16.0.37* Add HTML support for email 
