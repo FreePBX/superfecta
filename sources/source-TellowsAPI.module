@@ -37,6 +37,11 @@ class TellowsAPI extends superfecta_base {
                 'type'        => 'text',
                 'default'     => ''
             ),
+            'Allowlist_Skip' => array(
+                'description' => _('Skip Tellows spam classification if the number is found in the Allowlist.'),
+                'type' => 'checkbox',
+                'default' => '',
+			)
         );
     }
 
@@ -101,6 +106,8 @@ class TellowsAPI extends superfecta_base {
             $caller_id = trim($t['numberDetails']['name']);
         } elseif (!empty($t['callerNames']['caller'][0])) {
             $caller_id = trim($t['callerNames']['caller'][0]);
+        } elseif (!empty($t['callerTypes']['caller'][0]['name'])) {
+            $caller_id = trim($t['callerTypes']['caller'][0]['name']);
         }
 
         // Debug-Ausgaben + Spam-Entscheidung
@@ -116,10 +123,16 @@ class TellowsAPI extends superfecta_base {
             );
 
             if ($score >= $spamTh && $comments >= $commTh && $searches >= $searchTh) {
-                // Superfecta kann optional einen Spam-Count anzeigen
-                $this->spam_count = $score;
-                $this->spam = true;
-                $this->DebugPrint(" " . _("determined to be SPAM"));
+                $allowname = strip_tags($this->astman->database_get('allowlist', $thenumber));  // Prüft auf Existenz in der Allowlist
+                if (strlen($allowname) > 1 AND $run_param['Allowlist_Skip'] == 'on') {
+                    $this->DebugPrint(" "._("Caller is on the Allowlist, classifying as NO SPAM"));
+                }
+                else {
+                    // Superfecta kann optional einen Spam-Count anzeigen, der Spam-Count ist auch essentiell für die optionale Ausleitung an ein anderes Rufziel
+                    $this->spam_count = $score;
+                    $this->spam = true;
+                    $this->DebugPrint(" " . _("determined to be SPAM"));
+                }
             } else {
                 $this->DebugPrint(_("Not a SPAM caller"));
             }
