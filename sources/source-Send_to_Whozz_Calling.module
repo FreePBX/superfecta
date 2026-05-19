@@ -1,0 +1,155 @@
+<?php
+
+/*
+	#######################################################################################
+
+	Whozz Calling CallerID.com Notification Module for CID Superfecta
+
+	* Version History:
+		- Nov 23, 2025 - Initial Release by Gilbert Daniel
+
+
+	* Licence: This program is free software; you can redistribute it and/or modify it 
+	under the terms of the GNU General Public License as published by the Free Software 
+	Foundation; either version 2 of the License, or (at your option) any later version.
+
+	#######################################################################################
+*/
+
+class Send_to_Whozz_Calling extends superfecta_base {
+
+    public $description = "This source will broadcast the Caller ID name and number in the Whozz Calling Format.<br>The message will be sent as a Call notification<br>";
+    public $version_requirement = "2.11";
+    public $source_param = array(
+        'Broadcast_address' => array(
+            'description' => 'Specify the broadcast IP to call after a CLID was found.',
+            'type' => 'text',
+            'default' => '192.168.11.255'
+        ),
+        'Server_UDP_Port' => array(
+            'description' => 'Specify the UDP port to be used (default is 3520).',
+            'type' => 'number',
+            'default' => '3520'
+        ),
+        'Default_CNAM' => array(
+            'description' => 'Text to push if no CNAM is found. Leave blank to prevent Superfecta from sending anything if no CNAM is found.',
+            'type' => 'text',
+            'default' => 'Unknown'
+        ),
+        'Timeout' => array(
+            'description' => 'Time to display notification in seconds',
+            'type' => 'number',
+            'default' => '10'
+        ),
+        'Unit_Number' => array(
+            'description' => 'Unit number of CID box to emulate (12 Digits)',
+            'type' => 'number',
+            'default' => '000000000031'
+        ),
+        'Serial_Number' => array(
+            'description' => 'Serial number of CID box to emulate (12 Digits)',
+            'type' => 'number',
+            'default' => '000000000032'
+        ),
+        'Microsale' => array(
+            'description' => 'Adjust CName field for Micro$ale (adds two extra spaces at beginning)',
+            'type' => 'checkbox',
+            'default' => 'off'
+        )
+
+    );
+
+
+    function post_processing($cache_found, $winning_source, $first_caller_id, $run_param, $thenumber) {
+// since 'Lines' are not really a thing with SIP, we have to count active channels instead
+// count only PJSIP/SIP/DAHDI channels in "Up" state (ringing + answered)
+// quick and dirty, counts ALL active channels, not just incoming
+	$channels_output = `asterisk -rx "core show channels concise"`;
+	$lines = explode("\n", trim($channels_output));
+	$incoming_count = 0;
+
+	foreach ($lines as $line) {
+	    if (empty($line)) continue;
+	    $parts = explode("!", $line);
+	    if (count($parts) < 10) continue;
+
+	    $channel_name = $parts[0];
+	    $state        = $parts[4];  // "Up" for answered, "Ring" for ringing, etc.
+
+// Filter for inbound-ish channels (adjust patterns to your trunks/tech)
+	if (preg_match('/^(PJSIP\/|SIP\/|DAHDI|iAX|)/i', $channel_name) &&
+	   ($state === 'Up' || $state === 'Ring')) {
+	   $incoming_count++;
+		}
+	}
+	
+//Whozz Calling only supports up to 99 active calls in their data format.
+    	if ($incoming_count > 99 || $incoming_count == 0) {
+		$incoming_count = 01;
+	}
+//Populate CNAM and Caller ID from Asterisk/FreePBX
+        $whozz_cnam = ' ';
+        if ($first_caller_id != '') {
+            $whozz_cnam = $first_caller_id;
+        } else if ($run_param['Default_CNAM'] != '') {
+            $whozz_cnam = $run_param['Default_CNAM'];
+        }
+//Format number in US format NNN-NNN-NNNN
+	$thenumber = preg_replace('~.*(\d{3})[^\d]{0,7}(\d{3})[^\d]{0,7}(\d{4}).*~', '$1-$2-$3', $thenumber);
+	$thenumber = str_pad($thenumber, 14);
+
+//Micro$ale POS needs the CNAM field left padded by two spaces for some reason                                                 
+	if ($run_param['Microsale'] == 'on') {
+		$whozz_cnam = "  " . $whozz_cnam;
+	}
+//Trim and pad data to proper sizes
+	$whozz_cnam = substr($whozz_cnam, 0, 15);
+	$incoming_count = str_pad($incoming_count, 2, '0', STR_PAD_LEFT);
+
+//If Unit and Serial are defined, use them.  Otherwise use this.
+	if ($run_param['Unit_Number'] != '') {
+		$unit = hex2bin($run_param['Unit_Number']);
+	} else {
+		$unit = hex2bin("000000000032");
+		}
+
+	if ($run_param['Serial_Number'] != '') {
+		$serial = hex2bin($run_param['Serial_Number']);
+	} else {
+		$serial = hex2bin("000000000032");		
+		}
+//Do we have a vaild CNAM and Broadcast address?  If so, make packet to send	
+        if (($run_param['Broadcast_address'] != '') && ($whozz_cnam != '')) {
+            $whozz_text = '^^<U>'.
+				$unit.
+				'<S>'.
+				$serial.
+				'$'.
+				$incoming_count. Chr(0x20).
+				'I'. Chr(0x20).
+				'S'. Chr(0x20).
+				'0000'. Chr(0x20).
+				'G'. Chr(0x20).
+				'A0'. Chr(0x20).
+				Date("m/d"). Chr(0x20).
+				Date("h:i A"). Chr(0x20).
+                                $thenumber. Chr(0x20).
+                                    $whozz_cnam.
+				"\r\n";
+
+//Check if data is formatted correctly
+//If so, send as UDP packet
+		if (preg_match("/.*(\d\d) ([IO]) ([ESB]) (\d{4}) ([GB]) (.)(\d) (\d\d\/\d\d \d\d:\d\d [AP]M) (.{8,15})(.*)/", $whozz_text)) {
+	            $sock = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
+	            socket_set_option($sock, SOL_SOCKET, SO_BROADCAST, 1);
+	            socket_sendto($sock, $whozz_text, strlen($whozz_text), 0, $run_param['Broadcast_address'], $run_param['Server_UDP_Port']);
+	            socket_close($sock);
+	            $this->DebugPrint('Broadcast whozz message:'. '<xmp>'.$whozz_text.'</xmp>');
+		} else {
+	            $this->DebugPrint('Whozz failed format check.  Make sure no variables are blank in setup.');
+        	    $this->DebugPrint('<xmp>'.$whozz_text.'</xmp>');
+		}
+	}
+       return($thenumber);
+    }
+}
