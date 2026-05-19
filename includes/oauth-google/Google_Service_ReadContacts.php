@@ -2,25 +2,23 @@
 /*
 * Copyright 2010 Google Inc.
 *
-* Licensed under the Apache License, Version 2.0 ( the "License" );
-you may not
-* use this file except in compliance with the License. You may obtain a copy of
-* the License at
+* Licensed under the Apache License, Version 2.0 (the "License" );
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
 *
 * http://www.apache.org/licenses/LICENSE-2.0
 *
 * Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-* WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-* License for the specific language governing permissions and limitations under
-* the License.
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
 */
 
-// based on original work from the PHP Laravel framework
-if ( !function_exists( 'str_contains' ) ) {
-    function str_contains( $haystack, $needle ) {
-        return $needle !== '' && mb_strpos( $haystack, $needle ) !== false;
-    }
+if (!function_exists('str_contains')) {
+        function str_contains($haystack, $needle) {
+                return $needle !== '' && mb_strpos($haystack, $needle) !== false;
+        }
 }
 
 require_once 'Google/Service.php';
@@ -28,255 +26,265 @@ require_once 'Google/Service/Resource.php';
 
 #[AllowDynamicProperties]
 class Google_Service_ReadContacts {
-    const SCOPE_CONTACTS_READONLY = "https://www.googleapis.com/auth/contacts.readonly";
-    const BASE_URL = "https://people.googleapis.com/v1/people:searchContacts";
+        // Expected by Superfecta
+        const SCOPE_CONTACTS = "https://www.googleapis.com/auth/contacts";
+        const SCOPE_CONTACTS_READONLY = "https://www.googleapis.com/auth/contacts.readonly";
 
-    private $query;
-    private $gam;
+        const BASE_URL = "https://people.googleapis.com/v1/people:searchContacts";
 
-    /**
-    * Constructs the internal representation of the Admin service.
-    *
-    * @param Google_Client $client
-    */
+        private $query;
+        private $gam;
+        private $access_token;
 
-    public function __construct( GoogleAuthManager $authManager ) {
-        $this->gam = $authManager;
-    }
+        // Behavior flags
+        private $stopAfterFirstMatch = false;
 
-    public function setAccessToken( $at ) {
-        $this->access_token = $at;
-    }
+        // Debug control
+        private $debugEnabled = true;
+        private $last_http_code = null;
 
-    public function getContactsForNumberStarting( $query ) {
-        $appendPhoneTypes = true;
-        $useNickNames = true;
-		$displayLastNameFirstName = false;
-        try {
-            //            echo '<br><br><br><br>in getContactsForNumberStarting: '.json_encode( $this ).'<br><br><br>';
-            $append_phone_types = $this->gam->append_phone_types;
-            $use_nicknames = $this->gam->use_nicknames;
+        public function __construct(GoogleAuthManager $authManager) {
+                $this->gam = $authManager;
 
-            if ( $append_phone_types === 'on' ) {
+                try {
+                        if (isset($this->gam->debug_level)) {
+                                $lvl = intval($this->gam->debug_level);
+                                $this->debugEnabled = ($lvl > 0);
+                        } elseif (isset($this->gam->debug)) {
+                                $this->debugEnabled = ($this->gam->debug === 'on' || $this->gam->debug === 1 || intval($this->gam->debug) > 0);
+                        }
+                } catch (\Throwable $e) {}
+
+                try {
+                        if (isset($this->gam->stop_after_first_match) && $this->gam->stop_after_first_match === 'on') {
+                                $this->stopAfterFirstMatch = true;
+                        }
+                } catch (\Throwable $e) {}
+        }
+
+        public function setAccessToken($at) {
+                $this->access_token = $at;
+        }
+
+        public function getContactsForNumberStarting($query) {
                 $appendPhoneTypes = true;
-            } else {
-                $appendPhoneTypes = false;
-            }
-            if ( $this->gam->use_nicknames === 'on' ) {
                 $useNickNames = true;
-            } else {
-                $useNickNames = false;
-            }
-        } catch( Exception $e ) {
-            //echo 'Unable to get phone Type Flag: '.$e->getMessage().'<br>';
-        }
-
-		try {
-            if ( $this->gam->display_lastname_firstname === 'on' ) {
-                $displayLastNameFirstName = true;
-            } else {
                 $displayLastNameFirstName = false;
-            }
-        } catch( Exception $e ) {
-            echo 'Unable to get Last Name First Name Flag Flag: '.$e->getMessage().'<br>';
-        }
 
-        if ( $appendPhoneTypes ) {
-            echo 'Appending Phone Types to names.<br>';
-        } else {
-            echo 'Not Appending Phone Types to names.<br>';
-        }
+                try { $appendPhoneTypes = ($this->gam->append_phone_types === 'on'); } catch (\Throwable $e) {}
+                try { $useNickNames = ($this->gam->use_nicknames === 'on'); } catch (\Throwable $e) {}
+                try { $displayLastNameFirstName = ($this->gam->display_lastname_firstname === 'on'); } catch (\Throwable $e) {}
 
-        if ( $useNickNames ) {
-            echo 'Using Nicknames when available.<br>';
-        } else {
-            echo 'Not using Nicknames.<br>';
-        }
-        if ( $displayLastNameFirstName ) {
-            echo 'Displaying Last Name, First Name format<br>';
-        } else {
-            echo 'Displaying Default Name format.<br>';
-        }
-        $counter = 0;
-        $output = array();
+                $this->debugEcho($appendPhoneTypes ? "Appending Phone Types to names.<br>" : "Not Appending Phone Types to names.<br>");
+                $this->debugEcho($useNickNames ? "Using Nicknames when available.<br>" : "Not using Nicknames.<br>");
+                $this->debugEcho($displayLastNameFirstName ? "Displaying Last Name, First Name format<br>" : "Displaying Default Name format.<br>");
 
-        $this->setAccessToken( $this->gam->getAccessToken() );
-        $query_number = $this->cleanNumber( $query );
-        $len_query = strlen( $query_number );
-        $this->query = $query_number;
+                $this->setAccessToken($this->gam->getAccessToken());
 
-        $result = $this->curl_file_get_contents( $this->constructFinalUrl() );
-        //echo 'result:<br>'.$result.'<br>';
-        $result_json = json_decode( $result );
-        dbug( $result_json );
+                // 1) E.164 first
+                $queryE164 = $this->normalizeToE164($query);
+                $this->debugEcho("Normalized query number (E.164): {$queryE164}<br>");
+                $result_json = $this->performQueryAndDecode($queryE164);
 
-        if ( isset( $result_json->error ) ) {
-            echo 'Error getting result:<br>'.$result.'<br>';
-            $results = array( 'success' => 'no', 'data' => json_encode( $result_json->error ) );
-            return $results;
-        }
-
-        try {
-            $count = 0;
-            if ( isset( $result_json->results ) ) {
-                foreach ( $result_json->results as $entry ) {
-                    $count++;
-                    $name = "";
-                    try {
-                        if ( $useNickNames and isset( $entry->person->nicknames ) ) {
-                            $name = $entry->person->nicknames[0]->value;
-                            dbug( $name );
-                            echo '<br>Nickname: '.$name;
-                        } elseif ( isset( $entry->person->names ) ) {
-							if ($displayLastNameFirstName){
-								$name = $entry->person->names[0]->displayNameLastFirst;								
-							}
-							else{
-								$name = $entry->person->names[0]->displayName;
-							}
-                            dbug( $name );
-                            echo '<br>Name: '.$name;
-                        } elseif ( isset( $entry->person->organizations ) ) {
-                            $name = $entry->person->organizations[0]->name;
-                            dbug( $name );
-                            echo '<br>Organization: '.$name;
-                        }
-                        echo '<br>';
-
-                        if ( !empty( $name ) ) {
-                            if ( isset( $entry->person->phoneNumbers ) ) {
-                                foreach ( $entry->person->phoneNumbers as $phoneNumber ) {
-                                    $nameWithType = $name;
-                                    try {
-                                        if ( $appendPhoneTypes and isset( $phoneNumber->formattedType ) ) {
-                                            $nameWithType = $name.' ('.$phoneNumber->formattedType.')';
-                                        }
-                                    } catch( Exception $e ) {
-                                        echo 'Unable to get phone number type for '.$name.': '.$e->getMessage().'<br>';
-                                    }
-
-                                    try {
-                                        if ( isset( $phoneNumber->canonicalForm ) ) {
-                                            $no = $phoneNumber->canonicalForm;
-                                            echo $nameWithType.', Canonical Form: '.$no.'<br>';
-                                            $score = $this->subStringScore( $no, $query_number );
-                                            if ( $score > 0 ) {
-                                                $output[$counter] = $option = array( 'name' => $nameWithType, 'number' => $no, 'score' => $score );
-                                                $counter++;
-                                                echo $counter.'. '.$nameWithType.', '.$no.', Score:'.$score.'<br>';
-                                            }
-                                        }
-                                    } catch( Exception $e ) {
-                                        echo 'Error Parsing Canonical phone number for '.$nameWithType.': ' .$e->getMessage().'<br>';
-                                    }
-
-                                    try {
-                                        if ( isset( $phoneNumber->value ) ) {
-                                            $no = $this->cleanNumber( $phoneNumber->value );
-                                            echo $nameWithType.', Value: '.$no.'<br>';
-                                            $score = $this->subStringScore( $no, $query_number );
-                                            if ( $score > 0 ) {
-                                                $counter++;
-                                                $output[$counter] = $option = array( 'name' => $nameWithType, 'number' => $no, 'score' => $score );
-                                                echo $counter.'. '.$nameWithType.', '.$no.', Score:'.$score.'<br>';
-                                            }
-                                        }
-                                    } catch( Exception $e ) {
-                                        echo 'Error Parsing phone number for '.$nameWithType.': ' .$e->getMessage().'<br>';
-                                    }
-                                }
-                            }
-                        }
-                    } catch( Exception $e ) {
-                        echo 'Message 2: ' .$e->getMessage().'<br>';
-                    }
+                // 2) NANP format
+                if (!$this->hasResults($result_json)) {
+                        $this->debugEcho("No results with E.164, retrying with NANP format<br>");
+                        $queryNANP = $this->formatNANP($query);
+                        $result_json = $this->performQueryAndDecode($queryNANP);
                 }
-            }
-        } catch( Exception $e ) {
-            echo 'Message 3: ' .$e->getMessage().'<br>';
+
+                // 3) Raw digits
+                if (!$this->hasResults($result_json)) {
+                        $this->debugEcho("No results with NANP, retrying with raw digits<br>");
+                        $queryDigits = preg_replace('/\D+/', '', $query);
+                        $result_json = $this->performQueryAndDecode($queryDigits);
+                }
+
+                if (isset($result_json->error)) {
+                        $this->debugEcho('Error getting result:<br>' . htmlspecialchars(json_encode($result_json->error)) . '<br>');
+                        return ['success' => 'no', 'data' => json_encode($result_json->error)];
+                }
+
+                $output = [];
+                $counter = 0;
+
+                if (isset($result_json->results)) {
+                        foreach ($result_json->results as $entry) {
+                                try {
+                                        $name = "";
+                                        if ($useNickNames && isset($entry->person->nicknames)) {
+                                                $name = $entry->person->nicknames[0]->value;
+                                                $this->debugEcho("<br>Nickname: " . htmlspecialchars($name));
+                                        } elseif (isset($entry->person->names)) {
+                                                $name = $displayLastNameFirstName ?
+                                                        $entry->person->names[0]->displayNameLastFirst :
+                                                        $entry->person->names[0]->displayName;
+                                                $this->debugEcho("<br>Name: " . htmlspecialchars($name));
+                                        } elseif (isset($entry->person->organizations)) {
+                                                $name = $entry->person->organizations[0]->name;
+                                                $this->debugEcho("<br>Organization: " . htmlspecialchars($name));
+                                        }
+
+                                        if (!empty($name) && isset($entry->person->phoneNumbers)) {
+                                                foreach ($entry->person->phoneNumbers as $phoneNumber) {
+                                                        $nameWithType = $name;
+                                                        if ($appendPhoneTypes && isset($phoneNumber->formattedType)) {
+                                                                $nameWithType = $name . ' (' . $phoneNumber->formattedType . ')';
+                                                        }
+
+                                                        if (isset($phoneNumber->canonicalForm)) {
+                                                                $no = $phoneNumber->canonicalForm;
+                                                                $this->debugEcho($this->h("$nameWithType, Canonical Form: $no") . "<br>");
+                                                                $score = $this->subStringScore($no, $queryE164);
+                                                                if ($score > 0) {
+                                                                        $output[$counter] = ['name' => $nameWithType, 'number' => $no, 'score' => $score];
+                                                                        $counter++;
+                                                                        $this->debugEcho($this->h("$counter. $nameWithType, $no, Score:$score") . "<br>");
+                                                                        if ($this->stopAfterFirstMatch) {
+                                                                                $this->debugEcho("Stopping after first match (flag enabled)<br>");
+                                                                                return ['success' => 'yes', 'data' => $output];
+                                                                        }
+                                                                }
+                                                        }
+
+                                                        if (isset($phoneNumber->value)) {
+                                                                $noRaw = $this->cleanNumber($phoneNumber->value);
+                                                                $this->debugEcho($this->h("$nameWithType, Value: $noRaw") . "<br>");
+                                                                $score = $this->subStringScore($noRaw, $queryE164);
+                                                                if ($score > 0) {
+                                                                        $output[$counter] = ['name' => $nameWithType, 'number' => $noRaw, 'score' => $score];
+                                                                        $counter++;
+                                                                        $this->debugEcho($this->h("$counter. $nameWithType, $noRaw, Score:$score") . "<br>");
+                                                                        if ($this->stopAfterFirstMatch) {
+                                                                                $this->debugEcho("Stopping after first match (flag enabled)<br>");
+                                                                                return ['success' => 'yes', 'data' => $output];
+                                                                        }
+                                                                }
+                                                        }
+                                                }
+                                        }
+                                } catch (\Throwable $e) {
+                                        $this->debugEcho('Message: ' . $this->h($e->getMessage()) . '<br>');
+                                }
+                        }
+                }
+
+                $this->debugEcho('Found ' . $counter . ' matches<br>');
+                return ['success' => 'yes', 'data' => $output];
         }
 
-        echo 'found '.$counter.' matches<br>';
-        $results = array( 'success' => 'yes', 'data' => $output );
-        if ( sizeof( $results['data'] ) > 0 ) {
-            return $results;
+        /* -------------------- Helpers -------------------- */
+
+        private function performQueryAndDecode($queryString) {
+                $this->query = $queryString;
+                $url = $this->constructFinalUrl();
+                $this->debugEcho('URL: ' . $this->h($url) . '<br>');
+
+                $result = $this->curl_file_get_contents($url);
+
+                $this->debugEcho("cURL HTTP Code: " . $this->last_http_code . "<br>");
+                $this->debugEcho("Raw API result:<br>" . $this->prettyOrRaw($result) . "<br>");
+
+                $decoded = json_decode($result);
+                return $decoded ?: (object)[];
         }
 
-        if ( substr( $query, 0, 1 ) == '+' ) {
-            // No matches
-            return $results;
+        private function hasResults($result_json) {
+                return (isset($result_json->results) && !empty($result_json->results));
         }
 
-        // For US Numbers try to prefix number with 1
-        if ( substr( $query, 0, 1 ) != '1' ) {
-            $query1 = '1'.$query;
-            echo '<br><b>Searching Google Contacts for number with a 1 appended: '.$query1.'</b><br>';
-            $results = $this->getContactsForNumberStarting( $query1 );
-            if ( sizeof( $results['data'] ) > 0 ) {
-                //we have some matches
-                return $results;
-            }
-            // We didn't find a match with a number starting with 1
+        private function normalizeToE164($number) {
+                // Always strip all non-digits except leading '+'
+                $clean = preg_replace('/[^\d+]/', '', $number);
+
+                if (substr($clean, 0, 1) === '+') {
+                        return $clean;
+                }
+                if (strlen($clean) === 10) {
+                        return '+1' . $clean;
+                } elseif (strlen($clean) === 11 && substr($clean, 0, 1) === '1') {
+                        return '+' . $clean;
+                }
+                return '+' . $clean;
         }
 
-        // Try to prefix + sign
-        $query1 = '+'.$query;
-        echo '<br><b>Searching Google Contacts for number with a + sign appended: '.$query1.'</b><br>';
-        $results = $this->getContactsForNumberStarting($query1);
-        //echo sizeof($results['data']).'<br>';
-        if (sizeof($results['data']) > 0){
-          //we have some matches
-          return $results;
+        private function formatNANP($number) {
+                $digits = preg_replace('/\D+/', '', $number);
+                if (strlen($digits) == 10) {
+                        return '(' . substr($digits, 0, 3) . ') ' . substr($digits, 3, 3) . '-' . substr($digits, 6);
+                } elseif (strlen($digits) == 11 && substr($digits, 0, 1) == '1') {
+                        return '(' . substr($digits, 1, 3) . ') ' . substr($digits, 4, 3) . '-' . substr($digits, 7);
+                }
+                return $number;
         }
-        // No Matches
-        return $results;
-    }
 
-    private function cleanNumber($number) {
-        $result = preg_replace('/[^0-9+]*/', '', $number);
-        return $result;
-    }
-
-    private function subStringScore($number, $prefix) {
-        if (str_contains($number, $prefix)){
-          $result = strlen($prefix);
+        private function cleanNumber($number) {
+                return preg_replace('/[^0-9+]*/', '', $number);
         }
-        elseif (str_contains($prefix, $number)){
-          $result = strlen($number);
+
+        private function subStringScore($number, $prefix) {
+                if (str_contains($number, $prefix)) return strlen($prefix);
+                if (str_contains($prefix, $number)) return strlen($number);
+                return 0;
         }
-        else{
-          $result = 0;
+
+        private function constructFinalUrl() {
+                $url  = self::BASE_URL;
+                $url .= '?readMask=names,nicknames,organizations,phoneNumbers';
+                $url .= '&access_token=' . $this->access_token;
+                if (isset($this->query)) $url .= '&query=' . urlencode($this->query);
+                return $url;
         }
-        return $result;
-    }
 
-    private function constructFinalUrl() {
-        $result  = Google_Service_ReadContacts::BASE_URL;
-        $result .= '?readMask=names,nicknames,organizations,phoneNumbers';
-        $result .= '&access_token='.$this->access_token;
-        if (isset($this->query)) $result .= '&query='.$this->query;
-        dbug($result);
-        echo 'url: '.$result.'<br>';
-        return $result;
-    }
+        private function curl_file_get_contents($url) {
+                $curl = curl_init();
+                $userAgent = 'Mozilla/5.0 (Superfecta GoogleContacts)';
 
-    private function curl_file_get_contents($url) {
-        $curl = curl_init();
-        $userAgent = 'Mozilla/4.0 ( compatible;MSIE 6.0;Windows NT 5.1;.NET CLR 1.1.4322 )';
+                curl_setopt($curl, CURLOPT_URL, $url);
+                curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);
+                curl_setopt($curl, CURLOPT_TIMEOUT, 10);
+                curl_setopt($curl, CURLOPT_USERAGENT, $userAgent);
+                curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+                curl_setopt($curl, CURLOPT_AUTOREFERER, true);
+                curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+                curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+                curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
 
-        curl_setopt($curl, CURLOPT_URL, $url);  //The URL to fetch. This can also be set when initializing a session with curl_init().
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);       //TRUE to return the transfer as a string of the return value of curl_exec() instead of outputting it out directly.
-        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);  //The number of seconds to wait while trying to connect.
+                $contents = curl_exec($curl);
+                $this->last_http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
-        curl_setopt($curl, CURLOPT_USERAGENT, $userAgent);      //The contents of the "User-Agent: " header to be used in a HTTP request.
-        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, TRUE);       //To follow any "Location: " header that the server sends as part of the HTTP header.
-        curl_setopt($curl, CURLOPT_AUTOREFERER, TRUE);  //To automatically set the Referer: field in requests where it follows a Location: redirect.
-        curl_setopt($curl, CURLOPT_TIMEOUT, 10);        //The maximum number of seconds to allow cURL functions to execute.
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);  //To stop cURL from verifying the peer's certificate.
-            curl_setopt( $curl, CURLOPT_SSL_VERIFYHOST, 0 );
+                if ($contents === false) {
+                        $err = curl_error($curl);
+                        $this->debugEcho('cURL Error: ' . $this->h($err) . '<br>');
+                }
 
-            $contents = curl_exec( $curl );
-            curl_close( $curl );
-            return $contents;
+                curl_close($curl);
+                return $contents ?: '';
         }
-    }
+
+        private function prettyOrRaw($result) {
+                if (!$this->debugEnabled) return '';
+                $decodedAssoc = json_decode($result, true);
+                if (json_last_error() === JSON_ERROR_NONE) {
+                        $pretty = json_encode($decodedAssoc, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+                        $pretty = preg_replace_callback('/^( +)/m', function($m) {
+                                $spaces = strlen($m[1]);
+                                $groups = intdiv($spaces, 4);
+                                return str_repeat('  ', max(1, $groups));
+                        }, $pretty);
+                        return '<pre style="white-space:pre-wrap;margin:0;">' . htmlspecialchars($pretty) . '</pre>';
+                }
+                return '<pre style="white-space:pre-wrap;margin:0;">' . htmlspecialchars($result) . '</pre>';
+        }
+
+        private function debugEcho($msg) {
+                if ($this->debugEnabled) {
+                        echo $msg;
+                }
+        }
+
+        private function h($s) {
+                return htmlspecialchars($s, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        }
+}
