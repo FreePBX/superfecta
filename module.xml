@@ -2,7 +2,7 @@
 	<rawname>superfecta</rawname>
 	<repo>extended</repo>
 	<name>CID Superfecta</name>
-	<version>17.0.7</version>
+	<version>18.0.1</version>
 	<type>setup</type>
 	<category>Admin</category>
 	<publisher>Sangoma Technologies Corporation</publisher>
@@ -13,19 +13,7 @@
 	</description>
   	<more-info>https://sangomakb.atlassian.net/wiki/spaces/PG/pages/20644530/CID+Superfecta</more-info>
 	<changelog>
-		*17.0.7* FREEI-2883 changes done to fix the unsafe php code execution in superfecta 
-		*17.0.6* #issue-989 #issue-988 
-		*17.0.5*   Update source-TellowsAPI.module 
-		*17.0.4*   Fixes for German sources 
-		*17.0.3.7* #Issue-587 Contact Manager lookup fails if search-string contains '+' 
-		*17.0.3.6* Fix whoops error if lookup returns no CNAM 
-		*17.0.3.5* bump 
-		*17.0.3.3* Add Russian Federal Tax Service source 
-		*17.0.3.2* Fixing PHP 8.2 compatibility issue in Google Auth module  and Add HTML support for email
-		*17.0.3.1* Fixing PHP 8.2 compatibility issue 
-		*17.0.3*   Issue #356 add support for FreeCNAM 
-		*17.0.2.1* New superfecta source for Allowlist  
-		*17.0.1.10* bump
+		*18.0.1* initial release
 	</changelog>
 	<menuitems>
 		<superfecta needsenginedb="yes">CID Superfecta</superfecta>
@@ -90,8 +78,8 @@
 	</database>
 	<info>https://github.com/POSSA/Caller-ID-Superfecta/wiki</info>
 	<depends>
-		<module>core ge 17.0.1</module>
-		<module>framework ge 17.0.15.26</module>
+		<module>core ge 18.0.1</module>
+		<module>framework ge 18.0.1</module>
 	</depends>
 	<hooks>
 		<framework class="Chown" namespace="FreePBX\Console\Command">
@@ -99,6 +87,6 @@
 		</framework>
 	</hooks>
 	<supported>
-		<version>17.0</version>
+		<version>18.0</version>
 	</supported>
 </module>
