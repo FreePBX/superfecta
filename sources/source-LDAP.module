@@ -174,7 +174,7 @@ class LDAP extends superfecta_base {
             switch ($run_param['LDAP_Server']) {
                 case LDAP_OPENDIRECTORY:
                 case LDAP_OPENLDAP:
-                    $dn = "ou=${ou},${dc}";
+                    $dn = "ou={$ou},{$dc}";
                     break;
 
                 case LDAP_CUSTOM:
@@ -182,7 +182,7 @@ class LDAP extends superfecta_base {
                     break;
              }
         } else {
-            $dn = "${dc}";
+            $dn = "{$dc}";
         }
 
         $this->DebugEcho("Searching {$dn} ... ");
