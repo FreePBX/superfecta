@@ -51,7 +51,6 @@ class Telnyx extends superfecta_base {
 		curl_setopt($crl, CURLOPT_TIMEOUT, 5);
 		curl_setopt($crl, CURLOPT_HTTPGET, TRUE);
 		$json = curl_exec($crl);
-		curl_close($crl);
 		$json = json_decode($json, true);
 		if(isset($json["errors"])){
 			$this->DebugPrint("Lookup Error: ");

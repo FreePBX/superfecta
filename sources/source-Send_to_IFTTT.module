@@ -51,6 +51,5 @@ class Send_to_IFTTT extends superfecta_base {
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
 		curl_setopt($curl, CURLOPT_HEADER, FALSE);
 		$response = curl_exec($curl);
-		curl_close($curl);
 	}
 }

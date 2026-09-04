@@ -1,12 +1,20 @@
 <?php
 
-#[\AllowDynamicProperties]
 class superfecta_single extends superfecta_base {
 
 	public $name = 'Single';
 	public $description = 'Runs all sources in specified order, like old superfecta';
 	public $type = 'SINGLE';
 	private $winning = ''; //winning source, if any
+	protected $scheme_name = '';
+	protected $scheme = '';
+	protected $db = '';
+	protected $amp_conf = '';
+	protected $astman = '';
+	protected $scheme_params = array();
+	protected $source_params = array();
+	protected $path_location = '';
+	protected $trunk_info = array();
 
 	function __construct($options=array()) {
 		if(!empty($options)) {

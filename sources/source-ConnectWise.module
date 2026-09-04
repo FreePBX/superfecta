@@ -123,8 +123,7 @@ class ConnectWise extends superfecta_base {
 			$result = curl_exec($curl);
 
 			if(!$result){die("Connection Failure");}
-			curl_close($curl);
-		
+
 			$name=preg_split('/"*"/i', $result, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
 
 			if (!empty($name[3])) {
@@ -155,7 +154,6 @@ class ConnectWise extends superfecta_base {
 			$result = curl_exec($curl);
 
 			if(!$result){die("Connection Failure");}
-			curl_close($curl);
 
 			$name=preg_split('/"*"/i', $result, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);;
 

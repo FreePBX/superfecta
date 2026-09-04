@@ -79,30 +79,53 @@ class TAB_Reloaded extends superfecta_base {
 	
 		// Process ignore words
         $key_words = array();
-		$temp_array = explode(',',(isset($run_param['Ignore_Keywords'])?$run_param['Ignore_Keywords']:$source_param['Ignore_Keywords']['default']));
+		$temp_array = explode(',',(isset($run_param['Ignore_Keywords'])?$run_param['Ignore_Keywords']:$this->source_param['Ignore_Keywords']['default']));
 		foreach($temp_array as $val)  {
 			$key_words[] = trim($val);
 		}
 
 		//  Build regular expression from the modified $thenumber to avoid non-digit characters stored in database
-		$wquery = "'[^0-9]*";
+		$regex = "[^0-9]*";
 		for( $x=0; $x < ((strlen($thenumber))-1); $x++ ) {
-			$wquery .=  substr($thenumber,$x,1)."[^0-9]*" ;
+			$regex .=  substr($thenumber,$x,1)."[^0-9]*" ;
 		}
-		$wquery = $wquery.(substr($thenumber,-1))."([^0-9]+|$)'";
+		$regex = $regex.(substr($thenumber,-1))."([^0-9]+|$)";
 
-		//  Make a MySQL Connection
-		mysql_connect($run_param['tab_server'], $run_param['tab_user'], $run_param['tab_password']) or die(mysql_error());
-		mysql_select_db($run_param['tab_dbase']) or die(mysql_error());
+		if (!class_exists('PDO')) {
+			$this->DebugPrint("PDO not present on system...Skipping");
+			return null;
+		}
 
-		//  Search phone1 and phone2 fields in theaddressbook
-		$wquery_string = "SELECT * FROM ".$run_param['tab_contact']." INNER JOIN ".$run_param['tab_properties']." ON ".$run_param['tab_properties'].".id = ".$run_param['tab_contact'].".id WHERE ".$run_param['tab_properties'].".value REGEXP ".$wquery." ORDER BY lastUpdate DESC";
-		$wquery_result = mysql_query($wquery_string);
+		try {
+			$dbh = new PDO(
+				'mysql:dbname='.$run_param['tab_dbase'].';host='.$run_param['tab_server'].';charset=utf8',
+				$run_param['tab_user'],
+				$run_param['tab_password']
+			);
+			$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		} catch (PDOException $e) {
+			$this->DebugPrint('Connection failed: ' . $e->getMessage());
+			return null;
+		}
 
-		if (mysql_num_rows($wquery_result)>0)  {
-			// If result is found in phone1 or phone2
-			$wquery_row = mysql_fetch_array($wquery_result);
-			$wresult_caller_name = $wquery_row[$tab_fn]." ".$wquery_row[$tab_ln];
+		$contact = $run_param['tab_contact'];
+		$properties = $run_param['tab_properties'];
+		$sql = "SELECT * FROM ".$contact." INNER JOIN ".$properties." ON ".$properties.".id = ".$contact.".id WHERE ".$properties.".value REGEXP :regex ORDER BY lastUpdate DESC";
+
+		try {
+			$sth = $dbh->prepare($sql);
+			if (!$sth) {
+				$this->DebugPrint("Failed to Prepare the SQL Statement. Are we connected?...Skipping");
+				return null;
+			}
+			$sth->execute(array(':regex' => $regex));
+			$wquery_row = $sth->fetch(PDO::FETCH_ASSOC);
+			if ($wquery_row && is_array($wquery_row)) {
+				$wresult_caller_name = $wquery_row[$tab_fn]." ".$wquery_row[$tab_ln];
+			}
+		} catch (PDOException $e) {
+			$this->DebugPrint('Query failed: ' . $e->getMessage());
+			return null;
 		}
 		
 

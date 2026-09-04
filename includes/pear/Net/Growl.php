@@ -888,11 +888,13 @@ class Net_Growl
      */
     protected function utf8Encode($data)
     {
-        if (extension_loaded('mbstring')) {
-            return mb_convert_encoding($data, 'UTF-8', 'auto');
-        } else {
-            return utf8_encode($data);
+        if (function_exists('mb_convert_encoding')) {
+            return mb_convert_encoding($data, 'UTF-8', extension_loaded('mbstring') ? 'auto' : 'ISO-8859-1');
         }
+        if (function_exists('iconv')) {
+            return iconv('ISO-8859-1', 'UTF-8//IGNORE', $data);
+        }
+        return $data;
     }
 
     /**

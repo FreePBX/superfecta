@@ -99,7 +99,6 @@ class Send_to_Telegram extends superfecta_base {
                 $this->DebugPrint(_('Telegram: Parse Error!'));
             }
         }
-        curl_close($ch);
         return $result;
     }
 }

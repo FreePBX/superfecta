@@ -210,7 +210,6 @@ class OAuthDiscovery
 		curl_setopt($ch, CURLOPT_TIMEOUT, 		 30);
 
 		$txt = curl_exec($ch);
-		curl_close($ch);
 
 		// Tell the logger what we requested and what we received back
 		$data = "GET $uri";

@@ -298,7 +298,6 @@ class superfecta_base {
 		if ($ret == '1') {
 			$ret = '';
 		}
-		curl_close($crl);
 		$this->DebugPrint("Orignal Raw Returned Data: </br><textarea>".$ret."</textarea></br>",DEBUG_ALL);
 		return $ret;
 	}

@@ -414,10 +414,8 @@ class OAuthRequester extends OAuthRequestSigner
 		$txt = curl_exec($ch);
 		if ($txt === false) {
 			$error = curl_error($ch);
-			curl_close($ch);
 			throw new OAuthException2('CURL error: ' . $error);
-		} 
-		curl_close($ch);
+		}
 		
 		if (!empty($put_file))
 		{

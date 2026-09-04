@@ -80,6 +80,11 @@ class Superfecta extends FreePBX_Helpers implements BMO {
 				'path' => __DIR__."/agi/superfecta.agi",
 				'perms' => 0755,
 			],
+			[
+				'type' => 'file',
+				'path' => __DIR__."/includes/callerid.php",
+				'perms' => 0755,
+			],
 		];
 	}
 
@@ -147,18 +152,22 @@ class Superfecta extends FreePBX_Helpers implements BMO {
 				$options['scheme_settings'] = $this->getScheme($s['name']);
 				$options['module_parameters'] = $this->getSchemeAllModuleSettings($s['name']);
 
-				switch ($options['scheme_settings']) {
-					case 'superfecta_multi.php':
-						//TODO: This is broken and needs to be fixed, there are better ways to do it of course
-						//for now send all results back through to single
-						//$options['multifecta_id'] = isset($multifecta_id) ? $multifecta_id : null;
-						//$options['source'] = isset($source) ? $source : null;
-						//$superfecta = NEW \superfecta_multi($options);
-						//break;
-					case 'superfecta_single.php':
-					default:
-						$superfecta = NEW \superfecta_single($options);
-					break;
+				$processor = !empty($options['scheme_settings']['processor']) ? $options['scheme_settings']['processor'] : 'superfecta_single.php';
+				$this->out(sprintf(_("Scheme Type: %s"), ($processor === 'superfecta_multi.php') ? 'MULTIFECTA' : 'SINGLEFECTA'));
+
+				if ($processor === 'superfecta_multi.php') {
+					$scheme_parameters = $options['scheme_settings'];
+					if (isset($scheme_parameters['sources']) && is_array($scheme_parameters['sources'])) {
+						$scheme_parameters['sources'] = implode(',', array_filter($scheme_parameters['sources']));
+					}
+					$multiOpts = $options;
+					$multiOpts['db'] = (isset($db) && is_object($db) && method_exists($db, 'quoteSmart')) ? $db : new \DB($this->Database);
+					$multiOpts['scheme_parameters'] = $scheme_parameters;
+					$multiOpts['multifecta_id'] = null;
+					$multiOpts['source'] = null;
+					$superfecta = new \superfecta_multi($multiOpts);
+				} else {
+					$superfecta = new \superfecta_single($options);
 				}
 				
 				$superfecta->setDebug($debug);
@@ -396,7 +405,9 @@ class Superfecta extends FreePBX_Helpers implements BMO {
 				echo "<span class='header'>"._('The DID:')."</span> ".$thedid."</br>";
 				echo "<span class='header'>"._('The Original Number:')."</span> ".$tel."</br>";
 				echo "<span class='header'>"._('The Scheme:')."</span> ".$schem."</br>";
-				echo "<span class='header'>"._('Scheme Type:')."</span> SINGLEFECTA</br>";
+				$schemeInfo = $this->getScheme($schem);
+				$schemeType = (!empty($schemeInfo['processor']) && $schemeInfo['processor'] === 'superfecta_multi.php') ? 'MULTIFECTA' : 'SINGLEFECTA';
+				echo "<span class='header'>"._('Scheme Type:')."</span> ".$schemeType."</br>";
 				echo "<span class='header'>"._('Debugging Enabled, will not stop after first result')."</span></br>";
 				echo "</br>";
 				$time_start = microtime(true);

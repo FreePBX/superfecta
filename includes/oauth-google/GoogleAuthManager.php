@@ -1,7 +1,6 @@
 <?php
 require_once 'Google/Client.php';
 
-#[AllowDynamicProperties]
 class GoogleAuthManager {
     var $dataDir = '/tmp';
     var $redirect_uri = 'https://127.0.0.1';
@@ -17,6 +16,8 @@ class GoogleAuthManager {
     var $use_nicknames;
 
     var $needCode = true;
+    var $display_lastname_firstname;
+    var $new_code;
 
     public function __construct() {
         $this->client = new Google_Client();

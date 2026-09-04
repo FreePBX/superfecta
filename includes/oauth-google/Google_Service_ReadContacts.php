@@ -26,13 +26,13 @@ if ( !function_exists( 'str_contains' ) ) {
 require_once 'Google/Service.php';
 require_once 'Google/Service/Resource.php';
 
-#[AllowDynamicProperties]
 class Google_Service_ReadContacts {
     const SCOPE_CONTACTS_READONLY = "https://www.googleapis.com/auth/contacts.readonly";
     const BASE_URL = "https://people.googleapis.com/v1/people:searchContacts";
 
     private $query;
     private $gam;
+    private $access_token;
 
     /**
     * Constructs the internal representation of the Admin service.
@@ -276,7 +276,6 @@ class Google_Service_ReadContacts {
             curl_setopt( $curl, CURLOPT_SSL_VERIFYHOST, 0 );
 
             $contents = curl_exec( $curl );
-            curl_close( $curl );
             return $contents;
         }
     }

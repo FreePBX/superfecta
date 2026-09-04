@@ -1,26 +1,41 @@
 <?php
 
-#[\AllowDynamicProperties]
 class superfecta_multi extends superfecta_base {
 
     public $name = 'Multi';
     public $description = 'Multifecta, runs all sources at the same time';
     public $type = 'MULTI';
+    protected $db;
+    protected $scheme_name = '';
+    protected $scheme = '';
+    protected $scheme_param = array();
+    protected $path_location = '';
+    protected $source = '';
+    protected $multi_type = '';
+    protected $caller_id_array = array();
+    protected $trunk_info = array();
+    protected $multifecta_id = '';
+    protected $amp_conf = array();
+    protected $astman = '';
+    protected $spam_count = 0;
 
     function __construct($options=array()) {
 		if(!empty($options)) {
-	        $this->setDebug($options['debug']);
-	        $sn = explode("_", $options['scheme_name']);
-	        $this->scheme_name = $sn[1];
-	        $this->scheme = $options['scheme_name'];
-	        $this->db = $options['db'];
-	        $this->amp_conf = $options['amp_conf'];
-	        $this->astman = $options['astman'];
-	        $this->scheme_param = $options['scheme_parameters'];
-	        $this->path_location = $options['path_location'];
-	        $this->multifecta_id = $options['multifecta_id'];
-	        $this->source = $options['source'];
-	        $this->trunk_info = $options['trunk_info'];
+	        $this->setDebug(isset($options['debug']) ? $options['debug'] : 0);
+	        $sn = explode("_", isset($options['scheme_name']) ? $options['scheme_name'] : '', 2);
+	        $this->scheme_name = isset($sn[1]) ? $sn[1] : $sn[0];
+	        $this->scheme = isset($options['scheme_name']) ? $options['scheme_name'] : '';
+	        $this->db = isset($options['db']) ? $options['db'] : '';
+	        $this->amp_conf = isset($options['amp_conf']) ? $options['amp_conf'] : array();
+	        $this->astman = isset($options['astman']) ? $options['astman'] : '';
+	        $this->scheme_param = isset($options['scheme_parameters']) ? $options['scheme_parameters'] : (isset($options['scheme_settings']) ? $options['scheme_settings'] : array());
+	        if (isset($this->scheme_param['sources']) && is_array($this->scheme_param['sources'])) {
+	            $this->scheme_param['sources'] = implode(',', array_filter($this->scheme_param['sources']));
+	        }
+	        $this->path_location = isset($options['path_location']) ? $options['path_location'] : '';
+	        $this->multifecta_id = !empty($options['multifecta_id']) ? $options['multifecta_id'] : false;
+	        $this->source = isset($options['source']) ? $options['source'] : '';
+	        $this->trunk_info = isset($options['trunk_info']) ? $options['trunk_info'] : array();
 	        //Check if we are a multifecta child, if so, get our variables from our child record
 	        $this->multi_type = $this->multifecta_id ? 'CHILD' : 'PARENT';
 
@@ -66,9 +81,6 @@ class superfecta_multi extends superfecta_base {
 
     function run_parent() {
 
-		global $db;
-		global $amp_conf;
-
         // We are a multifecta parent
         $multifecta_start_time = $this->mctime_float();
         // Clean up multifecta records that are over 10 minutes old
@@ -106,18 +118,14 @@ class superfecta_multi extends superfecta_base {
         // (jkiel - 01/04/2011) [Insert complaints on Pear DB not supporting a last_insert_id method here]
         // (jkiel - 01/04/2011) What is the point of an abstraction layer when you are forced to bypass it?!?!?
 		// instead of complaining, just fix it
-		if(method_exists($db,'insert_id')) {
-			$id = $db->insert_id();
-		} else {
-			$id = $amp_conf["AMPDBENGINE"] == "sqlite3" ? sqlite_last_insert_rowid($db->connection) : mysql_insert_id($db->connection);
-		}
+		$id = $this->lastInsertId();
         if ($superfecta_mf_id = $id) {
             // We have the parent record id
             $this->DebugPrint("Multifecta Parent ID:" . $superfecta_mf_id);
         } else {
             $this->DebugDie("Unable to get parent record id");
         }
-        $sources = explode(",", $this->scheme_param['sources']);
+        $sources = array_filter(explode(",", isset($this->scheme_param['sources']) ? $this->scheme_param['sources'] : ''));
         $multifecta_count = 1;
         foreach ($sources as $data) {
             $multifecta_child_start_time = $this->mctime_float();
@@ -137,18 +145,22 @@ class superfecta_multi extends superfecta_base {
             if (DB::IsError($res2)) {
                 $this->DebugDie("Unable to create child record: " . $res2->getMessage());
             }
-			if(method_exists($db,'insert_id')) {
-				$id = $db->insert_id();
-			} else {
-				$id = $amp_conf["AMPDBENGINE"] == "sqlite3" ? sqlite_last_insert_rowid($db->connection) : mysql_insert_id($db->connection);
-			}
+			$id = $this->lastInsertId();
             if ($superfecta_mf_child_id = $id) {
-                $trunk_info = base64_encode(serialize($this->trunk_info));
+                $trunk_info = base64_encode(json_encode($this->trunk_info));
+                $php = is_executable('/usr/bin/php') ? '/usr/bin/php' : 'php';
+                $script = dirname(__DIR__) . '/callerid.php';
+                $cmd = escapeshellarg($php).' '.escapeshellarg($script)
+                    .' -s '.escapeshellarg($this->scheme_name)
+                    .' -m '.escapeshellarg($superfecta_mf_child_id)
+                    .' -t '.escapeshellarg($trunk_info)
+                    .' -r '.escapeshellarg($data);
                 if ($this->isDebug()) {
+                    $cmd .= ' -d '.escapeshellarg($this->getDebug());
                     $this->DebugPrint("Spawning child " . $superfecta_mf_child_id . ":" . $data);
-                    exec('/usr/bin/php '.$amp_conf['AMPWEBROOT'].'/admin/modules/superfecta/includes/callerid.php -s ' . $this->scheme_name . ' -d ' . $this->getDebug() . ' -m ' . $superfecta_mf_child_id . ' -t ' . $trunk_info . ' -r ' . $data . ' > log-' . $superfecta_mf_child_id . '.log 2>&1 &');
+                    exec($cmd.' > log-' . $superfecta_mf_child_id . '.log 2>&1 &');
                 } else {
-                    exec('/usr/bin/php '.$amp_conf['AMPWEBROOT'].'/admin/modules/superfecta/includes/callerid.php -s ' . $this->scheme_name . ' -m ' . $superfecta_mf_child_id . ' -t ' . $trunk_info . ' -r ' . $data . ' > /dev/null 2>&1 &');
+                    exec($cmd.' > /dev/null 2>&1 &');
                 }
             }
             $multifecta_count++;
@@ -291,8 +303,6 @@ class superfecta_multi extends superfecta_base {
         $sql = "SELECT field,value FROM superfectaconfig WHERE source = '" . $this->scheme_name . "_" . $this->source . "'";
         $run_param = $this->db->getAssoc($sql);
 
-        print_r($run_param);
-
         $source_file = $this->path_location . "/source-" . $this->source . ".module";
 
         if (file_exists($source_file)) {
@@ -352,7 +362,7 @@ class superfecta_multi extends superfecta_base {
 
     function send_results($caller_id) {
 
-        $sources = explode(",", $this->scheme_param['sources']);
+        $sources = array_filter(explode(",", isset($this->scheme_param['sources']) ? $this->scheme_param['sources'] : ''));
 
         $this->DebugPrint("Post CID retrieval processing.");
         foreach ($sources as $source_name) {
@@ -369,8 +379,6 @@ class superfecta_multi extends superfecta_base {
 								$run_param = $source_class->getRunParams($run_param);
                 if (method_exists($source_class, 'post_processing')) {
                     $source_class->post_processing($this->isCacheFound(), NULL, $caller_id, $run_param, $this->trunk_info['callerid']);
-                } else {
-                    print "Method 'post_processing' doesn't exist<br\>\n";
                 }
             }
         }
@@ -380,5 +388,18 @@ class superfecta_multi extends superfecta_base {
     function web_debug() {
         return($this->get_results());
     }
+
+	private function lastInsertId() {
+		if (!is_object($this->db)) {
+			return false;
+		}
+		if (method_exists($this->db, 'lastInsertId')) {
+			return $this->db->lastInsertId();
+		}
+		if (method_exists($this->db, 'insert_id')) {
+			return $this->db->insert_id();
+		}
+		return false;
+	}
 
 }

@@ -155,6 +155,10 @@ $(".source i").click(function() {
 				height: 400,
 				width: 650,
 				modal: true,
+				dialogClass: "superfecta-ui-dialog",
+				create: function() {
+					styleSuperfectaDialog(this);
+				},
 				buttons: {
 					Save: function() {
 						var $this = this;
@@ -227,6 +231,10 @@ $( "#scheme-dialog-form" ).dialog({
 	height: 500,
 	width: 650,
 	modal: true,
+	dialogClass: "superfecta-ui-dialog",
+	create: function() {
+		styleSuperfectaDialog(this);
+	},
 	buttons: {
 		Save: function() {
 			var $this = this;
@@ -257,6 +265,10 @@ $( "#debug-dialog" ).dialog({
 	height: 600,
 	width: 650,
 	modal: true,
+	dialogClass: "superfecta-ui-dialog",
+	create: function() {
+		styleSuperfectaDialog(this);
+	},
 	buttons: {
 		"Run This Scheme": function() {
 			runDebug(scheme);
@@ -312,6 +324,16 @@ function runDebug(scheme) {
 	}, 100);
 }
 
+function styleSuperfectaDialog(el) {
+	var $wrap = $(el).closest(".ui-dialog");
+	$wrap.addClass("superfecta-ui-dialog");
+	$wrap.find(".ui-dialog-buttonset button").addClass("btn");
+	$wrap.find(".ui-dialog-titlebar-close").attr({
+		title: "Close",
+		"aria-label": "Close"
+	}).empty().append('<i class="fa fa-times" aria-hidden="true"></i>');
+}
+
 function sort_scheme() {
 	$("#schemeorder_list li.scheme i.fa-arrow-down").removeClass("hidden");
 	$("#schemeorder_list li.scheme i.fa-arrow-down").removeClass("hidden");
@@ -322,7 +344,7 @@ function sort_scheme() {
 }
 
 function source_order() {
-	var total = $("#sources tr").size(), source_order = [];
+	var total = $("#sources tr").length, source_order = [];
 	$("#sources tr").each(function(index) {
 		var id = $(this).attr("id"), up = $(this).find(".fa-arrow-up"), down = $(this).find(".fa-arrow-down");
 		if (($(this).attr("id") != "row_header") && $("#" + id + "_enabled_yes").is(":checked")) {
