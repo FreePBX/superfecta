@@ -534,7 +534,17 @@ class Superfecta extends FreePBX_Helpers implements BMO {
 			case "save_options":
 				include(__DIR__."/includes/superfecta_base.php");
 				$path = __DIR__;
-				include $path.'/sources/source-'.$_REQUEST['source'].'.module';
+				$source = $_REQUEST['source'];
+				if (!preg_match('/^[a-zA-Z0-9_]+$/', $source)) {
+					return array("status" => false, "message" => "Invalid source parameter");
+				}
+
+				$file = $path.'/sources/source-'.$source.'.module';
+				if (!file_exists($file)) {
+					return array("status" => false, "message" => "Source file not found");
+				}
+
+				include $file;
 				if(!class_exists($_REQUEST['source'])) {
 					return array("status" => false);
 				}
@@ -542,7 +552,6 @@ class Superfecta extends FreePBX_Helpers implements BMO {
 				$params = $module->source_param;
 
 				$scheme = $_REQUEST['scheme'];
-				$source = $_REQUEST['source'];
 				$sql = "REPLACE INTO superfectaconfig (source,field,value) VALUES (?, ?, ?)";
 				$sth = $this->Database->prepare($sql);
 				foreach($params as $key => $data) {
@@ -555,6 +564,9 @@ class Superfecta extends FreePBX_Helpers implements BMO {
 				include(__DIR__."/includes/superfecta_base.php");
 				$scheme = $_REQUEST['scheme'];
 				$source = $_REQUEST['source'];
+				if (!preg_match('/^[a-zA-Z0-9_]+$/', $source)) {
+					return array("status" => false, "message" => "Invalid source parameter");
+				}
 
 				$sql = "SELECT field, value FROM superfectaconfig WHERE source = ?";
 				$sth = $this->Database->prepare($sql);
@@ -562,8 +574,12 @@ class Superfecta extends FreePBX_Helpers implements BMO {
 				$n_settings = $sth->fetchAll(PDO::FETCH_KEY_PAIR);
 
 				$path = __DIR__;
+				$file = $path.'/sources/source-'.$source.'.module';
+				if (!file_exists($file)) {
+					return array("status" => false, "message" => "Source file not found");
+				}
 
-				include $path.'/sources/source-'.$_REQUEST['source'].'.module';
+				include $file;
 				if(!class_exists($_REQUEST['source'])) {
 					return array("status" => false);
 				}

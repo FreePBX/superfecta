@@ -1043,7 +1043,7 @@ class superfecta_base {
 				break; // end AR
 
 				default:
-				$this->DebugPrint("Unknown Country Code ${country} passed to IsValidNumber: ${country}");
+				$this->DebugPrint("Unknown Country Code {$country} passed to IsValidNumber: {$country}");
 				$number_error = true;
 				break;
 			} // end Country switch
