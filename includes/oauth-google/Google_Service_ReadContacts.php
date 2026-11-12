@@ -42,6 +42,28 @@ class Google_Service_ReadContacts {
 	private $debugEnabled = true;
 	private $last_http_code = null;
 
+	// Timing instrumentation (added 2026-11-10, Shai approved exploration):
+	// per-step timings appended to a dedicated log file for latency analysis.
+	// Purely observational — never alters lookup behavior, and any failure
+	// in the logging path is swallowed so a lookup can never break.
+	private $timingLogPath = '/var/log/asterisk/superfecta-timing.log';
+	private $timingCnum = '';
+
+	private function logTiming($fields) {
+		try {
+			$line = date('c') . ' pid=' . getmypid() . ' ' . $fields . PHP_EOL;
+			@file_put_contents($this->timingLogPath, $line, FILE_APPEND | LOCK_EX);
+		} catch (\Throwable $e) {
+			// Timing must never break a lookup.
+		}
+	}
+
+	private function queryFormatLabel($q) {
+		if (strpos($q, '(') !== false) return 'nanp';
+		if (strpos($q, '+') === 0) return 'e164';
+		return 'digits';
+	}
+
 	public function __construct(GoogleAuthManager $authManager) {
 		$this->gam = $authManager;
 
@@ -78,7 +100,10 @@ class Google_Service_ReadContacts {
 		$this->debugEcho($useNickNames ? "Using Nicknames when available.<br>" : "Not using Nicknames.<br>");
 		$this->debugEcho($displayLastNameFirstName ? "Displaying Last Name, First Name format<br>" : "Displaying Default Name format.<br>");
 
+		$this->timingCnum = $query;
+		$tToken = microtime(true);
 		$this->setAccessToken($this->gam->getAccessToken());
+		$this->logTiming('token cnum=' . $this->timingCnum . ' ms=' . round((microtime(true) - $tToken) * 1000));
 
 		// 1) E.164 first
 		$queryE164 = $this->normalizeToE164($query);
@@ -179,12 +204,15 @@ class Google_Service_ReadContacts {
 		$url = $this->constructFinalUrl();
 		$this->debugEcho('URL: ' . $this->h($url) . '<br>');
 
+		$tQuery = microtime(true);
 		$result = $this->curl_file_get_contents($url);
+		$queryMs = round((microtime(true) - $tQuery) * 1000);
 
 		$this->debugEcho("cURL HTTP Code: " . $this->last_http_code . "<br>");
 		$this->debugEcho("Raw API result:<br>" . $this->prettyOrRaw($result) . "<br>");
 
 		$decoded = json_decode($result);
+		$this->logTiming('query cnum=' . $this->timingCnum . ' format=' . $this->queryFormatLabel($queryString) . ' ms=' . $queryMs . ' http=' . $this->last_http_code . ' results=' . (isset($decoded->results) ? count($decoded->results) : 0));
 		return $decoded ?: (object)[];
 	}
 
