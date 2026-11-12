@@ -77,6 +77,17 @@ class Google_Service_ReadContacts {
 			}
 		} catch (\Throwable $e) {}
 
+		// AGI flood guard (added 2026-11-11, Shai approved): under the CLI SAPI
+		// this code runs inside Asterisk's AGI, where stdout is the AGI command
+		// channel. Debug echoes there are parsed as AGI commands and flood the
+		// log ("Too many arguments, truncating" — 1,165 warnings in a single
+		// lookup on 2026-11-11, overflowing the log queue). Debug output only
+		// makes sense on the web portal's scheme test page, so force it off
+		// under CLI. Lookup behavior and results are unchanged.
+		if (php_sapi_name() === 'cli') {
+			$this->debugEnabled = false;
+		}
+
 		try {
 			if (isset($this->gam->stop_after_first_match) && $this->gam->stop_after_first_match === 'on') {
 				$this->stopAfterFirstMatch = true;
