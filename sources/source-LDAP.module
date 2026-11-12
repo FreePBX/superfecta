@@ -58,6 +58,10 @@ class LDAP extends superfecta_base {
         )
     );
 
+    // Wall-clock cap. LDAP_OPT_NETWORK_TIMEOUT does not abort a peer that
+    // accepts the TCP connection and then stays silent.
+    protected $lookup_deadline = 5;
+
     function get_caller_id($thenumber, $run_param=array()) {
         $caller_id = null;
 
@@ -126,21 +130,6 @@ class LDAP extends superfecta_base {
             $this->DebugDie("Invalid Format requested.");
         }
 
-        // Prepare connection to LDAP server
-        $ad = @ldap_connect("{$scheme}://{$server}") or $this->DebugDie("Could not connect to {$scheme}://{$server}");
-
-        // Set protocol version
-        ldap_set_option($ad, LDAP_OPT_PROTOCOL_VERSION, 3) or $this->DebugDie("Could not set ldap protocol");
-
-        // Set this option for AD on Windows Server 2003 per PHP manual
-        ldap_set_option($ad, LDAP_OPT_REFERRALS, 0) or $this->DebugDie("Could not set option referrals");
-
-        // Attempt to set 5 second timeout
-        if (defined('LDAP_OPT_NETWORK_TIMEOUT')) {
-            // This option isn't present before PHP 5.3.
-            ldap_set_option($ad, constant('LDAP_OPT_NETWORK_TIMEOUT'), 5) or $this->DebugDie("Could not set network timeout");
-        }
-
         // Set user id
         switch ($run_param['LDAP_Server']) {
             case LDAP_OPENDIRECTORY:
@@ -161,10 +150,6 @@ class LDAP extends superfecta_base {
         //     $UID = "cn={$run_param['LDAP_User']}, {$dc}";
         // }
 
-        // Establish connection with LDAP server
-        $this->DebugEcho("Attempting to bind, using UID:'$UID' ... <br>");
-        $bd = @ldap_bind($ad, $UID, "{$run_param['LDAP_Password']}") or $this->DebugDie("Could not bind to {$scheme}://{$server}");
-
         // Check for OU to limit search
         if (strlen($run_param['LDAP_Unit']) > 0) {
             // Allow for embedded quotes to avoid LDAP injection
@@ -174,26 +159,36 @@ class LDAP extends superfecta_base {
             switch ($run_param['LDAP_Server']) {
                 case LDAP_OPENDIRECTORY:
                 case LDAP_OPENLDAP:
-                    $dn = "ou=${ou},${dc}";
+                    $dn = "ou={$ou},{$dc}";
                     break;
 
                 case LDAP_CUSTOM:
                     $dn = $run_param['LDAP_Unit'];
                     break;
-             }
+            }
         } else {
-            $dn = "${dc}";
+            $dn = "{$dc}";
         }
 
+        $this->DebugEcho("Attempting to bind, using UID:'$UID' ... <br>");
         $this->DebugEcho("Searching {$dn} ... ");
 
-        // perform LDAP search - only return CN to conserve bandwidth
-		if (isset($run_param['Filter_Length']) && !empty($run_param['Filter_Length'])) {
-			$thenumber = substr($thenumber, (-1*$run_param['Filter_Length']));
-		}        
-        if ($rs = @ldap_search($ad, $dn, "(|(telephoneNumber=*{$thenumber})(mobile=*{$thenumber})(homeTelephoneNumber=*{$thenumber}))", $this->isDebug(DEBUG_ALL) ? array('*') : array_values($fieldlist))) {
-            if ($info = ldap_get_entries($ad, $rs)) {
-                $this->DebugPrint($info["count"] . " entries returned");
+        // Rightmost digits, then digits only, so the filter cannot carry LDAP syntax.
+        if (isset($run_param['Filter_Length']) && !empty($run_param['Filter_Length'])) {
+            $thenumber = substr($thenumber, (-1 * $run_param['Filter_Length']));
+        }
+        $thenumber = preg_replace('/\D+/', '', (string)$thenumber);
+
+        // ldap_bind/ldap_search run in a child. A parent-side deadline can
+        // stop a silent peer and still return to the dialplan.
+        $info = null;
+        if ($thenumber !== '') {
+            $attrs = $this->isDebug(DEBUG_ALL) ? array('*') : array_values($fieldlist);
+            $info = $this->ldapLookup("{$scheme}://{$server}", $UID, $run_param['LDAP_Password'], $dn, $thenumber, $attrs);
+        }
+
+        if (is_array($info)) {
+            $this->DebugPrint($info["count"] . " entries returned");
 
                 if ($info["count"] > 0) {
                     $this->DebugDump($info[0], DEBUG_ALL);
@@ -221,11 +216,7 @@ class LDAP extends superfecta_base {
                         }
                     }
                 }
-            }
         }
-
-        // Tidy up and release connection
-        ldap_unbind($ad);
 
         // If we found a match, return it
         if (strlen(trim($name)) > 1) {
@@ -235,6 +226,273 @@ class LDAP extends superfecta_base {
         }
 
         return $caller_id;
+    }
+
+
+    /**
+     * Query LDAP in a child PHP process and return ldap_get_entries(), or
+     * null when the deadline passes or the query fails. Returning null
+     * lets the next caller-ID source run. DebugDie would end the AGI.
+     */
+    private function ldapLookup($uri, $binddn, $bindpw, $base, $number, $attrs) {
+        $seconds = (float)$this->lookup_deadline;
+        if ($seconds < 0.2) {
+            $seconds = 0.2;
+        }
+        $net = (int)ceil($seconds);
+        if ($net < 1) {
+            $net = 1;
+        }
+        $attrEnv = in_array('*', $attrs, true) ? '*' : implode(',', $attrs);
+        $env = array(
+            'PATH' => '/usr/bin:/bin',
+            'LANG' => 'C.UTF-8',
+            'SF_LDAP_URI' => (string)$uri,
+            'SF_LDAP_BINDDN' => (string)$binddn,
+            'SF_LDAP_BINDPW' => (string)$bindpw,
+            'SF_LDAP_BASE' => (string)$base,
+            'SF_LDAP_NUMBER' => (string)$number,
+            'SF_LDAP_ATTRS' => (string)$attrEnv,
+            'SF_LDAP_NET_TIMEOUT' => (string)$net,
+        );
+        $stdout = $this->runBoundedPhp($this->ldapLookupScript(), $env, $seconds);
+        if ($stdout === null) {
+            return null;
+        }
+        $decoded = json_decode($stdout, true);
+        if (!is_array($decoded) || empty($decoded['ok']) || !isset($decoded['entries']) || !is_array($decoded['entries'])) {
+            $err = (is_array($decoded) && isset($decoded['error'])) ? $decoded['error'] : 'LDAP lookup returned nothing';
+            $this->DebugPrint($err);
+            return null;
+        }
+        return $decoded['entries'];
+    }
+
+    private function cliPhpBinary() {
+        $base = basename(PHP_BINARY);
+        $cliSapi = (PHP_SAPI === 'cli' || PHP_SAPI === 'phpdbg');
+        $looksLikePhp = (strpos($base, 'php') === 0);
+        $notAServer = (strpos($base, 'fpm') === false && strpos($base, 'cgi') === false && strpos($base, 'apache') === false);
+        if ($cliSapi && $looksLikePhp && $notAServer && @is_executable(PHP_BINARY)) {
+            return PHP_BINARY;
+        }
+        $names = array('php', 'php8.3', 'php8.2', 'php8.1', 'php8.0', 'php7.4');
+        $dirs = array();
+        if (defined('PHP_BINDIR') && PHP_BINDIR !== '') {
+            $dirs[] = PHP_BINDIR;
+        }
+        $dirs[] = '/usr/bin';
+        $dirs[] = '/usr/local/bin';
+        foreach ($dirs as $dir) {
+            foreach ($names as $name) {
+                $path = $dir . '/' . $name;
+                if (@is_executable($path)) {
+                    return $path;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Run a PHP script, passed on stdin, and return its stdout.
+     * Reads stdout and stderr together so a full pipe cannot deadlock.
+     * Kills the child when $seconds elapses. Returns null on timeout
+     * or if the child is still running when the pipes close.
+     */
+    private function runBoundedPhp($script, $env, $seconds) {
+        $php = $this->cliPhpBinary();
+        if ($php === null) {
+            $this->DebugPrint('LDAP lookup could not find a PHP CLI binary');
+            return null;
+        }
+        $pipes = array();
+        $proc = @proc_open(array($php), array(
+            0 => array('pipe', 'r'),
+            1 => array('pipe', 'w'),
+            2 => array('pipe', 'w'),
+        ), $pipes, null, $env);
+        if (!is_resource($proc)) {
+            $this->DebugPrint('LDAP lookup could not be started');
+            return null;
+        }
+        @fwrite($pipes[0], $script);
+        @fclose($pipes[0]);
+        @stream_set_blocking($pipes[1], false);
+        @stream_set_blocking($pipes[2], false);
+
+        $stdout = '';
+        $tooLarge = false;
+        $deadline = microtime(true) + (float)$seconds;
+        $open = array(1 => $pipes[1], 2 => $pipes[2]);
+        while ($open) {
+            $left = $deadline - microtime(true);
+            if ($left <= 0) {
+                break;
+            }
+            $read = array_values($open);
+            $write = null;
+            $except = null;
+            $sec = (int)floor($left);
+            $usec = (int)(($left - $sec) * 1000000);
+            if ($usec < 0) {
+                $usec = 0;
+            } elseif ($usec > 999999) {
+                $usec = 999999;
+            }
+            $n = @stream_select($read, $write, $except, $sec, $usec);
+            if ($n === false) {
+                usleep(10000);
+                continue;
+            }
+            if ($n > 0 && is_array($read)) {
+                foreach ($read as $pipe) {
+                    $idx = null;
+                    foreach ($open as $i => $candidate) {
+                        if ($candidate === $pipe) {
+                            $idx = $i;
+                            break;
+                        }
+                    }
+                    $chunk = @fread($pipe, 8192);
+                    if (!is_string($chunk) || $chunk === '') {
+                        $meta = @stream_get_meta_data($pipe);
+                        if ($idx !== null && is_array($meta) && !empty($meta['eof'])) {
+                            unset($open[$idx]);
+                        }
+                        continue;
+                    }
+                    if ($idx === 1) {
+                        $stdout .= $chunk;
+                        if (strlen($stdout) > 262144) {
+                            $tooLarge = true;
+                            $stdout = '';
+                            $open = array();
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        if (!$tooLarge) {
+            foreach (array(1, 2) as $idx) {
+                if (!isset($pipes[$idx]) || !is_resource($pipes[$idx])) {
+                    continue;
+                }
+                while (strlen($stdout) <= 262144) {
+                    $chunk = @fread($pipes[$idx], 8192);
+                    if (!is_string($chunk) || $chunk === '') {
+                        break;
+                    }
+                    if ($idx === 1) {
+                        $stdout .= $chunk;
+                    }
+                }
+            }
+        }
+        $status = @proc_get_status($proc);
+        $running = is_array($status) && !empty($status['running']);
+        if (strlen($stdout) > 262144) {
+            $tooLarge = true;
+        }
+        if ($running || $tooLarge) {
+            @proc_terminate($proc, 9);
+        }
+        $decodedEarly = json_decode($stdout, true);
+        $complete = is_array($decodedEarly) && !empty($decodedEarly['ok']);
+        if ($tooLarge || ($running && !$complete)) {
+            $stdout = '';
+            $failed = true;
+        } else {
+            $failed = false;
+        }
+        foreach (array(1, 2) as $idx) {
+            if (isset($pipes[$idx]) && is_resource($pipes[$idx])) {
+                @fclose($pipes[$idx]);
+            }
+        }
+        @proc_close($proc);
+        if ($failed) {
+            $why = $tooLarge ? 'LDAP lookup result was too large' : 'LDAP lookup exceeded ' . $seconds . 's and was abandoned';
+            $this->DebugPrint($why);
+            return null;
+        }
+        return $stdout;
+    }
+
+    private function ldapLookupScript() {
+        return <<<'PHP'
+<?php
+ini_set('display_errors', '0');
+$uri = getenv('SF_LDAP_URI');
+$binddn = getenv('SF_LDAP_BINDDN');
+$bindpw = getenv('SF_LDAP_BINDPW');
+$base = getenv('SF_LDAP_BASE');
+$number = preg_replace('/\D+/', '', (string)getenv('SF_LDAP_NUMBER'));
+$attrEnv = getenv('SF_LDAP_ATTRS');
+$net = (int)getenv('SF_LDAP_NET_TIMEOUT');
+if ($binddn === false) {
+    $binddn = '';
+}
+if ($bindpw === false) {
+    $bindpw = '';
+}
+if ($net < 1) {
+    $net = 1;
+}
+$fail = function ($msg) {
+    echo json_encode(array('ok' => false, 'error' => $msg));
+    exit(0);
+};
+if ($uri === false || $uri === '' || $base === false || $base === '' || $number === '' || !function_exists('ldap_connect')) {
+    $fail('LDAP lookup is not available');
+}
+$ad = @ldap_connect($uri);
+if (!$ad) {
+    $fail('Could not connect to LDAP server');
+}
+@ldap_set_option($ad, LDAP_OPT_PROTOCOL_VERSION, 3);
+@ldap_set_option($ad, LDAP_OPT_REFERRALS, 0);
+if (defined('LDAP_OPT_NETWORK_TIMEOUT')) {
+    @ldap_set_option($ad, LDAP_OPT_NETWORK_TIMEOUT, $net);
+}
+if (defined('LDAP_OPT_TIMEOUT')) {
+    @ldap_set_option($ad, LDAP_OPT_TIMEOUT, $net);
+}
+if (!@ldap_bind($ad, $binddn, $bindpw)) {
+    $fail('Could not bind to LDAP server');
+}
+if ($attrEnv === false || $attrEnv === '' || $attrEnv === '*') {
+    $attrList = array('*');
+} else {
+    $attrList = explode(',', $attrEnv);
+}
+$filter = '(|(telephoneNumber=*' . $number . ')(mobile=*' . $number . ')(homeTelephoneNumber=*' . $number . '))';
+$rs = @ldap_search($ad, $base, $filter, $attrList);
+if (!$rs) {
+    @ldap_unbind($ad);
+    $fail('LDAP search failed');
+}
+$info = @ldap_get_entries($ad, $rs);
+@ldap_unbind($ad);
+if (!is_array($info)) {
+    $fail('LDAP search failed');
+}
+$flags = 0;
+if (defined('JSON_UNESCAPED_UNICODE')) {
+    $flags |= JSON_UNESCAPED_UNICODE;
+}
+if (defined('JSON_INVALID_UTF8_SUBSTITUTE')) {
+    $flags |= JSON_INVALID_UTF8_SUBSTITUTE;
+}
+$json = json_encode(array('ok' => true, 'entries' => $info), $flags);
+if ($json === false) {
+    $fail('LDAP result could not be encoded');
+}
+echo $json;
+exit(0);
+
+PHP;
     }
 
 }
